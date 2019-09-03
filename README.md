@@ -30,7 +30,8 @@ USAGE
 # Commands
 <!-- commands -->
 * [`smartthings config [FILE]`](#smartthings-config-file)
-* [`smartthings hello [FILE]`](#smartthings-hello-file)
+* [`smartthings generate:java`](#smartthings-generatejava)
+* [`smartthings generate:node`](#smartthings-generatenode)
 * [`smartthings help [COMMAND]`](#smartthings-help-command)
 
 ## `smartthings config [FILE]`
@@ -49,25 +50,33 @@ OPTIONS
 
 _See code: [src/commands/config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/src/commands/config.ts)_
 
-## `smartthings hello [FILE]`
+## `smartthings generate:java`
 
 describe the command here
 
 ```
 USAGE
-  $ smartthings hello [FILE]
+  $ smartthings generate:java
 
 OPTIONS
-  -f, --force
   -h, --help       show CLI help
-  -n, --name=name  name to print
-
-EXAMPLE
-  $ smartthings hello
-  hello world from ./src/hello.ts!
 ```
 
-_See code: [src/commands/hello.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/src/commands/hello.ts)_
+_See code: [src/commands/generate/java.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/src/commands/generate/java.ts)_
+
+## `smartthings generate:node`
+
+Generate a NodeJS starter app
+
+```
+USAGE
+  $ smartthings generate:node
+
+OPTIONS
+  -h, --help  show CLI help
+```
+
+_See code: [src/commands/generate/node.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/src/commands/generate/node.ts)_
 
 ## `smartthings help [COMMAND]`
 
