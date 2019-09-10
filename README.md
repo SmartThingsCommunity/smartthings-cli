@@ -29,10 +29,34 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`smartthings autocomplete [SHELL]`](#smartthings-autocomplete-shell)
 * [`smartthings config [FILE]`](#smartthings-config-file)
 * [`smartthings generate:java`](#smartthings-generatejava)
 * [`smartthings generate:node`](#smartthings-generatenode)
 * [`smartthings help [COMMAND]`](#smartthings-help-command)
+
+## `smartthings autocomplete [SHELL]`
+
+display autocomplete installation instructions
+
+```
+USAGE
+  $ smartthings autocomplete [SHELL]
+
+ARGUMENTS
+  SHELL  shell type
+
+OPTIONS
+  -r, --refresh-cache  Refresh cache (ignores displaying instructions)
+
+EXAMPLES
+  $ smartthings autocomplete
+  $ smartthings autocomplete bash
+  $ smartthings autocomplete zsh
+  $ smartthings autocomplete --refresh-cache
+```
+
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.1.4/src/commands/autocomplete/index.ts)_
 
 ## `smartthings config [FILE]`
 
@@ -52,14 +76,14 @@ _See code: [src/commands/config.ts](https://github.com/SmartThingsCommunity/smar
 
 ## `smartthings generate:java`
 
-describe the command here
+Generate a Java starter app
 
 ```
 USAGE
   $ smartthings generate:java
 
 OPTIONS
-  -h, --help       show CLI help
+  -h, --help  show CLI help
 ```
 
 _See code: [src/commands/generate/java.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/src/commands/generate/java.ts)_
