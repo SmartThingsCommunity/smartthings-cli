@@ -8,31 +8,33 @@
 	},
 	"bugs": "https://github.com/SmartThingsCommunity/smartthings-cli/issues",
 	"dependencies": {
-		"@oclif/command": "^1.5.18",
+		"@oclif/command": "^1.5.19",
 		"@oclif/config": "^1.13.3",
 		"@oclif/plugin-autocomplete": "^0.1.4",
 		"@oclif/plugin-help": "^2.2.1",
 		"@oclif/plugin-not-found": "^1.2.3",
-		"generator-smartthings": "^1.3.0",
+		"generator-smartthings": "^1.4.0",
+		"js-yaml": "^3.13.1",
 		"tslib": "^1.10.0",
 		"yeoman-environment": "^2.4.0"
 	},
 	"devDependencies": {
 		"@oclif/dev-cli": "^1.22.2",
 		"@oclif/test": "^1.2.5",
-		"@types/chai": "^4.2.0",
+		"@types/chai": "^4.2.3",
+		"@types/js-yaml": "^3.12.1",
 		"@types/mocha": "^5.2.7",
-		"@types/node": "^10.14.16",
+		"@types/node": "^10.14.21",
 		"@types/yeoman-environment": "^2.3.2",
-		"@typescript-eslint/eslint-plugin": "^2.0.0",
-		"@typescript-eslint/parser": "^2.0.0",
+		"@typescript-eslint/eslint-plugin": "^2.3.3",
+		"@typescript-eslint/parser": "^2.3.3",
 		"chai": "^4.2.0",
-		"eslint": "^6.2.2",
+		"eslint": "^6.5.1",
 		"globby": "^10.0.1",
-		"mocha": "^6.2.0",
+		"mocha": "^6.2.1",
 		"nyc": "^14.1.1",
-		"ts-node": "^8.3.0",
-		"typescript": "^3.5.3"
+		"ts-node": "^8.4.1",
+		"typescript": "^3.6.4"
 	},
 	"engines": {
 		"node": ">=10.0.0"
@@ -56,7 +58,10 @@
 			"@oclif/plugin-help",
 			"@oclif/plugin-autocomplete",
 			"@oclif/plugin-not-found"
-		]
+		],
+		"hooks": {
+			"init": "./lib/hooks/init/init-config"
+		}
 	},
 	"repository": "SmartThingsCommunity/smartthings-cli",
 	"scripts": {
