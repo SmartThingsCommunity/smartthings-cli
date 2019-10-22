@@ -21,7 +21,7 @@ describe('cliConfig', () => {
 		expect(cliConfig.loadConfig()).to.eql({})
 	})
 
-	it('returns an empty config empty config file', function() {
+	it('returns an empty config for empty config file', function() {
 		const cliConfig = new CLIConfig()
 		cliConfig.init('./test/resources/empty-config.yaml')
 		expect(cliConfig.loadConfig()).to.eql({})
@@ -45,10 +45,10 @@ describe('cliConfig', () => {
 		expect(cliConfig.getProfile('simple')).to.eql({key: 'value'})
 	})
 
-	it('throws error for missing profile', function() {
+	it('returns empty config for missing profile', function() {
 		const cliConfig = new CLIConfig()
 		cliConfig.init('./test/resources/good-config.yaml')
-		expect(cliConfig.getProfile.bind(cliConfig, 'does-not-exist')).to.throw('could not find valid profile')
+		expect(cliConfig.getProfile('does-not-exist')).to.eql({})
 	})
 
 	it('throws error for bad profile', function() {

@@ -1,5 +1,8 @@
 import { Command, flags } from '@oclif/command'
 
+import cliConfig from '../lib/cli-config'
+
+
 export default class Config extends Command {
 	static description = 'describe the command here'
 
@@ -15,6 +18,8 @@ export default class Config extends Command {
 
 	async run(): Promise<void> {
 		const { args, flags } = this.parse(Config)
+		const profile = cliConfig.getProfile('dev')
+		this.log(`read profile:\n${JSON.stringify(profile, null, 4)}`)
 
 		const name = flags.name || 'world'
 		this.log(`hello ${name} from config.ts`)

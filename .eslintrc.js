@@ -34,7 +34,17 @@ module.exports = {
 			'never'
 		],
 		'@typescript-eslint/member-delimiter-style': [
-			'linebreak'
+			'error',
+			{
+				multiline: {
+					delimiter: 'none',
+					requireLast: true
+				},
+				singleline: {
+					delimiter: 'semi',
+					requireLast: false
+				}
+			}
 		]
 	}
 }

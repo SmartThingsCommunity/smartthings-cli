@@ -7,7 +7,7 @@ export class CLIConfig {
 	private _configFile: string|null = null
 	private _config: object|null = null
 
-	public init(configFile: string) {
+	public init(configFile: string): void {
 		this._configFile = configFile
 	}
 
@@ -15,6 +15,7 @@ export class CLIConfig {
 		return this._configFile
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public loadConfig(): { [name: string]: any } {
 		if (this._configFile == null) {
 			throw new Error('config not yet initialized')
@@ -43,9 +44,10 @@ export class CLIConfig {
 	}
 
 	public getProfile(name: string): object {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const config: { [name: string]: any } = this.loadConfig()
 		if (!(name in config)) {
-			throw new Error(`could not find valid profile ${name} in ${this._configFile}`)
+			return {}
 		}
 		const retVal = config[name]
 		if (typeof retVal === 'object') {
