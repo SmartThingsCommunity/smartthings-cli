@@ -1,5 +1,5 @@
 {
-	"name": "smartthings-cli",
+	"name": "@smartthings/cli",
 	"description": "SmartThings unified CLI",
 	"version": "0.0.0",
 	"author": "SmartThings, Inc.",
