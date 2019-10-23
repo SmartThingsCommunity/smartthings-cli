@@ -1,18 +1,17 @@
-import { Command, flags } from '@oclif/command'
 import yeoman from 'yeoman-environment'
 
+import SmartThingsCommand from '../smartthings-command'
 
-export default abstract class GenerateCommand extends Command {
-	static flags = {
-		help: flags.help({ char: 'h' }),
-	}
+
+export default abstract class GenerateCommand extends SmartThingsCommand {
+	static flags = SmartThingsCommand.flags
 
 	async generate(name: string): Promise<void> {
 		const env = yeoman.createEnv()
 		env.lookup(() => {
 			env.run(name, (err) => {
 				if (err) {
-					console.log(`failed to run yeoman: ${err}`)
+					this.log(`failed to run yeoman: ${err}`)
 				}
 			})
 		})
