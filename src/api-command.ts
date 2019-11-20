@@ -25,8 +25,35 @@ export default abstract class APICommand extends Command {
 		'target-environment': flags.string({
 			char: 'E',
 			description: 'target environment',
-			env: 'SMARTTHINGS_ENVIRONMENT'
+			env: 'SMARTTHINGS_ENVIRONMENT',
 		}),
+	}
+
+	private static jsonInputDescription = 'accept JSON raw input for the REST API call'
+	private static jsonOutputDescription = 'output raw JSON of the REST API call'
+	static jsonInputFlags = {
+		'json-input': flags.string({
+			description: APICommand.jsonInputDescription,
+			char: 'j',
+		}),
+	}
+	static jsonOutputFlags = {
+		'json-output': flags.string({
+			description: APICommand.jsonOutputDescription,
+			char: 'j',
+		}),
+	}
+	static jsonInputOutputFlags = {
+		'json-input': flags.string({
+			description: APICommand.jsonInputDescription,
+		}),
+		'json-output': flags.string({
+			description: APICommand.jsonOutputDescription,
+		}),
+		'json': flags.string({
+			description: 'equivalent of both --json-input and --json-output',
+			char: 'j',
+		})
 	}
 
 	protected args?: string[]

@@ -16,11 +16,11 @@ SmartThings unified CLI
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g smartthings-cli
+$ npm install -g @smartthings/cli
 $ smartthings COMMAND
 running command...
 $ smartthings (-v|--version|version)
-smartthings-cli/0.0.0 darwin-x64 node-v11.14.0
+@smartthings/cli/0.0.0 darwin-x64 node-v11.14.0
 $ smartthings --help [COMMAND]
 USAGE
   $ smartthings COMMAND
@@ -32,7 +32,7 @@ USAGE
 * [`smartthings autocomplete [SHELL]`](#smartthings-autocomplete-shell)
 * [`smartthings config [FILE]`](#smartthings-config-file)
 * [`smartthings devices ID`](#smartthings-devices-id)
-* [`smartthings devices:capabilities-status [FILE]`](#smartthings-devicescapabilities-status-file)
+* [`smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID`](#smartthings-devicescapabilities-status-id-componentid-capabilityid)
 * [`smartthings devices:commands ID`](#smartthings-devicescommands-id)
 * [`smartthings devices:components-status ID COMPONENTID`](#smartthings-devicescomponents-status-id-componentid)
 * [`smartthings devices:list`](#smartthings-deviceslist)
@@ -40,6 +40,11 @@ USAGE
 * [`smartthings generate:java`](#smartthings-generatejava)
 * [`smartthings generate:node`](#smartthings-generatenode)
 * [`smartthings help [COMMAND]`](#smartthings-help-command)
+* [`smartthings locations ID`](#smartthings-locations-id)
+* [`smartthings locations:create`](#smartthings-locationscreate)
+* [`smartthings locations:delete ID`](#smartthings-locationsdelete-id)
+* [`smartthings locations:list`](#smartthings-locationslist)
+* [`smartthings locations:update ID`](#smartthings-locationsupdate-id)
 
 ## `smartthings autocomplete [SHELL]`
 
@@ -100,7 +105,7 @@ OPTIONS
 
 _See code: [src/commands/devices.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/src/commands/devices.ts)_
 
-## `smartthings devices:capabilities-status [FILE]`
+## `smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID`
 
 get the current status of a device component's capability
 
@@ -109,8 +114,8 @@ USAGE
   $ smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID
 
 ARGUMENTS
-  ID           the device id
-  COMPONENTID  the component id
+  ID            the device id
+  COMPONENTID   the component id
   CAPABILITYID  the capability id
 
 OPTIONS
@@ -257,4 +262,100 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.1/src/commands/help.ts)_
+
+## `smartthings locations ID`
+
+get a specific Location from a user's account
+
+```
+USAGE
+  $ smartthings locations ID
+
+ARGUMENTS
+  ID  the location id
+
+OPTIONS
+  -E, --target-environment=target-environment  target environment
+  -h, --help                                   show CLI help
+  -p, --profile=profile                        [default: default] configuration profile
+  -t, --token=token                            the auth token to use
+```
+
+_See code: [src/commands/locations.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/src/commands/locations.ts)_
+
+## `smartthings locations:create`
+
+create a Location for a user
+
+```
+USAGE
+  $ smartthings locations:create
+
+OPTIONS
+  -E, --target-environment=target-environment  target environment
+  -d, --data=data                              JSON data for location
+  -h, --help                                   show CLI help
+  -p, --profile=profile                        [default: default] configuration profile
+  -t, --token=token                            the auth token to use
+```
+
+_See code: [src/commands/locations/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/src/commands/locations/create.ts)_
+
+## `smartthings locations:delete ID`
+
+delete a Location from a user's account
+
+```
+USAGE
+  $ smartthings locations:delete ID
+
+ARGUMENTS
+  ID  the location id
+
+OPTIONS
+  -E, --target-environment=target-environment  target environment
+  -h, --help                                   show CLI help
+  -p, --profile=profile                        [default: default] configuration profile
+  -t, --token=token                            the auth token to use
+```
+
+_See code: [src/commands/locations/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/src/commands/locations/delete.ts)_
+
+## `smartthings locations:list`
+
+list all Locations currently available in a user account
+
+```
+USAGE
+  $ smartthings locations:list
+
+OPTIONS
+  -E, --target-environment=target-environment  target environment
+  -h, --help                                   show CLI help
+  -p, --profile=profile                        [default: default] configuration profile
+  -t, --token=token                            the auth token to use
+```
+
+_See code: [src/commands/locations/list.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/src/commands/locations/list.ts)_
+
+## `smartthings locations:update ID`
+
+update a location
+
+```
+USAGE
+  $ smartthings locations:update ID
+
+ARGUMENTS
+  ID  the location id
+
+OPTIONS
+  -E, --target-environment=target-environment  target environment
+  -d, --data=data                              JSON data for location
+  -h, --help                                   show CLI help
+  -p, --profile=profile                        [default: default] configuration profile
+  -t, --token=token                            the auth token to use
+```
+
+_See code: [src/commands/locations/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/src/commands/locations/update.ts)_
 <!-- commandsstop -->

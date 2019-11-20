@@ -1,7 +1,8 @@
 import { flags } from '@oclif/command'
 
-import APICommand from '../../api-command'
 import { devices } from '@smartthings/rest-client'
+
+import APICommand from '../../api-command'
 
 
 export default class DevicesCommands extends APICommand {
@@ -25,7 +26,7 @@ export default class DevicesCommands extends APICommand {
 		try {
 			this.client.devices.executeCommands(id, commands)
 		} catch (err) {
-			this.log(`caught error ${err}`)
+			this.log(`caught error ${err} attempting to execute command`)
 		}
 	}
 
@@ -41,7 +42,6 @@ export default class DevicesCommands extends APICommand {
 			const inputChunks: string[] = []
 			stdin.resume()
 			stdin.on('data', chunk => {
-				this.log(`pushing chunk ${chunk}`)
 				inputChunks.push(chunk)
 			})
 			stdin.on('end', () => {

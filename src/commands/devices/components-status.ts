@@ -2,7 +2,7 @@ import APICommand from '../../api-command'
 
 
 export default class DevicesComponentsStatus extends APICommand {
-	static description = 'Get the status of all attributes of a the component.'
+	static description = 'get the status of all attributes of a the component'
 
 	static flags = APICommand.flags
 
