@@ -1,6 +1,6 @@
 import { flags } from '@oclif/command'
 
-import { locations } from '@smartthings/rest-client'
+import { LocationUpdate } from '@smartthings/smartthings-core-js/dist/core-public/locations'
 
 import APICommand from '../../api-command'
 
@@ -22,7 +22,7 @@ export default class LocationsUpdate extends APICommand {
 		required: true
 	}]
 
-	private updateAndDisplay(locationId: string, location: locations.LocationUpdate): void {
+	private updateAndDisplay(locationId: string, location: LocationUpdate): void {
 		try {
 			const updatedLocation = this.client.locations.update(locationId, location)
 			this.log(JSON.stringify(updatedLocation, null, 4))
@@ -36,7 +36,7 @@ export default class LocationsUpdate extends APICommand {
 		super.setup(args, flags)
 
 		if (flags.data) {
-			const location: locations.LocationUpdate = JSON.parse(flags.data)
+			const location: LocationUpdate = JSON.parse(flags.data)
 			this.updateAndDisplay(args.id, location)
 		} else {
 			const stdin = process.stdin
