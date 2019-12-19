@@ -1,8 +1,9 @@
 import Command, { flags } from '@oclif/command'
 
 import SmartThingsCommand from './smartthings-command'
-import { SmartThingsRESTClient } from '@smartthings/rest-client'
+import SmartThingsRESTClient from '@smartthings/smartthings-core-js/core-public/src/core'
 import cliConfig from './lib/cli-config'
+import { BearerTokenAuthenticator, NoOpAuthenticator } from '@smartthings/smartthings-core-js/base/src/authenticator'
 
 
 /**
@@ -57,9 +58,11 @@ export default abstract class APICommand extends Command {
 	}
 
 	protected args?: string[]
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	protected flags?: { [name: string]: any }
 	protected token?: string
 	protected profileName?: string
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	protected profileConfig?: { [name: string]: any }
 	protected targetEnvironment?: string
 	protected _client?: SmartThingsRESTClient
@@ -71,6 +74,7 @@ export default abstract class APICommand extends Command {
 		return this._client
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	protected async setup(args: string[], flags: { [name: string]: any }): Promise<void> {
 		this.args = args
 		this.flags = flags
@@ -92,6 +96,9 @@ export default abstract class APICommand extends Command {
 			this.targetEnvironment = 'prod'
 		}
 
-		this._client = new SmartThingsRESTClient(this.token, this.targetEnvironment)
+		const authenticator = this.token
+			? new BearerTokenAuthenticator(this.token)
+			: new NoOpAuthenticator()
+		this._client = new SmartThingsRESTClient(authenticator, this.targetEnvironment)
 	}
 }

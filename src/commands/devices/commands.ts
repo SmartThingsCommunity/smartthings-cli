@@ -1,6 +1,6 @@
 import { flags } from '@oclif/command'
 
-import { devices } from '@smartthings/rest-client'
+import { Command, CommandList } from '@smartthings/smartthings-core-js/core-public/src/devices'
 
 import APICommand from '../../api-command'
 
@@ -22,7 +22,7 @@ export default class DevicesCommands extends APICommand {
 		required: true
 	}]
 
-	private executeAndDisplay(id: string, commands: devices.Command[]): void {
+	private executeAndDisplay(id: string, commands: Command[]): void {
 		try {
 			this.client.devices.executeCommands(id, commands)
 		} catch (err) {
@@ -35,7 +35,7 @@ export default class DevicesCommands extends APICommand {
 		super.setup(args, flags)
 
 		if (flags.data) {
-			const commandsIn: devices.CommandList = JSON.parse(flags.data)
+			const commandsIn: CommandList = JSON.parse(flags.data)
 			this.executeAndDisplay(args.id, commandsIn.commands)
 		} else {
 			const stdin = process.stdin

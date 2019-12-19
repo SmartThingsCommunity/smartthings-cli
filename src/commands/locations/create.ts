@@ -1,6 +1,6 @@
 import { flags } from '@oclif/command'
 
-import { locations } from '@smartthings/rest-client'
+import { LocationCreate } from '@smartthings/smartthings-core-js/core-public/src/locations'
 
 import APICommand from '../../api-command'
 
@@ -16,7 +16,7 @@ export default class LocationsCreate extends APICommand {
 		}),
 	}
 
-	private createAndDisplay(location: locations.LocationCreate): void {
+	private createAndDisplay(location: LocationCreate): void {
 		try {
 			const createdLocation = this.client.locations.create(location)
 			this.log(JSON.stringify(createdLocation, null, 4))
@@ -30,7 +30,7 @@ export default class LocationsCreate extends APICommand {
 		super.setup(args, flags)
 
 		if (flags.data) {
-			const location: locations.LocationCreate = JSON.parse(flags.data)
+			const location: LocationCreate = JSON.parse(flags.data)
 			this.createAndDisplay(location)
 		} else {
 			const stdin = process.stdin
