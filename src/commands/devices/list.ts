@@ -1,7 +1,7 @@
 import { flags } from '@oclif/command'
 
 import APICommand from '../../api-command'
-import { devices } from '@smartthings/rest-client'
+import { DeviceListOptions } from '@smartthings/smartthings-core-js/dist/core-public/devices'
 
 
 export default class DevicesList extends APICommand {
@@ -36,7 +36,7 @@ export default class DevicesList extends APICommand {
 		const { args, flags } = this.parse(DevicesList)
 		super.setup(args, flags)
 
-		const deviceListOptions: devices.DeviceListOptions = {
+		const deviceListOptions: DeviceListOptions = {
 			capability: flags.capability,
 			capabilitiesMode: flags['capabilities-mode'] === 'or' ? 'or' : 'and',
 			locationId: flags['location-id'],
