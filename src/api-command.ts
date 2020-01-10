@@ -5,6 +5,7 @@ import { BearerTokenAuthenticator, NoOpAuthenticator } from '@smartthings/smartt
 
 import SmartThingsCommand from './smartthings-command'
 import cliConfig from './lib/cli-config'
+import logManager from './lib/logger'
 
 
 /**
@@ -97,9 +98,11 @@ export default abstract class APICommand extends Command {
 			this.targetEnvironment = 'prod'
 		}
 
+		const logger = logManager.getLogger('rest-client')
+
 		const authenticator = this.token
 			? new BearerTokenAuthenticator(this.token)
 			: new NoOpAuthenticator()
-		this._client = new SmartThingsRESTClient(authenticator, this.targetEnvironment)
+		this._client = new SmartThingsRESTClient(authenticator, this.targetEnvironment, { logger })
 	}
 }
