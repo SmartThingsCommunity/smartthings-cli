@@ -15,6 +15,7 @@
 		"@oclif/plugin-not-found": "^1.2.3",
 		"generator-smartthings": "^1.5.0",
 		"js-yaml": "^3.13.1",
+		"log4js": "^6.1.0",
 		"tslib": "^1.10.0",
 		"yeoman-environment": "^2.7.0"
 	},
@@ -42,7 +43,7 @@
 	},
 	"files": [
 		"/bin",
-		"/lib",
+		"/dist",
 		"/npm-shrinkwrap.json",
 		"/oclif.manifest.json"
 	],
@@ -51,9 +52,9 @@
 		"oclif"
 	],
 	"license": "Apache-2.0",
-	"main": "lib/index.js",
+	"main": "dist/index.js",
 	"oclif": {
-		"commands": "./lib/commands",
+		"commands": "./dist/commands",
 		"bin": "smartthings",
 		"plugins": [
 			"@oclif/plugin-help",
@@ -61,16 +62,17 @@
 			"@oclif/plugin-not-found"
 		],
 		"hooks": {
-			"init": "./lib/hooks/init/init-config"
+			"init": "./dist/hooks/init/init-config"
 		}
 	},
 	"repository": "SmartThingsCommunity/smartthings-cli",
 	"scripts": {
 		"lint": "eslint src/**/*.ts",
+		"build": "rm -rf dist && tsc",
 		"postpack": "rm -f oclif.manifest.json",
-		"prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+		"prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
 		"test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
 		"version": "oclif-dev readme && git add README.md"
 	},
-	"types": "lib/index.d.ts"
+	"types": "dist/index.d.ts"
 }
