@@ -23,6 +23,20 @@ SmartThings unified CLI
 * [Commands](#commands)
 * [Configuration](#configuration)
 <!-- tocstop -->
+
+# Development
+
+The CLI depends on the [SmartThings Core JS Library](https://codesamsung.com/iot-sdk/smartthings-core-js.git) which is not yet published. To get this working for testing
+purposes, you'll need to check out both repositories and then:
+
+1. In the SDK, run `npm run build`.
+1. In the SDK, run `npm link`.
+1. In the CLI, run `npm link @smartthings/smartthings-core-js`. You may sometimes
+   need to re-run this command, especially if you used `npm install` or
+   `npm uninstall` in the CLI project at a later time.
+1. In the CLI, run `npm link`. After this you can run the CLI using `smartthings`.
+
+
 # Usage
 <!-- usage -->
 ```sh-session
