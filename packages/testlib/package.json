@@ -1,0 +1,31 @@
+{
+	"name": "@smartthings/cli-testlib",
+	"version": "0.0.0",
+	"description": "SmartThings unified CLI testing utility methods library",
+	"author": "SmartThings, Inc.",
+	"bugs": "https://github.com/SmartThingsCommunity/smartthings-cli/issues",
+	"homepage": "https://github.com/SmartThingsCommunity/smartthings-cli",
+	"license": "Apache-2.0",
+	"main": "dist/index",
+	"types": "dist/index",
+	"files": [
+		"dist",
+		"README.md",
+		"!*/__tests__"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/SmartThingsCommunity/smartthings-cli.git",
+		"directory": "packages/testlib"
+	},
+	"scripts": {
+		"lint": "eslint src/**/*.ts",
+		"clean": "rm -rf dist && rm -f tsconfig.tsbuildinfo",
+		"compile": "tsc -b",
+		"build": "npm run clean && npm run compile",
+		"test": "jest"
+	},
+	"devDependencies": {
+		"typescript": "^3.7.4"
+	}
+}

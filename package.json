@@ -1,78 +1,25 @@
 {
-	"name": "@smartthings/cli",
-	"description": "SmartThings unified CLI",
-	"version": "0.0.0",
-	"author": "SmartThings, Inc.",
-	"bin": {
-		"smartthings": "./bin/run"
-	},
-	"bugs": "https://github.com/SmartThingsCommunity/smartthings-cli/issues",
+	"name": "root",
+	"private": true,
 	"dependencies": {
 		"@oclif/command": "^1.5.19",
 		"@oclif/config": "^1.13.3",
-		"@oclif/plugin-autocomplete": "^0.1.5",
-		"@oclif/plugin-help": "^2.2.3",
-		"@oclif/plugin-not-found": "^1.2.3",
-		"generator-smartthings": "^1.5.0",
 		"js-yaml": "^3.13.1",
 		"log4js": "^6.1.0",
-		"tslib": "^1.10.0",
-		"yeoman-environment": "^2.7.0"
+		"tslib": "^1.10.0"
 	},
 	"devDependencies": {
 		"@oclif/dev-cli": "^1.22.2",
-		"@oclif/test": "^1.2.5",
-		"@types/chai": "^4.2.5",
+		"@types/jest": "^24.9.0",
 		"@types/js-yaml": "^3.12.1",
-		"@types/mocha": "^5.2.7",
-		"@types/node": "^10.17.11",
-		"@types/qs": "^6.9.0",
-		"@types/yeoman-environment": "^2.3.2",
-		"@typescript-eslint/eslint-plugin": "^2.12.0",
-		"@typescript-eslint/parser": "^2.12.0",
-		"chai": "^4.2.0",
-		"eslint": "^6.7.2",
-		"globby": "^10.0.1",
-		"mocha": "^6.2.2",
-		"nyc": "^14.1.1",
-		"ts-node": "^8.5.4",
-		"typescript": "^3.7.3"
-	},
-	"engines": {
-		"node": ">=10.0.0"
-	},
-	"files": [
-		"/bin",
-		"/dist",
-		"/npm-shrinkwrap.json",
-		"/oclif.manifest.json"
-	],
-	"homepage": "https://github.com/SmartThingsCommunity/smartthings-cli",
-	"keywords": [
-		"oclif"
-	],
-	"license": "Apache-2.0",
-	"main": "dist/index.js",
-	"oclif": {
-		"commands": "./dist/commands",
-		"bin": "smartthings",
-		"plugins": [
-			"@oclif/plugin-help",
-			"@oclif/plugin-autocomplete",
-			"@oclif/plugin-not-found"
-		],
-		"hooks": {
-			"init": "./dist/hooks/init/init-config"
-		}
-	},
-	"repository": "SmartThingsCommunity/smartthings-cli",
-	"scripts": {
-		"lint": "eslint src/**/*.ts",
-		"build": "rm -rf dist && tsc",
-		"postpack": "rm -f oclif.manifest.json",
-		"prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
-		"test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-		"version": "oclif-dev readme && git add README.md"
-	},
-	"types": "dist/index.d.ts"
+		"@types/node": "^13.1.7",
+		"@typescript-eslint/eslint-plugin": "^2.17.0",
+		"@typescript-eslint/parser": "^2.17.0",
+		"eslint": "^6.8.0",
+		"jest": "^24.9.0",
+		"lerna": "^3.20.2",
+		"ts-jest": "^24.3.0",
+		"ts-node": "^8.6.2",
+		"typescript": "^3.7.4"
+	}
 }
