@@ -1,0 +1,21 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src"
+	},
+	"references": [
+		{
+			"path": "../lib",
+			"name": "@smartthings/cli-lib"
+		},
+		{
+			"path": "../testlib",
+			"name": "@smartthings/cli-testlib"
+		}
+	],
+	"exclude": [
+		"node_modules",
+		"dist"
+	]
+}

@@ -1,13 +1,11 @@
 *-debug.log
 *-error.log
 /.nyc_output
-/dist
-/lib
-/dist
+dist
 /tmp
-/yarn.lock
 node_modules
 .vscode
 .DS_Store
 temp_notes.md
 *.log
+tsconfig.tsbuildinfo

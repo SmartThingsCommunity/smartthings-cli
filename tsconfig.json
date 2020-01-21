@@ -1,12 +1,25 @@
 {
 	"compilerOptions": {
+		"composite": true,
 		"declaration": true,
 		"importHelpers": true,
 		"module": "commonjs",
-		"outDir": "dist",
-		"rootDirs": ["src", "test"],
 		"strict": true,
 		"target": "es2017",
-		"esModuleInterop": true
+		"esModuleInterop": true,
 	},
+	"references": [
+		{
+			"path": "packages/cli",
+			"name": "@smartthings/cli"
+		},
+		{
+			"path": "packages/lib",
+			"name": "@smartthings/cli-lib"
+		},
+		{
+			"path": "packages/testlib",
+			"name": "@smartthings/cli-testlib"
+		}
+	]
 }
