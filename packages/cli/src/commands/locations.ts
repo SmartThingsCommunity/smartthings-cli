@@ -16,7 +16,7 @@ export default class Locations extends APICommand {
 		const { args, flags } = this.parse(Locations)
 		super.setup(args, flags)
 
-		this.client.locations.find(args.id).then(async location => {
+		this.client.locations.get(args.id).then(async location => {
 			this.log(JSON.stringify(location, null, 4))
 		}).catch(err => {
 			this.log(`caught error ${err}`)

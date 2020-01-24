@@ -24,7 +24,7 @@ export default class DevicesCapabilitiesStatus extends APICommand {
 		const { args, flags } = this.parse(DevicesCapabilitiesStatus)
 		super.setup(args, flags)
 
-		this.client.devices.getCapabilitiesStatus(args.id, args.componentId, args.capabilityId).then(async status => {
+		this.client.devices.getCapabilityStatus(args.id, args.componentId, args.capabilityId).then(async status => {
 			this.log(JSON.stringify(status, null, 4))
 		})
 	}

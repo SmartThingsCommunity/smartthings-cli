@@ -19,7 +19,6 @@ SmartThings unified CLI
 [![License](https://img.shields.io/npm/l/smartthings-cli.svg)](https://github.com/SmartThingsCommunity/smartthings-cli/blob/master/package.json)
 
 <!-- toc -->
-* [Development](#development)
 * [Usage](#usage)
 * [Commands](#commands)
 * [Configuration](#configuration)

@@ -1,17 +1,18 @@
-import Command, { flags } from '@oclif/command'
+import { flags } from '@oclif/command'
 
 import SmartThingsRESTClient from '@smartthings/smartthings-core-js/dist/core-public/core'
-import { BearerTokenAuthenticator, NoOpAuthenticator } from '@smartthings/smartthings-core-js/dist/base/authenticator'
+import { BearerTokenAuthenticator } from '@smartthings/smartthings-core-js/dist/base/authenticator'
 
 import { SmartThingsCommand } from './smartthings-command'
 import { cliConfig } from './cli-config'
 import { logManager } from './logger'
+import { LoginAuthenticator } from './login-authenticator'
 
 
 /**
  * Base class for Rest API commands.
  */
-export abstract class APICommand extends Command {
+export abstract class APICommand extends SmartThingsCommand {
 	static flags = {
 		...SmartThingsCommand.flags,
 		profile: flags.string({
@@ -66,7 +67,7 @@ export abstract class APICommand extends Command {
 	protected profileName?: string
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	protected profileConfig?: { [name: string]: any }
-	protected targetEnvironment?: string
+	protected targetEnvironment = 'prod'
 	protected _client?: SmartThingsRESTClient
 
 	protected get client(): SmartThingsRESTClient {
@@ -94,15 +95,14 @@ export abstract class APICommand extends Command {
 			this.targetEnvironment = flags['target-environment']
 		} else if ('targetEnvironment' in this.profileConfig) {
 			this.targetEnvironment = this.profileConfig.targetEnvironment
-		} else {
-			this.targetEnvironment = 'prod'
 		}
 
 		const logger = logManager.getLogger('rest-client')
 
 		const authenticator = this.token
 			? new BearerTokenAuthenticator(this.token)
-			: new NoOpAuthenticator()
-		this._client = new SmartThingsRESTClient(authenticator, this.targetEnvironment, { logger })
+			: new LoginAuthenticator(this.profileName ? this.profileName : 'default',
+				this.targetEnvironment)
+		this._client = new SmartThingsRESTClient(authenticator, { targetEnvironment: this.targetEnvironment, logger })
 	}
 }
