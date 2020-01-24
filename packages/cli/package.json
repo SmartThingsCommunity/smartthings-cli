@@ -57,6 +57,7 @@
 		"lint": "eslint src/**/*.ts",
 		"clean": "rm -rf dist && rm -f tsconfig.tsbuildinfo",
 		"compile": "tsc -b",
+		"watch": "tsc -b -w",
 		"build": "npm run clean && npm run compile",
 		"test": "jest",
 		"postpack": "rm -f oclif.manifest.json",

@@ -1,12 +1,12 @@
 import { Configuration } from 'log4js'
 import { Hook } from '@oclif/config'
 
-import { cliConfig } from '@smartthings/cli-lib'
-import { logManager } from '@smartthings/cli-lib'
+import { cliConfig, logManager, LoginAuthenticator } from '@smartthings/cli-lib'
 
 
 const hook: Hook<'init'> = async function (opts) {
 	cliConfig.init(`${opts.config.configDir}/config.yaml`)
+	LoginAuthenticator.init(`${opts.config.configDir}/credentials.json`)
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const config: { [name: string]: any } = cliConfig.loadConfig()
@@ -15,11 +15,15 @@ const hook: Hook<'init'> = async function (opts) {
 		logConfig = config['logging']
 	} else {
 		logConfig = {
-			appenders: { smartthings: { type: 'file', filename: 'smartthings.log' }},
+			appenders: {
+				smartthings: { type: 'file', filename: 'smartthings.log' },
+				stderr: { type: 'stderr' },
+				errors: { type: 'logLevelFilter', appender: 'stderr', level: 'error' },
+			},
 			categories: {
-				default: { appenders: ['smartthings'], level: 'warn' },
-				'rest-client': { appenders: ['smartthings'], level: 'warn' },
-				'cli': { appenders: ['smartthings'], level: 'warn' },
+				default: { appenders: ['smartthings', 'errors'], level: 'warn' },
+				'rest-client': { appenders: ['smartthings', 'errors'], level: 'warn' },
+				cli: { appenders: ['smartthings', 'errors'], level: 'warn' },
 			},
 		}
 	}

@@ -18,14 +18,15 @@
 		"url": "git+https://github.com/SmartThingsCommunity/smartthings-cli.git",
 		"directory": "packages/testlib"
 	},
+	"devDependencies": {
+		"typescript": "^3.7.4"
+	},
 	"scripts": {
 		"lint": "eslint src/**/*.ts",
 		"clean": "rm -rf dist && rm -f tsconfig.tsbuildinfo",
 		"compile": "tsc -b",
+		"watch": "tsc -b -w",
 		"build": "npm run clean && npm run compile",
 		"test": "jest"
-	},
-	"devDependencies": {
-		"typescript": "^3.7.4"
 	}
 }
