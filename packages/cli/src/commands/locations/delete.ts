@@ -14,7 +14,7 @@ export default class LocationsDelete extends APICommand {
 
 	async run(): Promise<void> {
 		const { args, flags } = this.parse(LocationsDelete)
-		super.setup(args, flags)
+		await super.setup(args, flags)
 
 		this.client.locations.delete(args.id).then(async () => {
 			this.log(`location ${args.id} deleted`)

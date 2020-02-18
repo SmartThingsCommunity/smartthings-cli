@@ -33,7 +33,7 @@ export default class LocationsUpdate extends APICommand {
 
 	async run(): Promise<void> {
 		const { args, flags } = this.parse(LocationsUpdate)
-		super.setup(args, flags)
+		await super.setup(args, flags)
 
 		if (flags.data) {
 			const location: LocationUpdate = JSON.parse(flags.data)

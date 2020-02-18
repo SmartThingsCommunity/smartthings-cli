@@ -7,27 +7,22 @@ import open from 'open'
 import qs from 'qs'
 
 import { Authenticator } from '@smartthings/smartthings-core-js/dist/base/authenticator'
+import { SmartThingsURLProvider, defaultSmartThingsURLProvider } from '@smartthings/smartthings-core-js/dist/base/endpoint-client'
 
 import { logManager } from './logger'
 
 
-const urls: { [type: string]: { [env: string]: string }} = {
-	baseAuth: {
-		prod: 'https://oauthin-regional.api.smartthings.com/oauth',
-		dev: 'https://oauthin-regionald.smartthingsgdev.com/oauth',
-		staging: 'https://oauthin-regionals.smartthingsgdev.com/oauth',
-	},
-	tokenRefresh: {
-		prod: 'https://auth-global.api.smartthings.com/oauth/token',
-		dev: 'https://auth-globald.smartthingsgdev.com/oauth/token',
-		staging: 'https://auth-globals.smartthingsgdev.com/oauth/token',
-	},
+export interface ClientIdProvider extends SmartThingsURLProvider {
+	clientId: string
+	baseOAuthInURL: string
+	oauthAuthTokenRefreshURL: string
 }
 
-const clientIds: { [env: string]: string } = {
-	prod: 'none yet',
-	dev: 'none yet',
-	staging: '4f5b6c3b-640a-4d2b-861a-bfa45e25895f',
+export const defaultClientIdProvider: ClientIdProvider = {
+	...defaultSmartThingsURLProvider,
+	baseOAuthInURL: 'https://oauthin-regional.api.smartthings.com/oauth',
+	oauthAuthTokenRefreshURL: 'https://auth-global.api.smartthings.com/oauth/token',
+	clientId: 'none yet',
 }
 
 // All the scopes the clientId we are using is configured to use.
@@ -45,7 +40,6 @@ const postConfig = {
 
 
 interface AuthenticationInfo {
-	targetEnvironment: string
 	accessToken: string
 	refreshToken: string
 	expires: Date
@@ -67,12 +61,9 @@ export class LoginAuthenticator implements Authenticator {
 	private authenticationInfo?: AuthenticationInfo
 	private logger = logManager.getLogger('login-authenticator')
 
-	constructor(private profileName: string, private targetEnvironment: string) {
+	constructor(private profileName: string, private clientIdProvider: ClientIdProvider) {
 		this.logger.trace('constructing a LoginAuthenticator')
-		if (!(targetEnvironment in clientIds)) {
-			throw new Error(`invalid target environment: ${targetEnvironment}`)
-		}
-		this.clientId = clientIds[targetEnvironment]
+		this.clientId = clientIdProvider.clientId
 		if (!LoginAuthenticator.credentialsFile) {
 			throw new Error('LoginAuthenticator credentials file not set.')
 		}
@@ -119,7 +110,6 @@ export class LoginAuthenticator implements Authenticator {
 			throw new Error('credentials file location not set')
 		}
 		this.authenticationInfo = {
-			targetEnvironment: this.targetEnvironment,
 			accessToken: response.data.access_token,
 			refreshToken: response.data.refresh_token,
 			expires: new Date(Date.now() + response.data.expires_in * 1000),
@@ -146,11 +136,11 @@ export class LoginAuthenticator implements Authenticator {
 
 		const port = await getPort({ port: [61973, 61974, 61975] })
 
-		const baseAuthURL = urls.baseAuth[this.targetEnvironment]
+		const baseOAuthInURL = this.clientIdProvider.baseOAuthInURL
 		const codeChallenge = this.base64URLEncode(this.sha256(verifier))
 		const finishURL = `http://localhost:${port}/finish`
 		app.get('/start', (req, res) => {
-			const redirectTo = `${baseAuthURL}/authorize?scope=${scopes.join('+')}&` +
+			const redirectTo = `${baseOAuthInURL}/authorize?scope=${scopes.join('+')}&` +
 				`response_type=code&client_id=${this.clientId}&` +
 				`code_challenge=${codeChallenge}&code_challenge_method=S256&` +
 				`redirect_uri=${encodeURIComponent(finishURL)}&` +
@@ -173,17 +163,17 @@ export class LoginAuthenticator implements Authenticator {
 				'code': req.query.code,
 				'redirect_uri': finishURL
 			}
-			this.logger.trace(`making axios request to ${baseAuthURL}/token with:`)
+			this.logger.trace(`making axios request to ${baseOAuthInURL}/token with:`)
 			this.logger.trace(`  body: ${qs.stringify(requestBody)}`)
 			this.logger.trace(`  config: ${JSON.stringify(postConfig)}`)
 			this.logger.trace(`code = ${req.query.code}`)
 			if (0) {
 				// I used this for debugging. Axios does not include the body of the response in any way I could find.
-				this.logger.trace(`\n\nRun:\ncurl -i --request POST --url '${baseAuthURL}/token' --header 'content-type: application/x-www-form-urlencoded' ` +
+				this.logger.trace(`\n\nRun:\ncurl -i --request POST --url '${baseOAuthInURL}/token' --header 'content-type: application/x-www-form-urlencoded' ` +
 					`--data grant_type=authorization_code --data 'client_id=${this.clientId}' --data code_verifier=${verifier} --data code=${req.query.code} ` +
 					`--data 'redirect_uri=${finishURL}' --header 'X-ST-CORRELATION: ross-pkce-attempt'\n\n`)
 			} else {
-				axios.post(`${baseAuthURL}/token`, qs.stringify(requestBody), postConfig)
+				axios.post(`${baseOAuthInURL}/token`, qs.stringify(requestBody), postConfig)
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					.then((response: AxiosResponse<any>) => {
 						this.updateTokenFromResponse(response)
@@ -224,7 +214,7 @@ export class LoginAuthenticator implements Authenticator {
 
 	private async refreshToken(): Promise<void> {
 		this.logger.trace('refreshing token')
-		const tokenRefreshURL = urls.tokenRefresh[this.targetEnvironment]
+		const oauthAuthTokenRefreshURL = this.clientIdProvider.oauthAuthTokenRefreshURL
 		const requestBody = {
 			'grant_type': 'refresh_token',
 			'client_id': this.clientId,
@@ -235,10 +225,10 @@ export class LoginAuthenticator implements Authenticator {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			}
 		}
-		this.logger.trace(`making axios request to ${tokenRefreshURL} with:`)
+		this.logger.trace(`making axios request to ${oauthAuthTokenRefreshURL} with:`)
 		this.logger.trace(`  body: ${qs.stringify(requestBody)}`)
 		this.logger.trace(`  config: ${JSON.stringify(postConfig)}`)
-		await axios.post(tokenRefreshURL, qs.stringify(requestBody), postConfig)
+		await axios.post(oauthAuthTokenRefreshURL, qs.stringify(requestBody), postConfig)
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			.then((response: AxiosResponse<any>) => {
 				this.updateTokenFromResponse(response)

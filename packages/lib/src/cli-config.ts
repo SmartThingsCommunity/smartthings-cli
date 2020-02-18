@@ -50,6 +50,9 @@ export class CLIConfig {
 			return {}
 		}
 		const retVal = config[name]
+		if (retVal === null) {
+			throw new Error('null profile specified. Check config.yaml for errors.')
+		}
 		if (typeof retVal === 'object') {
 			return retVal
 		}

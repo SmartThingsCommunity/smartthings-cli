@@ -27,7 +27,7 @@ export default class LocationsCreate extends APICommand {
 
 	async run(): Promise<void> {
 		const { args, flags } = this.parse(LocationsCreate)
-		super.setup(args, flags)
+		await super.setup(args, flags)
 
 		if (flags.data) {
 			const location: LocationCreate = JSON.parse(flags.data)

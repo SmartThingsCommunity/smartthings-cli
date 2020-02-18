@@ -35,7 +35,7 @@ export default class DevicesList extends APICommand {
 
 	async run(): Promise<void> {
 		const { args, flags } = this.parse(DevicesList)
-		super.setup(args, flags)
+		await super.setup(args, flags)
 
 		const deviceListOptions: DeviceListOptions = {
 			capability: flags.capability,

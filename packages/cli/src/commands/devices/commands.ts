@@ -32,7 +32,7 @@ export default class DevicesCommands extends APICommand {
 
 	async run(): Promise<void> {
 		const { args, flags } = this.parse(DevicesCommands)
-		super.setup(args, flags)
+		await super.setup(args, flags)
 
 		if (flags.data) {
 			const commandsIn: CommandList = JSON.parse(flags.data)
