@@ -22,7 +22,7 @@ export default class DevicesCapabilitiesStatus extends APICommand {
 
 	async run(): Promise<void> {
 		const { args, flags } = this.parse(DevicesCapabilitiesStatus)
-		super.setup(args, flags)
+		await super.setup(args, flags)
 
 		this.client.devices.getCapabilityStatus(args.id, args.componentId, args.capabilityId).then(async status => {
 			this.log(JSON.stringify(status, null, 4))

@@ -6,7 +6,7 @@ import { BearerTokenAuthenticator } from '@smartthings/smartthings-core-js/dist/
 import { SmartThingsCommand } from './smartthings-command'
 import { cliConfig } from './cli-config'
 import { logManager } from './logger'
-import { LoginAuthenticator } from './login-authenticator'
+import { LoginAuthenticator, defaultClientIdProvider } from './login-authenticator'
 
 
 /**
@@ -25,11 +25,6 @@ export abstract class APICommand extends SmartThingsCommand {
 			char: 't',
 			description: 'the auth token to use',
 			env: 'SMARTTHINGS_TOKEN',
-		}),
-		'target-environment': flags.string({
-			char: 'E',
-			description: 'target environment',
-			env: 'SMARTTHINGS_ENVIRONMENT',
 		}),
 	}
 
@@ -67,7 +62,7 @@ export abstract class APICommand extends SmartThingsCommand {
 	protected profileName?: string
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	protected profileConfig?: { [name: string]: any }
-	protected targetEnvironment = 'prod'
+	protected clientIdProvider = defaultClientIdProvider
 	protected _client?: SmartThingsRESTClient
 
 	protected get client(): SmartThingsRESTClient {
@@ -91,10 +86,8 @@ export abstract class APICommand extends SmartThingsCommand {
 			this.token = this.profileConfig.token
 		}
 
-		if (flags['target-environment']) {
-			this.targetEnvironment = flags['target-environment']
-		} else if ('targetEnvironment' in this.profileConfig) {
-			this.targetEnvironment = this.profileConfig.targetEnvironment
+		if ('clientIdProvider' in this.profileConfig) {
+			this.clientIdProvider = this.profileConfig.clientIdProvider
 		}
 
 		const logger = logManager.getLogger('rest-client')
@@ -102,7 +95,8 @@ export abstract class APICommand extends SmartThingsCommand {
 		const authenticator = this.token
 			? new BearerTokenAuthenticator(this.token)
 			: new LoginAuthenticator(this.profileName ? this.profileName : 'default',
-				this.targetEnvironment)
-		this._client = new SmartThingsRESTClient(authenticator, { targetEnvironment: this.targetEnvironment, logger })
+				this.clientIdProvider)
+		this._client = new SmartThingsRESTClient(authenticator,
+			{ urlProvider: this.clientIdProvider, logger })
 	}
 }
