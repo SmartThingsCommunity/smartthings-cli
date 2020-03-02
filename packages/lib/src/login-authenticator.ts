@@ -6,8 +6,8 @@ import getPort from 'get-port'
 import open from 'open'
 import qs from 'qs'
 
-import { Authenticator } from '@smartthings/smartthings-core-js/dist/base/authenticator'
-import { SmartThingsURLProvider, defaultSmartThingsURLProvider } from '@smartthings/smartthings-core-js/dist/base/endpoint-client'
+import { Authenticator } from '@smartthings/core-sdk'
+import { SmartThingsURLProvider, defaultSmartThingsURLProvider } from '@smartthings/core-sdk'
 
 import { logManager } from './logger'
 

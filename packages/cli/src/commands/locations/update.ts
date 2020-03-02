@@ -1,6 +1,6 @@
 import { flags } from '@oclif/command'
 
-import { LocationUpdate } from '@smartthings/smartthings-core-js/dist/core-public/locations'
+import { LocationUpdate } from '@smartthings/core-sdk'
 
 import { APICommand } from '@smartthings/cli-lib'
 

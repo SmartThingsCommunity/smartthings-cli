@@ -46,6 +46,7 @@
 		"@oclif/plugin-not-found": "^1.2.3",
 		"@smartthings/cli-lib": "^0.0.0",
 		"generator-smartthings": "^1.5.0",
+		"node": "^12.16.0",
 		"yeoman-environment": "^2.7.0"
 	},
 	"devDependencies": {

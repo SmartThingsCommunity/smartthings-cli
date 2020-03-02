@@ -1,6 +1,6 @@
 import { flags } from '@oclif/command'
 
-import { LocationCreate } from '@smartthings/smartthings-core-js/dist/core-public/locations'
+import { LocationCreate } from '@smartthings/core-sdk'
 
 import { APICommand } from '@smartthings/cli-lib'
 
