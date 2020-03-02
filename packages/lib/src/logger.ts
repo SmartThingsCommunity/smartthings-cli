@@ -1,6 +1,6 @@
 import { configure, Configuration, Logger } from 'log4js'
 
-import { Logger as APILogger } from '@smartthings/smartthings-core-js/dist/base/logger'
+import { Logger as APILogger } from '@smartthings/core-sdk'
 
 
 class Log4JSLogger implements APILogger {

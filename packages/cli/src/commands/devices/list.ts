@@ -1,6 +1,6 @@
 import { flags } from '@oclif/command'
 
-import { DeviceListOptions } from '@smartthings/smartthings-core-js/dist/core-public/devices'
+import { DeviceListOptions } from '@smartthings/core-sdk'
 
 import { APICommand } from '@smartthings/cli-lib'
 

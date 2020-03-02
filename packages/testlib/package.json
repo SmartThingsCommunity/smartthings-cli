@@ -28,5 +28,8 @@
 		"watch": "tsc -b -w",
 		"build": "npm run clean && npm run compile",
 		"test": "jest"
+	},
+	"dependencies": {
+		"node": "^12.16.0"
 	}
 }

@@ -1,7 +1,7 @@
 import { flags } from '@oclif/command'
 
-import SmartThingsRESTClient from '@smartthings/smartthings-core-js/dist/core-public/core'
-import { BearerTokenAuthenticator } from '@smartthings/smartthings-core-js/dist/base/authenticator'
+import { SmartThingsClient } from '@smartthings/core-sdk'
+import { BearerTokenAuthenticator } from '@smartthings/core-sdk'
 
 import { SmartThingsCommand } from './smartthings-command'
 import { cliConfig } from './cli-config'
@@ -63,9 +63,9 @@ export abstract class APICommand extends SmartThingsCommand {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	protected profileConfig?: { [name: string]: any }
 	protected clientIdProvider = defaultClientIdProvider
-	protected _client?: SmartThingsRESTClient
+	protected _client?: SmartThingsClient
 
-	protected get client(): SmartThingsRESTClient {
+	protected get client(): SmartThingsClient {
 		if (!this._client) {
 			throw new Error('APICommand not properly initialized')
 		}
@@ -96,7 +96,7 @@ export abstract class APICommand extends SmartThingsCommand {
 			? new BearerTokenAuthenticator(this.token)
 			: new LoginAuthenticator(this.profileName ? this.profileName : 'default',
 				this.clientIdProvider)
-		this._client = new SmartThingsRESTClient(authenticator,
+		this._client = new SmartThingsClient(authenticator,
 			{ urlProvider: this.clientIdProvider, logger })
 	}
 }
