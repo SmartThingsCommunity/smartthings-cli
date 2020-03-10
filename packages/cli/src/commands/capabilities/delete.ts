@@ -2,7 +2,7 @@ import { APICommand } from '@smartthings/cli-lib'
 
 
 export default class CapabilitiesDelete extends APICommand {
-	static description = 'delete a Capability from a user\'s account'
+	static description = "delete a Capability from a user's account"
 
 	static flags = APICommand.flags
 
@@ -10,13 +10,13 @@ export default class CapabilitiesDelete extends APICommand {
 		{
 			name: 'id',
 			description: 'the capability id',
-			required: true
+			required: true,
 		},
 		{
 			name: 'version',
 			description: 'the capability version',
-			required: true
-		}
+			required: true,
+		},
 	]
 
 	async run(): Promise<void> {

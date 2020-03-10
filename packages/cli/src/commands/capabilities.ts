@@ -2,7 +2,7 @@ import { APICommand } from '@smartthings/cli-lib'
 
 
 export default class Capabilities extends APICommand {
-	static description = 'get a specific capability from a user\'s account'
+	static description = "get a specific capability from a user's account"
 
 	static flags = APICommand.flags
 
@@ -16,7 +16,7 @@ export default class Capabilities extends APICommand {
 			name: 'version',
 			description: 'the capability version',
 			required: true,
-		}
+		},
 	]
 
 	async run(): Promise<void> {

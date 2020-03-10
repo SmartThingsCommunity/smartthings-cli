@@ -52,7 +52,7 @@ export abstract class APICommand extends SmartThingsCommand {
 		'json': flags.string({
 			description: 'equivalent of both --json-input and --json-output',
 			char: 'j',
-		})
+		}),
 	}
 
 	protected args?: string[]

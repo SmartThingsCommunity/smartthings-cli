@@ -19,7 +19,7 @@ export default class DevicesCommands extends APICommand {
 	static args = [{
 		name: 'id',
 		description: 'the device on which you want to execute a command',
-		required: true
+		required: true,
 	}]
 
 	private executeAndDisplay(id: string, commands: Command[]): void {
@@ -31,8 +31,8 @@ export default class DevicesCommands extends APICommand {
 	}
 
 	async run(): Promise<void> {
-		const { args, flags } = this.parse(DevicesCommands)
-		await super.setup(args, flags)
+		const { args, argv, flags } = this.parse(DevicesCommands)
+		await super.setup(argv, flags)
 
 		if (flags.data) {
 			const commandsIn: CommandList = JSON.parse(flags.data)

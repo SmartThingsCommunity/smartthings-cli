@@ -35,7 +35,7 @@ const scopes = [
 const postConfig = {
 	headers: {
 		'Content-Type': 'application/x-www-form-urlencoded',
-	}
+	},
 }
 
 
@@ -73,7 +73,7 @@ export class LoginAuthenticator implements Authenticator {
 			const authInfo = credentialsFileData[profileName]
 			this.authenticationInfo = {
 				...authInfo,
-				expires: new Date(authInfo.expires)
+				expires: new Date(authInfo.expires),
 			}
 			this.logger.trace(`authentication info from file = ${JSON.stringify(this.authenticationInfo, null, 4)}`)
 		}
@@ -115,7 +115,7 @@ export class LoginAuthenticator implements Authenticator {
 			expires: new Date(Date.now() + response.data.expires_in * 1000),
 			scope: response.data.scope,
 			installedAppId: response.data.installed_app_id,
-			deviceId: response.data.device_id
+			deviceId: response.data.device_id,
 		}
 		const credentialsFileData = this.readCredentialsFile()
 		credentialsFileData[this.profileName] = this.authenticationInfo
@@ -161,7 +161,7 @@ export class LoginAuthenticator implements Authenticator {
 				'client_id': this.clientId,
 				'code_verifier': verifier,
 				'code': req.query.code,
-				'redirect_uri': finishURL
+				'redirect_uri': finishURL,
 			}
 			this.logger.trace(`making axios request to ${baseOAuthInURL}/token with:`)
 			this.logger.trace(`  body: ${qs.stringify(requestBody)}`)
@@ -223,7 +223,7 @@ export class LoginAuthenticator implements Authenticator {
 		const postConfig = {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
-			}
+			},
 		}
 		this.logger.trace(`making axios request to ${oauthAuthTokenRefreshURL} with:`)
 		this.logger.trace(`  body: ${qs.stringify(requestBody)}`)

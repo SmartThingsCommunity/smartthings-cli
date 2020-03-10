@@ -20,13 +20,13 @@ export default class CapabilitiesUpdate extends APICommand {
 		{
 			name: 'id',
 			description: 'the capability id',
-			required: true
+			required: true,
 		},
 		{
 			name: 'version',
 			description: 'the capability version',
-			required: true
-		}
+			required: true,
+		},
 	]
 
 	private updateAndDisplay(capabilityId: string, capabilityVersion: number, capability: CapabilityUpdate): void {

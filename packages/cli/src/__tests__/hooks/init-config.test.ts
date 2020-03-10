@@ -1,6 +1,6 @@
 // import { expect, test } from '@oclif/test'
 
-import { cliConfig } from '@smartthings/cli-lib'
+// import { cliConfig } from '@smartthings/cli-lib'
 
 describe('hooks', () => {
 	it('needs tests', () => {
