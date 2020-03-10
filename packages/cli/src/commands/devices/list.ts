@@ -13,29 +13,29 @@ export default class DevicesList extends APICommand {
 		'location-id': flags.string({
 			char: 'l',
 			description: 'filter results by location',
-			multiple: true
+			multiple: true,
 		}),
 		capability: flags.string({
 			char: 'c',
 			description: 'filter results by capability',
-			multiple: true
+			multiple: true,
 		}),
 		'capabilities-mode': flags.string({
 			char: 'C',
 			description: 'Treat capability filter query params as a logical "or" or "and" with a default of "and".',
 			dependsOn: ['capability'],
-			options: ['and', 'or']
+			options: ['and', 'or'],
 		}),
 		'device-id': flags.string({
 			char: 'd',
 			description: 'filter results by device',
-			multiple: true
+			multiple: true,
 		}),
 	}
 
 	async run(): Promise<void> {
-		const { args, flags } = this.parse(DevicesList)
-		await super.setup(args, flags)
+		const { argv, flags } = this.parse(DevicesList)
+		await super.setup(argv, flags)
 
 		const deviceListOptions: DeviceListOptions = {
 			capability: flags.capability,

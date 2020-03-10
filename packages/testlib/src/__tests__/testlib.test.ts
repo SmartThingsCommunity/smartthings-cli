@@ -1,4 +1,4 @@
-const testlib = import('..')
+// const testlib = import('..')
 
 describe('testlib', () => {
 	it('needs tests', () => {

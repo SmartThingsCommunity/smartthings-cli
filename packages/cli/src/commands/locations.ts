@@ -2,7 +2,7 @@ import { APICommand } from '@smartthings/cli-lib'
 
 
 export default class Locations extends APICommand {
-	static description = 'get a specific Location from a user\'s account'
+	static description = "get a specific Location from a user's account"
 
 	static flags = APICommand.flags
 
@@ -13,8 +13,8 @@ export default class Locations extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, flags } = this.parse(Locations)
-		await super.setup(args, flags)
+		const { args, argv, flags } = this.parse(Locations)
+		await super.setup(argv, flags)
 
 		this.client.locations.get(args.id).then(async location => {
 			this.log(JSON.stringify(location, null, 4))

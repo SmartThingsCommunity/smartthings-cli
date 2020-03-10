@@ -10,8 +10,8 @@ export default class LocationsList extends APICommand {
 	}
 
 	async run(): Promise<void> {
-		const { args, flags } = this.parse(LocationsList)
-		await super.setup(args, flags)
+		const { argv, flags } = this.parse(LocationsList)
+		await super.setup(argv, flags)
 
 		this.client.locations.list().then(async locations => {
 			this.log(JSON.stringify(locations, null, 4))
