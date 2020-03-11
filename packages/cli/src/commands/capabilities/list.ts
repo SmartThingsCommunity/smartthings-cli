@@ -1,4 +1,7 @@
+import Table from 'cli-table'
+
 import { APICommand } from '@smartthings/cli-lib'
+import { CapabilitySummary } from '@smartthings/core-sdk'
 
 
 export default class CapabilitiesList extends APICommand {
@@ -6,17 +9,33 @@ export default class CapabilitiesList extends APICommand {
 
 	static flags = {
 		...APICommand.flags,
-		...APICommand.jsonOutputFlags,
+		...APICommand.outputFlags,
+		...APICommand.jsonFlags,
 	}
 
 	async run(): Promise<void> {
-		const { args, flags } = this.parse(CapabilitiesList)
-		await super.setup(args, flags)
+		const { argv, flags } = this.parse(CapabilitiesList)
+		await super.setup(argv, flags)
 
 		this.client.capabilities.list().then(async capabilities => {
-			this.log(JSON.stringify(capabilities, null, 4))
+			if(flags.json){
+				this.log(JSON.stringify(capabilities, null, flags['json-space'] || 4))
+			} else {
+				this.printCapabilitiesTable(capabilities)
+			}
 		}).catch(err => {
 			this.log(`caught error ${err}`)
 		})
+	}
+
+	printCapabilitiesTable(capabilities: CapabilitySummary[]): void {
+		const table = new Table({
+			head: ['Capability', 'Version', 'Status'],
+			colWidths: [30, 30, 30],
+		})
+		for (const capability of capabilities) {
+			table.push([capability.id, capability.version, capability.status || 'N/A'])
+		}
+		console.log(table.toString())
 	}
 }

@@ -28,30 +28,30 @@ export abstract class APICommand extends SmartThingsCommand {
 		}),
 	}
 
-	private static jsonInputDescription = 'accept JSON raw input for the REST API call'
-	private static jsonOutputDescription = 'output raw JSON of the REST API call'
-	static jsonInputFlags = {
-		'json-input': flags.string({
-			description: APICommand.jsonInputDescription,
-			char: 'j',
+	private static inputFileDescription = 'accept raw input (JSON/YAML) for the REST API call'
+	private static outputFileDescription = 'output raw JSON of the REST API call in the specified file'
+	private static jsonSpaceDescription = 'Specify the number of spcaes for JSON formatting'
+	static inputFlags = {
+		input: flags.string({
+			char: 'i',
+			description: APICommand.inputFileDescription,
 		}),
 	}
-	static jsonOutputFlags = {
-		'json-output': flags.string({
-			description: APICommand.jsonOutputDescription,
-			char: 'j',
+
+	static outputFlags = {
+		output : flags.string({
+			char: 'o',
+			description: APICommand.outputFileDescription,
 		}),
 	}
-	static jsonInputOutputFlags = {
-		'json-input': flags.string({
-			description: APICommand.jsonInputDescription,
-		}),
-		'json-output': flags.string({
-			description: APICommand.jsonOutputDescription,
-		}),
-		'json': flags.string({
+
+	static jsonFlags = {
+		json: flags.boolean({
 			description: 'equivalent of both --json-input and --json-output',
 			char: 'j',
+		}),
+		'json-space' : flags.integer({
+			description: APICommand.jsonSpaceDescription,
 		}),
 	}
 

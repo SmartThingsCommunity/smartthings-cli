@@ -1,8 +1,11 @@
+import fs from 'fs'
 import { flags } from '@oclif/command'
 
-import { CapabilityUpdate } from '@smartthings/core-sdk/src/endpoint/capabilities'
-
 import { APICommand } from '@smartthings/cli-lib'
+import { CapabilityUpdate } from '@smartthings/core-sdk'
+
+import { CapabilityLogging } from '../capabilities'
+
 
 
 export default class CapabilitiesUpdate extends APICommand {
@@ -10,6 +13,8 @@ export default class CapabilitiesUpdate extends APICommand {
 
 	static flags = {
 		...APICommand.flags,
+		...APICommand.inputFlags,
+		...APICommand.jsonFlags,
 		data: flags.string({
 			char: 'd',
 			description: 'JSON data for capability',
@@ -32,7 +37,11 @@ export default class CapabilitiesUpdate extends APICommand {
 	private updateAndDisplay(capabilityId: string, capabilityVersion: number, capability: CapabilityUpdate): void {
 		this.client.capabilities.update(capabilityId, capabilityVersion, capability)
 			.then(updatedCapability => {
-				this.log(JSON.stringify(updatedCapability, null, 4))
+				if(this.flags && this.flags.json){
+					this.log(JSON.stringify(updatedCapability, null, this.flags['json-space'] || 4))
+				} else {
+					new CapabilityLogging().printCapabilityTable(updatedCapability)
+				}
 			})
 			.catch(err => {
 				this.log(`caught error ${err}`)
@@ -40,12 +49,19 @@ export default class CapabilitiesUpdate extends APICommand {
 	}
 
 	async run(): Promise<void> {
-		const { args, flags } = this.parse(CapabilitiesUpdate)
-		await super.setup(args, flags)
+		const { args, argv, flags } = this.parse(CapabilitiesUpdate)
+		await super.setup(argv, flags)
 
 		if (flags.data) {
 			const capability: CapabilityUpdate = JSON.parse(flags.data)
 			this.updateAndDisplay(args.id, args.version, capability)
+		} else if(flags.input) {
+			fs.readFile(flags.input, (err, data) => {
+				if (err) {
+					this.error(`Error reading input file: ${err}`)
+				}
+				this.updateAndDisplay(args.id, args.version, JSON.parse(data.toString()))
+			})
 		} else {
 			const stdin = process.stdin
 			const inputChunks: string[] = []
