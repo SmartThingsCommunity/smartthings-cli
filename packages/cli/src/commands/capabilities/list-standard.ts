@@ -6,8 +6,7 @@ import { APICommand } from '@smartthings/cli-lib'
 import { CapabilityDefaultOutput } from '../capabilities'
 
 
-
-export default class CapabilitiesList extends APICommand {
+export default class CapabilitiesListStandard extends APICommand {
 	static description = 'list all capabilities currently available in a user account'
 
 	static flags = {
@@ -15,19 +14,11 @@ export default class CapabilitiesList extends APICommand {
 		...APICommand.outputFlags,
 	}
 
-	static args = [
-		{
-			name: 'namespace',
-			description: 'the namespace that custom capabilities are assigned to',
-			required: true,
-		},
-	]
-
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(CapabilitiesList)
+		const { argv, flags } = this.parse(CapabilitiesListStandard)
 		await super.setup(argv, flags)
 
-		this.client.capabilities.list(args.namespace).then(async capabilities => {
+		this.client.capabilities.listStandard().then(async capabilities => {
 			//Create the output content based on flags
 			const capabilityDefaultOutput = new CapabilityDefaultOutput()
 			let output

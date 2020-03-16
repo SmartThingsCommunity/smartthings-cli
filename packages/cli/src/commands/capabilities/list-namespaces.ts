@@ -6,8 +6,7 @@ import { APICommand } from '@smartthings/cli-lib'
 import { CapabilityDefaultOutput } from '../capabilities'
 
 
-
-export default class CapabilitiesList extends APICommand {
+export default class CapabilitiesListNamespaces extends APICommand {
 	static description = 'list all capabilities currently available in a user account'
 
 	static flags = {
@@ -15,29 +14,21 @@ export default class CapabilitiesList extends APICommand {
 		...APICommand.outputFlags,
 	}
 
-	static args = [
-		{
-			name: 'namespace',
-			description: 'the namespace that custom capabilities are assigned to',
-			required: true,
-		},
-	]
-
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(CapabilitiesList)
+		const { argv, flags } = this.parse(CapabilitiesListNamespaces)
 		await super.setup(argv, flags)
 
-		this.client.capabilities.list(args.namespace).then(async capabilities => {
+		this.client.capabilities.listNamespaces().then(async namespaces => {
 			//Create the output content based on flags
 			const capabilityDefaultOutput = new CapabilityDefaultOutput()
 			let output
 
 			if (flags.json || capabilityDefaultOutput.allowedOutputFileType(flags.output, true)) {
-				output = JSON.stringify(capabilities, null, flags.indent || 4)
+				output = JSON.stringify(namespaces, null, flags.indent || 4)
 			} else if (flags.yaml || capabilityDefaultOutput.allowedOutputFileType(flags.output, false)) {
-				output = yaml.safeDump(capabilities, {indent: flags.indent || 2 })
+				output = yaml.safeDump(namespaces, {indent: flags.indent || 2 })
 			} else {
-				output = capabilityDefaultOutput.makeCapabilitiesTable(capabilities)
+				output = capabilityDefaultOutput.makeNamespacesTable(namespaces)
 			}
 
 			//decide how to output the content based on flags

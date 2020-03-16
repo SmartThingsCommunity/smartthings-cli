@@ -20,8 +20,8 @@ export default class CapabilitiesDelete extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, flags } = this.parse(CapabilitiesDelete)
-		await super.setup(args, flags)
+		const { args, argv, flags } = this.parse(CapabilitiesDelete)
+		await super.setup(argv, flags)
 
 		this.client.capabilities.delete(args.id, args.version).then(async () => {
 			this.log(`capability ${args.id}, version ${args.version} deleted`)

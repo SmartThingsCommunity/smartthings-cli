@@ -1,6 +1,9 @@
-import { flags } from '@oclif/command'
-import * as inquirer from 'inquirer'
+import fs from 'fs'
+import inquirer from 'inquirer'
+import yaml from 'js-yaml'
+import open from 'open'
 
+import { APICommand } from '@smartthings/cli-lib'
 import {
 	CapabilityCreate,
 	CapabilityAttribute,
@@ -12,7 +15,7 @@ import {
 	Argument,
 } from '@smartthings/core-sdk'
 
-import { APICommand } from '@smartthings/cli-lib'
+import { CapabilityDefaultOutput } from '../capabilities'
 
 
 export default class CapabilitiesCreate extends APICommand {
@@ -20,35 +23,56 @@ export default class CapabilitiesCreate extends APICommand {
 
 	static flags = {
 		...APICommand.flags,
-		data: flags.string({
-			char: 'd',
-			description: 'JSON data for capability',
-		}),
+		...APICommand.inputOutputFlags,
 	}
 
 	private createAndDisplay(capability: CapabilityCreate): void {
 		this.client.capabilities.create(capability).then(async newCapability => {
-			this.log(JSON.stringify(newCapability, null, 4))
+			//Create the output content based on flags
+			const capabilityDefaultOutput = new CapabilityDefaultOutput()
+			let output
+
+			if (this.flags && (this.flags.json || capabilityDefaultOutput.allowedOutputFileType(this.flags.output, true))) {
+				output = JSON.stringify(newCapability, null, this.flags.indent || 4)
+			} else if (this.flags && (this.flags.yaml || capabilityDefaultOutput.allowedOutputFileType(this.flags.output, false))) {
+				output = yaml.safeDump(newCapability, {indent: this.flags.indent || 2 })
+			} else {
+				output = capabilityDefaultOutput.makeCapabilityTable(newCapability)
+			}
+
+			//decide how to output the content based on flags
+			if (this.flags && this.flags.output) {
+				fs.writeFile(this.flags.output, output, () => {
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					open(this.flags!.output!)
+				})
+			} else {
+				this.log(output)
+			}
 		}).catch(err => {
 			this.log(`caught error ${err}`)
 		})
 	}
 
 	async run(): Promise<void> {
-		const { args, flags } = this.parse(CapabilitiesCreate)
-		await super.setup(args, flags)
+		const { argv, flags } = this.parse(CapabilitiesCreate)
+		await super.setup(argv, flags)
 
-		if (flags.data) {
-			const capability: CapabilityCreate = JSON.parse(flags.data)
+		if (flags.input) {
+			const capability: CapabilityCreate = yaml.safeLoad(fs.readFileSync(`${flags.input}`, 'utf-8'))
 			this.createAndDisplay(capability)
 		} else {
 			this.capabilityQA()
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	validateCapabilityCreate(capability: CapabilityCreate): ValidationResponse {
-		//will add additional validation as needed here
+		if ((!capability.attributes || Object.keys(capability.attributes).length === 0) && (!capability.commands || Object.keys(capability.commands).length === 0)) {
+			return {
+				status: false,
+				reason: 'At least one attribute or capability is required',
+			}
+		}
 		return {
 			status: true,
 		}
@@ -127,7 +151,12 @@ export default class CapabilitiesCreate extends APICommand {
 						case actions.FINISH:
 							const validationResponse: ValidationResponse = this.validateCapabilityCreate(capability)
 							//ASK: restart the prompts on validation failure? find out which subItem would error out and start that one over?
-							validationResponse.status ? this.createAndDisplay(capability) : this.log('Validation failed: ',validationResponse.reason)
+							if (validationResponse.status) {
+								this.createAndDisplay(capability)
+							} else {
+								this.log('Validation failed: ',validationResponse.reason)
+								prompts.capabilityAction()
+							}
 							break
 					}
 				})
@@ -138,7 +167,7 @@ export default class CapabilitiesCreate extends APICommand {
 					name: 'attributeName',
 					message: 'Attribute Name: ',
 					validate: (input) => {
-						return input.length > 0 || 'Attribute name is a required field'
+						return input.length > 0 || 'Invalid attribute name'
 					},
 				}).then(attributeNameAnswer => {
 					answers.attributeName = attributeNameAnswer.attributeName
@@ -153,7 +182,7 @@ export default class CapabilitiesCreate extends APICommand {
 					choices: [attributeTypes.INTEGER, attributeTypes.NUMBER, attributeTypes.STRING, attributeTypes.BOOLEAN],
 				}).then(typeAnswer => {
 					answers[attribute ? 'attributeType' : 'argumentType'] = typeAnswer.type
-					if(attribute){
+					 if (attribute) {
 						switch(typeAnswer.type){
 							case attributeTypes.INTEGER:
 							case attributeTypes.NUMBER:
@@ -181,7 +210,7 @@ export default class CapabilitiesCreate extends APICommand {
 						return input.length === 0 || !isNaN(input) || 'Please enter a numeric value'
 					},
 				}).then(schemaMinValueAnswer => {
-					if(schemaMinValueAnswer.schemaMinValue){
+					if (schemaMinValueAnswer.schemaMinValue) {
 						answers.schemaMinValue = parseInt(schemaMinValueAnswer.schemaMinValue)
 					}
 					prompts.attributeSchemaMaxValue()
@@ -197,7 +226,7 @@ export default class CapabilitiesCreate extends APICommand {
 						return input.length === 0 || !isNaN(input) || 'Please enter a numeric value'
 					},
 				}).then(schemaMaxValueAnswer => {
-					if(schemaMaxValueAnswer.schemaMaxValue){
+					if (schemaMaxValueAnswer.schemaMaxValue) {
 						answers.schemaMaxValue = parseInt(schemaMaxValueAnswer.schemaMaxValue)
 					}
 					prompts.attributeSetter()
@@ -213,7 +242,7 @@ export default class CapabilitiesCreate extends APICommand {
 						return input.length === 0 || !isNaN(input) || 'Please enter a numeric value'
 					},
 				}).then(schemaMaxLengthAnswer => {
-					if(schemaMaxLengthAnswer.schemaMaxLength){
+					if (schemaMaxLengthAnswer.schemaMaxLength) {
 						answers.schemaMaxLength = parseInt(schemaMaxLengthAnswer.schemaMaxLength)
 					}
 					prompts.attributeSetter()
@@ -235,6 +264,7 @@ export default class CapabilitiesCreate extends APICommand {
 					name: 'addBasicCommands',
 					message: enumCommands.length === 0 ? 'Include basic commands?' : 'Add another basic command?',
 				}).then(addSetterConfirm => {
+					// eslint-disable-next-line @typescript-eslint/no-use-before-define
 					addSetterConfirm.addBasicCommands ? prompts.commandName(true) : createCapabilitySubItem.createAndAddAttribute()
 				})
 			},
@@ -262,19 +292,20 @@ export default class CapabilitiesCreate extends APICommand {
 							name: 'basicCommandValue',
 							message: 'Command Value: ',
 							validate: (input) => {
-								if(isNaN(input)){
+								if (isNaN(input)) {
 									return 'Please enter a numeric value'
 								}
-								if(answers.schemaMinValue && parseInt(input) < answers.schemaMinValue){
+								if (answers.schemaMinValue && parseInt(input) < answers.schemaMinValue) {
 									return 'Number below given minimum value'
 								}
-								if(answers.schemaMaxValue && parseInt(input) > answers.schemaMaxValue){
+								if (answers.schemaMaxValue && parseInt(input) > answers.schemaMaxValue) {
 									return 'Number above given maximum value'
 								}
 								return true
 							},
 						}).then(basicCommandValueAnswer => {
 							answers.basicCommandValue = parseInt(basicCommandValueAnswer.basicCommandValue)
+							// eslint-disable-next-line @typescript-eslint/no-use-before-define
 							createCapabilitySubItem.createAndAddEnumCommand()
 						})
 					case attributeTypes.STRING:
@@ -283,13 +314,14 @@ export default class CapabilitiesCreate extends APICommand {
 							name: 'basicCommandValue',
 							message: 'Command Value: ',
 							validate: (input) => {
-								if(answers.schemaMaxLength && input.length > answers.schemaMaxLength){
+								if (answers.schemaMaxLength && input.length > answers.schemaMaxLength) {
 									return 'String longer than given maximum length'
 								}
 								return true
 							},
 						}).then(basicCommandValueAnswer => {
 							answers.basicCommandValue = basicCommandValueAnswer.basicCommandValue
+							// eslint-disable-next-line @typescript-eslint/no-use-before-define
 							createCapabilitySubItem.createAndAddEnumCommand()
 						})
 					case attributeTypes.BOOLEAN:
@@ -302,8 +334,11 @@ export default class CapabilitiesCreate extends APICommand {
 							choices: ['True', 'False'],
 						}).then(basicCommandValueAnswer => {
 							answers.basicCommandValue = basicCommandValueAnswer.basicCommandValue === 'True'
+							// eslint-disable-next-line @typescript-eslint/no-use-before-define
 							createCapabilitySubItem.createAndAddEnumCommand()
 						})
+					default:
+						throw Error('This should never be reached')
 				}
 			},
 			commandArgument: (): Promise<void> => {
@@ -312,6 +347,7 @@ export default class CapabilitiesCreate extends APICommand {
 					name: 'addArgument',
 					message: commandArguments.length === 0 ? 'Add an argument?' : 'Add another argument?',
 				}).then(addArgumentConfirm => {
+					// eslint-disable-next-line @typescript-eslint/no-use-before-define
 					addArgumentConfirm.addArgument ? prompts.argumentName() : createCapabilitySubItem.createAndAddCommand(false, false)
 				})
 			},
@@ -335,6 +371,7 @@ export default class CapabilitiesCreate extends APICommand {
 					message: 'Is this argument optional?',
 				}).then(optionalCommandConfirm => {
 					answers.argumentOptional = optionalCommandConfirm.optionalArgument
+					// eslint-disable-next-line @typescript-eslint/no-use-before-define
 					createCapabilitySubItem.createAndAddCommandArgument(false)
 				})
 			},
@@ -357,20 +394,20 @@ export default class CapabilitiesCreate extends APICommand {
 				} as CapabilityAttribute
 
 				//add ranges to attr schema, if applicable
-				if(answers.attributeType === 'integer' || answers.attributeType === 'number'){
-					if(answers.schemaMinValue || answers.schemaMinValue === 0){
+				if (answers.attributeType === 'integer' || answers.attributeType === 'number') {
+					if (answers.schemaMinValue || answers.schemaMinValue === 0) {
 						attribute.schema.properties.value.minimum = answers.schemaMinValue
 					}
-					if(answers.schemaMaxValue || answers.schemaMaxValue === 0 ){
+					if (answers.schemaMaxValue || answers.schemaMaxValue === 0 ) {
 						attribute.schema.properties.value.maximum = answers.schemaMaxValue
 					}
 				}
-				if(answers.attributeType === 'string' && answers.schemaMaxLength){
+				if (answers.attributeType === 'string' && answers.schemaMaxLength) {
 					attribute.schema.properties.value.maxLength = answers.schemaMaxLength
 				}
 
 				//add setter command name to attribute and create the command, if applicable
-				if(answers.attributeSetter){
+				if (answers.attributeSetter) {
 					answers.commandName = `set${answers.attributeName?.replace(/^\w/, c => c.toUpperCase())}`
 					attribute.setter = answers.commandName
 					answers.argumentName = 'value'
@@ -379,7 +416,7 @@ export default class CapabilitiesCreate extends APICommand {
 				}
 
 				//add enumCommands array to enumCommands, if applicable
-				if(enumCommands.length){
+				if (enumCommands.length) {
 					attribute.enumCommands = Object.assign([] , enumCommands)
 					//resets enum commands array to empty
 					enumCommands.length = 0
@@ -400,6 +437,11 @@ export default class CapabilitiesCreate extends APICommand {
 
 				this.log('Attribute added!')
 
+				//reset answers that may not be overwritten if user adds another attribute
+				answers.schemaMaxLength = undefined
+				answers.schemaMinValue = undefined
+				answers.schemaMaxValue = undefined
+
 				//Prompt from the beginning
 				prompts.capabilityAction()
 			},
@@ -412,6 +454,7 @@ export default class CapabilitiesCreate extends APICommand {
 			},
 			createAndAddCommandArgument: (setterCommandArgument: boolean): void => {
 				const arg = {
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					name: answers.argumentName!,
 					optional: answers.argumentOptional,
 					schema: {
@@ -419,15 +462,15 @@ export default class CapabilitiesCreate extends APICommand {
 					} as JSONSchema,
 				} as Argument
 
-				if(setterCommandArgument){
+				if (setterCommandArgument) {
 					//check if the corresponding attribute value has a min/max and include it here as well if it does
-					if(answers.schemaMinValue){
+					if (answers.schemaMinValue) {
 						arg.schema.minimum = answers.schemaMinValue
 					}
-					if(answers.schemaMaxValue){
+					if (answers.schemaMaxValue) {
 						arg.schema.maximum = answers.schemaMaxValue
 					}
-					if(answers.schemaMaxLength){
+					if (answers.schemaMaxLength) {
 						arg.schema.maxLength = answers.schemaMaxLength
 					}
 					commandArguments.push(arg)
@@ -441,14 +484,18 @@ export default class CapabilitiesCreate extends APICommand {
 			},
 			createAndAddCommand: (basicCommand: boolean, setterCommand: boolean): void => {
 				//add the completed command to the capability
-				if(capability.commands){
+				if (capability.commands) {
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					capability.commands[answers.commandName!] = {
+						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 						name: answers.commandName!,
 						arguments: Object.assign([] , commandArguments),
 					} as CapabilityCommand
 				} else {
 					capability.commands = {
+						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 						[answers.commandName!] : {
+							// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 							name: answers.commandName!,
 							arguments: Object.assign([] , commandArguments),
 						} as CapabilityCommand,
@@ -458,7 +505,7 @@ export default class CapabilitiesCreate extends APICommand {
 				//reset the command arguments array to empty
 				commandArguments.length = 0
 
-				if(basicCommand){
+				if (basicCommand) {
 					this.log('Command added!')
 					//ask for another basic command
 					prompts.basicCommands()
@@ -470,6 +517,7 @@ export default class CapabilitiesCreate extends APICommand {
 				//if this was a setter command, do nothing since the attribute needs to be created
 			},
 		}
+
 		return new Promise((resolve, reject) => {
 			setTimeout(() => prompts.capabilityName().then(resolve, reject), 0) // Set timeout is required, otherwise node hangs
 		})

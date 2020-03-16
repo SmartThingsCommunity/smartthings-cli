@@ -6,7 +6,7 @@ export default class LocationsList extends APICommand {
 
 	static flags = {
 		...APICommand.flags,
-		...APICommand.jsonOutputFlags,
+		...APICommand.outputFlags,
 	}
 
 	async run(): Promise<void> {
