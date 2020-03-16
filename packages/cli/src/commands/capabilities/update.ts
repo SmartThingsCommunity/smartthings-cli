@@ -1,8 +1,10 @@
-import { flags } from '@oclif/command'
+import fs from 'fs'
+import yaml from 'js-yaml'
 
-import { CapabilityUpdate } from '@smartthings/core-sdk/src/endpoint/capabilities'
-
+import { Capability, CapabilityUpdate } from '@smartthings/core-sdk'
 import { APICommand } from '@smartthings/cli-lib'
+
+import { CapabilityDefaultOutput } from '../capabilities'
 
 
 export default class CapabilitiesUpdate extends APICommand {
@@ -10,10 +12,7 @@ export default class CapabilitiesUpdate extends APICommand {
 
 	static flags = {
 		...APICommand.flags,
-		data: flags.string({
-			char: 'd',
-			description: 'JSON data for capability',
-		}),
+		...APICommand.inputOutputFlags,
 	}
 
 	static args = [
@@ -29,23 +28,46 @@ export default class CapabilitiesUpdate extends APICommand {
 		},
 	]
 
-	private updateAndDisplay(capabilityId: string, capabilityVersion: number, capability: CapabilityUpdate): void {
-		this.client.capabilities.update(capabilityId, capabilityVersion, capability)
-			.then(updatedCapability => {
-				this.log(JSON.stringify(updatedCapability, null, 4))
+	private display(capability: Capability): void {
+		//Create the output content based on flags
+		const capabilityDefaultOutput = new CapabilityDefaultOutput()
+		let output
+
+		if (this.flags && (this.flags.json || capabilityDefaultOutput.allowedOutputFileType(this.flags.output, true))) {
+			output = JSON.stringify(capability, null, this.flags.indent || 4)
+		} else if (this.flags && (this.flags.yaml || capabilityDefaultOutput.allowedOutputFileType(this.flags.output, false))) {
+			output = yaml.safeDump(capability, {indent: this.flags.indent || 2 })
+		} else {
+			output = capabilityDefaultOutput.makeCapabilityTable(capability)
+		}
+
+		//decide how to output the content based on flags
+		if (this.flags && this.flags.output) {
+			fs.writeFile(this.flags.output, output, () => {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				open(this.flags!.output!)
 			})
-			.catch(err => {
-				this.log(`caught error ${err}`)
-			})
+		} else {
+			this.log(output)
+		}
 	}
 
 	async run(): Promise<void> {
-		const { args, flags } = this.parse(CapabilitiesUpdate)
-		await super.setup(args, flags)
+		const { args, argv, flags } = this.parse(CapabilitiesUpdate)
+		await super.setup(argv, flags)
 
-		if (flags.data) {
-			const capability: CapabilityUpdate = JSON.parse(flags.data)
-			this.updateAndDisplay(args.id, args.version, capability)
+		if (flags.input) {
+			fs.readFile(flags.input, (err, data) => {
+				if (err) {
+					this.error(`Error reading input file: ${err}`)
+				}
+				this.client.capabilities.update(args.id, args.version, yaml.safeLoad(data.toString()) as CapabilityUpdate)
+					.then(capability => this.display(capability))
+					.catch(err => {
+						console.log(err)
+						this.log(`caught error ${err}`)
+					})
+			})
 		} else {
 			const stdin = process.stdin
 			const inputChunks: string[] = []
@@ -55,7 +77,11 @@ export default class CapabilitiesUpdate extends APICommand {
 			})
 			stdin.on('end', () => {
 				const capability = JSON.parse(inputChunks.join())
-				this.updateAndDisplay(args.id, args.version, capability)
+				this.client.capabilities.update(args.capabilityId, args.capabilityVersion, capability as CapabilityUpdate)
+					.then(capability => this.display(capability))
+					.catch(err => {
+						this.log(`caught error ${err}`)
+					})
 			})
 		}
 	}

@@ -8,6 +8,34 @@ import { cliConfig } from './cli-config'
 import { logManager } from './logger'
 import { LoginAuthenticator, defaultClientIdProvider } from './login-authenticator'
 
+// Flags common to both input and output.
+const commonIOFlags = {
+	indent: flags.integer({
+		description: 'specify indentation for formatting JSON or YAML output',
+	}),
+	json: flags.boolean({
+		description: 'use JSON format of input and/or output',
+		char: 'j',
+	}),
+	yaml : flags.boolean({
+		char: 'y',
+		description: 'use YAML format of input and/or output',
+	}),
+}
+
+const inputFlag = {
+	input: flags.string({
+		char: 'i',
+		description: 'specify input file',
+	}),
+}
+
+const outputFlag = {
+	output : flags.string({
+		char: 'o',
+		description: 'specify output file',
+	}),
+}
 
 /**
  * Base class for Rest API commands.
@@ -28,31 +56,20 @@ export abstract class APICommand extends SmartThingsCommand {
 		}),
 	}
 
-	private static jsonInputDescription = 'accept JSON raw input for the REST API call'
-	private static jsonOutputDescription = 'output raw JSON of the REST API call'
-	static jsonInputFlags = {
-		'json-input': flags.string({
-			description: APICommand.jsonInputDescription,
-			char: 'j',
-		}),
+	static inputFlags = {
+		...commonIOFlags,
+		...inputFlag,
 	}
-	static jsonOutputFlags = {
-		'json-output': flags.string({
-			description: APICommand.jsonOutputDescription,
-			char: 'j',
-		}),
+
+	static outputFlags = {
+		...commonIOFlags,
+		...outputFlag,
 	}
-	static jsonInputOutputFlags = {
-		'json-input': flags.string({
-			description: APICommand.jsonInputDescription,
-		}),
-		'json-output': flags.string({
-			description: APICommand.jsonOutputDescription,
-		}),
-		'json': flags.string({
-			description: 'equivalent of both --json-input and --json-output',
-			char: 'j',
-		}),
+
+	static inputOutputFlags = {
+		...commonIOFlags,
+		...inputFlag,
+		...outputFlag,
 	}
 
 	protected args?: string[]
