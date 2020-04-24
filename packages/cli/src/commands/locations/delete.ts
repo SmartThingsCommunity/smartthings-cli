@@ -2,7 +2,7 @@ import { APICommand } from '@smartthings/cli-lib'
 
 
 export default class LocationsDelete extends APICommand {
-	static description = "delete a Location from a user's account"
+	static description = 'delete a location'
 
 	static flags = APICommand.flags
 
@@ -14,7 +14,7 @@ export default class LocationsDelete extends APICommand {
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(LocationsDelete)
-		await super.setup(argv, flags)
+		await super.setup(args, argv, flags)
 
 		this.client.locations.delete(args.id).then(async () => {
 			this.log(`location ${args.id} deleted`)

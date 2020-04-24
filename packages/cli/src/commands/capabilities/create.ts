@@ -1,530 +1,369 @@
-import fs from 'fs'
 import inquirer from 'inquirer'
-import yaml from 'js-yaml'
-import open from 'open'
 
-import { APICommand } from '@smartthings/cli-lib'
+import { InputOutputAPICommand } from '@smartthings/cli-lib'
 import {
 	CapabilityCreate,
 	CapabilityAttribute,
-	AttributeSchema,
-	AttributeProperties,
-	JSONSchema,
+	CapabilityJSONSchema,
 	CapabilityCommand,
-	EnumCommand,
-	Argument,
+	CapabilityArgument,
+	Capability,
+	CapabilitySchemaPropertyName,
 } from '@smartthings/core-sdk'
 
-import { CapabilityDefaultOutput } from '../capabilities'
+import { buildTableOutput } from '../capabilities'
 
 
-export default class CapabilitiesCreate extends APICommand {
+const enum Type {
+	INTEGER = 'integer',
+	NUMBER = 'number',
+	STRING = 'string',
+	BOOLEAN = 'boolean',
+}
+
+export default class CapabilitiesCreate extends InputOutputAPICommand<CapabilityCreate, Capability> {
 	static description = 'create a capability for a user'
 
 	static flags = {
-		...APICommand.flags,
-		...APICommand.inputOutputFlags,
+		...InputOutputAPICommand.flags,
 	}
 
-	private createAndDisplay(capability: CapabilityCreate): void {
-		this.client.capabilities.create(capability).then(async newCapability => {
-			//Create the output content based on flags
-			const capabilityDefaultOutput = new CapabilityDefaultOutput()
-			let output
-
-			if (this.flags && (this.flags.json || capabilityDefaultOutput.allowedOutputFileType(this.flags.output, true))) {
-				output = JSON.stringify(newCapability, null, this.flags.indent || 4)
-			} else if (this.flags && (this.flags.yaml || capabilityDefaultOutput.allowedOutputFileType(this.flags.output, false))) {
-				output = yaml.safeDump(newCapability, {indent: this.flags.indent || 2 })
-			} else {
-				output = capabilityDefaultOutput.makeCapabilityTable(newCapability)
-			}
-
-			//decide how to output the content based on flags
-			if (this.flags && this.flags.output) {
-				fs.writeFile(this.flags.output, output, () => {
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-					open(this.flags!.output!)
-				})
-			} else {
-				this.log(output)
-			}
-		}).catch(err => {
-			this.log(`caught error ${err}`)
-		})
+	protected buildTableOutput(capability: Capability): string {
+		return buildTableOutput(capability)
 	}
 
 	async run(): Promise<void> {
-		const { argv, flags } = this.parse(CapabilitiesCreate)
-		await super.setup(argv, flags)
+		const { args, argv, flags } = this.parse(CapabilitiesCreate)
+		await super.setup(args, argv, flags)
 
-		if (flags.input) {
-			const capability: CapabilityCreate = yaml.safeLoad(fs.readFileSync(`${flags.input}`, 'utf-8'))
-			this.createAndDisplay(capability)
-		} else {
-			this.capabilityQA()
-		}
+		this.processNormally(capability => {
+			return this.client.capabilities.create(capability)
+		})
 	}
 
-	validateCapabilityCreate(capability: CapabilityCreate): ValidationResponse {
-		if ((!capability.attributes || Object.keys(capability.attributes).length === 0) && (!capability.commands || Object.keys(capability.commands).length === 0)) {
-			return {
-				status: false,
-				reason: 'At least one attribute or capability is required',
+	private addCommand(capability: CapabilityCreate, name: string, command: CapabilityCommand): void {
+		if (capability.commands === undefined) {
+			capability.commands = {}
+		}
+		capability.commands[name] = command
+	}
+
+	private async promptAndAddSetter(capability: CapabilityCreate,
+			attributeName: string, attribute: CapabilityAttribute,
+			type: Type): Promise<void> {
+		this.logger.debug('promptAndAddSetter - enter')
+		const addSetter = (await inquirer.prompt({
+			type: 'confirm',
+			name: 'addSetter',
+			message: 'Add a setter command for this attribute?',
+		})).addSetter
+
+		this.logger.debug(`promptAndAddSetter - addSetter = ${addSetter}`)
+		if (addSetter) {
+			// add setter command name to attribute and create the command, if applicable
+			const commandName = `set${attributeName.replace(/^\w/, c => c.toUpperCase())}`
+			attribute.setter = commandName
+			const argument: CapabilityArgument = {
+				name: 'value',
+				optional: false,
+				schema: this.buildSchemaMatchingAttributeType(attribute, type),
+			}
+			const setterCommand = {
+				name: commandName,
+				arguments: [argument],
+			}
+			this.addCommand(capability, commandName, setterCommand)
+		}
+		this.logger.debug('promptAndAddSetter - done')
+	}
+
+	private addBasicCommand(capability: CapabilityCreate, attribute: CapabilityAttribute,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			commandName: string, type: Type, value: any): void {
+		if (!attribute.enumCommands) {
+			attribute.enumCommands = []
+		}
+		attribute.enumCommands.push({ command: commandName, value })
+
+		const command = {
+			name: commandName,
+			arguments: [{
+				name: 'value',
+				optional: false,
+				schema: this.buildSchemaMatchingAttributeType(attribute, type),
+			}],
+		}
+		this.addCommand(capability, commandName, command)
+	}
+
+	private async promptAndAddBasicCommands(capability: CapabilityCreate,
+			attribute: CapabilityAttribute, type: Type): Promise<void> {
+		let basicCommandName = ''
+		const baseMessage = 'If you want to add a basic command, enter a ' +
+			'command name now (or hit enter for none):'
+		let message = `${baseMessage}\n(Basic commands are simple commands ` +
+			'that set the attribute to a specific value.)'
+		do {
+			basicCommandName = (await inquirer.prompt({
+				type: 'input',
+				name: 'basicCommandName',
+				message,
+			})).basicCommandName
+			this.logger.error(`promptAndAddBasicCommands; basicCommandName = ${basicCommandName}`)
+			message = baseMessage
+
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			let basicCommandValue: any = undefined
+			const minimum = attribute.schema.properties.value.minimum
+			const maximum = attribute.schema.properties.value.maximum
+			const maxLength = attribute.schema.properties.value.maxLength
+			if (basicCommandName) {
+				// TODO: This switch (/if/else/else) should be handled in a
+				// more generic/object oriented way
+				if (type === Type.INTEGER || type === Type.NUMBER) {
+					basicCommandValue = parseInt((await inquirer.prompt({
+						type: 'input',
+						name: 'basicCommandValue',
+						message: 'Command Value: ',
+						validate: (input) => {
+							if (isNaN(input)) {
+								return 'Please enter a numeric value'
+							}
+							if (typeof minimum === 'number' && parseInt(input) < minimum) {
+								return 'Number must be greater than or equal to minimum.'
+							}
+							if (typeof maximum === 'number' && parseInt(input) > maximum) {
+								return 'Number must be less than or equal to maximum value.'
+							}
+							return true
+						},
+					})).basicCommandValue)
+				} else if (type === Type.STRING) {
+					basicCommandValue = (await inquirer.prompt({
+						type: 'input',
+						name: 'basicCommandValue',
+						message: 'Command Value: ',
+						validate: (input) => {
+							if (typeof maxLength === 'number' && input.length > maxLength) {
+								return 'String cannot be greater than maximum length.'
+							}
+							return true
+						},
+					}))
+				} else if (type === Type.BOOLEAN) {
+					basicCommandValue = (await inquirer.prompt({
+						type: 'list',
+						name: 'basicCommandValue',
+						message: 'Command Value: ',
+						// choices must be strings as per inquirer documentation
+						choices: ['True', 'False'],
+					})).basicCommandValue
+				} else {
+					this.logger.error('invalid state in promptAndAddBasicCommands')
+				}
+
+				this.addBasicCommand(capability, attribute, basicCommandName,
+					type, basicCommandValue)
+			}
+		} while (basicCommandName)
+	}
+
+	private async promptForType(message: string): Promise<Type> {
+		return (await inquirer.prompt({
+			type: 'list',
+			name: 'type',
+			message: `Select an ${message} type:`,
+			choices: [Type.INTEGER, Type.NUMBER, Type.STRING, Type.BOOLEAN],
+		})).type
+	}
+
+	private async promptAndAddAttribute(capability: CapabilityCreate): Promise<void> {
+		const name: string = (await inquirer.prompt({
+			type: 'input',
+			name: 'attributeName',
+			message: 'Attribute Name: ',
+			validate: (input) => {
+				return input.length > 0 || 'Invalid attribute name'
+			},
+		})).attributeName
+
+		const type = await this.promptForType('attribute')
+
+		const attribute: CapabilityAttribute = {
+			schema: {
+				type: 'object',
+				properties: {
+					value: {
+						type,
+					},
+				},
+				additionalProperties: false,
+				required: [CapabilitySchemaPropertyName.VALUE],
+			},
+		}
+
+		if (type === Type.INTEGER || type === Type.NUMBER) {
+			const minValue: string | undefined = (await inquirer.prompt({
+				type: 'input',
+				name: 'minValue',
+				message: 'Minimum value (default: no minimum): ',
+				validate: (input) => {
+					return input.length === 0 || !isNaN(input) || 'Please enter a numeric value'
+				},
+			})).minValue
+			if (minValue) {
+				attribute.schema.properties.value.minimum = parseInt(minValue)
+			}
+			const maxValue: string | undefined = (await inquirer.prompt({
+				type: 'input',
+				name: 'maxValue',
+				message: 'Maximum value (default: no maximum): ',
+				validate: (input) => {
+					if (input.length === 0) {
+						return true
+					}
+					if (isNaN(input)) {
+						return 'Please enter a numeric value'
+					}
+					return minValue === undefined
+						|| parseInt(input) > parseInt(minValue)
+						|| 'Maximum value must be greater than minimum value.'
+				},
+			})).maxValue
+			if (maxValue) {
+				attribute.schema.properties.value.maximum = parseInt(maxValue)
+			}
+		} else if (type === Type.STRING) {
+			// TODO: min length also ???
+			const maxLength: string | undefined = (await inquirer.prompt({
+				type: 'input',
+				name: 'maxLength',
+				message: 'Maximum length (default: no max length): ',
+				validate: (input) => {
+					return input.length === 0 || !isNaN(input) || 'Please enter a numeric value'
+				},
+			})).maxLength
+			if (maxLength) {
+				attribute.schema.properties.value.maxLength = parseInt(maxLength)
 			}
 		}
-		return {
-			status: true,
+
+		await this.promptAndAddSetter(capability, name, attribute, type)
+		await this.promptAndAddBasicCommands(capability, attribute, type)
+
+		if (capability.attributes === undefined) {
+			capability.attributes = {}
 		}
+		capability.attributes[name] = attribute
 	}
 
-	capabilityQA(): Promise<void> {
-		enum actions {
-			ATTRIBUTE = 'Add an attribute',
-			COMMAND = 'Add a command',
-			FINISH = 'Finish & Create'
+	private buildSchemaMatchingAttributeType(attribute: CapabilityAttribute, type: Type): CapabilityJSONSchema {
+		const retVal: CapabilityJSONSchema = {
+			type,
+		}
+		if (attribute.schema.properties.value.minimum !== undefined) {
+			retVal.minimum = attribute.schema.properties.value.minimum
+		}
+		if (attribute.schema.properties.value.maximum !== undefined) {
+			retVal.maximum = attribute.schema.properties.value.maximum
+		}
+		if (attribute.schema.properties.value.maxLength !== undefined) {
+			retVal.maxLength = attribute.schema.properties.value.maxLength
+		}
+		return retVal
+	}
+
+	private async promptAndAddCommand(capability: CapabilityCreate): Promise<void> {
+		const name: string = (await inquirer.prompt({
+			type: 'input',
+			name: 'commandName',
+			message: 'Command Name: ',
+			validate: (input) => {
+				return input.length > 0 || 'Invalid command name'
+			},
+		})).commandName
+
+		const command: CapabilityCommand = {
+			name,
+			arguments: [],
 		}
 
-		enum attributeTypes {
-			INTEGER = 'integer',
-			NUMBER = 'number',
-			STRING = 'string',
-			BOOLEAN = 'boolean'
-		}
+		let argumentName = ''
+		do {
+			argumentName = (await inquirer.prompt({
+				type: 'input',
+				name: 'argumentName',
+				message: 'If you want to add argument, enter a name for it now (enter to finish): ',
+			})).argumentName
 
-		interface PromptAnswers {
-			attributeName?: string
-			attributeType?: string
-			schemaMinValue?: number
-			schemaMaxValue?: number
-			schemaMaxLength?: number
-			attributeSetter?: boolean
-			commandName?: string
-			argumentName?: string
-			argumentType?: string
-			argumentOptional?: boolean
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			basicCommandValue?: any
-		}
+			if (argumentName) {
+				const type = await this.promptForType('argument')
 
-		//holds answers to each prompt
-		const answers: PromptAnswers = {}
-
-		//final capability create object, with required fields
-		const capability: CapabilityCreate = { name: '' }
-
-		//holds command arguments while looping before they are added to the capability (0 -> n commands)
-		const commandArguments: Argument[] = []
-
-		//holds enum commands while looping before they are added to the capability (0 -> n commands)
-		const enumCommands: EnumCommand[] = []
-
-		const prompt = inquirer.createPromptModule()
-		const prompts = {
-			capabilityName: (): Promise<void> => {
-				return prompt({
-					type: 'input',
-					name: 'capabilityName',
-					message: 'Capability Name: ',
-					validate: (input) => {
-						return new RegExp('^[a-zA-Z0-9][a-zA-Z0-9 ]{1,35}$').test(input) || 'Invalid capability name'
-					},
-				}).then(capabilityNameAnswer => {
-					capability.name = capabilityNameAnswer.capabilityName
-					prompts.capabilityAction()
-				})
-			},
-			capabilityAction: (): Promise<void> => {
-				return prompt({
-					type: 'list',
-					name: 'action',
-					message: 'Select an action...',
-					choices: [actions.ATTRIBUTE, actions.COMMAND, actions.FINISH],
-				}).then(actionAnswer => {
-					switch(actionAnswer.action){
-						case actions.ATTRIBUTE:
-							prompts.attributeName()
-							break
-						case actions.COMMAND:
-							prompts.commandName(false)
-							break
-						case actions.FINISH:
-							const validationResponse: ValidationResponse = this.validateCapabilityCreate(capability)
-							//ASK: restart the prompts on validation failure? find out which subItem would error out and start that one over?
-							if (validationResponse.status) {
-								this.createAndDisplay(capability)
-							} else {
-								this.log('Validation failed: ',validationResponse.reason)
-								prompts.capabilityAction()
-							}
-							break
-					}
-				})
-			},
-			attributeName: (): Promise<void> => {
-				return prompt({
-					type: 'input',
-					name: 'attributeName',
-					message: 'Attribute Name: ',
-					validate: (input) => {
-						return input.length > 0 || 'Invalid attribute name'
-					},
-				}).then(attributeNameAnswer => {
-					answers.attributeName = attributeNameAnswer.attributeName
-					prompts.type(true)
-				})
-			},
-			type: (attribute: boolean): Promise<void> => {
-				return prompt({
-					type: 'list',
-					name: 'type',
-					message: `Select an ${attribute ? 'attribute' : 'argument'} type...`,
-					choices: [attributeTypes.INTEGER, attributeTypes.NUMBER, attributeTypes.STRING, attributeTypes.BOOLEAN],
-				}).then(typeAnswer => {
-					answers[attribute ? 'attributeType' : 'argumentType'] = typeAnswer.type
-					 if (attribute) {
-						switch(typeAnswer.type){
-							case attributeTypes.INTEGER:
-							case attributeTypes.NUMBER:
-								prompts.attributeSchemaMinValue()
-								break
-							case attributeTypes.STRING:
-								prompts.attributeSchemaMaxLength()
-								break
-							case attributeTypes.BOOLEAN:
-								prompts.attributeSetter()
-								break
-						}
-					} else {
-						prompts.optionalArgument()
-					}
-				})
-			},
-			attributeSchemaMinValue: (): Promise<void> => {
-				return prompt({
-					type: 'input',
-					name: 'schemaMinValue',
-					message: 'Minimum value (default: no minimum): ',
-					validate: (input) => {
-						//ensures input is either blank (no value) OR a valid number
-						return input.length === 0 || !isNaN(input) || 'Please enter a numeric value'
-					},
-				}).then(schemaMinValueAnswer => {
-					if (schemaMinValueAnswer.schemaMinValue) {
-						answers.schemaMinValue = parseInt(schemaMinValueAnswer.schemaMinValue)
-					}
-					prompts.attributeSchemaMaxValue()
-				})
-			},
-			attributeSchemaMaxValue: (): Promise<void> => {
-				return prompt({
-					type: 'input',
-					name: 'schemaMaxValue',
-					message: 'Maximum value (default: no maximum): ',
-					validate: (input) => {
-						//ensures input is either blank (no value) OR a valid number
-						return input.length === 0 || !isNaN(input) || 'Please enter a numeric value'
-					},
-				}).then(schemaMaxValueAnswer => {
-					if (schemaMaxValueAnswer.schemaMaxValue) {
-						answers.schemaMaxValue = parseInt(schemaMaxValueAnswer.schemaMaxValue)
-					}
-					prompts.attributeSetter()
-				})
-			},
-			attributeSchemaMaxLength: (): Promise<void> => {
-				return prompt({
-					type: 'input',
-					name: 'schemaMaxLength',
-					message: 'Maximum length (default: no max length): ',
-					validate: (input) => {
-						//ensures input is either blank (no value) OR a valid number
-						return input.length === 0 || !isNaN(input) || 'Please enter a numeric value'
-					},
-				}).then(schemaMaxLengthAnswer => {
-					if (schemaMaxLengthAnswer.schemaMaxLength) {
-						answers.schemaMaxLength = parseInt(schemaMaxLengthAnswer.schemaMaxLength)
-					}
-					prompts.attributeSetter()
-				})
-			},
-			attributeSetter: (): Promise<void> => {
-				return prompt({
-					type: 'confirm',
-					name: 'addSetter',
-					message: 'Add a setter command?',
-				}).then(addSetterConfirm => {
-					answers.attributeSetter = addSetterConfirm.addSetter
-					prompts.basicCommands()
-				})
-			},
-			basicCommands: (): Promise<void> => {
-				return prompt({
-					type: 'confirm',
-					name: 'addBasicCommands',
-					message: enumCommands.length === 0 ? 'Include basic commands?' : 'Add another basic command?',
-				}).then(addSetterConfirm => {
-					// eslint-disable-next-line @typescript-eslint/no-use-before-define
-					addSetterConfirm.addBasicCommands ? prompts.commandName(true) : createCapabilitySubItem.createAndAddAttribute()
-				})
-			},
-			commandName: (basicCommand: boolean): Promise<void> => {
-				return prompt({
-					type: 'input',
-					name: 'commandName',
-					message: 'Command Name: ',
-					validate: (input) => {
-						return input.length > 0 || 'Invalid command name'
-					},
-				}).then(commandNameAnswer => {
-					answers.commandName = commandNameAnswer.commandName
-					basicCommand ? prompts.commandValue() : prompts.commandArgument()
-				})
-			},
-			commandValue: (): Promise<void> => {
-				//switch here because prompt type will change based on the attribute type (input parsed to number for ints/nums, input as string for string, list for boolean)
-				switch(answers.attributeType){
-					//if type is int/num, validation ensures the value follows previous set ranges
-					case attributeTypes.INTEGER:
-					case attributeTypes.NUMBER:
-						return prompt({
-							type: 'input',
-							name: 'basicCommandValue',
-							message: 'Command Value: ',
-							validate: (input) => {
-								if (isNaN(input)) {
-									return 'Please enter a numeric value'
-								}
-								if (answers.schemaMinValue && parseInt(input) < answers.schemaMinValue) {
-									return 'Number below given minimum value'
-								}
-								if (answers.schemaMaxValue && parseInt(input) > answers.schemaMaxValue) {
-									return 'Number above given maximum value'
-								}
-								return true
-							},
-						}).then(basicCommandValueAnswer => {
-							answers.basicCommandValue = parseInt(basicCommandValueAnswer.basicCommandValue)
-							// eslint-disable-next-line @typescript-eslint/no-use-before-define
-							createCapabilitySubItem.createAndAddEnumCommand()
-						})
-					case attributeTypes.STRING:
-						return prompt({
-							type: 'input',
-							name: 'basicCommandValue',
-							message: 'Command Value: ',
-							validate: (input) => {
-								if (answers.schemaMaxLength && input.length > answers.schemaMaxLength) {
-									return 'String longer than given maximum length'
-								}
-								return true
-							},
-						}).then(basicCommandValueAnswer => {
-							answers.basicCommandValue = basicCommandValueAnswer.basicCommandValue
-							// eslint-disable-next-line @typescript-eslint/no-use-before-define
-							createCapabilitySubItem.createAndAddEnumCommand()
-						})
-					case attributeTypes.BOOLEAN:
-						//if Attribute type is a boolean, give two choices (true/false)
-						return prompt({
-							type: 'list',
-							name: 'basicCommandValue',
-							message: 'Command Value: ',
-							//choices must be strings as per inquirer documentation
-							choices: ['True', 'False'],
-						}).then(basicCommandValueAnswer => {
-							answers.basicCommandValue = basicCommandValueAnswer.basicCommandValue === 'True'
-							// eslint-disable-next-line @typescript-eslint/no-use-before-define
-							createCapabilitySubItem.createAndAddEnumCommand()
-						})
-					default:
-						throw Error('This should never be reached')
-				}
-			},
-			commandArgument: (): Promise<void> => {
-				return prompt({
-					type: 'confirm',
-					name: 'addArgument',
-					message: commandArguments.length === 0 ? 'Add an argument?' : 'Add another argument?',
-				}).then(addArgumentConfirm => {
-					// eslint-disable-next-line @typescript-eslint/no-use-before-define
-					addArgumentConfirm.addArgument ? prompts.argumentName() : createCapabilitySubItem.createAndAddCommand(false, false)
-				})
-			},
-			argumentName: (): Promise<void> => {
-				return prompt({
-					type: 'input',
-					name: 'argumentName',
-					message: 'Argument Name: ',
-					validate: (input) => {
-						return input.length > 0 || 'Argument name is a required field'
-					},
-				}).then(attributeNameAnswer => {
-					answers.argumentName = attributeNameAnswer.argumentName
-					prompts.type(false)
-				})
-			},
-			optionalArgument: (): Promise<void> => {
-				return prompt({
+				const optional = (await inquirer.prompt({
 					type: 'confirm',
 					name: 'optionalArgument',
 					message: 'Is this argument optional?',
-				}).then(optionalCommandConfirm => {
-					answers.argumentOptional = optionalCommandConfirm.optionalArgument
-					// eslint-disable-next-line @typescript-eslint/no-use-before-define
-					createCapabilitySubItem.createAndAddCommandArgument(false)
-				})
-			},
+				})).optionalArgument
+
+				const argument: CapabilityArgument = {
+					name: argumentName,
+					optional,
+					schema: {
+						type,
+					},
+				}
+				command.arguments?.push(argument)
+			}
+		} while (argumentName)
+
+		if (command.arguments?.length === 0) {
+			delete command.arguments
 		}
 
-		const createCapabilitySubItem = {
-			createAndAddAttribute: (): void => {
-				//create attribute with schema
-				const attribute = {
-					schema: {
-						type: 'object',
-						properties: {
-							value : {
-								type: answers.attributeType,
-							} as JSONSchema,
-						} as AttributeProperties,
-						additionalProperties: false,
-						required: ['value'],
-					} as AttributeSchema,
-				} as CapabilityAttribute
-
-				//add ranges to attr schema, if applicable
-				if (answers.attributeType === 'integer' || answers.attributeType === 'number') {
-					if (answers.schemaMinValue || answers.schemaMinValue === 0) {
-						attribute.schema.properties.value.minimum = answers.schemaMinValue
-					}
-					if (answers.schemaMaxValue || answers.schemaMaxValue === 0 ) {
-						attribute.schema.properties.value.maximum = answers.schemaMaxValue
-					}
-				}
-				if (answers.attributeType === 'string' && answers.schemaMaxLength) {
-					attribute.schema.properties.value.maxLength = answers.schemaMaxLength
-				}
-
-				//add setter command name to attribute and create the command, if applicable
-				if (answers.attributeSetter) {
-					answers.commandName = `set${answers.attributeName?.replace(/^\w/, c => c.toUpperCase())}`
-					attribute.setter = answers.commandName
-					answers.argumentName = 'value'
-					answers.argumentType = answers.attributeType
-					createCapabilitySubItem.createAndAddCommandArgument(true)
-				}
-
-				//add enumCommands array to enumCommands, if applicable
-				if (enumCommands.length) {
-					attribute.enumCommands = Object.assign([] , enumCommands)
-					//resets enum commands array to empty
-					enumCommands.length = 0
-				}
-
-				//add the completed attribute to the capability
-				if (answers.attributeName) {
-					if (capability.attributes) {
-						capability.attributes[answers.attributeName] = attribute
-					} else {
-						// TODO: I think this is a bug...
-						// maybe should be `capability.attributes[answers.attributeName] = attribute`
-						capability.attributes = { [answers.attributeName] : attribute }
-					}
-				} else {
-					throw new Error('expected attribute name')
-				}
-
-				this.log('Attribute added!')
-
-				//reset answers that may not be overwritten if user adds another attribute
-				answers.schemaMaxLength = undefined
-				answers.schemaMinValue = undefined
-				answers.schemaMaxValue = undefined
-
-				//Prompt from the beginning
-				prompts.capabilityAction()
-			},
-			createAndAddEnumCommand: (): void => {
-				enumCommands.push({
-					command: answers.commandName,
-					value: answers.basicCommandValue,
-				} as EnumCommand)
-				createCapabilitySubItem.createAndAddCommand(true, false)
-			},
-			createAndAddCommandArgument: (setterCommandArgument: boolean): void => {
-				const arg = {
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-					name: answers.argumentName!,
-					optional: answers.argumentOptional,
-					schema: {
-						type: answers.argumentType,
-					} as JSONSchema,
-				} as Argument
-
-				if (setterCommandArgument) {
-					//check if the corresponding attribute value has a min/max and include it here as well if it does
-					if (answers.schemaMinValue) {
-						arg.schema.minimum = answers.schemaMinValue
-					}
-					if (answers.schemaMaxValue) {
-						arg.schema.maximum = answers.schemaMaxValue
-					}
-					if (answers.schemaMaxLength) {
-						arg.schema.maxLength = answers.schemaMaxLength
-					}
-					commandArguments.push(arg)
-					//We can create the command right away because this is for a setter command
-					createCapabilitySubItem.createAndAddCommand(false, true)
-				} else {
-					commandArguments.push(arg)
-					this.log('Argument added!')
-					prompts.commandArgument()
-				}
-			},
-			createAndAddCommand: (basicCommand: boolean, setterCommand: boolean): void => {
-				//add the completed command to the capability
-				if (capability.commands) {
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-					capability.commands[answers.commandName!] = {
-						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-						name: answers.commandName!,
-						arguments: Object.assign([] , commandArguments),
-					} as CapabilityCommand
-				} else {
-					capability.commands = {
-						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-						[answers.commandName!] : {
-							// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-							name: answers.commandName!,
-							arguments: Object.assign([] , commandArguments),
-						} as CapabilityCommand,
-					}
-				}
-
-				//reset the command arguments array to empty
-				commandArguments.length = 0
-
-				if (basicCommand) {
-					this.log('Command added!')
-					//ask for another basic command
-					prompts.basicCommands()
-				} else if(!setterCommand){
-					this.log('Command added!')
-					//prompt from the beginning
-					prompts.capabilityAction()
-				}
-				//if this was a setter command, do nothing since the attribute needs to be created
-			},
-		}
-
-		return new Promise((resolve, reject) => {
-			setTimeout(() => prompts.capabilityName().then(resolve, reject), 0) // Set timeout is required, otherwise node hangs
-		})
+		this.addCommand(capability, name, command)
 	}
-}
 
-interface ValidationResponse {
-	status: boolean
-	reason?: string
+	// TODO: throughout this Q&A session there seldom options to cancel input
+	// choices without starting completely over. We need to look at fixing this.
+	// TODO: also, this process needs more up-front validation
+	protected async getInputFromUser(): Promise<CapabilityCreate> {
+		const name = (await inquirer.prompt({
+			type: 'input',
+			name: 'capabilityName',
+			message: 'Capability Name:',
+			validate: (input: string) => {
+				return new RegExp('^[a-zA-Z0-9][a-zA-Z0-9 ]{1,35}$').test(input) || 'Invalid capability name'
+			},
+		})).capabilityName
+
+		const capability: CapabilityCreate = {
+			name,
+		}
+
+		const enum Action {
+			ADD_ATTRIBUTE = 'Add an attribute',
+			ADD_COMMAND = 'Add a command',
+			FINISH = 'Finish & Create',
+		}
+		let action: string
+		let choices = [Action.ADD_ATTRIBUTE, Action.ADD_COMMAND]
+		do {
+			action = (await inquirer.prompt({
+				type: 'list',
+				name: 'action',
+				message: 'Select an action...',
+				choices,
+			})).action
+
+			if (action === Action.ADD_ATTRIBUTE) {
+				await this.promptAndAddAttribute(capability)
+			} else if (action === Action.ADD_COMMAND) {
+				await this.promptAndAddCommand(capability)
+			}
+
+			choices = [Action.ADD_ATTRIBUTE, Action.ADD_COMMAND, Action.FINISH]
+		} while (action !== Action.FINISH)
+
+		return capability
+	}
 }

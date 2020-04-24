@@ -22,21 +22,17 @@ export default class DevicesCommands extends APICommand {
 		required: true,
 	}]
 
-	private executeAndDisplay(id: string, commands: Command[]): void {
-		try {
-			this.client.devices.executeCommands(id, commands)
-		} catch (err) {
-			this.log(`caught error ${err} attempting to execute command`)
-		}
+	private async executeAndDisplay(id: string, commands: Command[]): Promise<void> {
+		await this.client.devices.executeCommands(id, commands)
 	}
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DevicesCommands)
-		await super.setup(argv, flags)
+		await super.setup(args, argv, flags)
 
 		if (flags.data) {
 			const commandsIn: CommandList = JSON.parse(flags.data)
-			this.executeAndDisplay(args.id, commandsIn.commands)
+			await this.executeAndDisplay(args.id, commandsIn.commands)
 		} else {
 			const stdin = process.stdin
 			const inputChunks: string[] = []
@@ -44,9 +40,9 @@ export default class DevicesCommands extends APICommand {
 			stdin.on('data', chunk => {
 				inputChunks.push(chunk.toString())
 			})
-			stdin.on('end', () => {
+			stdin.on('end', async () => {
 				const commandsIn = JSON.parse(inputChunks.join())
-				this.executeAndDisplay(args.id, commandsIn.commands)
+				await this.executeAndDisplay(args.id, commandsIn.commands)
 			})
 		}
 	}

@@ -1,22 +1,31 @@
-import { APICommand } from '@smartthings/cli-lib'
+import Table from 'cli-table'
+
+import { LocationItem } from '@smartthings/core-sdk'
+
+import { OutputAPICommand } from '@smartthings/cli-lib'
 
 
-export default class LocationsList extends APICommand {
+export default class LocationsList extends OutputAPICommand<LocationItem[]> {
 	static description = 'list all Locations currently available in a user account'
 
 	static flags = {
-		...APICommand.flags,
-		...APICommand.outputFlags,
+		...OutputAPICommand.flags,
+	}
+
+	protected buildTableOutput(locations: LocationItem[]): string {
+		const table = new Table({ head: ['Id', 'Name'] })
+		for (const location of locations) {
+			table.push([location.locationId, location.name])
+		}
+		return table.toString()
 	}
 
 	async run(): Promise<void> {
-		const { argv, flags } = this.parse(LocationsList)
-		await super.setup(argv, flags)
+		const { args, argv, flags } = this.parse(LocationsList)
+		await super.setup(args, argv, flags)
 
-		this.client.locations.list().then(async locations => {
-			this.log(JSON.stringify(locations, null, 4))
-		}).catch(err => {
-			this.log(`caught error ${err}`)
+		this.processNormally(() => {
+			return this.client.locations.list()
 		})
 	}
 }

@@ -14,7 +14,7 @@ export default class Devices extends APICommand {
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(Devices)
-		await super.setup(argv, flags)
+		await super.setup(args, argv, flags)
 
 		this.client.devices.get(args.id).then(async device => {
 			this.log(JSON.stringify(device, null, 4))
