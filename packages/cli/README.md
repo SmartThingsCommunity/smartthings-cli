@@ -31,7 +31,7 @@ $ npm install -g @smartthings/cli
 $ smartthings COMMAND
 running command...
 $ smartthings (-v|--version|version)
-@smartthings/cli/0.0.0 darwin-x64 node-v12.13.1
+@smartthings/cli/0.0.0 darwin-x64 node-v12.16.2
 $ smartthings --help [COMMAND]
 USAGE
   $ smartthings COMMAND
@@ -41,9 +41,20 @@ USAGE
 # Commands
 <!-- commands -->
 * [`smartthings autocomplete [SHELL]`](#smartthings-autocomplete-shell)
+* [`smartthings capabilities ID VERSION`](#smartthings-capabilities-id-version)
+* [`smartthings capabilities:create`](#smartthings-capabilitiescreate)
+* [`smartthings capabilities:delete ID VERSION`](#smartthings-capabilitiesdelete-id-version)
+* [`smartthings capabilities:list [NAMESPACE]`](#smartthings-capabilitieslist-namespace)
+* [`smartthings capabilities:list-namespaces`](#smartthings-capabilitieslist-namespaces)
+* [`smartthings capabilities:list-standard`](#smartthings-capabilitieslist-standard)
+* [`smartthings capabilities:presentation ID VERSION`](#smartthings-capabilitiespresentation-id-version)
+* [`smartthings capabilities:presentation:create ID VERSION`](#smartthings-capabilitiespresentationcreate-id-version)
+* [`smartthings capabilities:presentation:update ID VERSION`](#smartthings-capabilitiespresentationupdate-id-version)
+* [`smartthings capabilities:update ID VERSION`](#smartthings-capabilitiesupdate-id-version)
 * [`smartthings config [FILE]`](#smartthings-config-file)
 * [`smartthings devices ID`](#smartthings-devices-id)
 * [`smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID`](#smartthings-devicescapabilities-status-id-componentid-capabilityid)
+* [`smartthings devices:command ID`](#smartthings-devicescommand-id)
 * [`smartthings devices:commands ID`](#smartthings-devicescommands-id)
 * [`smartthings devices:components-status ID COMPONENTID`](#smartthings-devicescomponents-status-id-componentid)
 * [`smartthings devices:list`](#smartthings-deviceslist)
@@ -80,6 +91,237 @@ EXAMPLES
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.1.5/src/commands/autocomplete/index.ts)_
 
+## `smartthings capabilities ID VERSION`
+
+get a specific capability
+
+```
+USAGE
+  $ smartthings capabilities ID VERSION
+
+ARGUMENTS
+  ID       the capability id
+  VERSION  the capability version
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/capabilities.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities.ts)_
+
+## `smartthings capabilities:create`
+
+create a capability for a user
+
+```
+USAGE
+  $ smartthings capabilities:create
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/capabilities/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/create.ts)_
+
+## `smartthings capabilities:delete ID VERSION`
+
+delete a capability
+
+```
+USAGE
+  $ smartthings capabilities:delete ID VERSION
+
+ARGUMENTS
+  ID       the capability id
+  VERSION  the capability version
+
+OPTIONS
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+```
+
+_See code: [dist/commands/capabilities/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/delete.ts)_
+
+## `smartthings capabilities:list [NAMESPACE]`
+
+list all capabilities currently available in a user account
+
+```
+USAGE
+  $ smartthings capabilities:list [NAMESPACE]
+
+ARGUMENTS
+  NAMESPACE  the namespace that custom capabilities are assigned to
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/capabilities/list.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/list.ts)_
+
+## `smartthings capabilities:list-namespaces`
+
+list all capabilities currently available in a user account
+
+```
+USAGE
+  $ smartthings capabilities:list-namespaces
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/capabilities/list-namespaces.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/list-namespaces.ts)_
+
+## `smartthings capabilities:list-standard`
+
+list all capabilities currently available in a user account
+
+```
+USAGE
+  $ smartthings capabilities:list-standard
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/capabilities/list-standard.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/list-standard.ts)_
+
+## `smartthings capabilities:presentation ID VERSION`
+
+get presentation information for a specific capability
+
+```
+USAGE
+  $ smartthings capabilities:presentation ID VERSION
+
+ARGUMENTS
+  ID       the capability id
+  VERSION  the capability version
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/capabilities/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/presentation.ts)_
+
+## `smartthings capabilities:presentation:create ID VERSION`
+
+create presentation model for a capability
+
+```
+USAGE
+  $ smartthings capabilities:presentation:create ID VERSION
+
+ARGUMENTS
+  ID       the capability id
+  VERSION  the capability version
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/capabilities/presentation/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/presentation/create.ts)_
+
+## `smartthings capabilities:presentation:update ID VERSION`
+
+update presentation model for a capability
+
+```
+USAGE
+  $ smartthings capabilities:presentation:update ID VERSION
+
+ARGUMENTS
+  ID       the capability id
+  VERSION  the capability version
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/capabilities/presentation/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/presentation/update.ts)_
+
+## `smartthings capabilities:update ID VERSION`
+
+update a capability
+
+```
+USAGE
+  $ smartthings capabilities:update ID VERSION
+
+ARGUMENTS
+  ID       the capability id
+  VERSION  the capability version
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/capabilities/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/update.ts)_
+
 ## `smartthings config [FILE]`
 
 describe the command here
@@ -108,10 +350,9 @@ ARGUMENTS
   ID  the device id
 
 OPTIONS
-  -E, --target-environment=target-environment  target environment
-  -h, --help                                   show CLI help
-  -p, --profile=profile                        [default: default] configuration profile
-  -t, --token=token                            the auth token to use
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
 ```
 
 _See code: [dist/commands/devices.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices.ts)_
@@ -130,13 +371,32 @@ ARGUMENTS
   CAPABILITYID  the capability id
 
 OPTIONS
-  -E, --target-environment=target-environment  target environment
-  -h, --help                                   show CLI help
-  -p, --profile=profile                        [default: default] configuration profile
-  -t, --token=token                            the auth token to use
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
 ```
 
 _See code: [dist/commands/devices/capabilities-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/capabilities-status.ts)_
+
+## `smartthings devices:command ID`
+
+execute commands on a device
+
+```
+USAGE
+  $ smartthings devices:command ID
+
+ARGUMENTS
+  ID  the device on which you want to execute a command
+
+OPTIONS
+  -d, --data=data        JSON data for command(s)
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+```
+
+_See code: [dist/commands/devices/command.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/command.ts)_
 
 ## `smartthings devices:commands ID`
 
@@ -150,11 +410,10 @@ ARGUMENTS
   ID  the device on which you want to execute a command
 
 OPTIONS
-  -E, --target-environment=target-environment  target environment
-  -d, --data=data                              JSON data for command(s)
-  -h, --help                                   show CLI help
-  -p, --profile=profile                        [default: default] configuration profile
-  -t, --token=token                            the auth token to use
+  -d, --data=data        JSON data for command(s)
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
 ```
 
 _See code: [dist/commands/devices/commands.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/commands.ts)_
@@ -172,10 +431,9 @@ ARGUMENTS
   COMPONENTID  the component id
 
 OPTIONS
-  -E, --target-environment=target-environment  target environment
-  -h, --help                                   show CLI help
-  -p, --profile=profile                        [default: default] configuration profile
-  -t, --token=token                            the auth token to use
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
 ```
 
 _See code: [dist/commands/devices/components-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/components-status.ts)_
@@ -189,22 +447,20 @@ USAGE
   $ smartthings devices:list
 
 OPTIONS
-  -C, --capabilities-mode=and|or               Treat capability filter query params as a logical "or" or "and" with a
-                                               default of "and".
+  -C, --capabilities-mode=and|or  Treat capability filter query params as a logical "or" or "and" with a default of
+                                  "and".
 
-  -E, --target-environment=target-environment  target environment
+  -c, --capability=capability     filter results by capability
 
-  -c, --capability=capability                  filter results by capability
+  -d, --device-id=device-id       filter results by device
 
-  -d, --device-id=device-id                    filter results by device
+  -h, --help                      show CLI help
 
-  -h, --help                                   show CLI help
+  -l, --location-id=location-id   filter results by location
 
-  -l, --location-id=location-id                filter results by location
+  -p, --profile=profile           [default: default] configuration profile
 
-  -p, --profile=profile                        [default: default] configuration profile
-
-  -t, --token=token                            the auth token to use
+  -t, --token=token               the auth token to use
 ```
 
 _See code: [dist/commands/devices/list.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/list.ts)_
@@ -221,10 +477,9 @@ ARGUMENTS
   ID  the device id
 
 OPTIONS
-  -E, --target-environment=target-environment  target environment
-  -h, --help                                   show CLI help
-  -p, --profile=profile                        [default: default] configuration profile
-  -t, --token=token                            the auth token to use
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
 ```
 
 _See code: [dist/commands/devices/status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/status.ts)_
@@ -276,7 +531,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3
 
 ## `smartthings locations ID`
 
-get a specific Location from a user's account
+get a specific Location
 
 ```
 USAGE
@@ -286,10 +541,9 @@ ARGUMENTS
   ID  the location id
 
 OPTIONS
-  -E, --target-environment=target-environment  target environment
-  -h, --help                                   show CLI help
-  -p, --profile=profile                        [default: default] configuration profile
-  -t, --token=token                            the auth token to use
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
 ```
 
 _See code: [dist/commands/locations.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations.ts)_
@@ -303,18 +557,22 @@ USAGE
   $ smartthings locations:create
 
 OPTIONS
-  -E, --target-environment=target-environment  target environment
-  -d, --data=data                              JSON data for location
-  -h, --help                                   show CLI help
-  -p, --profile=profile                        [default: default] configuration profile
-  -t, --token=token                            the auth token to use
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/locations/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/create.ts)_
 
 ## `smartthings locations:delete ID`
 
-delete a Location from a user's account
+delete a location
 
 ```
 USAGE
@@ -324,10 +582,9 @@ ARGUMENTS
   ID  the location id
 
 OPTIONS
-  -E, --target-environment=target-environment  target environment
-  -h, --help                                   show CLI help
-  -p, --profile=profile                        [default: default] configuration profile
-  -t, --token=token                            the auth token to use
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
 ```
 
 _See code: [dist/commands/locations/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/delete.ts)_
@@ -341,11 +598,13 @@ USAGE
   $ smartthings locations:list
 
 OPTIONS
-  -E, --target-environment=target-environment  target environment
-  -h, --help                                   show CLI help
-  -j, --json-output=json-output                output raw JSON of the REST API call
-  -p, --profile=profile                        [default: default] configuration profile
-  -t, --token=token                            the auth token to use
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/locations/list.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/list.ts)_
@@ -362,11 +621,10 @@ ARGUMENTS
   ID  the location id
 
 OPTIONS
-  -E, --target-environment=target-environment  target environment
-  -d, --data=data                              JSON data for location
-  -h, --help                                   show CLI help
-  -p, --profile=profile                        [default: default] configuration profile
-  -t, --token=token                            the auth token to use
+  -d, --data=data        JSON data for location
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
 ```
 
 _See code: [dist/commands/locations/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/update.ts)_

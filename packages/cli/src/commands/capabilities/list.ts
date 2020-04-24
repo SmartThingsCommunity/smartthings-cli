@@ -1,56 +1,64 @@
-import fs from 'fs'
-import yaml from 'js-yaml'
+import Table from 'cli-table'
 
-import { APICommand } from '@smartthings/cli-lib'
+import { CapabilitySummary } from '@smartthings/core-sdk'
 
-import { CapabilityDefaultOutput } from '../capabilities'
-
+import { OutputAPICommand } from '@smartthings/cli-lib'
 
 
-export default class CapabilitiesList extends APICommand {
+export function buildTableOutput(capabilities: CapabilitySummary[]): string {
+	const table = new Table({
+		head: ['Capability', 'Version', 'Status'],
+		colWidths: [80, 10, 10],
+	})
+	for (const capability of capabilities) {
+		table.push([capability.id, capability.version, capability.status || ''])
+	}
+	return table.toString()
+}
+
+export default class CapabilitiesList extends OutputAPICommand<({ namespace: string } & CapabilitySummary)[]> {
 	static description = 'list all capabilities currently available in a user account'
 
 	static flags = {
-		...APICommand.flags,
-		...APICommand.outputFlags,
+		...OutputAPICommand.flags,
 	}
 
 	static args = [
 		{
 			name: 'namespace',
 			description: 'the namespace that custom capabilities are assigned to',
-			required: true,
 		},
 	]
 
+	protected buildTableOutput(capabilities: ({ namespace: string } & CapabilitySummary)[]): string {
+		return buildTableOutput(capabilities)
+	}
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesList)
-		await super.setup(argv, flags)
+		await super.setup(args, argv, flags)
 
-		this.client.capabilities.list(args.namespace).then(async capabilities => {
-			//Create the output content based on flags
-			const capabilityDefaultOutput = new CapabilityDefaultOutput()
-			let output
-
-			if (flags.json || capabilityDefaultOutput.allowedOutputFileType(flags.output, true)) {
-				output = JSON.stringify(capabilities, null, flags.indent || 4)
-			} else if (flags.yaml || capabilityDefaultOutput.allowedOutputFileType(flags.output, false)) {
-				output = yaml.safeDump(capabilities, {indent: flags.indent || 2 })
+		this.processNormally(async () => {
+			let namespaces: string[] = []
+			if (args.namespace) {
+				this.log(`namespace specified: ${args.namespace}`)
+				namespaces = [args.namespace]
 			} else {
-				output = capabilityDefaultOutput.makeCapabilitiesTable(capabilities)
+				namespaces = (await this.client.capabilities.listNamespaces()).map(ns => ns.name)
 			}
 
-			//decide how to output the content based on flags
-			if (flags.output) {
-				fs.writeFile(flags.output, output, () => {
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-					this.log(`file created: ${flags.output}`)
-				})
-			} else {
-				this.log(output)
+			if (!namespaces || namespaces.length == 0) {
+				this.log('could not find any namespaces for you account. Perhaps ' +
+					"you haven't created any capabilities yet.")
+				this.exit(1)
 			}
-		}).catch(err => {
-			this.log(`caught error ${err}`)
+
+			let capabilities: ({ namespace: string } & CapabilitySummary)[] = []
+			for (const namespace of namespaces) {
+				const caps = await this.client.capabilities.list(namespace)
+				capabilities = capabilities.concat(caps.map(capability => { return { ...capability, namespace } }))
+			}
+			return capabilities
 		})
 	}
 }

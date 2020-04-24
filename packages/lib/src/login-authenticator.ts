@@ -120,7 +120,6 @@ export class LoginAuthenticator implements Authenticator {
 		const credentialsFileData = this.readCredentialsFile()
 		credentialsFileData[this.profileName] = this.authenticationInfo
 		fs.writeFileSync(LoginAuthenticator.credentialsFile, JSON.stringify(credentialsFileData, null, 4))
-		// TODO: test on Windows
 		fs.chmod(LoginAuthenticator.credentialsFile, 0o600, err => {
 			if (err) {
 				this.logger.error('failed to set permissions on credentials file')

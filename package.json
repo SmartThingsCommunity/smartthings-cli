@@ -3,23 +3,23 @@
 	"private": true,
 	"dependencies": {
 		"@oclif/command": "^1.5.19",
-		"@oclif/config": "^1.14.0",
+		"@oclif/config": "^1.15.1",
 		"js-yaml": "^3.13.1",
-		"log4js": "^6.1.2",
+		"log4js": "^6.2.0",
 		"tslib": "^1.11.1"
 	},
 	"devDependencies": {
 		"@oclif/dev-cli": "^1.22.2",
-		"@types/jest": "^25.1.4",
-		"@types/js-yaml": "^3.12.2",
-		"@types/node": "^13.9.0",
-		"@typescript-eslint/eslint-plugin": "^2.22.0",
-		"@typescript-eslint/parser": "^2.22.0",
+		"@types/jest": "^25.2.1",
+		"@types/js-yaml": "^3.12.3",
+		"@types/node": "^12.12.35",
+		"@typescript-eslint/eslint-plugin": "^2.28.0",
+		"@typescript-eslint/parser": "^2.28.0",
 		"eslint": "^6.8.0",
-		"jest": "^25.1.0",
+		"jest": "^25.3.0",
 		"lerna": "^3.20.2",
-		"ts-jest": "^25.2.1",
-		"ts-node": "^8.6.2",
+		"ts-jest": "^25.3.1",
+		"ts-node": "^8.8.2",
 		"typescript": "^3.8.3"
 	}
 }

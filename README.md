@@ -34,6 +34,6 @@ need to check out both repositories and then:
 1. To run the CLI, run the `run` command in packages/cli/bin. You can create
    a link to this file to make it easier to run. Since the final installed
    name will be "smartthings", that's a good name for the link. For example:
-   `ln -s ~/mydevdir/smartthings/cli/packages/cli/bin/run ~/bin/smartthings`
+   `ln -s ~/mydevdir/smartthings-cli/packages/cli/bin/run ~/bin/smartthings`
 
 TODO: adding commands and oclif command to update README

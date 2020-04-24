@@ -5,6 +5,7 @@ import { LocationUpdate } from '@smartthings/core-sdk'
 import { APICommand } from '@smartthings/cli-lib'
 
 
+// TODO: use InputOutputAPICommand
 export default class LocationsUpdate extends APICommand {
 	static description = 'update a location'
 
@@ -33,7 +34,7 @@ export default class LocationsUpdate extends APICommand {
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(LocationsUpdate)
-		await super.setup(argv, flags)
+		await super.setup(args, argv, flags)
 
 		if (flags.data) {
 			const location: LocationUpdate = JSON.parse(flags.data)

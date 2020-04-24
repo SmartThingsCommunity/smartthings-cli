@@ -19,7 +19,7 @@
 		"directory": "packages/testlib"
 	},
 	"dependencies": {
-		"node": "^12.16.1"
+		"node": "^12.16.2"
 	},
 	"devDependencies": {
 		"typescript": "^3.8.3"

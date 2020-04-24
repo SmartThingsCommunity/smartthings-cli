@@ -8,34 +8,6 @@ import { cliConfig } from './cli-config'
 import { logManager } from './logger'
 import { LoginAuthenticator, defaultClientIdProvider } from './login-authenticator'
 
-// Flags common to both input and output.
-const commonIOFlags = {
-	indent: flags.integer({
-		description: 'specify indentation for formatting JSON or YAML output',
-	}),
-	json: flags.boolean({
-		description: 'use JSON format of input and/or output',
-		char: 'j',
-	}),
-	yaml : flags.boolean({
-		char: 'y',
-		description: 'use YAML format of input and/or output',
-	}),
-}
-
-const inputFlag = {
-	input: flags.string({
-		char: 'i',
-		description: 'specify input file',
-	}),
-}
-
-const outputFlag = {
-	output : flags.string({
-		char: 'o',
-		description: 'specify output file',
-	}),
-}
 
 /**
  * Base class for Rest API commands.
@@ -56,31 +28,30 @@ export abstract class APICommand extends SmartThingsCommand {
 		}),
 	}
 
-	static inputFlags = {
-		...commonIOFlags,
-		...inputFlag,
-	}
-
-	static outputFlags = {
-		...commonIOFlags,
-		...outputFlag,
-	}
-
-	static inputOutputFlags = {
-		...commonIOFlags,
-		...inputFlag,
-		...outputFlag,
-	}
-
-	protected args?: string[]
+	private _argv?: string[]
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	protected flags?: { [name: string]: any }
+	private _flags?: { [name: string]: any }
 	protected token?: string
-	protected profileName?: string
+	private _profileName?: string
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	protected profileConfig?: { [name: string]: any }
 	protected clientIdProvider = defaultClientIdProvider
-	protected _client?: SmartThingsClient
+	private _client?: SmartThingsClient
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	protected get flags(): { [name: string]: any } {
+		if (!this._flags) {
+			throw new Error('APICommand not properly initialized')
+		}
+		return this._flags
+	}
+
+	protected get profileName(): string {
+		if (!this._profileName) {
+			throw new Error('APICommand not properly initialized')
+		}
+		return this._profileName
+	}
 
 	protected get client(): SmartThingsClient {
 		if (!this._client) {
@@ -90,11 +61,11 @@ export abstract class APICommand extends SmartThingsCommand {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	protected async setup(args: string[], flags: { [name: string]: any }): Promise<void> {
-		this.args = args
-		this.flags = flags
+	protected async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
+		this._argv = argv
+		this._flags = flags
 
-		this.profileName = flags.profile
+		this._profileName = flags.profile || 'default'
 		this.profileConfig = cliConfig.getProfile(flags.profile)
 
 		if (flags.token) {
@@ -111,8 +82,7 @@ export abstract class APICommand extends SmartThingsCommand {
 
 		const authenticator = this.token
 			? new BearerTokenAuthenticator(this.token)
-			: new LoginAuthenticator(this.profileName ? this.profileName : 'default',
-				this.clientIdProvider)
+			: new LoginAuthenticator(this.profileName, this.clientIdProvider)
 		this._client = new SmartThingsClient(authenticator,
 			{ urlProvider: this.clientIdProvider, logger })
 	}
