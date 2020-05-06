@@ -8,9 +8,7 @@ import { CapabilityNamespace } from '@smartthings/core-sdk'
 export default class CapabilitiesListNamespaces extends OutputAPICommand<CapabilityNamespace[]> {
 	static description = 'list all capabilities currently available in a user account'
 
-	static flags = {
-		...OutputAPICommand.flags,
-	}
+	static flags = OutputAPICommand.flags
 
 	protected buildTableOutput(namespaces: CapabilityNamespace[]): string {
 		const table = new Table({

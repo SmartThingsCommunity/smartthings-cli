@@ -19,9 +19,7 @@ export function buildTableOutput(capabilities: CapabilitySummary[]): string {
 export default class CapabilitiesList extends OutputAPICommand<({ namespace: string } & CapabilitySummary)[]> {
 	static description = 'list all capabilities currently available in a user account'
 
-	static flags = {
-		...OutputAPICommand.flags,
-	}
+	static flags = OutputAPICommand.flags
 
 	static args = [
 		{

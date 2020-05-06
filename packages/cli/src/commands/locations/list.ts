@@ -8,9 +8,7 @@ import { OutputAPICommand } from '@smartthings/cli-lib'
 export default class LocationsList extends OutputAPICommand<LocationItem[]> {
 	static description = 'list all Locations currently available in a user account'
 
-	static flags = {
-		...OutputAPICommand.flags,
-	}
+	static flags = OutputAPICommand.flags
 
 	protected buildTableOutput(locations: LocationItem[]): string {
 		const table = new Table({ head: ['Id', 'Name'] })

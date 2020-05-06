@@ -8,9 +8,7 @@ import CapabilitiesPresentationCreate from './create'
 export default class CapabilitiesPresentationUpdate extends InputOutputAPICommand<CapabilityPresentationCreate, CapabilityPresentation> {
 	static description = 'update presentation model for a capability'
 
-	static flags = {
-		...InputOutputAPICommand.flags,
-	}
+	static flags = InputOutputAPICommand.flags
 
 	static args = CapabilitiesPresentationCreate.args
 

@@ -24,9 +24,7 @@ const enum Type {
 export default class CapabilitiesCreate extends InputOutputAPICommand<CapabilityCreate, Capability> {
 	static description = 'create a capability for a user'
 
-	static flags = {
-		...InputOutputAPICommand.flags,
-	}
+	static flags = InputOutputAPICommand.flags
 
 	protected buildTableOutput(capability: Capability): string {
 		return buildTableOutput(capability)
@@ -109,7 +107,6 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 				name: 'basicCommandName',
 				message,
 			})).basicCommandName
-			this.logger.error(`promptAndAddBasicCommands; basicCommandName = ${basicCommandName}`)
 			message = baseMessage
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
