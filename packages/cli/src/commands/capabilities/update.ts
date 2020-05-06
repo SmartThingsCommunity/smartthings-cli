@@ -7,9 +7,7 @@ import { buildTableOutput, capabilityIdInputArgs } from '../capabilities'
 export default class CapabilitiesUpdate extends InputOutputAPICommand<CapabilityUpdate, Capability> {
 	static description = 'update a capability'
 
-	static flags = {
-		...InputOutputAPICommand.flags,
-	}
+	static flags = InputOutputAPICommand.flags
 
 	static args = capabilityIdInputArgs
 

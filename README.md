@@ -19,8 +19,10 @@ The CLI depends on the
 which is not yet published. To get this working for testing purposes, you'll
 need to check out both repositories and then:
 
+1. Be sure you're using at least NodeJS version 12.
 1. In the SDK, run `npm install`.
-1. In the SDK, run `npm link`.
+1. In the SDK, run `npm link`. If you're using a globally-installed version of
+   node, you might need to run this with admin privileges.
 1. Install lerna globally with `npm -g i lerna`. (Alternatively, you can use
    `npx lerna` below instead of simply `lerna`.)
 1. In the CLI root directory, run `lerna bootstrap --hoist`.

@@ -61,9 +61,7 @@ export function buildTableOutput(capability: Capability): string {
 export default class Capabilities extends OutputAPICommand<Capability> {
 	static description = 'get a specific capability'
 
-	static flags = {
-		...OutputAPICommand.flags,
-	}
+	static flags = OutputAPICommand.flags
 
 	static args = capabilityIdInputArgs
 

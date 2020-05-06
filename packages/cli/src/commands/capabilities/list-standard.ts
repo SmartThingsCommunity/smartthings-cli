@@ -7,9 +7,7 @@ import { CapabilitySummary } from '@smartthings/core-sdk'
 export default class CapabilitiesListStandard extends OutputAPICommand<CapabilitySummary[]> {
 	static description = 'list all capabilities currently available in a user account'
 
-	static flags = {
-		...OutputAPICommand.flags,
-	}
+	static flags = OutputAPICommand.flags
 
 	protected buildTableOutput(capabilities: CapabilitySummary[]): string {
 		return buildTableOutput(capabilities)

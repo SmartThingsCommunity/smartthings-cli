@@ -8,9 +8,7 @@ import { capabilityIdInputArgs } from '../../capabilities'
 export default class CapabilitiesPresentationCreate extends InputOutputAPICommand<CapabilityPresentationCreate, CapabilityPresentation> {
 	static description = 'create presentation model for a capability'
 
-	static flags = {
-		...InputOutputAPICommand.flags,
-	}
+	static flags = InputOutputAPICommand.flags
 
 	static args = capabilityIdInputArgs
 

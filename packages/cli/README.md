@@ -67,6 +67,10 @@ USAGE
 * [`smartthings locations:delete ID`](#smartthings-locationsdelete-id)
 * [`smartthings locations:list`](#smartthings-locationslist)
 * [`smartthings locations:update ID`](#smartthings-locationsupdate-id)
+* [`smartthings presentation VID`](#smartthings-presentation-vid)
+* [`smartthings presentation:device-config VID`](#smartthings-presentationdevice-config-vid)
+* [`smartthings presentation:device-config:create`](#smartthings-presentationdevice-configcreate)
+* [`smartthings presentation:device-config:generate ID`](#smartthings-presentationdevice-configgenerate-id)
 
 ## `smartthings autocomplete [SHELL]`
 
@@ -628,6 +632,101 @@ OPTIONS
 ```
 
 _See code: [dist/commands/locations/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/update.ts)_
+
+## `smartthings presentation VID`
+
+query device presentation by vid
+
+```
+USAGE
+  $ smartthings presentation VID
+
+ARGUMENTS
+  VID  system generated identifier that corresponds to a device presentation
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/presentation.ts)_
+
+## `smartthings presentation:device-config VID`
+
+query device config by vid
+
+```
+USAGE
+  $ smartthings presentation:device-config VID
+
+ARGUMENTS
+  VID  system generated identifier that corresponds to a device presentation
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/presentation/device-config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/presentation/device-config.ts)_
+
+## `smartthings presentation:device-config:create`
+
+create a device config
+
+```
+USAGE
+  $ smartthings presentation:device-config:create
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/presentation/device-config/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/presentation/device-config/create.ts)_
+
+## `smartthings presentation:device-config:generate ID`
+
+generate the default device configuration
+
+```
+USAGE
+  $ smartthings presentation:device-config:generate ID
+
+ARGUMENTS
+  ID  the profile id (or legacy DTH id))
+
+OPTIONS
+  -h, --help                     show CLI help
+  -j, --json                     use JSON format of input and/or output
+  -o, --output=output            specify output file
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
+  -y, --yaml                     use YAML format of input and/or output
+  --dth                          generate from legacy DTH id instead of a profile id
+  --indent=indent                specify indentation for formatting JSON or YAML output
+
+  --type-shard-id=type-shard-id  data management shard Id where the device type resides, only useful for legacy DTH type
+                                 integrations
+```
+
+_See code: [dist/commands/presentation/device-config/generate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/presentation/device-config/generate.ts)_
 <!-- commandsstop -->
 
 # Configuration
