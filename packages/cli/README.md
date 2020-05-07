@@ -54,7 +54,6 @@ USAGE
 * [`smartthings config [FILE]`](#smartthings-config-file)
 * [`smartthings devices ID`](#smartthings-devices-id)
 * [`smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID`](#smartthings-devicescapabilities-status-id-componentid-capabilityid)
-* [`smartthings devices:command ID`](#smartthings-devicescommand-id)
 * [`smartthings devices:commands ID`](#smartthings-devicescommands-id)
 * [`smartthings devices:components-status ID COMPONENTID`](#smartthings-devicescomponents-status-id-componentid)
 * [`smartthings devices:list`](#smartthings-deviceslist)
@@ -381,26 +380,6 @@ OPTIONS
 ```
 
 _See code: [dist/commands/devices/capabilities-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/capabilities-status.ts)_
-
-## `smartthings devices:command ID`
-
-execute commands on a device
-
-```
-USAGE
-  $ smartthings devices:command ID
-
-ARGUMENTS
-  ID  the device on which you want to execute a command
-
-OPTIONS
-  -d, --data=data        JSON data for command(s)
-  -h, --help             show CLI help
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-```
-
-_See code: [dist/commands/devices/command.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/command.ts)_
 
 ## `smartthings devices:commands ID`
 
