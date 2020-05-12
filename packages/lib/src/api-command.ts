@@ -1,5 +1,6 @@
 import { flags } from '@oclif/command'
 
+import Table from 'cli-table'
 import { SmartThingsClient } from '@smartthings/core-sdk'
 import { BearerTokenAuthenticator } from '@smartthings/core-sdk'
 
@@ -58,6 +59,27 @@ export abstract class APICommand extends SmartThingsCommand {
 			throw new Error('APICommand not properly initialized')
 		}
 		return this._client
+	}
+
+	protected newOutputTable(options?: { [name: string]: any }): Table {
+		const defaultOptions = this.profileConfig ? this.profileConfig.tableOptions || {} : {}
+		if (this.flags.compact) {
+			if (defaultOptions.style) {
+				defaultOptions.style.compact = true
+			} else {
+				defaultOptions.style = {compact: true}
+			}
+		} else if (this.flags.expanded) {
+			if (defaultOptions.style) {
+				defaultOptions.style.compact = false
+			} else {
+				defaultOptions.style = {compact: false}
+			}
+		}
+		if (options) {
+			return new Table({...defaultOptions, ...options})
+		}
+		return new Table(defaultOptions)
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
