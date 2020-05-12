@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command'
 
-import { cliConfig } from '../../../lib/src/cli-config'
+import { cliConfig } from '@smartthings/cli-lib'
 
 
 export default class Config extends Command {
