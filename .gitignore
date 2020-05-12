@@ -2,6 +2,7 @@
 *-error.log
 /.nyc_output
 dist
+dist_bin
 /tmp
 node_modules
 .vscode
