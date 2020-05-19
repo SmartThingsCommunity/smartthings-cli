@@ -31,7 +31,7 @@ $ npm install -g @smartthings/cli
 $ smartthings COMMAND
 running command...
 $ smartthings (-v|--version|version)
-@smartthings/cli/0.0.0 darwin-x64 node-v12.16.2
+@smartthings/cli/0.0.0 darwin-x64 node-v12.16.3
 $ smartthings --help [COMMAND]
 USAGE
   $ smartthings COMMAND
@@ -40,6 +40,16 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`smartthings apps [ID]`](#smartthings-apps-id)
+* [`smartthings apps:create`](#smartthings-appscreate)
+* [`smartthings apps:delete ID`](#smartthings-appsdelete-id)
+* [`smartthings apps:oauth ID`](#smartthings-appsoauth-id)
+* [`smartthings apps:oauth:generate ID`](#smartthings-appsoauthgenerate-id)
+* [`smartthings apps:oauth:update ID`](#smartthings-appsoauthupdate-id)
+* [`smartthings apps:register ID`](#smartthings-appsregister-id)
+* [`smartthings apps:settings ID`](#smartthings-appssettings-id)
+* [`smartthings apps:settings:update ID`](#smartthings-appssettingsupdate-id)
+* [`smartthings apps:update ID`](#smartthings-appsupdate-id)
 * [`smartthings autocomplete [SHELL]`](#smartthings-autocomplete-shell)
 * [`smartthings capabilities ID VERSION`](#smartthings-capabilities-id-version)
 * [`smartthings capabilities:create`](#smartthings-capabilitiescreate)
@@ -52,6 +62,11 @@ USAGE
 * [`smartthings capabilities:presentation:update ID VERSION`](#smartthings-capabilitiespresentationupdate-id-version)
 * [`smartthings capabilities:update ID VERSION`](#smartthings-capabilitiesupdate-id-version)
 * [`smartthings config [FILE]`](#smartthings-config-file)
+* [`smartthings deviceprofiles [ID]`](#smartthings-deviceprofiles-id)
+* [`smartthings deviceprofiles:create`](#smartthings-deviceprofilescreate)
+* [`smartthings deviceprofiles:delete ID`](#smartthings-deviceprofilesdelete-id)
+* [`smartthings deviceprofiles:publish ID`](#smartthings-deviceprofilespublish-id)
+* [`smartthings deviceprofiles:update ID`](#smartthings-deviceprofilesupdate-id)
 * [`smartthings devices ID`](#smartthings-devices-id)
 * [`smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID`](#smartthings-devicescapabilities-status-id-componentid-capabilityid)
 * [`smartthings devices:commands ID`](#smartthings-devicescommands-id)
@@ -70,6 +85,252 @@ USAGE
 * [`smartthings presentation:device-config VID`](#smartthings-presentationdevice-config-vid)
 * [`smartthings presentation:device-config:create`](#smartthings-presentationdevice-configcreate)
 * [`smartthings presentation:device-config:generate ID`](#smartthings-presentationdevice-configgenerate-id)
+
+## `smartthings apps [ID]`
+
+get a specific app or a list of apps
+
+```
+USAGE
+  $ smartthings apps [ID]
+
+ARGUMENTS
+  ID  the app id or number from list
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -v, --verbose          include URLs and ARNs in table output
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/apps.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps.ts)_
+
+## `smartthings apps:create`
+
+update the OAuth settings of the app
+
+```
+USAGE
+  $ smartthings apps:create
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/apps/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/create.ts)_
+
+## `smartthings apps:delete ID`
+
+delete the app
+
+```
+USAGE
+  $ smartthings apps:delete ID
+
+ARGUMENTS
+  ID  the app id
+
+OPTIONS
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+```
+
+_See code: [dist/commands/apps/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/delete.ts)_
+
+## `smartthings apps:oauth ID`
+
+get OAuth settings of the app
+
+```
+USAGE
+  $ smartthings apps:oauth ID
+
+ARGUMENTS
+  ID  the app id
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/apps/oauth.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/oauth.ts)_
+
+## `smartthings apps:oauth:generate ID`
+
+update the OAuth settings of the app and regenerate the clientId and clientSecret
+
+```
+USAGE
+  $ smartthings apps:oauth:generate ID
+
+ARGUMENTS
+  ID  the app id
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/apps/oauth/generate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/oauth/generate.ts)_
+
+## `smartthings apps:oauth:update ID`
+
+update the OAuth settings of the app
+
+```
+USAGE
+  $ smartthings apps:oauth:update ID
+
+ARGUMENTS
+  ID  the app id
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/apps/oauth/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/oauth/update.ts)_
+
+## `smartthings apps:register ID`
+
+register the app
+
+```
+USAGE
+  $ smartthings apps:register ID
+
+ARGUMENTS
+  ID  the app id
+
+OPTIONS
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+```
+
+_See code: [dist/commands/apps/register.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/register.ts)_
+
+## `smartthings apps:settings ID`
+
+get OAuth settings of the app
+
+```
+USAGE
+  $ smartthings apps:settings ID
+
+ARGUMENTS
+  ID  the app id
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/apps/settings.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/settings.ts)_
+
+## `smartthings apps:settings:update ID`
+
+update the OAuth settings of the app
+
+```
+USAGE
+  $ smartthings apps:settings:update ID
+
+ARGUMENTS
+  ID  the app id
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/apps/settings/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/settings/update.ts)_
+
+## `smartthings apps:update ID`
+
+update the OAuth settings of the app
+
+```
+USAGE
+  $ smartthings apps:update ID
+
+ARGUMENTS
+  ID  the app id
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/apps/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/update.ts)_
 
 ## `smartthings autocomplete [SHELL]`
 
@@ -113,6 +374,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -135,6 +398,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -178,6 +443,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -198,6 +465,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -218,6 +487,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -242,6 +513,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -268,6 +541,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -294,6 +569,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -320,6 +597,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -340,6 +619,146 @@ OPTIONS
 ```
 
 _See code: [dist/commands/config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/config.ts)_
+
+## `smartthings deviceprofiles [ID]`
+
+list all device profiles available in a user account or retrieve a single profile
+
+```
+USAGE
+  $ smartthings deviceprofiles [ID]
+
+ARGUMENTS
+  ID  Device profile to retrieve. Can be a UUID or the number of the profile in the list
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+
+EXAMPLES
+  $ smartthings deviceprofiles                      # list all device profiles
+  $ smartthings deviceprofiles bb0fdc5-...-a8bd2ea  # show device profile with the specified UUID
+  $ smartthings deviceprofiles 2                    # show the second device profile in the list
+  $ smartthings deviceprofiles 3 -j                 # show the profile in JSON format
+  $ smartthings deviceprofiles 5 -y                 # show the profile in YAML format
+  $ smartthings deviceprofiles 4 -j -o profile.json # write the profile to the file "profile.json"
+```
+
+_See code: [dist/commands/deviceprofiles.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles.ts)_
+
+## `smartthings deviceprofiles:create`
+
+create a new device profile
+
+```
+USAGE
+  $ smartthings deviceprofiles:create
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+
+EXAMPLES
+  $ smartthings deviceprofiles:create -i myprofile.json    # create a device profile from the JSON file definition
+  $ smartthings deviceprofiles:create -i myprofile.yaml    # create a device profile from the YAML file definition
+```
+
+_See code: [dist/commands/deviceprofiles/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/create.ts)_
+
+## `smartthings deviceprofiles:delete ID`
+
+delete a device profile
+
+```
+USAGE
+  $ smartthings deviceprofiles:delete ID
+
+ARGUMENTS
+  ID  Device profile UUID or number in the list
+
+OPTIONS
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+
+EXAMPLES
+  $ smartthings deviceprofiles:delete 63b8c91e-9686-4c43-9afb-fbd9f77e3bb0  # delete profile with this UUID
+  $ smartthings deviceprofiles:delete 5                                     # delete the 5th profile in the list
+```
+
+_See code: [dist/commands/deviceprofiles/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/delete.ts)_
+
+## `smartthings deviceprofiles:publish ID`
+
+publish a device profile (published profiles cannot be modified)
+
+```
+USAGE
+  $ smartthings deviceprofiles:publish ID
+
+ARGUMENTS
+  ID  Device profile UUID or number in the list
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+
+EXAMPLES
+  $ smartthings deviceprofiles:publish 63b8c91e-9686-4c43-9afb-fbd9f77e3bb0  # publish the profile with this UUID
+  $ smartthings deviceprofiles:publish 5                                     # publish the 5th profile in the list
+```
+
+_See code: [dist/commands/deviceprofiles/publish.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/publish.ts)_
+
+## `smartthings deviceprofiles:update ID`
+
+update a device profile
+
+```
+USAGE
+  $ smartthings deviceprofiles:update ID
+
+ARGUMENTS
+  ID  Device profile UUID or number in the list
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/deviceprofiles/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/update.ts)_
 
 ## `smartthings devices ID`
 
@@ -469,28 +888,30 @@ _See code: [dist/commands/devices/status.ts](https://github.com/SmartThingsCommu
 
 ## `smartthings generate:java`
 
-Generate a Java starter app
+generate a Java starter app
 
 ```
 USAGE
   $ smartthings generate:java
 
 OPTIONS
-  -h, --help  show CLI help
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
 ```
 
 _See code: [dist/commands/generate/java.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/generate/java.ts)_
 
 ## `smartthings generate:node`
 
-Generate a NodeJS starter app
+generate a NodeJS starter app
 
 ```
 USAGE
   $ smartthings generate:node
 
 OPTIONS
-  -h, --help  show CLI help
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
 ```
 
 _See code: [dist/commands/generate/node.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/generate/node.ts)_
@@ -548,6 +969,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -587,6 +1010,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -630,6 +1055,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -653,6 +1080,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -675,6 +1104,8 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
@@ -698,7 +1129,9 @@ OPTIONS
   -p, --profile=profile          [default: default] configuration profile
   -t, --token=token              the auth token to use
   -y, --yaml                     use YAML format of input and/or output
+  --compact                      use compact table format with no lines between body rows
   --dth                          generate from legacy DTH id instead of a profile id
+  --expanded                     use expanded table format with a line between each body row
   --indent=indent                specify indentation for formatting JSON or YAML output
 
   --type-shard-id=type-shard-id  data management shard Id where the device type resides, only useful for legacy DTH type

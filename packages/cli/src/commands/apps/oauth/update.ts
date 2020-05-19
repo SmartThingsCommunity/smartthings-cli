@@ -1,10 +1,14 @@
-import { App, AppOAuth } from '@smartthings/core-sdk'
-import { ListableObjectInputOutputCommand } from '@smartthings/cli-lib'
+import { AppOAuth } from '@smartthings/core-sdk'
 
-export default class AppOauthUpdateCommand extends ListableObjectInputOutputCommand<App, AppOAuth, AppOAuth> {
+import { InputOutputAPICommand } from '@smartthings/cli-lib'
+
+import { buildTableForOutput } from '../oauth'
+
+
+export default class AppOauthUpdateCommand extends InputOutputAPICommand<AppOAuth, AppOAuth> {
 	static description = 'update the OAuth settings of the app'
 
-	static flags = ListableObjectInputOutputCommand.flags
+	static flags = InputOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -15,14 +19,15 @@ export default class AppOauthUpdateCommand extends ListableObjectInputOutputComm
 	protected primaryKeyName(): string { return 'appId' }
 	protected sortKeyName(): string { return 'displayName' }
 
+	protected buildTableOutput(appOAuth: AppOAuth): string {
+		const table = buildTableForOutput(this, appOAuth)
+		return table.toString()
+	}
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppOauthUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
-			args.id,
-			() => { return this.client.apps.list() },
-			(id, data) => { return this.client.apps.updateOauth(id, data) },
-		)
+		this.processNormally((data) => { return this.client.apps.updateOauth(args.id, data) })
 	}
 }

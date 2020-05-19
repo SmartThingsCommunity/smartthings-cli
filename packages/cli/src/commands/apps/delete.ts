@@ -1,10 +1,10 @@
-import { App, Count } from '@smartthings/core-sdk'
-import { ListableObjectOutputCommand } from '@smartthings/cli-lib'
+import { SimpleAPICommand } from '@smartthings/cli-lib'
 
-export default class AppDeleteCommand extends ListableObjectOutputCommand<App, Count> {
+
+export default class AppDeleteCommand extends SimpleAPICommand {
 	static description = 'delete the app'
 
-	static flags = ListableObjectOutputCommand.flags
+	static flags = SimpleAPICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -19,10 +19,7 @@ export default class AppDeleteCommand extends ListableObjectOutputCommand<App, C
 		const { args, argv, flags } = this.parse(AppDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
-			args.id,
-			() => { return this.client.apps.list() },
-			(id) => { return this.client.apps.delete(id) },
-		)
+		this.processNormally(`app ${args.id} deleted`,
+			async () => { await this.client.apps.delete(args.id) })
 	}
 }

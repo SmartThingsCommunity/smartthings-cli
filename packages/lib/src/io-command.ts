@@ -5,7 +5,6 @@ import path from 'path'
 
 import { APICommand } from './api-command'
 import { logManager } from './logger'
-import Table from 'cli-table'
 
 
 // TODO: TEST TEST TEST
@@ -20,7 +19,7 @@ const commonIOFlags = {
 		description: 'use JSON format of input and/or output',
 		char: 'j',
 	}),
-	yaml : flags.boolean({
+	yaml: flags.boolean({
 		char: 'y',
 		description: 'use YAML format of input and/or output',
 	}),
@@ -34,7 +33,7 @@ const inputFlag = {
 }
 
 const outputFlag = {
-	output : flags.string({
+	output: flags.string({
 		char: 'o',
 		description: 'specify output file',
 	}),
@@ -67,9 +66,9 @@ export interface OutputOptions {
 	indentLevel: number
 }
 
-export type ListCallback<T> = () => Promise<T[]>;
-export type GetCallback<T> = (id: string) => Promise<T>;
-export type UpdateCallback<T,U> = (id: string, data: U) => Promise<T>;
+export type ListCallback<T> = () => Promise<T[]>
+export type GetCallback<T> = (id: string) => Promise<T>
+export type UpdateCallback<T, U> = (id: string, data: U) => Promise<T>
 
 function formatFromFilename(filename: string): IOFormat {
 	const ext = path.extname(filename).toLowerCase()
@@ -83,8 +82,8 @@ function formatFromFilename(filename: string): IOFormat {
 	return IOFormat.YAML
 }
 
-export abstract class InputAPICommand<T> extends APICommand {
-	protected getInputFromUser?(): Promise<T>
+export abstract class InputAPICommand<I> extends APICommand {
+	protected getInputFromUser?(): Promise<I>
 
 	private _inputOptions?: InputOptions
 
@@ -95,12 +94,12 @@ export abstract class InputAPICommand<T> extends APICommand {
 		return this._inputOptions
 	}
 
-	protected async readInput(): Promise<T> {
+	protected async readInput(): Promise<I> {
 		if (this.inputOptions.format === IOFormat.COMMON && this.getInputFromUser) {
 			return this.getInputFromUser()
 		}
 
-		return new Promise<T>((resolve, reject) => {
+		return new Promise<I>((resolve, reject) => {
 			if (this.inputOptions.format === IOFormat.COMMON) {
 				reject('invalid state')
 			} else if (this.inputOptions.filename) {
@@ -176,17 +175,15 @@ function determineOutputOptions(flags: { [name: string]: any }, inputOptions?: I
 	}
 }
 
-function writeOutput<T>(data: T, outputOptions: OutputOptions, buildTableOutput?: (data: T) => string): void {
+function writeOutput<T>(data: T, outputOptions: OutputOptions, buildTableOutput: (data: T) => string): void {
 	let output: string
 
 	if (outputOptions.format === IOFormat.JSON) {
 		output = JSON.stringify(data, null, outputOptions.indentLevel)
 	} else if (outputOptions.format === IOFormat.YAML) {
 		output = yaml.safeDump(data, { indent: outputOptions.indentLevel })
-	} else if (buildTableOutput) {
-		output = buildTableOutput(data)
 	} else {
-		output = JSON.stringify(data, null, outputOptions.indentLevel)
+		output = buildTableOutput(data)
 	}
 
 	if (outputOptions.filename) {
@@ -199,7 +196,11 @@ function writeOutput<T>(data: T, outputOptions: OutputOptions, buildTableOutput?
 	}
 }
 
-export abstract class OutputAPICommand<T> extends APICommand {
+/**
+ * An API command that defines only output. This is primarily useful for
+ * GET calls that return a single object.
+ */
+export abstract class OutputAPICommand<O> extends APICommand {
 	private _outputOptions?: OutputOptions
 
 	protected get outputOptions(): OutputOptions {
@@ -209,9 +210,9 @@ export abstract class OutputAPICommand<T> extends APICommand {
 		return this._outputOptions
 	}
 
-	protected abstract buildTableOutput(data: T): string
+	protected abstract buildTableOutput(data: O): string
 
-	protected writeOutput(data: T): void {
+	protected writeOutput(data: O): void {
 		writeOutput(data, this.outputOptions, this.buildTableOutput.bind(this))
 	}
 
@@ -221,7 +222,7 @@ export abstract class OutputAPICommand<T> extends APICommand {
 	 *
 	 * @param executeCommand function that does the work
 	 */
-	protected processNormally(getData: () => Promise<T>): void {
+	protected processNormally(getData: () => Promise<O>): void {
 		getData().then(data => {
 			this.writeOutput(data)
 		}).catch(err => {
@@ -244,7 +245,15 @@ export abstract class OutputAPICommand<T> extends APICommand {
 	}
 }
 
-export abstract class InputOutputAPICommand<T, U> extends InputAPICommand<T> {
+/**
+ * An API command that has complicated input and complicated output. This
+ * would normally be used for POST and PUT methods.
+ *
+ * Generic types:
+ *   I: the input type
+ *   O: the output type
+ */
+export abstract class InputOutputAPICommand<I, O> extends InputAPICommand<I> {
 	// Since we can only extend InputAPICommand or OutputAPICommand, we have
 	// add stuff from the other.
 	private _outputOptions?: OutputOptions
@@ -256,9 +265,9 @@ export abstract class InputOutputAPICommand<T, U> extends InputAPICommand<T> {
 		return this._outputOptions
 	}
 
-	protected abstract buildTableOutput(data: U): string
+	protected abstract buildTableOutput(data: O): string
 
-	protected writeOutput(data: U): void {
+	protected writeOutput(data: O): void {
 		writeOutput(data, this.outputOptions, this.buildTableOutput.bind(this))
 	}
 
@@ -268,7 +277,7 @@ export abstract class InputOutputAPICommand<T, U> extends InputAPICommand<T> {
 	 *
 	 * @param executeCommand function that does the work
 	 */
-	protected processNormally(executeCommand: (input: T) => Promise<U>): void {
+	protected processNormally(executeCommand: (input: I) => Promise<O>): void {
 		if (this.flags['dry-run']) {
 			this.readInput().then(input => {
 				this.log(JSON.stringify(input, null, 4))
@@ -297,16 +306,18 @@ export abstract class InputOutputAPICommand<T, U> extends InputAPICommand<T> {
 	static flags = {
 		...InputAPICommand.flags,
 		...outputFlag,
-		'dry-run' : flags.boolean({
+		'dry-run': flags.boolean({
 			char: 'd',
 			description: "produce JSON but don't actually submit",
 		}),
 	}
 }
 
-export abstract class ListableCommand<L, T> extends APICommand {
+export abstract class ListableCommand<O, L> extends APICommand {
 	protected abstract primaryKeyName(): string
 	protected abstract sortKeyName(): string
+	// TODO: replace tableHeadings with tableFieldDefinitions
+	// protected abstract tableFieldDefinitions: TableFieldDefinition<T>[]
 	protected tableHeadings(): string[] {
 		return [this.sortKeyName(), this.primaryKeyName()]
 	}
@@ -319,14 +330,12 @@ export abstract class ListableCommand<L, T> extends APICommand {
 		return this._outputOptions
 	}
 
-	protected buildObjectTableOutput(data: T): string {
-		return JSON.stringify(data, null, this.outputOptions.indentLevel)
-	}
+	protected abstract buildObjectTableOutput(data: O): string
 
 	protected buildTableOutput(sortedList: L[]): string {
 		const head = this.tableHeadings()
 		let count = 1
-		const table = this.newOutputTable({ head: ['#', ...head]})
+		const table = this.newOutputTable({ head: ['#', ...head] })
 		for (const obj of sortedList) {
 			const item = [count++, ...head.map(name => {
 				// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -365,34 +374,40 @@ export abstract class ListableCommand<L, T> extends APICommand {
 	}
 }
 
-export abstract class ListableObjectOutputCommand<L, T> extends ListableCommand<L,T> {
-	protected async processNormally(id: any, listFunction: ListCallback<L>, getFunction: GetCallback<T>): Promise<void> {
+// TODO: look more into the generics here and see if we can be more explicit
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export abstract class ListableObjectOutputCommand<O, L extends { [name: string]: any }> extends ListableCommand<O, L> {
+	protected async processNormally(idOrIndex: string | number, listFunction: ListCallback<L>, getFunction: GetCallback<O>): Promise<void> {
 		try {
-			if (id) {
-				let item: T
-				if (!isNaN(id)) {
-					const index = parseInt(id)
-					const items = this.sort( await listFunction())
-					// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-					// @ts-ignore
-					item = await getFunction(items[index - 1][this.primaryKeyName()])
+			if (idOrIndex) {
+				let id: string
+				if (typeof (idOrIndex) === 'number' || !isNaN(Number(idOrIndex))) {
+					const index = typeof (idOrIndex) === 'string' ? Number.parseInt(idOrIndex) : idOrIndex
+					const items = this.sort(await listFunction())
+					const searchItem: L = items[index - 1]
+					if (!(this.primaryKeyName() in searchItem)) {
+						throw Error(`did not find key ${this.primaryKeyName()} in data`)
+					}
+					id = searchItem[this.primaryKeyName()]
 				} else {
-					item = await getFunction(id)
+					id = idOrIndex
 				}
-				writeOutput<T>(item, this.outputOptions, this.buildObjectTableOutput.bind(this))
+				const item = await getFunction(id)
+				writeOutput<O>(item, this.outputOptions, this.buildObjectTableOutput.bind(this))
 			} else {
 				const list = this.sort(await listFunction())
 				writeOutput<L[]>(list, this.outputOptions, this.buildTableOutput.bind(this))
 			}
-		} catch(err) {
+		} catch (err) {
 			this.logger.error(`caught error ${err}`)
 			this.exit(1)
 		}
 	}
 }
 
-export abstract class ListableObjectInputOutputCommand<L, T, U> extends ListableCommand<L, T> {
-	protected getInputFromUser?(): Promise<U>
+// TODO: add "API" and standardize generic names
+export abstract class ListableObjectInputOutputCommand<I, O, L> extends ListableCommand<O, L> {
+	protected getInputFromUser?(): Promise<I>
 
 	private _inputOptions?: InputOptions
 
@@ -403,10 +418,13 @@ export abstract class ListableObjectInputOutputCommand<L, T, U> extends Listable
 		return this._inputOptions
 	}
 
-	protected async processNormally(id: any, listFunction: ListCallback<L>, updateFunction: UpdateCallback<T,U>): Promise<void> {
+	// TODO: I feel like id doesn't have to be any; maybe `string | number` or even just `string`
+	// since even when it's a number, it comes in as a string
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	protected async processNormally(id: any, listFunction: ListCallback<L>, updateFunction: UpdateCallback<O, I>): Promise<void> {
 		try {
-			const data: U = await this.readInput()
-			let item: T
+			const data: I = await this.readInput()
+			let item: O
 			if (!isNaN(id)) {
 				const index = parseInt(id)
 				let items = await listFunction()
@@ -417,19 +435,19 @@ export abstract class ListableObjectInputOutputCommand<L, T, U> extends Listable
 			} else {
 				item = await updateFunction(id, data)
 			}
-			writeOutput<T>(item, this.outputOptions, this.buildObjectTableOutput.bind(this))
-		} catch(err) {
+			writeOutput<O>(item, this.outputOptions, this.buildObjectTableOutput.bind(this))
+		} catch (err) {
 			this.logger.error(`caught error ${err}`)
 			this.exit(1)
 		}
 	}
 
-	protected async readInput(): Promise<U> {
+	protected async readInput(): Promise<I> {
 		if (this.inputOptions.format === IOFormat.COMMON && this.getInputFromUser) {
 			return this.getInputFromUser()
 		}
 
-		return new Promise<U>((resolve, reject) => {
+		return new Promise<I>((resolve, reject) => {
 			if (this.inputOptions.format === IOFormat.COMMON) {
 				reject('invalid state')
 			} else if (this.inputOptions.filename) {

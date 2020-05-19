@@ -166,22 +166,19 @@ export class LoginAuthenticator implements Authenticator {
 			this.logger.trace(`  body: ${qs.stringify(requestBody)}`)
 			this.logger.trace(`  config: ${JSON.stringify(postConfig)}`)
 			this.logger.trace(`code = ${req.query.code}`)
-			if (0) {
-				// I used this for debugging. Axios does not include the body of the response in any way I could find.
-				this.logger.trace(`\n\nRun:\ncurl -i --request POST --url '${baseOAuthInURL}/token' --header 'content-type: application/x-www-form-urlencoded' ` +
-					`--data grant_type=authorization_code --data 'client_id=${this.clientId}' --data code_verifier=${verifier} --data code=${req.query.code} ` +
-					`--data 'redirect_uri=${finishURL}' --header 'X-ST-CORRELATION: ross-pkce-attempt'\n\n`)
-			} else {
-				axios.post(`${baseOAuthInURL}/token`, qs.stringify(requestBody), postConfig)
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					.then((response: AxiosResponse<any>) => {
-						this.updateTokenFromResponse(response)
-					})
-					.catch(err => {
-						this.logger.trace(`got error ${err.name}/${err}}/${err.message} trying to get final token`)
-						this.logger.trace(`err = ${JSON.stringify(err, null, 4)}`)
-					})
-			}
+			// I used this for debugging. Axios does not include the body of the response in any way I could find.
+			// this.logger.trace(`\n\nRun:\ncurl -i --request POST --url '${baseOAuthInURL}/token' --header 'content-type: application/x-www-form-urlencoded' ` +
+			// 	`--data grant_type=authorization_code --data 'client_id=${this.clientId}' --data code_verifier=${verifier} --data code=${req.query.code} ` +
+			// 	`--data 'redirect_uri=${finishURL}' --header 'X-ST-CORRELATION: ross-pkce-attempt'\n\n`)
+			axios.post(`${baseOAuthInURL}/token`, qs.stringify(requestBody), postConfig)
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				.then((response: AxiosResponse<any>) => {
+					this.updateTokenFromResponse(response)
+				})
+				.catch(err => {
+					this.logger.trace(`got error ${err.name}/${err}}/${err.message} trying to get final token`)
+					this.logger.trace(`err = ${JSON.stringify(err, null, 4)}`)
+				})
 			res.send('<html><body><h1>You can close the window.</h1></body></html>')
 		})
 
@@ -192,9 +189,9 @@ export class LoginAuthenticator implements Authenticator {
 
 		const startTime = Date.now()
 		const maxDelay = 10 * 60 * 1000 // wait up to ten minutes for login
-		return new Promise(async (resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			while (!this.authenticationInfo && Date.now() < startTime + maxDelay) {
-				await this.delay(1000)
+				this.delay(1000)
 			}
 			server.close((err) => {
 				if (err) {

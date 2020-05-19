@@ -47,7 +47,7 @@ export default class DevicesList extends APICommand {
 			this.log(JSON.stringify(devices, null, 4))
 		}).catch(err => {
 			this.log(`caught error ${err}`)
-			process.exit(1)
+			this.exit(1)
 		})
 	}
 }
