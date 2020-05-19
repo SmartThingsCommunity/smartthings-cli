@@ -5,6 +5,7 @@ import path from 'path'
 
 import { APICommand } from './api-command'
 import { logManager } from './logger'
+import Table from 'cli-table'
 
 
 // TODO: TEST TEST TEST
@@ -37,6 +38,13 @@ const outputFlag = {
 		char: 'o',
 		description: 'specify output file',
 	}),
+	compact: flags.boolean({
+		description: 'use compact table format with no lines between body rows',
+	}),
+	expanded: flags.boolean({
+		description: 'use expanded table format with a line between each body row',
+	}),
+
 }
 
 export enum IOFormat {
@@ -58,6 +66,10 @@ export interface OutputOptions {
 	format: IOFormat
 	indentLevel: number
 }
+
+export type ListCallback<T> = () => Promise<T[]>;
+export type GetCallback<T> = (id: string) => Promise<T>;
+export type UpdateCallback<T,U> = (id: string, data: U) => Promise<T>;
 
 function formatFromFilename(filename: string): IOFormat {
 	const ext = path.extname(filename).toLowerCase()
@@ -164,15 +176,17 @@ function determineOutputOptions(flags: { [name: string]: any }, inputOptions?: I
 	}
 }
 
-function writeOutput<T>(data: T, outputOptions: OutputOptions, buildTableOutput: (data: T) => string): void {
+function writeOutput<T>(data: T, outputOptions: OutputOptions, buildTableOutput?: (data: T) => string): void {
 	let output: string
 
 	if (outputOptions.format === IOFormat.JSON) {
 		output = JSON.stringify(data, null, outputOptions.indentLevel)
 	} else if (outputOptions.format === IOFormat.YAML) {
 		output = yaml.safeDump(data, { indent: outputOptions.indentLevel })
-	} else {
+	} else if (buildTableOutput) {
 		output = buildTableOutput(data)
+	} else {
+		output = JSON.stringify(data, null, outputOptions.indentLevel)
 	}
 
 	if (outputOptions.filename) {
@@ -202,7 +216,7 @@ export abstract class OutputAPICommand<T> extends APICommand {
 	}
 
 	/**
-	 * This is just a convenience method that outputs thee data and handles
+	 * This is just a convenience method that outputs the data and handles
 	 * exceptions.
 	 *
 	 * @param executeCommand function that does the work
@@ -287,5 +301,186 @@ export abstract class InputOutputAPICommand<T, U> extends InputAPICommand<T> {
 			char: 'd',
 			description: "produce JSON but don't actually submit",
 		}),
+	}
+}
+
+export abstract class ListableCommand<L, T> extends APICommand {
+	protected abstract primaryKeyName(): string
+	protected abstract sortKeyName(): string
+	protected tableHeadings(): string[] {
+		return [this.sortKeyName(), this.primaryKeyName()]
+	}
+
+	private _outputOptions?: OutputOptions
+	protected get outputOptions(): OutputOptions {
+		if (!this._outputOptions) {
+			throw new Error('APICommand not properly initialized')
+		}
+		return this._outputOptions
+	}
+
+	protected buildObjectTableOutput(data: T): string {
+		return JSON.stringify(data, null, this.outputOptions.indentLevel)
+	}
+
+	protected buildTableOutput(sortedList: L[]): string {
+		const head = this.tableHeadings()
+		let count = 1
+		const table = this.newOutputTable({ head: ['#', ...head]})
+		for (const obj of sortedList) {
+			const item = [count++, ...head.map(name => {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+				// @ts-ignore
+				return obj[name]
+			})]
+			table.push(item)
+		}
+		return table.toString()
+	}
+
+	protected sort(list: L[]): L[] {
+		const sortKey = this.tableHeadings()[0]
+		return list.sort((a, b) => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			const av = a[sortKey]
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			const bv = b[sortKey]
+			return av === bv ? 0 : av < bv ? -1 : 1
+		})
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	protected async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
+		await super.setup(args, argv, flags)
+
+		this._outputOptions = determineOutputOptions(this.flags)
+	}
+
+	static flags = {
+		...APICommand.flags,
+		...commonIOFlags,
+		...outputFlag,
+	}
+}
+
+export abstract class ListableObjectOutputCommand<L, T> extends ListableCommand<L,T> {
+	protected async processNormally(id: any, listFunction: ListCallback<L>, getFunction: GetCallback<T>): Promise<void> {
+		try {
+			if (id) {
+				let item: T
+				if (!isNaN(id)) {
+					const index = parseInt(id)
+					const items = this.sort( await listFunction())
+					// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+					// @ts-ignore
+					item = await getFunction(items[index - 1][this.primaryKeyName()])
+				} else {
+					item = await getFunction(id)
+				}
+				writeOutput<T>(item, this.outputOptions, this.buildObjectTableOutput.bind(this))
+			} else {
+				const list = this.sort(await listFunction())
+				writeOutput<L[]>(list, this.outputOptions, this.buildTableOutput.bind(this))
+			}
+		} catch(err) {
+			this.logger.error(`caught error ${err}`)
+			this.exit(1)
+		}
+	}
+}
+
+export abstract class ListableObjectInputOutputCommand<L, T, U> extends ListableCommand<L, T> {
+	protected getInputFromUser?(): Promise<U>
+
+	private _inputOptions?: InputOptions
+
+	protected get inputOptions(): InputOptions {
+		if (!this._inputOptions) {
+			throw new Error('APICommand not properly initialized')
+		}
+		return this._inputOptions
+	}
+
+	protected async processNormally(id: any, listFunction: ListCallback<L>, updateFunction: UpdateCallback<T,U>): Promise<void> {
+		try {
+			const data: U = await this.readInput()
+			let item: T
+			if (!isNaN(id)) {
+				const index = parseInt(id)
+				let items = await listFunction()
+				items = this.sort(items)
+				// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+				// @ts-ignore
+				item = await updateFunction(items[index - 1][this.primaryKeyName()], data)
+			} else {
+				item = await updateFunction(id, data)
+			}
+			writeOutput<T>(item, this.outputOptions, this.buildObjectTableOutput.bind(this))
+		} catch(err) {
+			this.logger.error(`caught error ${err}`)
+			this.exit(1)
+		}
+	}
+
+	protected async readInput(): Promise<U> {
+		if (this.inputOptions.format === IOFormat.COMMON && this.getInputFromUser) {
+			return this.getInputFromUser()
+		}
+
+		return new Promise<U>((resolve, reject) => {
+			if (this.inputOptions.format === IOFormat.COMMON) {
+				reject('invalid state')
+			} else if (this.inputOptions.filename) {
+				resolve(yaml.safeLoad(fs.readFileSync(`${this.inputOptions.filename}`, 'utf-8')))
+			} else {
+				const stdin = process.stdin
+				const inputChunks: string[] = []
+				stdin.resume()
+				stdin.on('data', chunk => {
+					inputChunks.push(chunk.toString())
+				})
+				stdin.on('end', () => {
+					resolve(JSON.parse(inputChunks.join()))
+				})
+			}
+		})
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	protected async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
+		await super.setup(args, argv, flags)
+
+		let inputFormat: IOFormat
+		if (this.flags.json) {
+			inputFormat = IOFormat.JSON
+		} else if (this.flags.yaml) {
+			inputFormat = IOFormat.YAML
+		} else if (this.flags.input) {
+			inputFormat = formatFromFilename(this.flags.input)
+		} else {
+			inputFormat = this.getInputFromUser && process.stdin.isTTY ? IOFormat.COMMON : IOFormat.YAML
+		}
+
+		this._inputOptions = {
+			filename: this.flags.input,
+			format: inputFormat,
+		}
+
+		if (this._inputOptions.format !== IOFormat.COMMON
+			&& !this._inputOptions.filename
+			&& process.stdin.isTTY) {
+			logManager.getLogger('cli').error('input is required either via' +
+				' file specified with --input option or from stdin')
+			this.exit(1)
+		}
+	}
+
+	static flags = {
+		...APICommand.flags,
+		...commonIOFlags,
+		...inputFlag,
+		...outputFlag,
 	}
 }
