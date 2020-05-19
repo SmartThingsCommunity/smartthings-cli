@@ -1,10 +1,13 @@
-import { App, AppOAuth, AppOAuthResponse } from '@smartthings/core-sdk'
-import { ListableObjectInputOutputCommand } from '@smartthings/cli-lib'
+import { AppOAuth, AppOAuthResponse } from '@smartthings/core-sdk'
 
-export default class AppOauthGenerateCommand extends ListableObjectInputOutputCommand<App, AppOAuthResponse, AppOAuth> {
+import { InputOutputAPICommand } from '@smartthings/cli-lib'
+import { buildTableForOutput } from '../oauth'
+
+
+export default class AppOauthGenerateCommand extends InputOutputAPICommand<AppOAuth, AppOAuthResponse> {
 	static description = 'update the OAuth settings of the app and regenerate the clientId and clientSecret'
 
-	static flags = ListableObjectInputOutputCommand.flags
+	static flags = InputOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -15,14 +18,17 @@ export default class AppOauthGenerateCommand extends ListableObjectInputOutputCo
 	protected primaryKeyName(): string { return 'appId' }
 	protected sortKeyName(): string { return 'displayName' }
 
+	protected buildTableOutput(appOAuthResponse: AppOAuthResponse): string {
+		const table = buildTableForOutput(this, appOAuthResponse)
+		table.push(['Client Id', appOAuthResponse.oauthClientId])
+		table.push(['Client Secret', appOAuthResponse.oauthClientSecret])
+		return table.toString()
+	}
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppOauthGenerateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
-			args.id,
-			() => { return this.client.apps.list() },
-			(id, data) => { return this.client.apps.regenerateOauth(id, data) },
-		)
+		this.processNormally((data) => { return this.client.apps.regenerateOauth(args.id, data) })
 	}
 }

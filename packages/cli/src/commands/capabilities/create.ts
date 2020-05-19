@@ -49,7 +49,6 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 	private async promptAndAddSetter(capability: CapabilityCreate,
 			attributeName: string, attribute: CapabilityAttribute,
 			type: Type): Promise<void> {
-		this.logger.debug('promptAndAddSetter - enter')
 		const addSetter = (await inquirer.prompt({
 			type: 'confirm',
 			name: 'addSetter',
@@ -72,7 +71,6 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 			}
 			this.addCommand(capability, commandName, setterCommand)
 		}
-		this.logger.debug('promptAndAddSetter - done')
 	}
 
 	private addBasicCommand(capability: CapabilityCreate, attribute: CapabilityAttribute,

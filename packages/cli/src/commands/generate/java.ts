@@ -1,7 +1,8 @@
 import GenerateCommand from '../../lib/generate-command'
 
+
 export default class GenerateJava extends GenerateCommand {
-	static description = 'Generate a Java starter app'
+	static description = 'generate a Java starter app'
 
 	static flags = GenerateCommand.flags
 

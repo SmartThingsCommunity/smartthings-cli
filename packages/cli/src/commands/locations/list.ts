@@ -5,6 +5,7 @@ import { LocationItem } from '@smartthings/core-sdk'
 import { OutputAPICommand } from '@smartthings/cli-lib'
 
 
+// TODO: add Command like Bob did
 export default class LocationsList extends OutputAPICommand<LocationItem[]> {
 	static description = 'list all Locations currently available in a user account'
 

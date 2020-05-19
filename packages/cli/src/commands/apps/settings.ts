@@ -1,7 +1,8 @@
 import { App, AppSettings } from '@smartthings/core-sdk'
 import { ListableObjectOutputCommand } from '@smartthings/cli-lib'
 
-export default class AppSettingsCommand extends ListableObjectOutputCommand<App, AppSettings> {
+
+export default class AppSettingsCommand extends ListableObjectOutputCommand<AppSettings, App> {
 	static description = 'get OAuth settings of the app'
 
 	static flags = ListableObjectOutputCommand.flags

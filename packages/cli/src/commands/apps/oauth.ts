@@ -1,10 +1,22 @@
-import { App, AppOAuth } from '@smartthings/core-sdk'
-import { ListableObjectOutputCommand } from '@smartthings/cli-lib'
+import Table from 'cli-table'
 
-export default class AppOauthCommand extends ListableObjectOutputCommand<App, AppOAuth> {
+import { AppOAuth } from '@smartthings/core-sdk'
+
+import { OutputAPICommand, TableGenerator } from '@smartthings/cli-lib'
+
+
+export function buildTableForOutput(tableGenerator: TableGenerator, appOAuth: AppOAuth): Table {
+	const table = tableGenerator.newOutputTable()
+	table.push(['Client Name', appOAuth.clientName])
+	table.push(['Scope', appOAuth.scope])
+	table.push(['Redirect URIs', appOAuth.redirectUris])
+	return table
+}
+
+export default class AppOauthCommand extends OutputAPICommand<AppOAuth> {
 	static description = 'get OAuth settings of the app'
 
-	static flags = ListableObjectOutputCommand.flags
+	static flags = OutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -15,14 +27,15 @@ export default class AppOauthCommand extends ListableObjectOutputCommand<App, Ap
 	protected primaryKeyName(): string { return 'appId' }
 	protected sortKeyName(): string { return 'displayName' }
 
+	protected buildTableOutput(appOAuth: AppOAuth): string {
+		const table = buildTableForOutput(this, appOAuth)
+		return table.toString()
+	}
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppOauthCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
-			args.id,
-			() => { return this.client.apps.list() },
-			(id) => { return this.client.apps.getOauth(id) },
-		)
+		this.processNormally(() => { return this.client.apps.getOauth(args.id) })
 	}
 }

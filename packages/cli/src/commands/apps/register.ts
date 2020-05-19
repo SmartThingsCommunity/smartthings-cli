@@ -1,10 +1,10 @@
-import { App, Status } from '@smartthings/core-sdk'
-import { ListableObjectOutputCommand } from '@smartthings/cli-lib'
+import { SimpleAPICommand } from '@smartthings/cli-lib'
 
-export default class AppRegisterCommand extends ListableObjectOutputCommand<App, Status> {
+
+export default class AppRegisterCommand extends SimpleAPICommand {
 	static description = 'register the app'
 
-	static flags = ListableObjectOutputCommand.flags
+	static flags = SimpleAPICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -19,10 +19,7 @@ export default class AppRegisterCommand extends ListableObjectOutputCommand<App,
 		const { args, argv, flags } = this.parse(AppRegisterCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
-			args.id,
-			() => { return this.client.apps.list() },
-			(id) => { return this.client.apps.register(id) },
-		)
+		this.processNormally(`app ${args.id} registered`,
+			async () => { await this.client.apps.register(args.id) })
 	}
 }

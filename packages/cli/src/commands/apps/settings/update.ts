@@ -1,10 +1,12 @@
-import { App, AppSettings } from '@smartthings/core-sdk'
-import { ListableObjectInputOutputCommand } from '@smartthings/cli-lib'
+import { AppSettings } from '@smartthings/core-sdk'
 
-export default class AppSettingsUpdateCommand extends ListableObjectInputOutputCommand<App, AppSettings, AppSettings> {
+import { InputOutputAPICommand } from '@smartthings/cli-lib'
+
+
+export default class AppSettingsUpdateCommand extends InputOutputAPICommand<AppSettings, AppSettings> {
 	static description = 'update the OAuth settings of the app'
 
-	static flags = ListableObjectInputOutputCommand.flags
+	static flags = InputOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -12,13 +14,11 @@ export default class AppSettingsUpdateCommand extends ListableObjectInputOutputC
 		required: true,
 	}]
 
-	protected primaryKeyName(): string { return 'appId' }
-	protected sortKeyName(): string { return 'displayName' }
-	protected buildObjectTableOutput(data: AppSettings): string {
-		const table = this.newOutputTable({head: ['name','value']})
-		if (data.settings) {
-			for (const key of Object.keys(data.settings)) {
-				table.push([key, data.settings[key]])
+	protected buildTableOutput(appSettings: AppSettings): string {
+		const table = this.newOutputTable({ head: ['name', 'value'] })
+		if (appSettings.settings) {
+			for (const key of Object.keys(appSettings.settings)) {
+				table.push([key, appSettings.settings[key]])
 			}
 		}
 		return table.toString()
@@ -27,10 +27,8 @@ export default class AppSettingsUpdateCommand extends ListableObjectInputOutputC
 		const { args, argv, flags } = this.parse(AppSettingsUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
-			args.id,
-			() => { return this.client.apps.list() },
-			(id, data) => { return this.client.apps.updateSettings(id, data) },
-		)
+		this.processNormally(appSettings => {
+			return this.client.apps.updateSettings(args.id, appSettings)
+		})
 	}
 }

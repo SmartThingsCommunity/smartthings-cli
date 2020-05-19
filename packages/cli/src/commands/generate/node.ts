@@ -1,7 +1,8 @@
 import GenerateCommand from '../../lib/generate-command'
 
+
 export default class GenerateNode extends GenerateCommand {
-	static description = 'Generate a NodeJS starter app'
+	static description = 'generate a NodeJS starter app'
 
 	static flags = GenerateCommand.flags
 

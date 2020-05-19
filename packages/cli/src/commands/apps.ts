@@ -1,8 +1,50 @@
-import { App } from '@smartthings/core-sdk'
-import {ListableObjectOutputCommand} from '@smartthings/cli-lib'
-import {flags} from '@oclif/command'
+import { flags } from '@oclif/command'
 
-export default class AppsList extends ListableObjectOutputCommand<App,App> {
+import { App } from '@smartthings/core-sdk'
+
+import { ListableObjectOutputCommand, TableGenerator } from '@smartthings/cli-lib'
+
+
+export function buildTableOutput(tableGenerator: TableGenerator, data: App): string {
+	const table = tableGenerator.newOutputTable({head: ['property','value']})
+	table.push(['Name', data.displayName])
+	table.push(['App Id', data.appId])
+	table.push(['App Name', data.appName])
+	table.push(['Description', data.description])
+	table.push(['Single Instance', data.singleInstance])
+	if (data.classifications) {
+		table.push(['Classifications', data.classifications.join('\n')])
+	}
+	if (data.installMetadata && data.installMetadata.certified) {
+		table.push(['Certified', data.installMetadata.certified])
+	}
+	if (data.installMetadata && data.installMetadata.maxInstalls) {
+		table.push(['Nax Installs', data.installMetadata.maxInstalls])
+	}
+	table.push(['App Type', data.appType])
+	if (data.webhookSmartApp) {
+		table.push(['Signature Type', data.webhookSmartApp.signatureType])
+		table.push(['Target URL', data.webhookSmartApp.targetUrl])
+		table.push(['Target Status', data.webhookSmartApp.targetStatus])
+	}
+	if (data.webhookSmartApp && data.webhookSmartApp.publicKey) {
+		table.push(['Public Key', data.webhookSmartApp.publicKey.replace(/\r\n/g, '\n')])
+	}
+	if (data.lambdaSmartApp && data.lambdaSmartApp.functions) {
+		table.push(['Lambda Functions', data.lambdaSmartApp.functions.join('\n')])
+	}
+	if (data.apiOnly && data.apiOnly.subscription) {
+		table.push(['Target URL', data.apiOnly.subscription.targetUrl])
+		table.push(['Target Status', data.apiOnly.subscription.targetStatus])
+	}
+	if (data.installMetadata && data.installMetadata.certified !== undefined) {
+		table.push(['Certified', data.installMetadata.certified])
+	}
+
+	return table.toString()
+}
+
+export default class AppsList extends ListableObjectOutputCommand<App, App> {
 	static description = 'get a specific app or a list of apps'
 
 	static flags = {
@@ -15,7 +57,7 @@ export default class AppsList extends ListableObjectOutputCommand<App,App> {
 
 	static args = [{
 		name: 'id',
-		description: 'the app id',
+		description: 'the app id or number from list',
 		required: false,
 	}]
 
@@ -30,42 +72,7 @@ export default class AppsList extends ListableObjectOutputCommand<App,App> {
 	}
 
 	protected buildObjectTableOutput(data: App): string {
-		const table = this.newOutputTable({head: ['property','value']})
-		table.push(['name', data.displayName])
-		table.push(['appId', data.appId])
-		table.push(['appName', data.appName])
-		table.push(['description', data.description])
-		table.push(['singleInstance', data.singleInstance])
-		if (data.classifications) {
-			table.push(['classifications', data.classifications.join('\n')])
-		}
-		if (data.installMetadata && data.installMetadata.certified) {
-			table.push(['certified', data.installMetadata.certified])
-		}
-		if (data.installMetadata && data.installMetadata.maxInstalls) {
-			table.push(['maxInstalls', data.installMetadata.maxInstalls])
-		}
-		table.push(['appType', data.appType])
-		if (data.webhookSmartApp) {
-			table.push(['signatureType', data.webhookSmartApp.signatureType])
-			table.push(['targetUrl', data.webhookSmartApp.targetUrl])
-			table.push(['targetStatus', data.webhookSmartApp.targetStatus])
-		}
-		if (data.webhookSmartApp && data.webhookSmartApp.publicKey) {
-			table.push(['publicKey', data.webhookSmartApp.publicKey.replace(/\r\n/g, '\n')])
-		}
-		if (data.lambdaSmartApp && data.lambdaSmartApp.functions) {
-			table.push(['lambda functions', data.lambdaSmartApp.functions.join('\n')])
-		}
-		if (data.apiOnly && data.apiOnly.subscription) {
-			table.push(['targetUrl', data.apiOnly.subscription.targetUrl])
-			table.push(['targetStatus', data.apiOnly.subscription.targetStatus])
-		}
-		if (data.installMetadata && data.installMetadata.certified !== undefined) {
-			table.push(['certified', data.installMetadata.certified])
-		}
-
-		return table.toString()
+		return buildTableOutput(this, data)
 	}
 
 	async run(): Promise<void> {
@@ -99,10 +106,10 @@ export default class AppsList extends ListableObjectOutputCommand<App,App> {
 					return this.client.apps.list()
 				}
 
-			 },
+			},
 			(id: string) => {
 				return this.client.apps.get(id)
-			 },
+			},
 		)
 	}
 }

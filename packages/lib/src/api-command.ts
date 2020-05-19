@@ -1,11 +1,9 @@
 import { flags } from '@oclif/command'
 
-import Table from 'cli-table'
 import { SmartThingsClient } from '@smartthings/core-sdk'
 import { BearerTokenAuthenticator } from '@smartthings/core-sdk'
 
 import { SmartThingsCommand } from './smartthings-command'
-import { cliConfig } from './cli-config'
 import { logManager } from './logger'
 import { LoginAuthenticator, defaultClientIdProvider } from './login-authenticator'
 
@@ -16,12 +14,6 @@ import { LoginAuthenticator, defaultClientIdProvider } from './login-authenticat
 export abstract class APICommand extends SmartThingsCommand {
 	static flags = {
 		...SmartThingsCommand.flags,
-		profile: flags.string({
-			char: 'p',
-			description: 'configuration profile',
-			default: 'default',
-			env: 'SMARTTHINGS_PROFILE',
-		}),
 		token: flags.string({
 			char: 't',
 			description: 'the auth token to use',
@@ -29,30 +21,9 @@ export abstract class APICommand extends SmartThingsCommand {
 		}),
 	}
 
-	private _argv?: string[]
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private _flags?: { [name: string]: any }
 	protected token?: string
-	private _profileName?: string
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	protected profileConfig?: { [name: string]: any }
 	protected clientIdProvider = defaultClientIdProvider
 	private _client?: SmartThingsClient
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	protected get flags(): { [name: string]: any } {
-		if (!this._flags) {
-			throw new Error('APICommand not properly initialized')
-		}
-		return this._flags
-	}
-
-	protected get profileName(): string {
-		if (!this._profileName) {
-			throw new Error('APICommand not properly initialized')
-		}
-		return this._profileName
-	}
 
 	protected get client(): SmartThingsClient {
 		if (!this._client) {
@@ -61,34 +32,9 @@ export abstract class APICommand extends SmartThingsCommand {
 		return this._client
 	}
 
-	protected newOutputTable(options?: { [name: string]: any }): Table {
-		const defaultOptions = this.profileConfig ? this.profileConfig.tableOptions || {} : {}
-		if (this.flags.compact) {
-			if (defaultOptions.style) {
-				defaultOptions.style.compact = true
-			} else {
-				defaultOptions.style = {compact: true}
-			}
-		} else if (this.flags.expanded) {
-			if (defaultOptions.style) {
-				defaultOptions.style.compact = false
-			} else {
-				defaultOptions.style = {compact: false}
-			}
-		}
-		if (options) {
-			return new Table({...defaultOptions, ...options})
-		}
-		return new Table(defaultOptions)
-	}
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	protected async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
-		this._argv = argv
-		this._flags = flags
-
-		this._profileName = flags.profile || 'default'
-		this.profileConfig = cliConfig.getProfile(flags.profile)
+		await super.setup(args, argv, flags)
 
 		if (flags.token) {
 			this.token = flags.token
@@ -107,5 +53,24 @@ export abstract class APICommand extends SmartThingsCommand {
 			: new LoginAuthenticator(this.profileName, this.clientIdProvider)
 		this._client = new SmartThingsClient(authenticator,
 			{ urlProvider: this.clientIdProvider, logger })
+	}
+}
+
+export abstract class SimpleAPICommand extends APICommand {
+	/**
+	 * This is just a convenience method that outputs a simple string message
+	 * on success and handles exceptions. This is mostly useful for simple
+	 * things like a DELETE call that don't have any complicated inputs or
+	 * outputs.
+	 *
+	 * @param executeCommand function that does the work
+	 */
+	protected processNormally(successMessage: string, makeRequest: () => Promise<void>): void {
+		makeRequest().then(() => {
+			process.stdout.write(`${successMessage}\n`)
+		}).catch(err => {
+			this.logger.error(`caught error ${err}`)
+			this.exit(1)
+		})
 	}
 }
