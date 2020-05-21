@@ -146,7 +146,7 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 							}
 							return true
 						},
-					}))
+					})).basicCommandValue
 				} else if (type === Type.BOOLEAN) {
 					basicCommandValue = (await inquirer.prompt({
 						type: 'list',
