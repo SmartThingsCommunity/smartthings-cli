@@ -4,6 +4,7 @@ import { InputOutputAPICommand } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../locations'
 
+
 export default class LocationsCreate extends InputOutputAPICommand<LocationCreate, Location> {
 	static description = 'create a Location for a user'
 
