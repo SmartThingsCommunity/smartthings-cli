@@ -24,8 +24,8 @@ export default class AppOauthCommand extends OutputAPICommand<AppOAuth> {
 		required: true,
 	}]
 
-	protected primaryKeyName(): string { return 'appId' }
-	protected sortKeyName(): string { return 'displayName' }
+	protected primaryKeyName = 'appId'
+	protected sortKeyName = 'displayName'
 
 	protected buildTableOutput(appOAuth: AppOAuth): string {
 		const table = buildTableForOutput(this, appOAuth)

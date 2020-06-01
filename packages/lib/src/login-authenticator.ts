@@ -22,15 +22,28 @@ export const defaultClientIdProvider: ClientIdProvider = {
 	...defaultSmartThingsURLProvider,
 	baseOAuthInURL: 'https://oauthin-regional.api.smartthings.com/oauth',
 	oauthAuthTokenRefreshURL: 'https://auth-global.api.smartthings.com/oauth/token',
-	clientId: 'none yet',
+	clientId: 'd18cf96e-c626-4433-bf51-ddbb10c5d1ed',
 }
 
 // All the scopes the clientId we are using is configured to use.
 const scopes = [
 	'r:devices:*',
+	// 'l:devices',
 	'w:devices:*',
+	'x:devices:*',
+
 	'r:locations:*',
 	'w:locations:*',
+	'x:locations:*',
+
+	// 'r:customcapability',
+	// 'w:customcapability',
+
+	'r:deviceprofiles',
+	// 'w:deviceprofiles',
+
+	// 'r:apps:*',
+	// 'w:apps:*',
 ]
 const postConfig = {
 	headers: {
@@ -189,9 +202,10 @@ export class LoginAuthenticator implements Authenticator {
 
 		const startTime = Date.now()
 		const maxDelay = 10 * 60 * 1000 // wait up to ten minutes for login
-		return new Promise((resolve, reject) => {
+		// eslint-disable-next-line no-async-promise-executor
+		return new Promise(async (resolve, reject) => {
 			while (!this.authenticationInfo && Date.now() < startTime + maxDelay) {
-				this.delay(1000)
+				await this.delay(1000)
 			}
 			server.close((err) => {
 				if (err) {

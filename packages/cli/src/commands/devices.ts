@@ -1,7 +1,7 @@
 import { APICommand } from '@smartthings/cli-lib'
 
 
-export default class Devices extends APICommand {
+export default class DevicesCommand extends APICommand {
 	static description = "get device's description"
 
 	static flags = APICommand.flags
@@ -13,7 +13,7 @@ export default class Devices extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(Devices)
+		const { args, argv, flags } = this.parse(DevicesCommand)
 		await super.setup(args, argv, flags)
 
 		this.client.devices.get(args.id).then(async device => {

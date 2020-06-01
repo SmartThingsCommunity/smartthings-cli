@@ -64,7 +64,7 @@ USAGE
 * [`smartthings config [FILE]`](#smartthings-config-file)
 * [`smartthings deviceprofiles [ID]`](#smartthings-deviceprofiles-id)
 * [`smartthings deviceprofiles:create`](#smartthings-deviceprofilescreate)
-* [`smartthings deviceprofiles:delete ID`](#smartthings-deviceprofilesdelete-id)
+* [`smartthings deviceprofiles:delete [ID]`](#smartthings-deviceprofilesdelete-id)
 * [`smartthings deviceprofiles:publish ID`](#smartthings-deviceprofilespublish-id)
 * [`smartthings deviceprofiles:update ID`](#smartthings-deviceprofilesupdate-id)
 * [`smartthings devices ID`](#smartthings-devices-id)
@@ -419,8 +419,14 @@ ARGUMENTS
 
 OPTIONS
   -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/capabilities/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/delete.ts)_
@@ -642,6 +648,9 @@ OPTIONS
   --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
 
+ALIASES
+  $ smartthings device-profiles
+
 EXAMPLES
   $ smartthings deviceprofiles                      # list all device profiles
   $ smartthings deviceprofiles bb0fdc5-...-a8bd2ea  # show device profile with the specified UUID
@@ -681,21 +690,27 @@ EXAMPLES
 
 _See code: [dist/commands/deviceprofiles/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/create.ts)_
 
-## `smartthings deviceprofiles:delete ID`
+## `smartthings deviceprofiles:delete [ID]`
 
 delete a device profile
 
 ```
 USAGE
-  $ smartthings deviceprofiles:delete ID
+  $ smartthings deviceprofiles:delete [ID]
 
 ARGUMENTS
   ID  Device profile UUID or number in the list
 
 OPTIONS
   -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
 
 EXAMPLES
   $ smartthings deviceprofiles:delete 63b8c91e-9686-4c43-9afb-fbd9f77e3bb0  # delete profile with this UUID

@@ -12,8 +12,8 @@ export default class AppDeleteCommand extends SimpleAPICommand {
 		required: true,
 	}]
 
-	protected primaryKeyName(): string { return 'appId' }
-	protected sortKeyName(): string { return 'displayName' }
+	protected primaryKeyName = 'appId'
+	protected sortKeyName = 'displayName'
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppDeleteCommand)

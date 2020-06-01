@@ -11,9 +11,7 @@ export default class CapabilitiesUpdate extends InputOutputAPICommand<Capability
 
 	static args = capabilityIdInputArgs
 
-	protected buildTableOutput(capability: Capability): string {
-		return buildTableOutput(capability)
-	}
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesUpdate)
