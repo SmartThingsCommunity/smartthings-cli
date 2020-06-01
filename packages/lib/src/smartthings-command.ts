@@ -104,7 +104,7 @@ export interface TableGenerator {
 }
 
 /**
- * The base class for all commands.
+ * The base class for all commands in the SmartThings CLI.
  */
 export abstract class SmartThingsCommand extends Command implements TableGenerator {
 	static flags = {
@@ -163,7 +163,6 @@ export abstract class SmartThingsCommand extends Command implements TableGenerat
 
 		this._profileName = flags.profile || 'default'
 		this._profileConfig = cliConfig.getProfile(flags.profile)
-
 	}
 
 	newOutputTable(options?: Partial<TableOptions>): Table {

@@ -15,8 +15,8 @@ export default class DeviceProfileUpdateCommand extends InputOutputAPICommand<De
 		required: true,
 	}]
 
-	protected primaryKeyName(): string { return 'id' }
-	protected sortKeyName(): string { return 'name' }
+	protected primaryKeyName = 'id'
+	protected sortKeyName = 'name'
 
 	protected buildTableOutput(deviceProfile: DeviceProfile): string {
 		return buildTableOutput(this, deviceProfile)

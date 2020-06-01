@@ -1,11 +1,11 @@
 import { App, AppSettings } from '@smartthings/core-sdk'
-import { ListableObjectOutputCommand } from '@smartthings/cli-lib'
+import { ListingOutputAPICommand } from '@smartthings/cli-lib'
 
 
-export default class AppSettingsCommand extends ListableObjectOutputCommand<AppSettings, App> {
+export default class AppSettingsCommand extends ListingOutputAPICommand<AppSettings, App> {
 	static description = 'get OAuth settings of the app'
 
-	static flags = ListableObjectOutputCommand.flags
+	static flags = ListingOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -13,8 +13,8 @@ export default class AppSettingsCommand extends ListableObjectOutputCommand<AppS
 		required: true,
 	}]
 
-	protected primaryKeyName(): string { return 'appId' }
-	protected sortKeyName(): string { return 'displayName' }
+	protected primaryKeyName = 'appId'
+	protected sortKeyName = 'displayName'
 	protected buildObjectTableOutput(data: AppSettings): string {
 		const table = this.newOutputTable({head: ['name','value']})
 		if (data.settings) {

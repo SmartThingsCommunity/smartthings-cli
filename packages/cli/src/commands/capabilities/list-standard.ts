@@ -1,7 +1,8 @@
+import { CapabilitySummary } from '@smartthings/core-sdk'
+
 import { OutputAPICommand } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from './list'
-import { CapabilitySummary } from '@smartthings/core-sdk'
+import { buildListTableOutput } from '../capabilities'
 
 
 export default class CapabilitiesListStandard extends OutputAPICommand<CapabilitySummary[]> {
@@ -9,9 +10,7 @@ export default class CapabilitiesListStandard extends OutputAPICommand<Capabilit
 
 	static flags = OutputAPICommand.flags
 
-	protected buildTableOutput(capabilities: CapabilitySummary[]): string {
-		return buildTableOutput(capabilities)
-	}
+	protected buildTableOutput = buildListTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesListStandard)

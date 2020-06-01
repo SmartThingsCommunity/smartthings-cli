@@ -26,9 +26,7 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 
 	static flags = InputOutputAPICommand.flags
 
-	protected buildTableOutput(capability: Capability): string {
-		return buildTableOutput(capability)
-	}
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesCreate)

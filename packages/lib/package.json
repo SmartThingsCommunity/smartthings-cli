@@ -29,7 +29,7 @@
 	"devDependencies": {
 		"@types/express": "^4.17.6",
 		"@types/qs": "^6.9.1",
-		"typescript": "^3.8.3"
+		"typescript": "^3.9.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext ts src",

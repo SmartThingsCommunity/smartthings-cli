@@ -22,7 +22,7 @@
 		"node": "^12.16.2"
 	},
 	"devDependencies": {
-		"typescript": "^3.8.3"
+		"typescript": "^3.9.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext ts src",

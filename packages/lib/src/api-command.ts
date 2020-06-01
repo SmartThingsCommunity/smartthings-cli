@@ -9,7 +9,8 @@ import { LoginAuthenticator, defaultClientIdProvider } from './login-authenticat
 
 
 /**
- * Base class for Rest API commands.
+ * Base class for commands that need to use Rest API commands via the
+ * SmartThings Core SDK.
  */
 export abstract class APICommand extends SmartThingsCommand {
 	static flags = {
@@ -56,6 +57,10 @@ export abstract class APICommand extends SmartThingsCommand {
 	}
 }
 
+/**
+ * TODO: most or all classes that use this should be updated soon to use
+ * `StringSelectingInputAPICommand` (or in a few cases `SelectingInputAPICommand`).
+ */
 export abstract class SimpleAPICommand extends APICommand {
 	/**
 	 * This is just a convenience method that outputs a simple string message

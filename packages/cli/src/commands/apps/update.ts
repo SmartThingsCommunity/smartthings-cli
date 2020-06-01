@@ -15,8 +15,8 @@ export default class AppUpdateCommand extends InputOutputAPICommand<AppRequest, 
 		required: true,
 	}]
 
-	protected primaryKeyName(): string { return 'appId' }
-	protected sortKeyName(): string { return 'displayName' }
+	protected primaryKeyName = 'appId'
+	protected sortKeyName = 'displayName'
 
 	protected buildTableOutput(app: App): string {
 		return buildTableOutput(this, app)

@@ -62,7 +62,7 @@
 		"@types/cli-table": "^0.3.0",
 		"@types/yeoman-environment": "^2.3.3",
 		"pkg": "^4.4.8",
-		"typescript": "^3.8.3"
+		"typescript": "^3.9.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext ts src",

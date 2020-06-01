@@ -1,6 +1,6 @@
 import { DeviceProfile } from '@smartthings/core-sdk'
 
-import { ListableObjectOutputCommand, TableGenerator } from '@smartthings/cli-lib'
+import { ListingOutputAPICommand, TableGenerator } from '@smartthings/cli-lib'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile): string {
@@ -18,10 +18,10 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePro
 	return table.toString()
 }
 
-export default class DeviceProfilesList extends ListableObjectOutputCommand<DeviceProfile, DeviceProfile> {
+export default class DeviceProfilesList extends ListingOutputAPICommand<DeviceProfile, DeviceProfile> {
 	static description = 'list all device profiles available in a user account or retrieve a single profile'
 
-	static flags = ListableObjectOutputCommand.flags
+	static flags = ListingOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -38,8 +38,10 @@ export default class DeviceProfilesList extends ListableObjectOutputCommand<Devi
 		'$ smartthings deviceprofiles 4 -j -o profile.json # write the profile to the file "profile.json"',
 	]
 
-	protected primaryKeyName(): string { return 'id' }
-	protected sortKeyName(): string { return 'name' }
+	static aliases = ['device-profiles']
+
+	protected primaryKeyName = 'id'
+	protected sortKeyName = 'name'
 	protected tableHeadings(): string[] { return ['name', 'status', 'id'] }
 
 	protected buildObjectTableOutput(deviceProfile: DeviceProfile): string {

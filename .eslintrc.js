@@ -52,6 +52,7 @@ module.exports = {
 		'no-process-exit': 'error',
 		'no-template-curly-in-string': 'error',
 		'require-await': 'off',
+		'no-inner-declarations': 'off',
 		semi: 'off', // disable to allow @typescript-eslint/semi to do its job
 		'@typescript-eslint/semi': ['error', 'never'],
 		'@typescript-eslint/member-delimiter-style': [
@@ -77,6 +78,7 @@ module.exports = {
 			{ functions: false, classes: false, enums: false, variables: true }
 		],
 		'@typescript-eslint/no-var-requires': 'error',
+		'@typescript-eslint/ban-ts-ignore': 0,
 
 		// disallow non-import statements appearing before import statements
 		'import/first': 'error',

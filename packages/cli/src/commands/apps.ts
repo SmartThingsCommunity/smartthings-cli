@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { App } from '@smartthings/core-sdk'
 
-import { ListableObjectOutputCommand, TableGenerator } from '@smartthings/cli-lib'
+import { ListingOutputAPICommand, TableGenerator } from '@smartthings/cli-lib'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, data: App): string {
@@ -44,11 +44,11 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: App): str
 	return table.toString()
 }
 
-export default class AppsList extends ListableObjectOutputCommand<App, App> {
+export default class AppsList extends ListingOutputAPICommand<App, App> {
 	static description = 'get a specific app or a list of apps'
 
 	static flags = {
-		...ListableObjectOutputCommand.flags,
+		...ListingOutputAPICommand.flags,
 		verbose: flags.boolean({
 			description: 'include URLs and ARNs in table output',
 			char: 'v',
@@ -61,8 +61,8 @@ export default class AppsList extends ListableObjectOutputCommand<App, App> {
 		required: false,
 	}]
 
-	protected primaryKeyName(): string { return 'appId' }
-	protected sortKeyName(): string { return 'displayName' }
+	protected primaryKeyName = 'appId'
+	protected sortKeyName = 'displayName'
 	protected tableHeadings(): string[] {
 		if (this.flags.verbose) {
 			return ['displayName', 'appType', 'appId', 'ARN/URL']
@@ -85,7 +85,6 @@ export default class AppsList extends ListableObjectOutputCommand<App, App> {
 				if (flags.verbose) {
 					return this.client.apps.list().then(list => {
 						const objects = list.map(it => {
-							// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 							// @ts-ignore
 							return this.client.apps.get(it.appId) // TODO appId should not be optional
 						})
@@ -93,10 +92,10 @@ export default class AppsList extends ListableObjectOutputCommand<App, App> {
 							for (const item of list) {
 								const uri = item.webhookSmartApp ?
 									item.webhookSmartApp.targetUrl :
-									(item.lambdaSmartApp ? item.lambdaSmartApp.functions[0] :
-										(item.apiOnly && item.apiOnly.subscription ?
-											item.apiOnly.subscription.targetUrl : ''))
+									(item.lambdaSmartApp ? (item.lambdaSmartApp?.functions?.length ? item.lambdaSmartApp?.functions[0] : '') :
+										(item.apiOnly?.subscription?.targetUrl ?? ''))
 
+								// @ts-ignore
 								item['ARN/URL'] = uri.length < 96 ? uri : uri.slice(0,95) + '...'
 							}
 							return list
