@@ -43,7 +43,7 @@ USAGE
 * [`smartthings apps [ID]`](#smartthings-apps-id)
 * [`smartthings apps:create`](#smartthings-appscreate)
 * [`smartthings apps:delete [ID]`](#smartthings-appsdelete-id)
-* [`smartthings apps:oauth ID`](#smartthings-appsoauth-id)
+* [`smartthings apps:oauth [ID]`](#smartthings-appsoauth-id)
 * [`smartthings apps:oauth:generate ID`](#smartthings-appsoauthgenerate-id)
 * [`smartthings apps:oauth:update ID`](#smartthings-appsoauthupdate-id)
 * [`smartthings apps:register ID`](#smartthings-appsregister-id)
@@ -51,16 +51,16 @@ USAGE
 * [`smartthings apps:settings:update ID`](#smartthings-appssettingsupdate-id)
 * [`smartthings apps:update ID`](#smartthings-appsupdate-id)
 * [`smartthings autocomplete [SHELL]`](#smartthings-autocomplete-shell)
-* [`smartthings capabilities ID VERSION`](#smartthings-capabilities-id-version)
+* [`smartthings capabilities [ID] [VERSION]`](#smartthings-capabilities-id-version)
 * [`smartthings capabilities:create`](#smartthings-capabilitiescreate)
-* [`smartthings capabilities:delete ID VERSION`](#smartthings-capabilitiesdelete-id-version)
+* [`smartthings capabilities:delete [ID] [VERSION]`](#smartthings-capabilitiesdelete-id-version)
 * [`smartthings capabilities:list [NAMESPACE]`](#smartthings-capabilitieslist-namespace)
 * [`smartthings capabilities:list-namespaces`](#smartthings-capabilitieslist-namespaces)
 * [`smartthings capabilities:list-standard`](#smartthings-capabilitieslist-standard)
-* [`smartthings capabilities:presentation ID VERSION`](#smartthings-capabilitiespresentation-id-version)
-* [`smartthings capabilities:presentation:create ID VERSION`](#smartthings-capabilitiespresentationcreate-id-version)
-* [`smartthings capabilities:presentation:update ID VERSION`](#smartthings-capabilitiespresentationupdate-id-version)
-* [`smartthings capabilities:update ID VERSION`](#smartthings-capabilitiesupdate-id-version)
+* [`smartthings capabilities:presentation [ID] [VERSION]`](#smartthings-capabilitiespresentation-id-version)
+* [`smartthings capabilities:presentation:create [ID] [VERSION]`](#smartthings-capabilitiespresentationcreate-id-version)
+* [`smartthings capabilities:presentation:update [ID] [VERSION]`](#smartthings-capabilitiespresentationupdate-id-version)
+* [`smartthings capabilities:update [ID] [VERSION]`](#smartthings-capabilitiesupdate-id-version)
 * [`smartthings config [FILE]`](#smartthings-config-file)
 * [`smartthings deviceprofiles [ID]`](#smartthings-deviceprofiles-id)
 * [`smartthings deviceprofiles:create`](#smartthings-deviceprofilescreate)
@@ -161,16 +161,16 @@ OPTIONS
 
 _See code: [dist/commands/apps/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/delete.ts)_
 
-## `smartthings apps:oauth ID`
+## `smartthings apps:oauth [ID]`
 
 get OAuth settings of the app
 
 ```
 USAGE
-  $ smartthings apps:oauth ID
+  $ smartthings apps:oauth [ID]
 
 ARGUMENTS
-  ID  the app id
+  ID  the app id or number in the list
 
 OPTIONS
   -h, --help             show CLI help
@@ -361,28 +361,29 @@ EXAMPLES
 
 _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v0.1.5/src/commands/autocomplete/index.ts)_
 
-## `smartthings capabilities ID VERSION`
+## `smartthings capabilities [ID] [VERSION]`
 
 get a specific capability
 
 ```
 USAGE
-  $ smartthings capabilities ID VERSION
+  $ smartthings capabilities [ID] [VERSION]
 
 ARGUMENTS
-  ID       the capability id
+  ID       the capability id number in list
   VERSION  the capability version
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
+  -h, --help                 show CLI help
+  -j, --json                 use JSON format of input and/or output
+  -n, --namespace=namespace  a specific namespace to query; will use all by default
+  -o, --output=output        specify output file
+  -p, --profile=profile      [default: default] configuration profile
+  -t, --token=token          the auth token to use
+  -y, --yaml                 use YAML format of input and/or output
+  --compact                  use compact table format with no lines between body rows
+  --expanded                 use expanded table format with a line between each body row
+  --indent=indent            specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/capabilities.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities.ts)_
@@ -411,13 +412,13 @@ OPTIONS
 
 _See code: [dist/commands/capabilities/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/create.ts)_
 
-## `smartthings capabilities:delete ID VERSION`
+## `smartthings capabilities:delete [ID] [VERSION]`
 
 delete a capability
 
 ```
 USAGE
-  $ smartthings capabilities:delete ID VERSION
+  $ smartthings capabilities:delete [ID] [VERSION]
 
 ARGUMENTS
   ID       the capability id
@@ -425,8 +426,14 @@ ARGUMENTS
 
 OPTIONS
   -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/capabilities/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/delete.ts)_
@@ -500,39 +507,40 @@ OPTIONS
 
 _See code: [dist/commands/capabilities/list-standard.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/list-standard.ts)_
 
-## `smartthings capabilities:presentation ID VERSION`
+## `smartthings capabilities:presentation [ID] [VERSION]`
 
 get presentation information for a specific capability
 
 ```
 USAGE
-  $ smartthings capabilities:presentation ID VERSION
+  $ smartthings capabilities:presentation [ID] [VERSION]
 
 ARGUMENTS
-  ID       the capability id
+  ID       the capability id or number in list
   VERSION  the capability version
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
+  -h, --help                 show CLI help
+  -j, --json                 use JSON format of input and/or output
+  -n, --namespace=namespace  a specific namespace to query; will use all by default
+  -o, --output=output        specify output file
+  -p, --profile=profile      [default: default] configuration profile
+  -t, --token=token          the auth token to use
+  -y, --yaml                 use YAML format of input and/or output
+  --compact                  use compact table format with no lines between body rows
+  --expanded                 use expanded table format with a line between each body row
+  --indent=indent            specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/capabilities/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/presentation.ts)_
 
-## `smartthings capabilities:presentation:create ID VERSION`
+## `smartthings capabilities:presentation:create [ID] [VERSION]`
 
 create presentation model for a capability
 
 ```
 USAGE
-  $ smartthings capabilities:presentation:create ID VERSION
+  $ smartthings capabilities:presentation:create [ID] [VERSION]
 
 ARGUMENTS
   ID       the capability id
@@ -554,13 +562,13 @@ OPTIONS
 
 _See code: [dist/commands/capabilities/presentation/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/presentation/create.ts)_
 
-## `smartthings capabilities:presentation:update ID VERSION`
+## `smartthings capabilities:presentation:update [ID] [VERSION]`
 
 update presentation model for a capability
 
 ```
 USAGE
-  $ smartthings capabilities:presentation:update ID VERSION
+  $ smartthings capabilities:presentation:update [ID] [VERSION]
 
 ARGUMENTS
   ID       the capability id
@@ -582,22 +590,20 @@ OPTIONS
 
 _See code: [dist/commands/capabilities/presentation/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/presentation/update.ts)_
 
-## `smartthings capabilities:update ID VERSION`
+## `smartthings capabilities:update [ID] [VERSION]`
 
 update a capability
 
 ```
 USAGE
-  $ smartthings capabilities:update ID VERSION
+  $ smartthings capabilities:update [ID] [VERSION]
 
 ARGUMENTS
   ID       the capability id
   VERSION  the capability version
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
-  -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
   -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
@@ -635,7 +641,7 @@ USAGE
   $ smartthings deviceprofiles [ID]
 
 ARGUMENTS
-  ID  Device profile to retrieve. Can be a UUID or the number of the profile in the list
+  ID  device profile to retrieve; UUID or the number of the profile from list
 
 OPTIONS
   -h, --help             show CLI help
@@ -757,7 +763,7 @@ USAGE
   $ smartthings deviceprofiles:update ID
 
 ARGUMENTS
-  ID  Device profile UUID or number in the list
+  ID  device profile UUID or number in the list
 
 OPTIONS
   -d, --dry-run          produce JSON but don't actually submit

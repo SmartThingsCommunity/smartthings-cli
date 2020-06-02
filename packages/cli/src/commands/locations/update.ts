@@ -16,8 +16,8 @@ export default class LocationsUpdateCommand extends InputOutputAPICommand <Locat
 		required: true,
 	}]
 
-	protected primaryKeyName = 'locationId'
-	protected sortKeyName = 'name'
+	primaryKeyName = 'locationId'
+	sortKeyName = 'name'
 
 	protected buildTableOutput = buildTableOutput
 

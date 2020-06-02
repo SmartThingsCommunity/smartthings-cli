@@ -61,8 +61,8 @@ export default class AppsList extends ListingOutputAPICommand<App, App> {
 		required: false,
 	}]
 
-	protected primaryKeyName = 'appId'
-	protected sortKeyName = 'displayName'
+	primaryKeyName = 'appId'
+	sortKeyName = 'displayName'
 	protected tableHeadings(): string[] {
 		if (this.flags.verbose) {
 			return ['displayName', 'appType', 'appId', 'ARN/URL']

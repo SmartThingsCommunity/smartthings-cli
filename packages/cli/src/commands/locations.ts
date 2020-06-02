@@ -19,24 +19,24 @@ export function buildTableOutput(this: APICommand, data: Location): string {
 	return table.toString()
 }
 
-export default class Locations extends ListingOutputAPICommand<Location, LocationItem> {
+export default class LocationsCommand extends ListingOutputAPICommand<Location, LocationItem> {
 	static description = 'get a specific Location'
 
 	static flags = ListingOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
+		// TODO: fix description
 		description: 'the location id',
-		required: false,
 	}]
 
-	protected primaryKeyName = 'locationId'
-	protected sortKeyName = 'name'
+	primaryKeyName = 'locationId'
+	sortKeyName = 'name'
 
 	protected buildObjectTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(Locations)
+		const { args, argv, flags } = this.parse(LocationsCommand)
 		await super.setup(args, argv, flags)
 
 		this.processNormally(

@@ -1,8 +1,11 @@
 import Table from 'cli-table'
+import { flags } from '@oclif/command'
 
-import { OutputAPICommand } from '@smartthings/cli-lib'
 import { CapabilityPresentation } from '@smartthings/core-sdk'
-import { capabilityIdInputArgs } from '../capabilities'
+
+import { ListingOutputAPICommandBase } from '@smartthings/cli-lib'
+
+import { getCustomByNamespace, translateToId, CapabilityId, CapabilitySummaryWithNamespace } from '../capabilities'
 
 
 export function buildTableOutput(presentation: CapabilityPresentation): string {
@@ -82,23 +85,50 @@ export function buildTableOutput(presentation: CapabilityPresentation): string {
 		'(Information is summarized, for full details use YAML or JSON flags.)'
 }
 
-export default class Presentations extends OutputAPICommand<CapabilityPresentation> {
+export default class PresentationsCommand extends ListingOutputAPICommandBase<CapabilityId, CapabilityPresentation, CapabilitySummaryWithNamespace> {
 	static description = 'get presentation information for a specific capability'
 
-	static flags = OutputAPICommand.flags
-
-	static args = capabilityIdInputArgs
-
-	protected buildTableOutput(presentation: CapabilityPresentation): string {
-		return buildTableOutput(presentation)
+	static flags = {
+		...ListingOutputAPICommandBase.flags,
+		namespace: flags.string({
+			char: 'n',
+			description: 'a specific namespace to query; will use all by default',
+		}),
 	}
 
+	static args = [{
+		name: 'id',
+		description: 'the capability id or number in list',
+	},
+	{
+		name: 'version',
+		description: 'the capability version',
+	}]
+
+	primaryKeyName = 'id'
+	sortKeyName = 'id'
+
+	protected tableHeadings(): string[] {
+		return ['id', 'version', 'status']
+	}
+
+	protected buildObjectTableOutput(presentation: CapabilityPresentation): string {
+		return buildTableOutput(presentation)
+	}
+	protected translateToId = translateToId
+
+	private getCustomByNamespace = getCustomByNamespace
+
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(Presentations)
+		const { args, argv, flags } = this.parse(PresentationsCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(() => {
-			return this.client.capabilities.getPresentation(args.id, args.version)
-		})
+		const idOrIndex = args.version
+			? { id: args.id, version: args.version }
+			: args.id
+		this.processNormally(
+			idOrIndex,
+			() => this.getCustomByNamespace(flags.namespace),
+			(id) =>  this.client.capabilities.getPresentation(id.id, id.version))
 	}
 }

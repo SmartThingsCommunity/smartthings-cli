@@ -1,18 +1,30 @@
+import inquirer from 'inquirer'
+import { flags } from '@oclif/command'
+
 import { Capability, CapabilitySummary } from '@smartthings/core-sdk'
 
-import { APICommand, OutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, ListCallback, ListingCommand, ListingOutputAPICommandBase } from '@smartthings/cli-lib'
 
 
 export const capabilityIdInputArgs = [
 	{
 		name: 'id',
 		description: 'the capability id',
-		required: true,
 	},
 	{
 		name: 'version',
 		description: 'the capability version',
-		required: true,
+	},
+]
+
+export const capabilityIdOrIndexInputArgs = [
+	{
+		name: 'id',
+		description: 'the capability id number in list',
+	},
+	{
+		name: 'version',
+		description: 'the capability version',
 	},
 ]
 
@@ -104,21 +116,114 @@ export async function getCustomByNamespace(this: APICommand, namespace?: string)
 	return capabilities
 }
 
-export default class Capabilities extends OutputAPICommand<Capability> {
+export async function getIdFromUser(this: APICommand & { primaryKeyName: string },
+		items: CapabilitySummaryWithNamespace[]): Promise<CapabilityId> {
+	const convertToId = (itemIdOrIndex: string): string | false => {
+		if (itemIdOrIndex.length === 0) {
+			return false
+		}
+		const matchingItem = items.find((item) => {
+			// @ts-ignore
+			return (this.primaryKeyName in item) && itemIdOrIndex === item[this.primaryKeyName]
+		})
+		if (matchingItem) {
+			return itemIdOrIndex
+		}
+
+		const index = Number.parseInt(itemIdOrIndex)
+
+		if (!Number.isNaN(index) && index > 0 && index <= items.length) {
+			// @ts-ignore
+			const id = items[index - 1][this.primaryKeyName]
+			if (typeof id === 'string') {
+				return id
+			} else {
+				throw Error(`invalid type ${typeof id} for primary key`  +
+					` ${this.primaryKeyName} in ${JSON.stringify(items[index - 1])}`)
+			}
+		} else {
+			return false
+		}
+	}
+	const idOrIndex: string = (await inquirer.prompt({
+		type: 'input',
+		name: 'idOrIndex',
+		message: 'Enter id or index',
+		validate: (input) => {
+			return convertToId(input)
+				? true
+				: `Invalid id or index ${idOrIndex}. Please enter an index or valid id.`
+		},
+	})).idOrIndex
+	const inputId = convertToId(idOrIndex)
+	if (inputId === false) {
+		throw Error(`unable to convert ${idOrIndex} to id`)
+	}
+
+	// TODO: check for version
+	// currently the version is always 1. Once it's possible to have
+	// other values we should:
+	// - check here if there are more than one
+	//    - if not, use the one there is
+	//    - if so, ask the user which one
+
+	return { 'id': inputId, 'version': 1 }
+}
+
+export async function translateToId(this: ListingCommand<CapabilitySummaryWithNamespace>,  idOrIndex: string | CapabilityId,
+		listFunction: ListCallback<CapabilitySummaryWithNamespace>): Promise<CapabilityId> {
+	if (typeof idOrIndex !== 'string') {
+		return idOrIndex
+	}
+
+	const index = Number.parseInt(idOrIndex)
+
+	if (isNaN(index)) {
+		// TODO: when versions are supported, look up and use the most recent
+		// version here instead of 1
+		return { id: idOrIndex, version: 1 }
+	}
+
+	const items = this.sort(await listFunction())
+	const matchingItem: CapabilitySummaryWithNamespace = items[index - 1]
+	return { id: matchingItem.id, version: matchingItem.version }
+}
+
+export default class CapabilitiesCommand extends ListingOutputAPICommandBase<CapabilityId, Capability, CapabilitySummaryWithNamespace> {
 	static description = 'get a specific capability'
 
-	static flags = OutputAPICommand.flags
+	static flags = {
+		...ListingOutputAPICommandBase.flags,
+		namespace: flags.string({
+			char: 'n',
+			description: 'a specific namespace to query; will use all by default',
+		}),
+	}
 
-	static args = capabilityIdInputArgs
+	static args = capabilityIdOrIndexInputArgs
 
-	protected buildTableOutput = buildTableOutput
+	primaryKeyName = 'id'
+	sortKeyName = 'id'
+
+	protected tableHeadings(): string[] {
+		return ['id', 'version', 'status']
+	}
+
+	protected buildObjectTableOutput = buildTableOutput
+	protected translateToId = translateToId
+
+	private getCustomByNamespace = getCustomByNamespace
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(Capabilities)
+		const { args, argv, flags } = this.parse(CapabilitiesCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(() => {
-			return this.client.capabilities.get(args.id, args.version)
-		})
+		const idOrIndex = args.version
+			? { id: args.id, version: args.version }
+			: args.id
+		this.processNormally(
+			idOrIndex,
+			() => this.getCustomByNamespace(flags.namespace),
+			(id) =>  this.client.capabilities.get(id.id, id.version))
 	}
 }

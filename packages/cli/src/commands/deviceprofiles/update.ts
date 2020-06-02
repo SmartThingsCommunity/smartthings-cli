@@ -11,12 +11,12 @@ export default class DeviceProfileUpdateCommand extends InputOutputAPICommand<De
 
 	static args = [{
 		name: 'id',
-		description: 'Device profile UUID or number in the list',
+		description: 'device profile UUID or number in the list',
 		required: true,
 	}]
 
-	protected primaryKeyName = 'id'
-	protected sortKeyName = 'name'
+	primaryKeyName = 'id'
+	sortKeyName = 'name'
 
 	protected buildTableOutput(deviceProfile: DeviceProfile): string {
 		return buildTableOutput(this, deviceProfile)

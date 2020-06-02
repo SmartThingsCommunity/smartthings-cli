@@ -15,11 +15,13 @@ export default class AppOauthGenerateCommand extends InputOutputAPICommand<AppOA
 		required: true,
 	}]
 
-	protected primaryKeyName = 'appId'
-	protected sortKeyName = 'displayName'
+	primaryKeyName = 'appId'
+	sortKeyName = 'displayName'
+
+	protected buildTableForOutput = buildTableForOutput
 
 	protected buildTableOutput(appOAuthResponse: AppOAuthResponse): string {
-		const table = buildTableForOutput(this, appOAuthResponse)
+		const table = this.buildTableForOutput(appOAuthResponse)
 		table.push(['Client Id', appOAuthResponse.oauthClientId])
 		table.push(['Client Secret', appOAuthResponse.oauthClientSecret])
 		return table.toString()

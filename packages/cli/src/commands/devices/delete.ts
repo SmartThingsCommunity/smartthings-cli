@@ -1,20 +1,20 @@
 import { Device } from '@smartthings/core-sdk'
 
-import { StringSelectingInputAPICommand } from '@smartthings/cli-lib'
+import { SelectingInputAPICommand } from '@smartthings/cli-lib'
 
 
-export default class DeviceDeleteCommand extends StringSelectingInputAPICommand<Device> {
+export default class DeviceDeleteCommand extends SelectingInputAPICommand<Device> {
 	static description = 'delete a device'
 
-	static flags = StringSelectingInputAPICommand.flags
+	static flags = SelectingInputAPICommand.flags
 
 	static args = [{
 		name: 'id',
 		description: 'device UUID',
 	}]
 
-	protected primaryKeyName = 'deviceId'
-	protected sortKeyName = 'name'
+	primaryKeyName = 'deviceId'
+	sortKeyName = 'name'
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceDeleteCommand)
