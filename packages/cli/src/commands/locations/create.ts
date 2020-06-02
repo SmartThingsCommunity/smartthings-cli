@@ -10,9 +10,7 @@ export default class LocationsCreate extends InputOutputAPICommand<LocationCreat
 
 	static flags = InputOutputAPICommand.flags
 
-	protected buildTableOutput(location: Location): string {
-		return buildTableOutput(location)
-	}
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(LocationsCreate)
