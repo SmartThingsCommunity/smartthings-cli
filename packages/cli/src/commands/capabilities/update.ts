@@ -1,24 +1,34 @@
 import { CapabilityUpdate, Capability } from '@smartthings/core-sdk'
-import { InputOutputAPICommand } from '@smartthings/cli-lib'
+import { SelectingInputOutputAPICommandBase } from '@smartthings/cli-lib'
 
-import { buildTableOutput, capabilityIdInputArgs } from '../capabilities'
+import { buildTableOutput, capabilityIdInputArgs, getCustomByNamespace, getIdFromUser,
+	CapabilityId, CapabilitySummaryWithNamespace } from '../capabilities'
 
 
-export default class CapabilitiesUpdate extends InputOutputAPICommand<CapabilityUpdate, Capability> {
+export default class CapabilitiesUpdate extends SelectingInputOutputAPICommandBase<CapabilityId, CapabilityUpdate, Capability, CapabilitySummaryWithNamespace> {
 	static description = 'update a capability'
 
-	static flags = InputOutputAPICommand.flags
+	static flags = SelectingInputOutputAPICommandBase.flags
 
 	static args = capabilityIdInputArgs
 
-	protected buildTableOutput = buildTableOutput
+	primaryKeyName = 'id'
+	sortKeyName = 'id'
+
+	protected tableHeadings(): string[] {
+		return ['id', 'version']
+	}
+
+	protected buildObjectTableOutput = buildTableOutput
+	private getCustomByNamespace = getCustomByNamespace
+	protected getIdFromUser = getIdFromUser
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesUpdate)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(capability => {
-			return this.client.capabilities.update(args.id, args.version, capability)
-		})
+		this.processNormally(args.id,
+			async () => this.getCustomByNamespace(),
+			async (id, capability) => this.client.capabilities.update(id.id, id.version, capability))
 	}
 }

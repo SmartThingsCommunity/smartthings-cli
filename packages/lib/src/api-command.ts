@@ -59,7 +59,7 @@ export abstract class APICommand extends SmartThingsCommand {
 
 /**
  * TODO: most or all classes that use this should be updated soon to use
- * `StringSelectingInputAPICommand` (or in a few cases `SelectingInputAPICommand`).
+ * `SelectingInputAPICommand` (or in a few cases `SelectingInputAPICommandBase`).
  */
 export abstract class SimpleAPICommand extends APICommand {
 	/**

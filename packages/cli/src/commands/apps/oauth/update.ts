@@ -16,11 +16,13 @@ export default class AppOauthUpdateCommand extends InputOutputAPICommand<AppOAut
 		required: true,
 	}]
 
-	protected primaryKeyName = 'appId'
-	protected sortKeyName = 'displayName'
+	primaryKeyName = 'appId'
+	sortKeyName = 'displayName'
+
+	protected buildTableForOutput = buildTableForOutput
 
 	protected buildTableOutput(appOAuth: AppOAuth): string {
-		const table = buildTableForOutput(this, appOAuth)
+		const table = this.buildTableForOutput(appOAuth)
 		return table.toString()
 	}
 

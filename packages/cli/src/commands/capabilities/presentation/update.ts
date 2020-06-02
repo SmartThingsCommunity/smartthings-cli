@@ -2,7 +2,7 @@ import { InputOutputAPICommand } from '@smartthings/cli-lib'
 import { CapabilityPresentationCreate, CapabilityPresentation } from '@smartthings/core-sdk'
 
 import { buildTableOutput } from '../presentation'
-import CapabilitiesPresentationCreate from './create'
+import { capabilityIdInputArgs } from '../../capabilities'
 
 
 export default class CapabilitiesPresentationUpdate extends InputOutputAPICommand<CapabilityPresentationCreate, CapabilityPresentation> {
@@ -10,7 +10,7 @@ export default class CapabilitiesPresentationUpdate extends InputOutputAPIComman
 
 	static flags = InputOutputAPICommand.flags
 
-	static args = CapabilitiesPresentationCreate.args
+	static args = capabilityIdInputArgs
 
 	protected buildTableOutput(presentation: CapabilityPresentation): string {
 		return buildTableOutput(presentation)

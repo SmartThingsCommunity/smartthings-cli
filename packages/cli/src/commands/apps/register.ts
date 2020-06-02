@@ -12,8 +12,8 @@ export default class AppRegisterCommand extends SimpleAPICommand {
 		required: true,
 	}]
 
-	protected primaryKeyName = 'appId'
-	protected sortKeyName = 'displayName'
+	primaryKeyName = 'appId'
+	sortKeyName = 'displayName'
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppRegisterCommand)

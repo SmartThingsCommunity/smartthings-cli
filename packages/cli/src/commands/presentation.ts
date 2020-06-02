@@ -5,7 +5,7 @@ import { PresentationDevicePresentation } from '@smartthings/core-sdk'
 import { OutputAPICommand } from '@smartthings/cli-lib'
 
 
-export default class Devices extends OutputAPICommand<PresentationDevicePresentation> {
+export default class PresentationCommand extends OutputAPICommand<PresentationDevicePresentation> {
 	static description = 'query device presentation by vid'
 
 	static flags = OutputAPICommand.flags
@@ -100,7 +100,7 @@ export default class Devices extends OutputAPICommand<PresentationDevicePresenta
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(Devices)
+		const { args, argv, flags } = this.parse(PresentationCommand)
 		await super.setup(args, argv, flags)
 
 		this.processNormally(() => {

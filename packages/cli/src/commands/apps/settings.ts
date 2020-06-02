@@ -13,8 +13,8 @@ export default class AppSettingsCommand extends ListingOutputAPICommand<AppSetti
 		required: true,
 	}]
 
-	protected primaryKeyName = 'appId'
-	protected sortKeyName = 'displayName'
+	primaryKeyName = 'appId'
+	sortKeyName = 'displayName'
 	protected buildObjectTableOutput(data: AppSettings): string {
 		const table = this.newOutputTable({head: ['name','value']})
 		if (data.settings) {

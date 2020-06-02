@@ -1,20 +1,20 @@
 import { DeviceProfile } from '@smartthings/core-sdk'
 
-import { StringSelectingInputAPICommand } from '@smartthings/cli-lib'
+import { SelectingInputAPICommand } from '@smartthings/cli-lib'
 
 
-export default class DeviceProfileDeleteCommand extends StringSelectingInputAPICommand<DeviceProfile> {
+export default class DeviceProfileDeleteCommand extends SelectingInputAPICommand<DeviceProfile> {
 	static description = 'delete a device profile'
 
-	static flags = StringSelectingInputAPICommand.flags
+	static flags = SelectingInputAPICommand.flags
 
 	static args = [{
 		name: 'id',
 		description: 'Device profile UUID or number in the list',
 	}]
 
-	protected primaryKeyName = 'id'
-	protected sortKeyName = 'name'
+	primaryKeyName = 'id'
+	sortKeyName = 'name'
 
 	static examples = [
 		'$ smartthings deviceprofiles:delete 63b8c91e-9686-4c43-9afb-fbd9f77e3bb0  # delete profile with this UUID',

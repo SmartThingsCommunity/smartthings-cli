@@ -1,20 +1,20 @@
 import { App } from '@smartthings/core-sdk'
 
-import { StringSelectingInputAPICommand } from '@smartthings/cli-lib'
+import { SelectingInputAPICommand } from '@smartthings/cli-lib'
 
 
-export default class AppDeleteCommand extends StringSelectingInputAPICommand<App> {
+export default class AppDeleteCommand extends SelectingInputAPICommand<App> {
 	static description = 'delete the app'
 
-	static flags = StringSelectingInputAPICommand.flags
+	static flags = SelectingInputAPICommand.flags
 
 	static args = [{
 		name: 'id',
 		description: 'App profile UUID or number in the list',
 	}]
 
-	protected primaryKeyName = 'appId'
-	protected sortKeyName = 'displayName'
+	primaryKeyName = 'appId'
+	sortKeyName = 'displayName'
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppDeleteCommand)

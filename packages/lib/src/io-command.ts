@@ -4,12 +4,16 @@ import path from 'path'
 import yaml from 'js-yaml'
 import { flags } from '@oclif/command'
 
+import { Logger } from '@smartthings/core-sdk'
+
 import { APICommand } from './api-command'
 import { logManager } from './logger'
 
 
 // TODO: TEST TEST TEST
 // TODO: DOCUMENT DOCUMENT DOCUMENT
+
+const validIndex = /^[1-9][0-9]*$/
 
 // Flags common to both input and output.
 const commonIOFlags = {
@@ -67,10 +71,9 @@ export interface OutputOptions {
 	indentLevel: number
 }
 
-// TODO: make generic type names match ones we've used below
-export type ListCallback<T> = () => Promise<T[]>
-export type GetCallback<T> = (id: string) => Promise<T>
-export type UpdateCallback<T, U> = (id: string, data: U) => Promise<T>
+export type ListCallback<L> = () => Promise<L[]>
+export type GetCallback<ID, O> = (id: ID) => Promise<O>
+export type UpdateCallback<ID, I, O> = (id: ID, data: I) => Promise<O>
 export type ActionCallback<ID> = (id: ID) => Promise<void>
 
 function formatFromFilename(filename: string): IOFormat {
@@ -106,10 +109,13 @@ function determineOutputOptions(flags: { [name: string]: any }, inputOptions?: I
 	}
 }
 
-function writeOutput<T>(data: T, outputOptions: OutputOptions, buildTableOutput: (data: T) => string): void {
+function writeOutput<T>(data: T, outputOptions: OutputOptions,
+		buildTableOutput: (data: T) => string, forceTableOutput?: boolean): void {
 	let output: string
 
-	if (outputOptions.format === IOFormat.JSON) {
+	if (forceTableOutput) {
+		output = buildTableOutput(data)
+	} else if (outputOptions.format === IOFormat.JSON) {
 		output = JSON.stringify(data, null, outputOptions.indentLevel)
 	} else if (outputOptions.format === IOFormat.YAML) {
 		output = yaml.safeDump(data, { indent: outputOptions.indentLevel })
@@ -132,7 +138,7 @@ function writeOutput<T>(data: T, outputOptions: OutputOptions, buildTableOutput:
  * data but don't take complex data like GET calls that return a single object.
  */
 export abstract class BaseOutputAPICommand<O> extends APICommand {
-	private _outputOptions?: OutputOptions
+	protected _outputOptions?: OutputOptions
 
 	protected get outputOptions(): OutputOptions {
 		if (!this._outputOptions) {
@@ -183,6 +189,65 @@ export abstract class OutputAPICommand<O> extends BaseOutputAPICommand<O> {
 	static flags = BaseOutputAPICommand.flags
 }
 
+async function readInput<I>(inputOptions: InputOptions, getInputFromUser?: () => Promise<I>): Promise<I> {
+	if (inputOptions.format === IOFormat.COMMON && getInputFromUser) {
+		return getInputFromUser()
+	}
+
+	return new Promise<I>((resolve, reject) => {
+		if (inputOptions.format === IOFormat.COMMON) {
+			reject('invalid state')
+		} else if (inputOptions.filename) {
+			resolve(yaml.safeLoad(fs.readFileSync(`${inputOptions.filename}`, 'utf-8')))
+		} else {
+			const stdin = process.stdin
+			const inputChunks: string[] = []
+			stdin.resume()
+			stdin.on('data', chunk => {
+				inputChunks.push(chunk.toString())
+			})
+			stdin.on('end', () => {
+				try {
+					resolve(JSON.parse(inputChunks.join()))
+				} catch (err) {
+					reject(err)
+				}
+			})
+		}
+	})
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function determineInputOptions(flags: { [name: string]: any },
+		hasGetInputFromUser: boolean,
+		logger: Logger): InputOptions {
+	let inputFormat: IOFormat
+	if (flags.json) {
+		inputFormat = IOFormat.JSON
+	} else if (flags.yaml) {
+		inputFormat = IOFormat.YAML
+	} else if (flags.input) {
+		inputFormat = formatFromFilename(flags.input)
+	} else {
+		inputFormat = hasGetInputFromUser && process.stdin.isTTY ? IOFormat.COMMON : IOFormat.YAML
+	}
+
+	const inputOptions = {
+		filename: flags.input,
+		format: inputFormat,
+	}
+
+	if (inputOptions.format !== IOFormat.COMMON
+			&& !inputOptions.filename
+			&& process.stdin.isTTY) {
+		logger.error('input is required either via' +
+			' file specified with --input option or from stdin')
+		process.exit(1)
+	}
+
+	return inputOptions
+}
+
 /**
  * An API command that has complex input and complex output. This
  * would normally be used for POST and PUT methods.
@@ -204,31 +269,7 @@ export abstract class InputOutputAPICommand<I, O> extends OutputAPICommand<O> {
 	}
 
 	protected async readInput(): Promise<I> {
-		if (this.inputOptions.format === IOFormat.COMMON && this.getInputFromUser) {
-			return this.getInputFromUser()
-		}
-
-		return new Promise<I>((resolve, reject) => {
-			if (this.inputOptions.format === IOFormat.COMMON) {
-				reject('invalid state')
-			} else if (this.inputOptions.filename) {
-				resolve(yaml.safeLoad(fs.readFileSync(`${this.inputOptions.filename}`, 'utf-8')))
-			} else {
-				const stdin = process.stdin
-				const inputChunks: string[] = []
-				stdin.resume()
-				stdin.on('data', chunk => {
-					inputChunks.push(chunk.toString())
-				})
-				stdin.on('end', () => {
-					try {
-						resolve(JSON.parse(inputChunks.join()))
-					} catch (err) {
-						reject(err)
-					}
-				})
-			}
-		})
+		return readInput(this.inputOptions, this.getInputFromUser?.bind(this))
 	}
 
 	/**
@@ -262,29 +303,8 @@ export abstract class InputOutputAPICommand<I, O> extends OutputAPICommand<O> {
 	protected async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
 		await super.setup(args, argv, flags)
 
-		let inputFormat: IOFormat
-		if (this.flags.json) {
-			inputFormat = IOFormat.JSON
-		} else if (this.flags.yaml) {
-			inputFormat = IOFormat.YAML
-		} else if (this.flags.input) {
-			inputFormat = formatFromFilename(this.flags.input)
-		} else {
-			inputFormat = this.getInputFromUser && process.stdin.isTTY ? IOFormat.COMMON : IOFormat.YAML
-		}
-
-		this._inputOptions = {
-			filename: this.flags.input,
-			format: inputFormat,
-		}
-
-		if (this._inputOptions.format !== IOFormat.COMMON
-				&& !this._inputOptions.filename
-				&& process.stdin.isTTY) {
-			this.logger.error('input is required either via' +
-				' file specified with --input option or from stdin')
-			process.exit(1)
-		}
+		this._inputOptions = determineInputOptions(this.flags,
+			this.getInputFromUser !== undefined, this.logger)
 	}
 
 	static flags = {
@@ -302,8 +322,8 @@ export abstract class InputOutputAPICommand<I, O> extends OutputAPICommand<O> {
  * something.
  */
 export abstract class ListingCommand<L> extends BaseOutputAPICommand<L[]> {
-	protected abstract primaryKeyName: string
-	protected abstract sortKeyName: string
+	abstract readonly primaryKeyName: string
+	abstract readonly sortKeyName: string
 
 	// TODO: replace tableHeadings with tableFieldDefinitions
 	// protected abstract tableFieldDefinitions: TableFieldDefinition<T>[]
@@ -325,7 +345,7 @@ export abstract class ListingCommand<L> extends BaseOutputAPICommand<L[]> {
 		return table.toString()
 	}
 
-	protected sort(list: L[]): L[] {
+	sort(list: L[]): L[] {
 		const sortKey = this.tableHeadings()[0]
 		return list.sort((a, b) => {
 			// @ts-ignore
@@ -339,42 +359,54 @@ export abstract class ListingCommand<L> extends BaseOutputAPICommand<L[]> {
 	static flags = OutputAPICommand.flags
 }
 
-// TODO: should I put L before O again? (and use I, L, O for input output)
-export abstract class ListingOutputAPICommand<O, L> extends ListingCommand<L> {
+export abstract class ListingOutputAPICommandBase<ID, O, L> extends ListingCommand<L> {
 	protected abstract buildObjectTableOutput(data: O): string
 
-	protected async processNormally(idOrIndex: string | undefined, listFunction: ListCallback<L>, getFunction: GetCallback<O>): Promise<void> {
+	protected abstract async translateToId(idOrIndex: ID | string,
+		listFunction: ListCallback<L>): Promise<ID>
+
+	protected async processNormally(idOrIndex: ID | string | undefined,
+			listFunction: ListCallback<L>,
+			getFunction: GetCallback<ID, O>): Promise<void> {
 		try {
 			if (idOrIndex) {
-				let id: string
-				if (typeof (idOrIndex) === 'number' || !isNaN(Number(idOrIndex))) {
-					const index = typeof (idOrIndex) === 'string' ? Number.parseInt(idOrIndex) : idOrIndex
-					const items = this.sort(await listFunction())
-					const searchItem: L = items[index - 1]
-					if (!(this.primaryKeyName in searchItem)) {
-						throw Error(`did not find key ${this.primaryKeyName} in data`)
-					}
-					// @ts-ignore
-					const pk = searchItem[this.primaryKeyName]
-					if (typeof pk === 'string') {
-						id = pk
-					} else {
-						throw Error(`invalid type ${typeof pk} for primary key`  +
-							` ${this.primaryKeyName} in ${JSON.stringify(searchItem)}`)
-					}
-				} else {
-					id = idOrIndex
-				}
+				const id: ID = await this.translateToId(idOrIndex, listFunction)
 				const item = await getFunction(id)
 				writeOutput(item, this.outputOptions, this.buildObjectTableOutput.bind(this))
 			} else {
 				const list = this.sort(await listFunction())
-				writeOutput(list, this.outputOptions, this.buildTableOutput.bind(this))
+				this.writeOutput(list)
 			}
 		} catch (err) {
 			this.logger.error(`caught error ${err}`)
 			process.exit(1)
 		}
+	}
+}
+
+export abstract class ListingOutputAPICommand<O, L> extends ListingOutputAPICommandBase<string, O, L> {
+	protected async translateToId(idOrIndex: string,
+			listFunction: ListCallback<L>): Promise<string> {
+		if (!idOrIndex.match(validIndex)) {
+			// idOrIndex isn't a valid index so has to be an id (or bad)
+			return idOrIndex
+		}
+
+		const index = Number.parseInt(idOrIndex)
+
+		const items = this.sort(await listFunction())
+		const matchingItem: L = items[index - 1]
+		if (!(this.primaryKeyName in matchingItem)) {
+			throw Error(`did not find key ${this.primaryKeyName} in data`)
+		}
+		// @ts-ignore
+		const pk = matchingItem[this.primaryKeyName]
+		if (typeof pk === 'string') {
+			return pk
+		}
+
+		throw Error(`invalid type ${typeof pk} for primary key`  +
+			` ${this.primaryKeyName} in ${JSON.stringify(matchingItem)}`)
 	}
 }
 
@@ -389,9 +421,9 @@ export abstract class ListingOutputAPICommand<O, L> extends ListingCommand<L> {
  *   L: the type of each object returned by the list callback
  *
  * NOTE: most APIs use a simple string for the input type and can use
- * StringSelectingInputAPICommand instead.
+ * SelectingInputAPICommand instead.
  */
-export abstract class SelectingInputAPICommand<ID, L> extends ListingCommand<L> {
+export abstract class SelectingInputAPICommandBase<ID, L> extends ListingCommand<L> {
 	protected abstract async getIdFromUser(items: L[]): Promise<ID>
 
 	protected async processNormally(id: ID | undefined,
@@ -404,7 +436,11 @@ export abstract class SelectingInputAPICommand<ID, L> extends ListingCommand<L> 
 				inputId = id
 			} else {
 				const items = this.sort(await listCallback())
-				writeOutput(items, this.outputOptions, this.buildTableOutput.bind(this))
+				if (items.length === 0) {
+					this.log('no items found')
+					process.exit(0)
+				}
+				this.writeOutput(items)
 				inputId = await this.getIdFromUser(items)
 			}
 			await actionCallback(inputId)
@@ -416,54 +452,129 @@ export abstract class SelectingInputAPICommand<ID, L> extends ListingCommand<L> 
 	}
 }
 
-/**
- * A version of SelectingInputAPICommand for APIs that use strings for their id.
- */
-export abstract class StringSelectingInputAPICommand<L> extends SelectingInputAPICommand<string, L> {
-	protected async getIdFromUser(items: L[]): Promise<string> {
-		const convertToId = (itemIdOrIndex: string): string | false => {
-			if (itemIdOrIndex.length === 0) {
-				return false
-			}
-			const matchingItem = items.find((item) => {
-				// @ts-ignore
-				return (this.primaryKeyName in item) && itemIdOrIndex === item[this.primaryKeyName]
-			})
-			if (matchingItem) {
-				return itemIdOrIndex
-			}
+async function stringGetIdFromUser<L>(this: APICommand & { readonly primaryKeyName: string }, items: L[]): Promise<string> {
+	const convertToId = (itemIdOrIndex: string): string | false => {
+		if (itemIdOrIndex.length === 0) {
+			return false
+		}
+		const matchingItem = items.find((item) => {
+			// @ts-ignore
+			return (this.primaryKeyName in item) && itemIdOrIndex === item[this.primaryKeyName]
+		})
+		if (matchingItem) {
+			return itemIdOrIndex
+		}
 
-			const index = Number.parseInt(itemIdOrIndex)
+		if (!itemIdOrIndex.match(validIndex)) {
+			return false
+		}
 
-			if (!Number.isNaN(index) && index > 0 && index <= items.length) {
-				// @ts-ignore
-				const pk = items[index - 1][this.primaryKeyName]
-				if (typeof pk === 'string') {
-					return pk
-				} else {
-					throw Error(`invalid type ${typeof pk} for primary key`  +
-						` ${this.primaryKeyName} in ${JSON.stringify(items[index - 1])}`)
-				}
+		const index = Number.parseInt(itemIdOrIndex)
+
+		if (!Number.isNaN(index) && index > 0 && index <= items.length) {
+			// @ts-ignore
+			const pk = items[index - 1][this.primaryKeyName]
+			if (typeof pk === 'string') {
+				return pk
 			} else {
-				return false
+				throw Error(`invalid type ${typeof pk} for primary key`  +
+					` ${this.primaryKeyName} in ${JSON.stringify(items[index - 1])}`)
 			}
+		} else {
+			return false
 		}
-		const itemIdOrIndex: string = (await inquirer.prompt({
-			type: 'input',
-			name: 'itemIdOrIndex',
-			message: 'Enter id or index',
-			validate: (input) => {
-				return convertToId(input)
-					? true
-					: `Invalid id or index ${itemIdOrIndex}. Please enter an index or valid id.`
-			},
-		})).itemIdOrIndex
-		const inputId = convertToId(itemIdOrIndex)
-		if (inputId === false) {
-			throw Error(`unable to convert ${itemIdOrIndex} to id`)
-		}
-		return inputId
 	}
+	const itemIdOrIndex: string = (await inquirer.prompt({
+		type: 'input',
+		name: 'itemIdOrIndex',
+		message: 'Enter id or index',
+		validate: (input) => {
+			return convertToId(input)
+				? true
+				: `Invalid id or index ${itemIdOrIndex}. Please enter an index or valid id.`
+		},
+	})).itemIdOrIndex
+	const inputId = convertToId(itemIdOrIndex)
+	if (inputId === false) {
+		throw Error(`unable to convert ${itemIdOrIndex} to id`)
+	}
+	return inputId
+}
+
+/**
+ * A version of SelectingInputAPICommandBase for APIs that use strings for
+ * their id, which is nearly all of them.
+ */
+export abstract class SelectingInputAPICommand<L> extends SelectingInputAPICommandBase<string, L> {
+	protected getIdFromUser = stringGetIdFromUser
+}
+
+export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends ListingCommand<L> {
+	private _inputOptions?: InputOptions
+
+	protected get inputOptions(): InputOptions {
+		if (!this._inputOptions) {
+			throw new Error('APICommand not properly initialized')
+		}
+		return this._inputOptions
+	}
+
+	protected getInputFromUser?(): Promise<I>
+
+	protected abstract buildObjectTableOutput(data: O): string
+
+	protected abstract async getIdFromUser(items: L[]): Promise<ID>
+
+	protected async readInput(): Promise<I> {
+		return readInput(this.inputOptions, this.getInputFromUser?.bind(this))
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	protected async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
+		await super.setup(args, argv, flags)
+
+		this._inputOptions = determineInputOptions(this.flags,
+			this.getInputFromUser !== undefined, this.logger)
+		// This already happened in a parent class but we didn't have the input
+		// options yet then.
+		this._outputOptions = determineOutputOptions(this.flags, this.inputOptions)
+	}
+
+	protected async processNormally(id: ID | undefined,
+			listCallback: ListCallback<L>,
+			updateCallback: UpdateCallback<ID, I, O>): Promise<void> {
+		try {
+			let inputId: ID
+			if (id) {
+				inputId = id
+			} else if (this.inputOptions.filename) {
+				const items = this.sort(await listCallback())
+				if (items.length === 0) {
+					this.log('no items found')
+					process.exit(0)
+				}
+				writeOutput(items, this.outputOptions, this.buildTableOutput.bind(this), true)
+				inputId = await this.getIdFromUser(items)
+			} else {
+				throw Error('When input data comes in via stdin, id is required on command line')
+			}
+			const input: I = await this.readInput()
+			const output = await updateCallback(inputId, input)
+			writeOutput(output, this.outputOptions, this.buildObjectTableOutput.bind(this))
+		} catch (err) {
+			this.logger.error(`caught error ${err}`)
+			process.exit(1)
+		}
+	}
+
+	static flags = {
+		...ListingCommand.flags,
+		...inputFlag,
+	}
+}
+
+export abstract class SelectingInputOutputAPICommand<I, O, L> extends SelectingInputOutputAPICommandBase<string, I, O, L> {
+	protected getIdFromUser = stringGetIdFromUser
 }
 
 /* eslint-enable no-process-exit */

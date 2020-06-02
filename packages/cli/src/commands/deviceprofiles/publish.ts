@@ -15,8 +15,8 @@ export default class DeviceProfilePublishCommand extends OutputAPICommand<Device
 		required: true,
 	}]
 
-	protected primaryKeyName = 'id'
-	protected sortKeyName = 'name'
+	primaryKeyName = 'id'
+	sortKeyName = 'name'
 
 	static examples = [
 		'$ smartthings deviceprofiles:publish 63b8c91e-9686-4c43-9afb-fbd9f77e3bb0  # publish the profile with this UUID',

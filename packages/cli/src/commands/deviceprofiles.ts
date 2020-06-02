@@ -25,7 +25,7 @@ export default class DeviceProfilesList extends ListingOutputAPICommand<DevicePr
 
 	static args = [{
 		name: 'id',
-		description: 'Device profile to retrieve. Can be a UUID or the number of the profile in the list',
+		description: 'device profile to retrieve; UUID or the number of the profile from list',
 		required: false,
 	}]
 
@@ -40,8 +40,8 @@ export default class DeviceProfilesList extends ListingOutputAPICommand<DevicePr
 
 	static aliases = ['device-profiles']
 
-	protected primaryKeyName = 'id'
-	protected sortKeyName = 'name'
+	primaryKeyName = 'id'
+	sortKeyName = 'name'
 	protected tableHeadings(): string[] { return ['name', 'status', 'id'] }
 
 	protected buildObjectTableOutput(deviceProfile: DeviceProfile): string {
