@@ -10,10 +10,10 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePro
 		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
 	}
 	table.push(['Id', data.id])
-	table.push(['Device Type', data.metadata ? data.metadata.deviceType : ''])
-	table.push(['OCF Device Type', data.metadata ? data.metadata.ocfDeviceType : ''])
-	table.push(['mnmn', data.metadata ? data.metadata.mnmn : ''])
-	table.push(['vid', data.metadata ? data.metadata.vid : ''])
+	table.push(['Device Type', data.metadata?.deviceType ?? ''])
+	table.push(['OCF Device Type', data.metadata?.ocfDeviceType ?? ''])
+	table.push(['mnmn', data.metadata?.mnmn ?? ''])
+	table.push(['vid', data.metadata?.vid ?? ''])
 	table.push(['Status', data.status])
 	return table.toString()
 }
