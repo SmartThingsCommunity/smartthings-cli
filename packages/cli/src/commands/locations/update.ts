@@ -1,55 +1,30 @@
-import { flags } from '@oclif/command'
+import { buildTableOutput } from '../locations'
 
-import { LocationUpdate } from '@smartthings/core-sdk'
+import { InputOutputAPICommand } from '@smartthings/cli-lib'
 
-import { APICommand } from '@smartthings/cli-lib'
+import { Location, LocationUpdate } from '@smartthings/core-sdk'
 
 
-// TODO: use InputOutputAPICommand
-export default class LocationsUpdate extends APICommand {
+export default class LocationsUpdateCommand extends InputOutputAPICommand <LocationUpdate, Location> {
 	static description = 'update a location'
 
-	static flags = {
-		...APICommand.flags,
-		data: flags.string({
-			char: 'd',
-			description: 'JSON data for location',
-		}),
-	}
+	static flags = InputOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
-		description: 'the location id',
+		description: 'location UUID',
 		required: true,
 	}]
 
-	private updateAndDisplay(locationId: string, location: LocationUpdate): void {
-		try {
-			const updatedLocation = this.client.locations.update(locationId, location)
-			this.log(JSON.stringify(updatedLocation, null, 4))
-		} catch (err) {
-			this.log(`caught error ${err} attempting to create location`)
-		}
-	}
+	protected primaryKeyName = 'locationId'
+	protected sortKeyName = 'name'
+
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(LocationsUpdate)
+		const { args, argv, flags } = this.parse(LocationsUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		if (flags.data) {
-			const location: LocationUpdate = JSON.parse(flags.data)
-			this.updateAndDisplay(args.id, location)
-		} else {
-			const stdin = process.stdin
-			const inputChunks: string[] = []
-			stdin.resume()
-			stdin.on('data', chunk => {
-				inputChunks.push(chunk.toString())
-			})
-			stdin.on('end', () => {
-				const location = JSON.parse(inputChunks.join())
-				this.updateAndDisplay(args.id, location)
-			})
-		}
+		this.processNormally(data => { return this.client.locations.update(args.id, data) })
 	}
 }

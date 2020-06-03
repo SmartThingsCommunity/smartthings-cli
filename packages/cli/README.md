@@ -1056,13 +1056,20 @@ USAGE
   $ smartthings locations:update ID
 
 ARGUMENTS
-  ID  the location id
+  ID  location UUID
 
 OPTIONS
-  -d, --data=data        JSON data for location
+  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/locations/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/update.ts)_
