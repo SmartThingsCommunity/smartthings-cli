@@ -71,6 +71,7 @@ USAGE
 * [`smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID`](#smartthings-devicescapabilities-status-id-componentid-capabilityid)
 * [`smartthings devices:commands ID`](#smartthings-devicescommands-id)
 * [`smartthings devices:components-status ID COMPONENTID`](#smartthings-devicescomponents-status-id-componentid)
+* [`smartthings devices:delete [ID]`](#smartthings-devicesdelete-id)
 * [`smartthings devices:list`](#smartthings-deviceslist)
 * [`smartthings devices:status ID`](#smartthings-devicesstatus-id)
 * [`smartthings generate:java`](#smartthings-generatejava)
@@ -853,6 +854,31 @@ OPTIONS
 ```
 
 _See code: [dist/commands/devices/components-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/components-status.ts)_
+
+## `smartthings devices:delete [ID]`
+
+delete a device
+
+```
+USAGE
+  $ smartthings devices:delete [ID]
+
+ARGUMENTS
+  ID  device UUID
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/devices/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/delete.ts)_
 
 ## `smartthings devices:list`
 
