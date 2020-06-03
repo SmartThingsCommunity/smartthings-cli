@@ -76,10 +76,9 @@ USAGE
 * [`smartthings generate:java`](#smartthings-generatejava)
 * [`smartthings generate:node`](#smartthings-generatenode)
 * [`smartthings help [COMMAND]`](#smartthings-help-command)
-* [`smartthings locations ID`](#smartthings-locations-id)
+* [`smartthings locations [ID]`](#smartthings-locations-id)
 * [`smartthings locations:create`](#smartthings-locationscreate)
 * [`smartthings locations:delete ID`](#smartthings-locationsdelete-id)
-* [`smartthings locations:list`](#smartthings-locationslist)
 * [`smartthings locations:update ID`](#smartthings-locationsupdate-id)
 * [`smartthings presentation VID`](#smartthings-presentation-vid)
 * [`smartthings presentation:device-config VID`](#smartthings-presentationdevice-config-vid)
@@ -419,14 +418,8 @@ ARGUMENTS
 
 OPTIONS
   -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/capabilities/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/delete.ts)_
@@ -948,21 +941,27 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
 
-## `smartthings locations ID`
+## `smartthings locations [ID]`
 
 get a specific Location
 
 ```
 USAGE
-  $ smartthings locations ID
+  $ smartthings locations [ID]
 
 ARGUMENTS
   ID  the location id
 
 OPTIONS
   -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/locations.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations.ts)_
@@ -1009,28 +1008,6 @@ OPTIONS
 ```
 
 _See code: [dist/commands/locations/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/delete.ts)_
-
-## `smartthings locations:list`
-
-list all Locations currently available in a user account
-
-```
-USAGE
-  $ smartthings locations:list
-
-OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-```
-
-_See code: [dist/commands/locations/list.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/list.ts)_
 
 ## `smartthings locations:update ID`
 
