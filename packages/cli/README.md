@@ -42,7 +42,7 @@ USAGE
 <!-- commands -->
 * [`smartthings apps [ID]`](#smartthings-apps-id)
 * [`smartthings apps:create`](#smartthings-appscreate)
-* [`smartthings apps:delete ID`](#smartthings-appsdelete-id)
+* [`smartthings apps:delete [ID]`](#smartthings-appsdelete-id)
 * [`smartthings apps:oauth ID`](#smartthings-appsoauth-id)
 * [`smartthings apps:oauth:generate ID`](#smartthings-appsoauthgenerate-id)
 * [`smartthings apps:oauth:update ID`](#smartthings-appsoauthupdate-id)
@@ -78,7 +78,7 @@ USAGE
 * [`smartthings help [COMMAND]`](#smartthings-help-command)
 * [`smartthings locations [ID]`](#smartthings-locations-id)
 * [`smartthings locations:create`](#smartthings-locationscreate)
-* [`smartthings locations:delete ID`](#smartthings-locationsdelete-id)
+* [`smartthings locations:delete [ID]`](#smartthings-locationsdelete-id)
 * [`smartthings locations:update ID`](#smartthings-locationsupdate-id)
 * [`smartthings presentation VID`](#smartthings-presentation-vid)
 * [`smartthings presentation:device-config VID`](#smartthings-presentationdevice-config-vid)
@@ -135,21 +135,27 @@ OPTIONS
 
 _See code: [dist/commands/apps/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/create.ts)_
 
-## `smartthings apps:delete ID`
+## `smartthings apps:delete [ID]`
 
 delete the app
 
 ```
 USAGE
-  $ smartthings apps:delete ID
+  $ smartthings apps:delete [ID]
 
 ARGUMENTS
-  ID  the app id
+  ID  App profile UUID or number in the list
 
 OPTIONS
   -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/apps/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/delete.ts)_
@@ -990,21 +996,27 @@ OPTIONS
 
 _See code: [dist/commands/locations/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/create.ts)_
 
-## `smartthings locations:delete ID`
+## `smartthings locations:delete [ID]`
 
 delete a location
 
 ```
 USAGE
-  $ smartthings locations:delete ID
+  $ smartthings locations:delete [ID]
 
 ARGUMENTS
-  ID  the location id
+  ID  location UUID or number in the list
 
 OPTIONS
   -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/locations/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/delete.ts)_
