@@ -370,7 +370,7 @@ USAGE
   $ smartthings capabilities [ID] [VERSION]
 
 ARGUMENTS
-  ID       the capability id number in list
+  ID       the capability id or number in list
   VERSION  the capability version
 
 OPTIONS
@@ -547,7 +547,6 @@ ARGUMENTS
   VERSION  the capability version
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -604,6 +603,7 @@ ARGUMENTS
 
 OPTIONS
   -h, --help             show CLI help
+  -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
   -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile

@@ -546,8 +546,9 @@ export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends Li
 		try {
 			let inputId: ID
 			if (id) {
+				this.log(`using id from command line = ${id}`)
 				inputId = id
-			} else if (this.inputOptions.filename) {
+			} else if (this.inputOptions.filename || process.stdin.isTTY) {
 				const items = this.sort(await listCallback())
 				if (items.length === 0) {
 					this.log('no items found')

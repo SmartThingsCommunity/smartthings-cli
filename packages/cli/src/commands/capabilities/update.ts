@@ -27,7 +27,10 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommandBa
 		const { args, argv, flags } = this.parse(CapabilitiesUpdate)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		const idOrIndex = args.version
+			? { id: args.id, version: args.version }
+			: args.id
+		this.processNormally(idOrIndex,
 			async () => this.getCustomByNamespace(),
 			async (id, capability) => this.client.capabilities.update(id.id, id.version, capability))
 	}

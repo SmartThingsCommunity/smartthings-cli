@@ -1,16 +1,27 @@
-import { InputOutputAPICommand } from '@smartthings/cli-lib'
+import { SelectingInputOutputAPICommandBase } from '@smartthings/cli-lib'
 import { CapabilityPresentationCreate, CapabilityPresentation } from '@smartthings/core-sdk'
 
 import { buildTableOutput } from '../presentation'
-import { capabilityIdInputArgs } from '../../capabilities'
+import { capabilityIdInputArgs, getCustomByNamespace, getIdFromUser,
+	CapabilityId, CapabilitySummaryWithNamespace } from '../../capabilities'
 
 
-export default class CapabilitiesPresentationCreate extends InputOutputAPICommand<CapabilityPresentationCreate, CapabilityPresentation> {
+export default class CapabilitiesPresentationCreate extends SelectingInputOutputAPICommandBase<CapabilityId, CapabilityPresentationCreate, CapabilityPresentation, CapabilitySummaryWithNamespace> {
 	static description = 'create presentation model for a capability'
 
-	static flags = InputOutputAPICommand.flags
+	static flags = SelectingInputOutputAPICommandBase.flags
 
 	static args = capabilityIdInputArgs
+
+	primaryKeyName = 'id'
+	sortKeyName = 'id'
+
+	protected tableHeadings(): string[] {
+		return ['id', 'version']
+	}
+
+	private getCustomByNamespace = getCustomByNamespace
+	protected getIdFromUser = getIdFromUser
 
 	protected getInputFromUser(): Promise<CapabilityPresentationCreate> {
 		return Promise.reject('Q & A not yet implemented')
@@ -27,7 +38,7 @@ export default class CapabilitiesPresentationCreate extends InputOutputAPIComman
 		// this.log(`presentation = ${JSON.stringify(saved)}`)
 	}
 
-	protected buildTableOutput(presentation: CapabilityPresentation): string {
+	protected buildObjectTableOutput(presentation: CapabilityPresentation): string {
 		return buildTableOutput(presentation)
 	}
 
@@ -35,8 +46,11 @@ export default class CapabilitiesPresentationCreate extends InputOutputAPIComman
 		const { args, argv, flags } = this.parse(CapabilitiesPresentationCreate)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(presentation => {
-			return this.client.capabilities.createPresentation(args.id, args.version, presentation)
-		})
+		const idOrIndex = args.version
+			? { id: args.id, version: args.version }
+			: args.id
+		this.processNormally(idOrIndex,
+			async () => this.getCustomByNamespace(),
+			async (id, presentation) => this.client.capabilities.createPresentation(id.id, id.version, presentation))
 	}
 }

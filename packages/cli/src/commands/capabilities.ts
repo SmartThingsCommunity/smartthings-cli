@@ -20,7 +20,7 @@ export const capabilityIdInputArgs = [
 export const capabilityIdOrIndexInputArgs = [
 	{
 		name: 'id',
-		description: 'the capability id number in list',
+		description: 'the capability id or number in list',
 	},
 	{
 		name: 'version',
