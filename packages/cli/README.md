@@ -67,12 +67,11 @@ USAGE
 * [`smartthings deviceprofiles:delete [ID]`](#smartthings-deviceprofilesdelete-id)
 * [`smartthings deviceprofiles:publish ID`](#smartthings-deviceprofilespublish-id)
 * [`smartthings deviceprofiles:update ID`](#smartthings-deviceprofilesupdate-id)
-* [`smartthings devices ID`](#smartthings-devices-id)
+* [`smartthings devices [ID]`](#smartthings-devices-id)
 * [`smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID`](#smartthings-devicescapabilities-status-id-componentid-capabilityid)
 * [`smartthings devices:commands ID`](#smartthings-devicescommands-id)
 * [`smartthings devices:components-status ID COMPONENTID`](#smartthings-devicescomponents-status-id-componentid)
 * [`smartthings devices:delete [ID]`](#smartthings-devicesdelete-id)
-* [`smartthings devices:list`](#smartthings-deviceslist)
 * [`smartthings devices:status ID`](#smartthings-devicesstatus-id)
 * [`smartthings generate:java`](#smartthings-generatejava)
 * [`smartthings generate:node`](#smartthings-generatenode)
@@ -781,21 +780,44 @@ OPTIONS
 
 _See code: [dist/commands/deviceprofiles/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/update.ts)_
 
-## `smartthings devices ID`
+## `smartthings devices [ID]`
 
-get device's description
+list all devices available in a user account or retrieve a single device
 
 ```
 USAGE
-  $ smartthings devices ID
+  $ smartthings devices [ID]
 
 ARGUMENTS
-  ID  the device id
+  ID  device to retrieve; UUID or the number of the device from list
 
 OPTIONS
-  -h, --help             show CLI help
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
+  -C, --capabilities-mode=and|or  Treat capability filter query params as a logical "or" or "and" with a default of
+                                  "and".
+
+  -c, --capability=capability     filter results by capability
+
+  -d, --device-id=device-id       filter results by device
+
+  -h, --help                      show CLI help
+
+  -j, --json                      use JSON format of input and/or output
+
+  -l, --location-id=location-id   filter results by location
+
+  -o, --output=output             specify output file
+
+  -p, --profile=profile           [default: default] configuration profile
+
+  -t, --token=token               the auth token to use
+
+  -y, --yaml                      use YAML format of input and/or output
+
+  --compact                       use compact table format with no lines between body rows
+
+  --expanded                      use expanded table format with a line between each body row
+
+  --indent=indent                 specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/devices.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices.ts)_
@@ -885,33 +907,6 @@ OPTIONS
 ```
 
 _See code: [dist/commands/devices/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/delete.ts)_
-
-## `smartthings devices:list`
-
-get a list of devices
-
-```
-USAGE
-  $ smartthings devices:list
-
-OPTIONS
-  -C, --capabilities-mode=and|or  Treat capability filter query params as a logical "or" or "and" with a default of
-                                  "and".
-
-  -c, --capability=capability     filter results by capability
-
-  -d, --device-id=device-id       filter results by device
-
-  -h, --help                      show CLI help
-
-  -l, --location-id=location-id   filter results by location
-
-  -p, --profile=profile           [default: default] configuration profile
-
-  -t, --token=token               the auth token to use
-```
-
-_See code: [dist/commands/devices/list.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/list.ts)_
 
 ## `smartthings devices:status ID`
 
