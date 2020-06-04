@@ -41,6 +41,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`smartthings apps [ID]`](#smartthings-apps-id)
+* [`smartthings apps:authorize ARN`](#smartthings-appsauthorize-arn)
 * [`smartthings apps:create`](#smartthings-appscreate)
 * [`smartthings apps:delete [ID]`](#smartthings-appsdelete-id)
 * [`smartthings apps:oauth [ID]`](#smartthings-appsoauth-id)
@@ -112,6 +113,36 @@ OPTIONS
 
 _See code: [dist/commands/apps.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps.ts)_
 
+## `smartthings apps:authorize ARN`
+
+authorize calls to your AWS Lambda function from SmartThings
+
+```
+USAGE
+  $ smartthings apps:authorize ARN
+
+ARGUMENTS
+  ARN  the ARN of the AWS Lambda function
+
+OPTIONS
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+
+EXAMPLES
+  $ smartthings apps:authorize arn:aws:lambda:us-east-1:1234567890:function:your-test-app
+
+  Note that this command is the same as running the following with the AWS CLI:
+
+  $ aws lambda add-permission --region us-east-1 \
+       --function-name arn:aws:lambda:us-east-1:1234567890:function:your-test-app \
+       --statement-id smartthings --principal 906037444270 --action lambda:InvokeFunction
+
+  It requires your machine to be configured to run the AWS CLI
+```
+
+_See code: [dist/commands/apps/authorize.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/authorize.ts)_
+
 ## `smartthings apps:create`
 
 update the OAuth settings of the app
@@ -129,6 +160,7 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --authorize            authorize Lambda functions to be called by SmartThings
   --compact              use compact table format with no lines between body rows
   --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
@@ -331,6 +363,7 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   -y, --yaml             use YAML format of input and/or output
+  --authorize            authorize Lambda functions to be called by SmartThings
   --compact              use compact table format with no lines between body rows
   --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
@@ -604,6 +637,7 @@ ARGUMENTS
 
 OPTIONS
   -h, --help             show CLI help
+  -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
   -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
