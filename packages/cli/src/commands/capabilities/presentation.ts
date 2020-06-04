@@ -5,7 +5,8 @@ import { CapabilityPresentation } from '@smartthings/core-sdk'
 
 import { ListingOutputAPICommandBase } from '@smartthings/cli-lib'
 
-import { getCustomByNamespace, translateToId, CapabilityId, CapabilitySummaryWithNamespace } from '../capabilities'
+import { capabilityIdOrIndexInputArgs, getCustomByNamespace, translateToId,
+	CapabilityId, CapabilitySummaryWithNamespace } from '../capabilities'
 
 
 export function buildTableOutput(presentation: CapabilityPresentation): string {
@@ -96,14 +97,7 @@ export default class PresentationsCommand extends ListingOutputAPICommandBase<Ca
 		}),
 	}
 
-	static args = [{
-		name: 'id',
-		description: 'the capability id or number in list',
-	},
-	{
-		name: 'version',
-		description: 'the capability version',
-	}]
+	static args = capabilityIdOrIndexInputArgs
 
 	primaryKeyName = 'id'
 	sortKeyName = 'id'
