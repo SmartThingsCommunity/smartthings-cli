@@ -121,6 +121,7 @@ Commands are organized in a hierarchy that maps the API hierarchy.
 * [`smartthings generate:java`](#smartthings-generatejava)
 * [`smartthings generate:node`](#smartthings-generatenode)
 * [`smartthings help [COMMAND]`](#smartthings-help-command)
+* [`smartthings installedapps [ID]`](#smartthings-installedapps-id)
 * [`smartthings locations [ID]`](#smartthings-locations-id)
 * [`smartthings locations:create`](#smartthings-locationscreate)
 * [`smartthings locations:delete [ID]`](#smartthings-locationsdelete-id)
@@ -888,6 +889,8 @@ OPTIONS
 
   -t, --token=token               the auth token to use
 
+  -v, --verbose                   include location name in output
+
   -y, --yaml                      use YAML format of input and/or output
 
   --compact                       use compact table format with no lines between body rows
@@ -1050,6 +1053,32 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
+
+## `smartthings installedapps [ID]`
+
+get a specific app or a list of apps
+
+```
+USAGE
+  $ smartthings installedapps [ID]
+
+ARGUMENTS
+  ID  the app id
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -v, --verbose          include location name in table output
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/installedapps.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/installedapps.ts)_
 
 ## `smartthings locations [ID]`
 
