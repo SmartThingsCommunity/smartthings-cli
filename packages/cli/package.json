@@ -54,7 +54,6 @@
 		"@oclif/plugin-help": "^2.2.3",
 		"@oclif/plugin-not-found": "^1.2.3",
 		"@smartthings/cli-lib": "^0.0.0",
-		"@types/lodash": "^4.14.155",
 		"aws-sdk": "^2.690.0",
 		"generator-smartthings": "^1.5.0",
 		"lodash": "^4.17.15",
@@ -65,6 +64,7 @@
 	"devDependencies": {
 		"@smartthings/cli-testlib": "^0.0.0",
 		"@types/cli-table": "^0.3.0",
+		"@types/lodash": "^4.14.155",
 		"@types/yeoman-environment": "^2.3.3",
 		"pkg": "^4.4.8",
 		"typescript": "^3.9.3"

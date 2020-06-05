@@ -56,7 +56,7 @@ export default class DevicesCommand extends ListingOutputAPICommand<Device, Devi
 			multiple: true,
 		}),
 		verbose: flags.boolean({
-			description: 'include location name in table output',
+			description: 'include location name in output',
 			char: 'v',
 		}),
 	}
