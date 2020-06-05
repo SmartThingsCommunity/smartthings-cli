@@ -28,9 +28,9 @@ export default class InstalledAppsList extends ListingOutputAPICommand<Installed
 	sortKeyName = 'displayName'
 	protected tableHeadings(): string[] {
 		if (this.flags.verbose) {
-			return ['displayName', 'installedAppType', 'installedAppId', 'location']
+			return ['displayName', 'installedAppType', 'location', 'installedAppId']
 		} else {
-			return ['displayName', 'installedAppType'] //, 'installedAppId']
+			return ['displayName', 'installedAppType', 'installedAppId']
 		}
 	}
 

@@ -49,9 +49,6 @@ export async function addLocationsAndRooms(client: SmartThingsClient, list: Loca
 		return map
 	}, new IdNameMap())
 
-	// eslint-disable-next-line no-console
-	console.log(`LOCATIONS = ${JSON.stringify(locationMap)}`)
-
 	// Note -- this ignore is here because the source types such as InstalledApp are currently defined with
 	// optional locationIds even though the location ID is actually always set. The ignore can be removed
 	// once that issue is corrected.
@@ -74,9 +71,6 @@ export async function addLocationsAndRooms(client: SmartThingsClient, list: Loca
 		}, new IdNameMap())
 		return map
 	}, new NestedIdNameMap())
-
-	// eslint-disable-next-line no-console
-	console.log(`LOCATIONS & ROOMS = ${JSON.stringify(locationRoomMap)}`)
 
 	for (const item of list) {
 		if (item.locationId) {
