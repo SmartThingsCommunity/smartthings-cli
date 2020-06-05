@@ -54,8 +54,10 @@
 		"@oclif/plugin-help": "^2.2.3",
 		"@oclif/plugin-not-found": "^1.2.3",
 		"@smartthings/cli-lib": "^0.0.0",
+		"@types/lodash": "^4.14.155",
 		"aws-sdk": "^2.690.0",
 		"generator-smartthings": "^1.5.0",
+		"lodash": "^4.17.15",
 		"node": "^12.16.2",
 		"open": "^7.0.3",
 		"yeoman-environment": "^2.9.1"

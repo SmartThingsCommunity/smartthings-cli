@@ -2,8 +2,12 @@ import { APICommand, ListingOutputAPICommand } from '@smartthings/cli-lib'
 
 import { Device, DeviceListOptions } from '@smartthings/core-sdk'
 
+import { addLocationsAndRooms } from '../lib/api-helpers'
+
 import { flags } from '@oclif/command'
 
+
+export type DeviceWithLocation = DeviceListOptions & { location?: string }
 
 export function buildTableOutput(this: APICommand, data: Device): string {
 	const table = this.newOutputTable()
@@ -25,7 +29,7 @@ export function buildTableOutput(this: APICommand, data: Device): string {
 	return table.toString()
 }
 
-export default class DevicesCommand extends ListingOutputAPICommand<Device, DeviceListOptions> {
+export default class DevicesCommand extends ListingOutputAPICommand<Device, DeviceWithLocation> {
 	static description = 'list all devices available in a user account or retrieve a single device'
 
 	static flags = {
@@ -51,6 +55,10 @@ export default class DevicesCommand extends ListingOutputAPICommand<Device, Devi
 			description: 'filter results by device',
 			multiple: true,
 		}),
+		verbose: flags.boolean({
+			description: 'include location name in table output',
+			char: 'v',
+		}),
 	}
 
 	static args = [{
@@ -60,7 +68,14 @@ export default class DevicesCommand extends ListingOutputAPICommand<Device, Devi
 	}]
 
 	primaryKeyName = 'deviceId'
-	sortKeyName = 'name'
+	sortKeyName = 'label'
+	protected tableHeadings(): string[] {
+		if (this.flags.verbose) {
+			return ['label', 'name', 'type', 'location', 'room', 'deviceId']
+		} else {
+			return ['label', 'name', 'type', 'deviceId']
+		}
+	}
 
 	protected buildObjectTableOutput = buildTableOutput
 
@@ -77,7 +92,13 @@ export default class DevicesCommand extends ListingOutputAPICommand<Device, Devi
 
 		this.processNormally(
 			args.id,
-			() => { return this.client.devices.list(deviceListOptions) },
+			async () => {
+				const devices = await this.client.devices.list(deviceListOptions)
+				if (flags.verbose) {
+					await addLocationsAndRooms(this.client, devices)
+				}
+				return devices
+			},
 			(id) => {return this.client.devices.get(id) },
 		)
 	}
