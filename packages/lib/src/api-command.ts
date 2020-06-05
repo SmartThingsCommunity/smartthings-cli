@@ -33,6 +33,93 @@ export abstract class APICommand extends SmartThingsCommand {
 		return this._client
 	}
 
+	protected async addLocations<T>(list: T[]): Promise<T[]> {
+		const locations = await this.client.locations.list()
+
+		const names = locations.reduce((map, obj) => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			map[obj.locationId] = obj.name
+			return map
+		}, {})
+
+		for (const item of list) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			item.location = names[item.locationId]
+		}
+
+		return list
+	}
+
+	async addLocationsAndRooms<T>(list: T[]): Promise<T[]> {
+		const locationMap = (await this.client.locations.list()).reduce((map, obj) => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			map[obj.locationId] = obj.name
+			return map
+		}, {})
+
+		// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+		// @ts-ignore
+		const locationIds: string[] = _.uniq(list.map(it => it.locationId))
+		const roomsList = await Promise.all(locationIds.map((it) => {
+			return this.client.rooms.list(it)
+		}))
+
+		const locationRoomMap = await locationIds.reduce((map, locationId, index) => {
+			const rooms = roomsList[index]
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			map[locationId] = rooms.reduce((map2, room) => {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+				// @ts-ignore
+				map2[room.roomId] = room.name
+				return map2
+			}, {})
+			return map
+		}, {})
+
+		for (const item of list) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			item.location = locationMap[item.locationId]
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			item.room = locationRoomMap[item.locationId][item.roomId] || ''
+		}
+		return list
+	}
+
+	async addRooms<T>(list: T[]): Promise<T[]> {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+		// @ts-ignore
+		const locationIds: string[] = _.uniq(list.map(it => it.locationId))
+		const roomsList = await Promise.all(locationIds.map((it) => {
+			return this.client.rooms.list(it)
+		}))
+
+		const locationRoomMap = await locationIds.reduce((map, locationId, index) => {
+			const rooms = roomsList[index]
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			map[locationId] = rooms.reduce((map2, room) => {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+				// @ts-ignore
+				map2[room.roomId] = room.name;
+				return map2
+			}, {})
+			return map
+		}, {})
+
+		for (const item of list) {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
+			item.room = locationRoomMap[item.locationId][item.roomId] || ''
+		}
+		return list
+	}
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	protected async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
 		await super.setup(args, argv, flags)
