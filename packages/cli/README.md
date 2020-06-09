@@ -640,7 +640,7 @@ _See code: [dist/commands/capabilities/presentation/create.ts](https://github.co
 
 ## `smartthings capabilities:presentation:update [ID] [VERSION]`
 
-update presentation model for a capability
+update presentation information of a capability
 
 ```
 USAGE
@@ -651,7 +651,6 @@ ARGUMENTS
   VERSION  the capability version
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
