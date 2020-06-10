@@ -13,7 +13,7 @@ export default class InstalledAppsList extends ListingOutputAPICommand<Installed
 	static flags = {
 		...ListingOutputAPICommand.flags,
 		verbose: flags.boolean({
-			description: 'include location name in table output',
+			description: 'include location name in output',
 			char: 'v',
 		}),
 	}
@@ -28,14 +28,14 @@ export default class InstalledAppsList extends ListingOutputAPICommand<Installed
 	sortKeyName = 'displayName'
 	protected tableHeadings(): string[] {
 		if (this.flags.verbose) {
-			return ['displayName', 'installedAppType', 'location', 'installedAppId']
+			return ['displayName', 'installedAppType', 'installedAppStatus', 'location', 'installedAppId']
 		} else {
-			return ['displayName', 'installedAppType', 'installedAppId']
+			return ['displayName', 'installedAppType', 'installedAppStatus', 'installedAppId']
 		}
 	}
 
 	protected buildObjectTableOutput(data: InstalledApp): string {
-		const table = this.newOutputTable({head: ['property','value']})
+		const table = this.newOutputTable()
 		table.push(['name', data.displayName])
 		table.push(['installedAppId', data.installedAppId])
 		table.push(['installedAppType', data.installedAppType])
