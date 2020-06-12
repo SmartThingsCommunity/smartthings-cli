@@ -6,7 +6,7 @@ import { buildListTableOutput } from '../capabilities'
 
 
 export default class CapabilitiesListStandard extends OutputAPICommand<CapabilitySummary[]> {
-	static description = 'list all capabilities currently available in a user account'
+	static description = 'list all standard capabilities'
 
 	static flags = OutputAPICommand.flags
 

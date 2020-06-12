@@ -99,7 +99,6 @@ Commands are organized in a hierarchy that maps the API hierarchy.
 * [`smartthings capabilities [ID] [VERSION]`](#smartthings-capabilities-id-version)
 * [`smartthings capabilities:create`](#smartthings-capabilitiescreate)
 * [`smartthings capabilities:delete [ID] [VERSION]`](#smartthings-capabilitiesdelete-id-version)
-* [`smartthings capabilities:list [NAMESPACE]`](#smartthings-capabilitieslist-namespace)
 * [`smartthings capabilities:list-namespaces`](#smartthings-capabilitieslist-namespaces)
 * [`smartthings capabilities:list-standard`](#smartthings-capabilitieslist-standard)
 * [`smartthings capabilities:presentation [ID] [VERSION]`](#smartthings-capabilitiespresentation-id-version)
@@ -515,34 +514,9 @@ OPTIONS
 
 _See code: [dist/commands/capabilities/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/delete.ts)_
 
-## `smartthings capabilities:list [NAMESPACE]`
-
-list all capabilities currently available in a user account
-
-```
-USAGE
-  $ smartthings capabilities:list [NAMESPACE]
-
-ARGUMENTS
-  NAMESPACE  the namespace that custom capabilities are assigned to
-
-OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-```
-
-_See code: [dist/commands/capabilities/list.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/list.ts)_
-
 ## `smartthings capabilities:list-namespaces`
 
-list all capabilities currently available in a user account
+list all capability namespaces currently available in a user account
 
 ```
 USAGE
@@ -564,7 +538,7 @@ _See code: [dist/commands/capabilities/list-namespaces.ts](https://github.com/Sm
 
 ## `smartthings capabilities:list-standard`
 
-list all capabilities currently available in a user account
+list all standard capabilities
 
 ```
 USAGE
