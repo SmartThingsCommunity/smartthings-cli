@@ -17,57 +17,31 @@ export default class SchemaList extends ListingOutputAPICommand<SchemaApp, Schem
 	static args = [{
 		name: 'id',
 		description: 'the schema connector id',
-		required: false,
 	}]
+
+	protected tableFieldDefinitions = [
+		'appName', 'partnerName', 'endpointAppId', 'schemaType', 'hostingType',
+		'stClientId', 'oAuthAuthorizationUrl', 'oAuthTokenUrl', 'oAuthClientId',
+		'oAuthClientSecret', 'icon', 'icon2x', 'icon3x',
+		{ prop: 'lambdaArn', skipEmpty: true },
+		{ prop: 'lambdaArnAP', skipEmpty: true },
+		{ prop: 'lambdaArnCN', skipEmpty: true },
+		{ prop: 'lambdaArnEU', skipEmpty: true },
+		{ prop: 'webhookUrl', skipEmpty: true },
+	]
 
 	primaryKeyName = 'endpointAppId'
 	sortKeyName = 'appName'
 
-	protected tableHeadings(): string[] {
-		if (this.flags.verbose) {
-			return ['appName', 'endpointAppId', 'hostingType', 'ARN/URL']
-		} else {
-			return ['appName', 'endpointAppId', 'hostingType']
-		}
-	}
-
-	protected buildObjectTableOutput(data: SchemaApp): string {
-		const table = this.newOutputTable()
-		table.push(['name', data.appName])
-		table.push(['partnerName', data.partnerName])
-		table.push(['endpointAppId', data.endpointAppId])
-		table.push(['schemaType', data.schemaType])
-		table.push(['hostingType', data.hostingType])
-		// @ts-ignore
-		table.push(['stClientId', data.stClientId])
-		table.push(['oAuthAuthorizationUrl', data.oAuthAuthorizationUrl])
-		table.push(['oAuthTokenUrl', data.oAuthTokenUrl])
-		table.push(['oAuthClientId', data.oAuthClientId])
-		table.push(['oAuthClientSecret', data.oAuthClientSecret])
-		table.push(['icon', data.icon])
-		table.push(['icon2x', data.icon2x])
-		table.push(['icon3x', data.icon3x])
-		if (data.lambdaArn) {
-			table.push(['lambdaArn', data.lambdaArn])
-		}
-		if (data.lambdaArnAP) {
-			table.push(['lambdaArnAP', data.lambdaArnAP])
-		}
-		if (data.lambdaArnCN) {
-			table.push(['lambdaArnCN', data.lambdaArnCN])
-		}
-		if (data.lambdaArnEU) {
-			table.push(['lambdaArnEU', data.lambdaArnEU])
-		}
-		if (data.webhookUrl) {
-			table.push(['webhookUrl', data.webhookUrl])
-		}
-		return table.toString()
-	}
+	protected listTableFieldDefinitions = ['appName', 'endpointAppId', 'hostingType']
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(SchemaList)
 		await super.setup(args, argv, flags)
+
+		if (flags.verbose) {
+			this.listTableFieldDefinitions.push('ARN/URL')
+		}
 
 		this.processNormally(
 			args.id,

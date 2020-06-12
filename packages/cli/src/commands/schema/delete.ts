@@ -1,12 +1,12 @@
 import { SchemaApp } from '@smartthings/core-sdk'
 
-import { SelectingInputAPICommand } from '@smartthings/cli-lib'
+import { SelectingAPICommand } from '@smartthings/cli-lib'
 
 
-export default class SchemaAppDeleteCommand extends SelectingInputAPICommand<SchemaApp> {
+export default class SchemaAppDeleteCommand extends SelectingAPICommand<SchemaApp> {
 	static description = 'delete the ST Schema connector'
 
-	static flags = SelectingInputAPICommand.flags
+	static flags = SelectingAPICommand.flags
 
 	static args = [{
 		name: 'id',

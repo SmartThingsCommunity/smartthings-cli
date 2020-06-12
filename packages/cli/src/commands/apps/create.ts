@@ -1,7 +1,10 @@
-import { AppRequest, AppCreationResponse} from '@smartthings/core-sdk'
-import { InputOutputAPICommand } from '@smartthings/cli-lib'
 import { flags } from '@oclif/command'
-import { buildTableOutput } from '../apps'
+
+import { AppRequest, AppCreationResponse} from '@smartthings/core-sdk'
+
+import { InputOutputAPICommand } from '@smartthings/cli-lib'
+
+import { tableFieldDefinitions } from '../apps'
 import { addPermission } from '../../lib/aws-utils'
 
 
@@ -15,7 +18,7 @@ export default class AppCreateCommand extends InputOutputAPICommand<AppRequest, 
 		})}
 
 	protected buildTableOutput(data: AppCreationResponse): string {
-		return buildTableOutput(this, data.app)
+		return this.tableGenerator.buildTableFromItem(data.app, tableFieldDefinitions)
 	}
 
 	async run(): Promise<void> {

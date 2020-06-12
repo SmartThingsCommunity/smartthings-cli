@@ -1,7 +1,7 @@
 import { AppOAuth, AppOAuthResponse } from '@smartthings/core-sdk'
 
 import { InputOutputAPICommand } from '@smartthings/cli-lib'
-import { buildTableForOutput } from '../oauth'
+import { tableFieldDefinitions } from '../oauth'
 
 
 export default class AppOauthGenerateCommand extends InputOutputAPICommand<AppOAuth, AppOAuthResponse> {
@@ -18,14 +18,7 @@ export default class AppOauthGenerateCommand extends InputOutputAPICommand<AppOA
 	primaryKeyName = 'appId'
 	sortKeyName = 'displayName'
 
-	protected buildTableForOutput = buildTableForOutput
-
-	protected buildTableOutput(appOAuthResponse: AppOAuthResponse): string {
-		const table = this.buildTableForOutput(appOAuthResponse)
-		table.push(['Client Id', appOAuthResponse.oauthClientId])
-		table.push(['Client Secret', appOAuthResponse.oauthClientSecret])
-		return table.toString()
-	}
+	protected tableFieldDefinitions = tableFieldDefinitions.concat('oauthClientId', 'oauthClientSecret')
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppOauthGenerateCommand)

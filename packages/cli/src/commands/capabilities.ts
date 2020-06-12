@@ -3,7 +3,7 @@ import { flags } from '@oclif/command'
 
 import { Capability, CapabilitySummary } from '@smartthings/core-sdk'
 
-import { APICommand, ListCallback, ListingCommand, ListingOutputAPICommandBase } from '@smartthings/cli-lib'
+import { APICommand, ListCallback, Listing, ListingOutputAPICommandBase } from '@smartthings/cli-lib'
 
 
 export const capabilityIdInputArgs = [
@@ -38,7 +38,7 @@ export function buildTableOutput(this: APICommand, capability: Capability): stri
 		const headers = type === SubItemTypes.ATTRIBUTES
 			? ['Name', 'Type', 'Setter']
 			: ['Name', '# of Arguments']
-		const table = this.newOutputTable({
+		const table = this.tableGenerator.newOutputTable({
 			head: headers,
 			colWidths: headers.map(() => {
 				return 30
@@ -79,14 +79,7 @@ export interface CapabilityId {
 export type CapabilitySummaryWithNamespace = CapabilitySummary & { namespace: string }
 
 export function buildListTableOutput(this: APICommand, capabilities: CapabilitySummaryWithNamespace[]): string {
-	const table = this.newOutputTable({
-		head: ['Capability', 'Version', 'Status'],
-		colWidths: [80, 10, 10],
-	})
-	for (const capability of capabilities) {
-		table.push([capability.id, capability.version, capability.status || ''])
-	}
-	return table.toString()
+	return this.tableGenerator.buildTableFromList(capabilities, ['id', 'version', 'status'])
 }
 
 /**
@@ -170,7 +163,7 @@ export async function getIdFromUser(this: APICommand & { primaryKeyName: string 
 	return { 'id': inputId, 'version': 1 }
 }
 
-export async function translateToId(this: ListingCommand<CapabilitySummaryWithNamespace>,  idOrIndex: string | CapabilityId,
+export async function translateToId(this: Listing<CapabilitySummaryWithNamespace>,  idOrIndex: string | CapabilityId,
 		listFunction: ListCallback<CapabilitySummaryWithNamespace>): Promise<CapabilityId> {
 	if (typeof idOrIndex !== 'string') {
 		return idOrIndex
@@ -205,11 +198,10 @@ export default class CapabilitiesCommand extends ListingOutputAPICommandBase<Cap
 	primaryKeyName = 'id'
 	sortKeyName = 'id'
 
-	protected tableHeadings(): string[] {
-		return ['id', 'version', 'status']
-	}
+	protected tableFieldDefinitions = ['id', 'version', 'status']
+	protected listTableFieldDefinitions = this.tableFieldDefinitions
 
-	protected buildObjectTableOutput = buildTableOutput
+	protected buildTableOutput = buildTableOutput
 	protected translateToId = translateToId
 
 	private getCustomByNamespace = getCustomByNamespace

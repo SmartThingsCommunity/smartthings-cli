@@ -16,11 +16,9 @@ export default class CapabilitiesPresentationUpdate extends SelectingInputOutput
 	primaryKeyName = 'id'
 	sortKeyName = 'id'
 
-	protected tableHeadings(): string[] {
-		return ['id', 'version', 'status']
-	}
+	protected listTableFieldDefinitions = ['id', 'version', 'status']
 
-	protected buildObjectTableOutput = buildTableOutput
+	protected buildTableOutput = buildTableOutput
 	private getCustomByNamespace = getCustomByNamespace
 	protected getIdFromUser = getIdFromUser
 

@@ -1,13 +1,15 @@
-import { InstalledApp } from '@smartthings/core-sdk'
-import { ListingOutputAPICommand } from '@smartthings/cli-lib'
 import { flags } from '@oclif/command'
+
+import { InstalledApp } from '@smartthings/core-sdk'
+
+import { ListingOutputAPICommand, TableFieldDefinition } from '@smartthings/cli-lib'
 
 import { addLocations } from '../lib/api-helpers'
 
 
 export type InstalledAppWithLocation = InstalledApp & { location?: string }
 
-export default class InstalledAppsList extends ListingOutputAPICommand<InstalledApp, InstalledAppWithLocation> {
+export default class InstalledAppsCommand extends ListingOutputAPICommand<InstalledApp, InstalledAppWithLocation> {
 	static description = 'get a specific app or a list of apps'
 
 	static flags = {
@@ -21,38 +23,30 @@ export default class InstalledAppsList extends ListingOutputAPICommand<Installed
 	static args = [{
 		name: 'id',
 		description: 'the app id',
-		required: false,
 	}]
 
 	primaryKeyName = 'installedAppId'
 	sortKeyName = 'displayName'
-	protected tableHeadings(): string[] {
-		if (this.flags.verbose) {
-			return ['displayName', 'installedAppType', 'installedAppStatus', 'location', 'installedAppId']
-		} else {
-			return ['displayName', 'installedAppType', 'installedAppStatus', 'installedAppId']
-		}
-	}
+	protected listTableFieldDefinitions = ['displayName', 'installedAppType',
+		'installedAppStatus', 'installedAppId']
 
-	protected buildObjectTableOutput(data: InstalledApp): string {
-		const table = this.newOutputTable()
-		table.push(['name', data.displayName])
-		table.push(['installedAppId', data.installedAppId])
-		table.push(['installedAppType', data.installedAppType])
-		table.push(['installedAppStatus', data.installedAppStatus])
-		table.push(['singleInstance', data.singleInstance])
-		table.push(['appId', data.appId])
-		table.push(['locationId', data.locationId])
-		if (data.classifications) {
-			table.push(['classifications', data.classifications.join('\n')])
-		}
-
-		return table.toString()
-	}
+	protected tableFieldDefinitions: TableFieldDefinition<InstalledApp>[] = [
+		'displayName', 'installedAppId', 'installedAppType', 'installedAppStatus',
+		'singleInstance', 'appId', 'locationId', 'singleInstance',
+		{
+			label: 'Classifications',
+			value: (installedApp) => installedApp.classifications?.join('\n') ?? '',
+			include: (installedApp) => !!installedApp.classifications,
+		},
+	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(InstalledAppsList)
+		const { args, argv, flags } = this.parse(InstalledAppsCommand)
 		await super.setup(args, argv, flags)
+
+		if (this.flags.verbose) {
+			this.listTableFieldDefinitions.splice(3, 0, 'location')
+		}
 
 		this.processNormally(
 			args.id,

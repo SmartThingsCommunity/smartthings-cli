@@ -10,9 +10,7 @@ export default class DeviceConfigCreate extends InputOutputAPICommand<Presentati
 
 	static flags = InputOutputAPICommand.flags
 
-	protected buildTableOutput(deviceConfig: PresentationDeviceConfig): string {
-		return buildTableOutput(deviceConfig)
-	}
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceConfigCreate)

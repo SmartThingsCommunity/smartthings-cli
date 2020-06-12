@@ -15,11 +15,9 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommandBa
 	primaryKeyName = 'id'
 	sortKeyName = 'id'
 
-	protected tableHeadings(): string[] {
-		return ['id', 'version']
-	}
+	protected listTableFieldDefinitions = ['id', 'version']
 
-	protected buildObjectTableOutput = buildTableOutput
+	protected buildTableOutput = buildTableOutput
 	private getCustomByNamespace = getCustomByNamespace
 	protected getIdFromUser = getIdFromUser
 

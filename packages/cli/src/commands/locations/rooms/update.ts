@@ -1,7 +1,7 @@
 import { flags } from '@oclif/command'
 import { Room, RoomRequest } from '@smartthings/core-sdk'
 
-import { buildTableOutput, getRoomsByLocation } from '../rooms'
+import { getRoomsByLocation, tableFieldDefinitions } from '../rooms'
 import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
 
 
@@ -26,9 +26,10 @@ export default class RoomsUpdateCommand extends SelectingInputOutputAPICommand <
 	primaryKeyName = 'roomId'
 	sortKeyName = 'name'
 
-	protected buildObjectTableOutput = buildTableOutput
+	protected tableFieldDefinitions = tableFieldDefinitions
+	protected listTableFieldDefinitions = tableFieldDefinitions
+
 	protected getRoomsByLocation = getRoomsByLocation
-	protected tableHeadings(): string[] { return ['name', 'roomId', 'locationId'] }
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(RoomsUpdateCommand)

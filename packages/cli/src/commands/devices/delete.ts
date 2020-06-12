@@ -1,12 +1,12 @@
 import { Device } from '@smartthings/core-sdk'
 
-import { SelectingInputAPICommand } from '@smartthings/cli-lib'
+import { SelectingAPICommand } from '@smartthings/cli-lib'
 
 
-export default class DeviceDeleteCommand extends SelectingInputAPICommand<Device> {
+export default class DeviceDeleteCommand extends SelectingAPICommand<Device> {
 	static description = 'delete a device'
 
-	static flags = SelectingInputAPICommand.flags
+	static flags = SelectingAPICommand.flags
 
 	static args = [{
 		name: 'id',

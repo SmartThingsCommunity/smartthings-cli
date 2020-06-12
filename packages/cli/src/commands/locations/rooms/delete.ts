@@ -2,14 +2,14 @@ import { flags } from '@oclif/command'
 import { Room } from '@smartthings/core-sdk'
 
 import { getRoomsByLocation } from '../rooms'
-import { SelectingInputAPICommand } from '@smartthings/cli-lib'
+import { SelectingAPICommand } from '@smartthings/cli-lib'
 
 
-export default class RoomsDeleteCommand extends SelectingInputAPICommand<Room> {
+export default class RoomsDeleteCommand extends SelectingAPICommand<Room> {
 	static description = 'delete a room'
 
 	static flags = {
-		...SelectingInputAPICommand.flags,
+		...SelectingAPICommand.flags,
 		locationId: flags.string({
 			char: 'l',
 			description: 'a specific location to query',

@@ -2,7 +2,7 @@ import { LocationCreate, Location } from '@smartthings/core-sdk'
 
 import { InputOutputAPICommand } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../locations'
+import { tableFieldDefinitions } from '../locations'
 
 
 export default class LocationsCreate extends InputOutputAPICommand<LocationCreate, Location> {
@@ -10,7 +10,7 @@ export default class LocationsCreate extends InputOutputAPICommand<LocationCreat
 
 	static flags = InputOutputAPICommand.flags
 
-	protected buildTableOutput = buildTableOutput
+	protected tableFieldDefinitions = tableFieldDefinitions
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(LocationsCreate)

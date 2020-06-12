@@ -4,13 +4,7 @@ import { LocationItem, Room } from '@smartthings/core-sdk'
 import { APICommand, ListingOutputAPICommand } from '@smartthings/cli-lib'
 
 
-export function buildTableOutput(this: APICommand, data: Room): string {
-	const table = this.newOutputTable()
-	table.push(['Location Id', data.locationId ?? ''])
-	table.push(['Room Id', data.roomId ?? ''])
-	table.push(['Room Name', data.name ?? ''])
-	return table.toString()
-}
+export const tableFieldDefinitions = ['name', 'locationId', 'roomId']
 
 export async function getRoomsByLocation(this: APICommand, locationId?: string): Promise<RoomWithLocation[]> {
 	let locations: LocationItem[] = []
@@ -34,7 +28,9 @@ export async function getRoomsByLocation(this: APICommand, locationId?: string):
 	return rooms
 }
 
-export type RoomWithLocation = Room & { locationName?: string }
+export type RoomWithLocation = Room & {
+	locationName?: string
+}
 
 export default class RoomsCommand extends ListingOutputAPICommand<Room, RoomWithLocation> {
 	static description = 'get a specific room'
@@ -57,9 +53,10 @@ export default class RoomsCommand extends ListingOutputAPICommand<Room, RoomWith
 	primaryKeyName = 'roomId'
 	sortKeyName = 'name'
 
-	protected buildObjectTableOutput = buildTableOutput
 	protected getRoomsByLocation = getRoomsByLocation
-	protected tableHeadings(): string[] { return ['name', 'roomId', 'locationId'] }
+
+	protected listTableFieldDefinitions = tableFieldDefinitions
+	protected tableFieldDefinitions = tableFieldDefinitions
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(RoomsCommand)

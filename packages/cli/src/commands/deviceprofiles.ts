@@ -1,10 +1,10 @@
 import { DeviceProfile } from '@smartthings/core-sdk'
 
-import { ListingOutputAPICommand, TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, ListingOutputAPICommand } from '@smartthings/cli-lib'
 
 
-export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile): string {
-	const table = tableGenerator.newOutputTable()
+export function buildTableOutput(this: APICommand, data: DeviceProfile): string {
+	const table = this.tableGenerator.newOutputTable()
 	table.push(['Name', data.name])
 	for (const comp of data.components) {
 		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
@@ -26,7 +26,6 @@ export default class DeviceProfilesList extends ListingOutputAPICommand<DevicePr
 	static args = [{
 		name: 'id',
 		description: 'device profile to retrieve; UUID or the number of the profile from list',
-		required: false,
 	}]
 
 	static examples = [
@@ -42,11 +41,10 @@ export default class DeviceProfilesList extends ListingOutputAPICommand<DevicePr
 
 	primaryKeyName = 'id'
 	sortKeyName = 'name'
-	protected tableHeadings(): string[] { return ['name', 'status', 'id'] }
 
-	protected buildObjectTableOutput(deviceProfile: DeviceProfile): string {
-		return buildTableOutput(this, deviceProfile)
-	}
+	protected listTableFieldDefinitions = ['name', 'status', 'id']
+
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfilesList)

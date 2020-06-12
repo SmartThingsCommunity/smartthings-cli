@@ -2,47 +2,38 @@ import { flags } from '@oclif/command'
 
 import { App } from '@smartthings/core-sdk'
 
-import { ListingOutputAPICommand, TableGenerator } from '@smartthings/cli-lib'
+import { ListingOutputAPICommand, TableFieldDefinition } from '@smartthings/cli-lib'
 
 
-export function buildTableOutput(tableGenerator: TableGenerator, data: App): string {
-	const table = tableGenerator.newOutputTable({head: ['property','value']})
-	table.push(['Name', data.displayName])
-	table.push(['App Id', data.appId])
-	table.push(['App Name', data.appName])
-	table.push(['Description', data.description])
-	table.push(['Single Instance', data.singleInstance])
-	if (data.classifications) {
-		table.push(['Classifications', data.classifications.join('\n')])
-	}
-	if (data.installMetadata && data.installMetadata.certified) {
-		table.push(['Certified', data.installMetadata.certified])
-	}
-	if (data.installMetadata && data.installMetadata.maxInstalls) {
-		table.push(['Nax Installs', data.installMetadata.maxInstalls])
-	}
-	table.push(['App Type', data.appType])
-	if (data.webhookSmartApp) {
-		table.push(['Signature Type', data.webhookSmartApp.signatureType])
-		table.push(['Target URL', data.webhookSmartApp.targetUrl])
-		table.push(['Target Status', data.webhookSmartApp.targetStatus])
-	}
-	if (data.webhookSmartApp && data.webhookSmartApp.publicKey) {
-		table.push(['Public Key', data.webhookSmartApp.publicKey.replace(/\r\n/g, '\n')])
-	}
-	if (data.lambdaSmartApp && data.lambdaSmartApp.functions) {
-		table.push(['Lambda Functions', data.lambdaSmartApp.functions.join('\n')])
-	}
-	if (data.apiOnly && data.apiOnly.subscription) {
-		table.push(['Target URL', data.apiOnly.subscription.targetUrl])
-		table.push(['Target Status', data.apiOnly.subscription.targetStatus])
-	}
-	if (data.installMetadata && data.installMetadata.certified !== undefined) {
-		table.push(['Certified', data.installMetadata.certified])
-	}
-
-	return table.toString()
-}
+const isWebhookSmartApp = (app: App): boolean => !!app.webhookSmartApp
+const hasSubscription = (app: App): boolean => !!app.apiOnly?.subscription
+export const tableFieldDefinitions: TableFieldDefinition<App>[] = [
+	'displayName',
+	'appId',
+	'appName',
+	'description',
+	'singleInstance',
+	{ prop: 'classifications', include: app => !!app.classifications },
+	{ prop: 'installMetadata.certified', include: app => !!app.installMetadata?.certified },
+	{ prop: 'installMetadata.maxInstalls', include: app => !!app.installMetadata?.maxInstalls },
+	'appType',
+	{ prop: 'webhookSmartApp.signatureType', include: isWebhookSmartApp },
+	{ prop: 'webhookSmartApp.targetUrl', include: isWebhookSmartApp },
+	{ prop: 'webhookSmartApp.targetStatus', include: isWebhookSmartApp },
+	{
+		prop: 'webhookSmartApp.publicKey',
+		include: app => !!app.webhookSmartApp?.publicKey,
+		value: app => app.webhookSmartApp?.publicKey?.replace(/\r\n/g, '\n') ?? '',
+	},
+	{
+		include: app => !!app.lambdaSmartApp?.functions,
+		label: 'Lambda Function',
+		value: app => app.lambdaSmartApp?.functions?.join('\n') ?? '',
+	},
+	{ prop: 'apiOnly.subscription.targetUrl', include: hasSubscription },
+	{ prop: 'apiOnly.subscription.targetStatus', include: hasSubscription },
+	{ prop: 'installMetadata.certified', include: app => app.installMetadata?.certified !== undefined },
+]
 
 export default class AppsList extends ListingOutputAPICommand<App, App> {
 	static description = 'get a specific app or a list of apps'
@@ -58,26 +49,21 @@ export default class AppsList extends ListingOutputAPICommand<App, App> {
 	static args = [{
 		name: 'id',
 		description: 'the app id or number from list',
-		required: false,
 	}]
 
 	primaryKeyName = 'appId'
 	sortKeyName = 'displayName'
-	protected tableHeadings(): string[] {
-		if (this.flags.verbose) {
-			return ['displayName', 'appType', 'appId', 'ARN/URL']
-		} else {
-			return ['displayName', 'appType', 'appId']
-		}
-	}
 
-	protected buildObjectTableOutput(data: App): string {
-		return buildTableOutput(this, data)
-	}
+	protected tableFieldDefinitions = tableFieldDefinitions
+	protected listTableFieldDefinitions = ['displayName', 'appType', 'appId']
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppsList)
 		await super.setup(args, argv, flags)
+
+		if (flags.verbose) {
+			this.tableFieldDefinitions.push('ARN/URL')
+		}
 
 		this.processNormally(
 			args.id,

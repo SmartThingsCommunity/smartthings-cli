@@ -1,8 +1,11 @@
-import { App, AppRequest} from '@smartthings/core-sdk'
 import { flags } from '@oclif/command'
+
+import { App, AppRequest} from '@smartthings/core-sdk'
+
 import { InputOutputAPICommand } from '@smartthings/cli-lib'
-import { buildTableOutput } from '../apps'
-import {addPermission} from '../../lib/aws-utils'
+
+import { tableFieldDefinitions } from '../apps'
+import { addPermission } from '../../lib/aws-utils'
 
 
 export default class AppUpdateCommand extends InputOutputAPICommand<AppRequest, App> {
@@ -23,9 +26,7 @@ export default class AppUpdateCommand extends InputOutputAPICommand<AppRequest, 
 	primaryKeyName = 'appId'
 	sortKeyName = 'displayName'
 
-	protected buildTableOutput(app: App): string {
-		return buildTableOutput(this, app)
-	}
+	protected tableFieldDefinitions = tableFieldDefinitions
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppUpdateCommand)
