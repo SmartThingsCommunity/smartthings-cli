@@ -1,7 +1,7 @@
 import { flags } from '@oclif/command'
 import { Room, RoomRequest } from '@smartthings/core-sdk'
 
-import { buildTableOutput } from '../rooms'
+import { tableFieldDefinitions } from '../rooms'
 import { InputOutputAPICommand } from '@smartthings/cli-lib'
 
 
@@ -18,7 +18,7 @@ export default class RoomsCreate extends InputOutputAPICommand<RoomRequest, Room
 
 	static aliases = ['rooms:create']
 
-	protected buildTableOutput = buildTableOutput
+	protected tableFieldDefinitions = tableFieldDefinitions
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(RoomsCreate)

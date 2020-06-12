@@ -10,7 +10,7 @@ import { flags } from '@oclif/command'
 export type DeviceWithLocation = DeviceListOptions & { location?: string }
 
 export function buildTableOutput(this: APICommand, data: Device): string {
-	const table = this.newOutputTable()
+	const table = this.tableGenerator.newOutputTable()
 	table.push(['Name', data.name])
 	table.push(['Id', data.deviceId])
 	table.push(['Label', data.label])
@@ -64,24 +64,21 @@ export default class DevicesCommand extends ListingOutputAPICommand<Device, Devi
 	static args = [{
 		name: 'id',
 		description: 'device to retrieve; UUID or the number of the device from list',
-		required: false,
 	}]
 
 	primaryKeyName = 'deviceId'
 	sortKeyName = 'label'
-	protected tableHeadings(): string[] {
-		if (this.flags.verbose) {
-			return ['label', 'name', 'type', 'location', 'room', 'deviceId']
-		} else {
-			return ['label', 'name', 'type', 'deviceId']
-		}
-	}
+	protected listTableFieldDefinitions = ['label', 'name', 'type', 'deviceId']
 
-	protected buildObjectTableOutput = buildTableOutput
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DevicesCommand)
 		await super.setup(args, argv, flags)
+
+		if (this.flags.verbose) {
+			this.listTableFieldDefinitions.splice(3, 0, 'location', 'room')
+		}
 
 		const deviceListOptions: DeviceListOptions = {
 			capability: flags.capability,

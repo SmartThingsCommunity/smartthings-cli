@@ -1,46 +1,33 @@
-import Table from 'cli-table'
 import { flags } from '@oclif/command'
 
 import { CapabilityPresentation } from '@smartthings/core-sdk'
 
-import { ListingOutputAPICommandBase } from '@smartthings/cli-lib'
+import { APICommand, ListingOutputAPICommandBase } from '@smartthings/cli-lib'
 
 import { capabilityIdOrIndexInputArgs, getCustomByNamespace, translateToId,
 	CapabilityId, CapabilitySummaryWithNamespace } from '../capabilities'
 
 
-export function buildTableOutput(presentation: CapabilityPresentation): string {
-	const table = new Table({})
+export function buildTableOutput(this: APICommand, presentation: CapabilityPresentation): string {
+	const tableGenerator = this.tableGenerator
 
-	table.push(['Id', presentation.id])
-	table.push(['Version', presentation.version])
+	const basicInfo = tableGenerator.buildTableFromItem(presentation, ['id', 'version'])
 
 	let dashboardStates = 'No dashboard states'
 	if (presentation.dashboard?.states && presentation.dashboard.states.length > 0) {
-		const subTable = new Table({ head: ['Label', 'Alternatives', 'Group'] })
-		for (const state of presentation.dashboard.states) {
-			const alternatives = state.alternatives?.length
-				? state.alternatives.length
-				: 'none'
-			subTable.push([
-				state.label,
-				alternatives,
-				state.group ? state.group : '',
-			])
-		}
-		dashboardStates = `Dashboard States\n${subTable.toString()}`
+		const newDashboardStates = tableGenerator.buildTableFromList(presentation.dashboard.states, ['label',
+			{ label: 'Alternatives', value: (state) => (state.alternatives?.length?.toString() ?? 'none') },
+			'group',
+		])
+		dashboardStates = `Dashboard States\n${newDashboardStates}`
 	}
 
 	function buildDisplayTypeTable(items: { displayType: string }[]): string {
-		const subTable = new Table({ head: ['Display Type'] })
-		for (const item of items) {
-			subTable.push([item.displayType])
-		}
-		return subTable.toString()
+		return tableGenerator.buildTableFromList(items, ['displayType'])
 	}
 
 	function buildLabelDisplayTypeTable(items: { label: string; displayType: string }[]): string {
-		const subTable = new Table({ head: ['Label', 'Display Type'] })
+		const subTable = tableGenerator.newOutputTable({ head: ['Label', 'Display Type'] })
 		for (const item of items) {
 			subTable.push([item.label, item.displayType])
 		}
@@ -59,11 +46,8 @@ export function buildTableOutput(presentation: CapabilityPresentation): string {
 
 	let detailView = 'No Detail View Items'
 	if (presentation.detailView?.length) {
-		const subTable = new Table({ head: ['Label', 'Display Type'] })
-		for (const item of presentation.detailView) {
-			subTable.push([item.label, item.displayType])
-		}
-		detailView = `Detail View Items\n${subTable.toString()}`
+		const subTable = tableGenerator.buildTableFromList(presentation.detailView, ['label', 'displayType'])
+		detailView = `Detail View Items\n${subTable}`
 	}
 
 	let automationConditions = 'No automation conditions'
@@ -76,7 +60,7 @@ export function buildTableOutput(presentation: CapabilityPresentation): string {
 		automationActions = `Automation Actions\n${buildLabelDisplayTypeTable(presentation.automation.actions)}`
 	}
 
-	return `Basic Information\n${table.toString()}\n\n` +
+	return `Basic Information\n${basicInfo}\n\n` +
 		`${dashboardStates}\n\n` +
 		`${dashboardActions}\n\n` +
 		`${dashboardBasicPlus}\n\n` +
@@ -102,13 +86,9 @@ export default class PresentationsCommand extends ListingOutputAPICommandBase<Ca
 	primaryKeyName = 'id'
 	sortKeyName = 'id'
 
-	protected tableHeadings(): string[] {
-		return ['id', 'version', 'status']
-	}
+	protected listTableFieldDefinitions = ['id', 'version', 'status']
 
-	protected buildObjectTableOutput(presentation: CapabilityPresentation): string {
-		return buildTableOutput(presentation)
-	}
+	protected buildTableOutput = buildTableOutput
 	protected translateToId = translateToId
 
 	private getCustomByNamespace = getCustomByNamespace

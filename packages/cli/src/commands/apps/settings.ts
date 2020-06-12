@@ -1,6 +1,17 @@
 import { App, AppSettings } from '@smartthings/core-sdk'
-import { ListingOutputAPICommand } from '@smartthings/cli-lib'
 
+import { APICommand, ListingOutputAPICommand } from '@smartthings/cli-lib'
+
+
+export function buildTableOutput(this: APICommand, appSettings: AppSettings): string {
+	const table = this.tableGenerator.newOutputTable()
+	if (appSettings.settings) {
+		for (const key of Object.keys(appSettings.settings)) {
+			table.push([key, appSettings.settings[key]])
+		}
+	}
+	return table.toString()
+}
 
 export default class AppSettingsCommand extends ListingOutputAPICommand<AppSettings, App> {
 	static description = 'get OAuth settings of the app'
@@ -15,15 +26,9 @@ export default class AppSettingsCommand extends ListingOutputAPICommand<AppSetti
 
 	primaryKeyName = 'appId'
 	sortKeyName = 'displayName'
-	protected buildObjectTableOutput(data: AppSettings): string {
-		const table = this.newOutputTable({head: ['name','value']})
-		if (data.settings) {
-			for (const key of Object.keys(data.settings)) {
-				table.push([key, data.settings[key]])
-			}
-		}
-		return table.toString()
-	}
+
+	protected buildTableOutput = buildTableOutput
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppSettingsCommand)
 		await super.setup(args, argv, flags)

@@ -1,22 +1,20 @@
-import { SelectingInputAPICommandBase } from '@smartthings/cli-lib'
+import { SelectingAPICommandBase } from '@smartthings/cli-lib'
 
 import { capabilityIdInputArgs, getCustomByNamespace, getIdFromUser,
 	CapabilityId, CapabilitySummaryWithNamespace } from '../capabilities'
 
 
-export default class CapabilitiesDeleteCommand extends SelectingInputAPICommandBase<CapabilityId, CapabilitySummaryWithNamespace> {
+export default class CapabilitiesDeleteCommand extends SelectingAPICommandBase<CapabilityId, CapabilitySummaryWithNamespace> {
 	static description = 'delete a capability'
 
-	static flags = SelectingInputAPICommandBase.flags
+	static flags = SelectingAPICommandBase.flags
 
 	static args = capabilityIdInputArgs
 
 	primaryKeyName = 'id'
 	sortKeyName = 'id'
 
-	protected tableHeadings(): string[] {
-		return ['id', 'version']
-	}
+	protected listTableFieldDefinitions = ['id', 'version']
 
 	private getCustomByNamespace = getCustomByNamespace
 	protected getIdFromUser = getIdFromUser

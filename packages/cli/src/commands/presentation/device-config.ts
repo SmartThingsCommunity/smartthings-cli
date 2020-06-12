@@ -1,12 +1,12 @@
-import Table from 'cli-table'
-
 import { PresentationDeviceConfig, PresentationDPInfo, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
 
-import { OutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, OutputAPICommand } from '@smartthings/cli-lib'
 
 
-export function buildTableOutput(deviceConfig: PresentationDeviceConfig): string {
-	const table = new Table()
+export function buildTableOutput(this: APICommand, deviceConfig: PresentationDeviceConfig): string {
+	const tableGenerator = this.tableGenerator
+	// This could use more advanced methods of tableGenerator.
+	const table = tableGenerator.newOutputTable()
 	table.push(['VID', deviceConfig.vid])
 	table.push(['MNMN', deviceConfig.mnmn])
 	if (deviceConfig.type) {
@@ -18,7 +18,7 @@ export function buildTableOutput(deviceConfig: PresentationDeviceConfig): string
 
 	let dpInfo = 'No DP info'
 	function buildDPInfoTable(items: PresentationDPInfo[]): string {
-		const subTable = new Table({ head: ['OS', 'URI', 'Operating Mode'] })
+		const subTable = tableGenerator.newOutputTable({ head: ['OS', 'URI', 'Operating Mode'] })
 		for (const item of items) {
 			subTable.push([item.os, item.dpUri, item.operatingMode ? item.operatingMode : 'none'])
 		}
@@ -29,7 +29,7 @@ export function buildTableOutput(deviceConfig: PresentationDeviceConfig): string
 	}
 
 	function buildConfigEntryTable(items: PresentationDeviceConfigEntry[]): string {
-		const subTable = new Table({ head: ['Component', 'Capability',
+		const subTable = tableGenerator.newOutputTable({ head: ['Component', 'Capability',
 			'Version', 'Values', 'Visible Condition'] })
 		for (const item of items) {
 			const values = item.values?.length ? item.values.length : 'none'
@@ -87,9 +87,7 @@ export default class Devices extends OutputAPICommand<PresentationDeviceConfig> 
 		required: true,
 	}]
 
-	protected buildTableOutput(data: PresentationDeviceConfig): string {
-		return buildTableOutput(data)
-	}
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(Devices)

@@ -1,5 +1,3 @@
-import Table from 'cli-table'
-
 import { OutputAPICommand } from '@smartthings/cli-lib'
 
 import { CapabilityNamespace } from '@smartthings/core-sdk'
@@ -10,15 +8,9 @@ export default class CapabilitiesListNamespaces extends OutputAPICommand<Capabil
 
 	static flags = OutputAPICommand.flags
 
-	protected buildTableOutput(namespaces: CapabilityNamespace[]): string {
-		const table = new Table({
-			head: ['Namespace', 'Owner Type', 'Owner Id'],
-			colWidths: [40, 20, 40],
-		})
-		for (const namespace of namespaces) {
-			table.push([namespace.name, namespace.ownerType, namespace.ownerId])
-		}
-		return table.toString()
+	protected tableFieldDefinitions = ['name', 'ownerType', 'ownerId']
+	protected buildTableOutput(items: CapabilityNamespace[]): string {
+		return this.tableGenerator.buildTableFromList(items, this.tableFieldDefinitions)
 	}
 
 	async run(): Promise<void> {

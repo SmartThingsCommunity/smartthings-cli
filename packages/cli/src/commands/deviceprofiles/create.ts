@@ -1,5 +1,7 @@
 import { DeviceProfile, DeviceProfileRequest } from '@smartthings/core-sdk'
+
 import { InputOutputAPICommand } from '@smartthings/cli-lib'
+
 import { buildTableOutput } from '../deviceprofiles'
 
 
@@ -13,9 +15,7 @@ export default class DeviceProfileCreateCommand extends InputOutputAPICommand<De
 		'$ smartthings deviceprofiles:create -i myprofile.yaml    # create a device profile from the YAML file definition',
 	]
 
-	protected buildTableOutput(deviceProfile: DeviceProfile): string {
-		return buildTableOutput(this, deviceProfile)
-	}
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileCreateCommand)

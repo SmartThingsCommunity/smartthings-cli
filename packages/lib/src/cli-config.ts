@@ -43,6 +43,14 @@ export class CLIConfig {
 		return this._config
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public getRawConfigData(): { [name: string]: any } {
+		if (!this._config) {
+			throw new Error('config not initialized completely')
+		}
+		return this._config
+	}
+
 	public getProfile(name: string): object {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const config: { [name: string]: any } = this.loadConfig()

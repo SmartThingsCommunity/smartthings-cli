@@ -1,8 +1,8 @@
-import path from 'path'
-import yaml from 'js-yaml'
-import {APICommand, ListingOutputAPICommand, CLIConfig, IOFormat} from '@smartthings/cli-lib'
-import { flags } from '@oclif/command'
 import fs from 'fs'
+import yaml from 'js-yaml'
+import { flags } from '@oclif/command'
+
+import { cliConfig, IOFormat, ListingOutputAPICommand, TableFieldDefinition } from '@smartthings/cli-lib'
 
 
 function reservedKey(key: string): boolean {
@@ -31,6 +31,9 @@ export class ConfigItem {
 
 }
 
+// TODO: make non-API commands listable as well so we don't have to extend
+// APICommand here (or anywhere else we need to do non-API commands that list
+// things)
 export default class ConfigCommand extends ListingOutputAPICommand<ConfigItem, ConfigItem> {
 	static description = 'list config file entries'
 
@@ -50,32 +53,25 @@ export default class ConfigCommand extends ListingOutputAPICommand<ConfigItem, C
 	primaryKeyName = 'name'
 	sortKeyName = 'name'
 
-	protected buildObjectTableOutput(this: APICommand, item: ConfigItem): string {
-		const table = this.newOutputTable()
-		table.push(['Name', item.name])
-		table.push(['Active', reservedKey(item.name) ? 'N/A' : !!item.active])
-		table.push(['Definition', yaml.safeDump(item.data)])
-		return table.toString()
-	}
+	protected listTableFieldDefinitions: TableFieldDefinition<ConfigItem>[] = [
+		'name',
+		{ label: 'Active', value: (item) => reservedKey(item.name) ? 'N/A' : item.active ? 'true' : '' },
+	]
 
-	protected buildTableOutput(sortedList: ConfigItem[]): string {
-		const head = this.flags.verbose ? ['#', 'name', 'active', 'token'] : ['#', 'name', 'active']
-		if (this.flags.verbose && !!sortedList.find(it => it.data.clientIdProvider?.baseURL)) {
-			head.push('apiUrl')
-		}
-		const table = this.newOutputTable({head})
-		let count = 1
-		for (const item of sortedList) {
-			// @ts-ignore
-			table.push([count++, ...head.slice(1).map(it => item[it])])
-		}
-		return table.toString()
-	}
+	protected tableFieldDefinitions: TableFieldDefinition<ConfigItem>[] = [
+		...this.listTableFieldDefinitions,
+		{ label: 'Definition', value: (item) => yaml.safeDump(item.data) },
+	]
 
-	private getCliConfig(): ConfigData {
-		const cliConfig = new CLIConfig()
-		cliConfig.init(path.join(this.config.configDir, 'config.yaml'))
-		return cliConfig.loadConfig()
+	protected buildListTableOutput(sortedList: ConfigItem[]): string {
+		if (this.flags.verbose) {
+			this.listTableFieldDefinitions.push('token')
+			if (this.flags.verbose && !!sortedList.find(it => it.data.clientIdProvider?.baseURL)) {
+				this.listTableFieldDefinitions.push('apiUrl')
+			}
+		}
+
+		return super.buildListTableOutput(sortedList)
 	}
 
 	async run(): Promise<void> {
@@ -84,7 +80,7 @@ export default class ConfigCommand extends ListingOutputAPICommand<ConfigItem, C
 
 		const outputOptions = this.outputOptions
 		if (!args.name && outputOptions.format === IOFormat.JSON || outputOptions.format === IOFormat.YAML) {
-			const data = this.getCliConfig()
+			const data = cliConfig.getRawConfigData()
 			const output = outputOptions.format === IOFormat.JSON ?
 				JSON.stringify(data, null, outputOptions.indentLevel) :
 				yaml.safeDump(data, { indent: outputOptions.indentLevel })
@@ -97,18 +93,17 @@ export default class ConfigCommand extends ListingOutputAPICommand<ConfigItem, C
 					process.stdout.write('\n')
 				}
 			}
-		}
-		else {
+		} else {
 			this.processNormally(
 				args.name,
 				async () => {
-					const config = this.getCliConfig()
+					const config = cliConfig.getRawConfigData()
 					return Object.keys(config).map(it => {
 						return new ConfigItem(it, config[it], this.profileName)
 					})
 				},
 				async (name) => {
-					const config = this.getCliConfig()
+					const config = cliConfig.getRawConfigData()
 					return new ConfigItem(name, config[name], this.profileName)
 				},
 			)

@@ -34,7 +34,7 @@ export abstract class APICommand extends SmartThingsCommand {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	protected async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
+	async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
 		await super.setup(args, argv, flags)
 
 		if (flags.token) {
@@ -59,7 +59,7 @@ export abstract class APICommand extends SmartThingsCommand {
 
 /**
  * TODO: most or all classes that use this should be updated soon to use
- * `SelectingInputAPICommand` (or in a few cases `SelectingInputAPICommandBase`).
+ * `SelectingAPICommand` (or in a few cases `SelectingAPICommandBase`).
  */
 export abstract class SimpleAPICommand extends APICommand {
 	/**

@@ -1,6 +1,9 @@
-import { SchemaAppRequest, SchemaCreateResponse} from '@smartthings/core-sdk'
-import { InputOutputAPICommand } from '@smartthings/cli-lib'
 import { flags } from '@oclif/command'
+
+import { SchemaAppRequest, SchemaCreateResponse } from '@smartthings/core-sdk'
+
+import { InputOutputAPICommand } from '@smartthings/cli-lib'
+
 import { addSchemaPermission } from '../../lib/aws-utils'
 
 
@@ -11,15 +14,10 @@ export default class SchemaAppCreateCommand extends InputOutputAPICommand<Schema
 		...InputOutputAPICommand.flags,
 		authorize: flags.boolean({
 			description: 'authorize connector\'s Lambda functions to be called by SmartThings',
-		})}
-
-	protected buildTableOutput(data: SchemaCreateResponse): string {
-		const table = this.newOutputTable()
-		table.push(['endpointAppId', data.endpointAppId])
-		table.push(['stClientId', data.stClientId])
-		table.push(['stClientSecret', data.stClientSecret])
-		return table.toString()
+		}),
 	}
+
+	protected tableFieldDefinitions = ['endpointAppId', 'stClientId', 'stClientSecret']
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(SchemaAppCreateCommand)

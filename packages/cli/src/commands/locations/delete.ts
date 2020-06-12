@@ -1,12 +1,12 @@
 import { LocationItem } from '@smartthings/core-sdk'
 
-import { SelectingInputAPICommand } from '@smartthings/cli-lib'
+import { SelectingAPICommand } from '@smartthings/cli-lib'
 
 
-export default class LocationsDeleteCommand extends SelectingInputAPICommand<LocationItem> {
+export default class LocationsDeleteCommand extends SelectingAPICommand<LocationItem> {
 	static description = 'delete a location'
 
-	static flags = SelectingInputAPICommand.flags
+	static flags = SelectingAPICommand.flags
 
 	static args = [{
 		name: 'id',

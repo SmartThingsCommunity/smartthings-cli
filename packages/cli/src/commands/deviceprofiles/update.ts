@@ -1,6 +1,7 @@
 import { DeviceProfile, DeviceProfileRequest } from '@smartthings/core-sdk'
 
 import { InputOutputAPICommand } from '@smartthings/cli-lib'
+
 import { buildTableOutput } from '../deviceprofiles'
 
 
@@ -18,9 +19,7 @@ export default class DeviceProfileUpdateCommand extends InputOutputAPICommand<De
 	primaryKeyName = 'id'
 	sortKeyName = 'name'
 
-	protected buildTableOutput(deviceProfile: DeviceProfile): string {
-		return buildTableOutput(this, deviceProfile)
-	}
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileUpdateCommand)

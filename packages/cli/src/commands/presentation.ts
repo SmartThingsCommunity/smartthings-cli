@@ -1,5 +1,3 @@
-import Table from 'cli-table'
-
 import { PresentationDevicePresentation } from '@smartthings/core-sdk'
 
 import { OutputAPICommand } from '@smartthings/cli-lib'
@@ -17,16 +15,14 @@ export default class PresentationCommand extends OutputAPICommand<PresentationDe
 	}]
 
 	protected buildTableOutput(presentation: PresentationDevicePresentation): string {
-		const table = new Table()
-		table.push(['VID', presentation.vid])
-		table.push(['MNMN', presentation.mnmn])
-		if (presentation.iconUrl) {
-			table.push(['Icon URL', presentation.iconUrl])
-		}
+		const tableGenerator = this.tableGenerator
+		const basicInfo = tableGenerator.buildTableFromItem(presentation, [
+			{ prop: 'vid', label: 'VID' }, { prop: 'mnmn', label: 'MNMN' }, 'iconUrl',
+		])
 
 		let dashboardStates = 'No dashboard states'
 		if (presentation.dashboard?.states && presentation.dashboard.states.length > 0) {
-			const subTable = new Table({ head: ['Label', 'Alternatives', 'Group'] })
+			const subTable = tableGenerator.newOutputTable({ head: ['Label', 'Alternatives', 'Group'] })
 			for (const state of presentation.dashboard.states) {
 				const alternatives = state.alternatives?.length
 					? state.alternatives.length
@@ -41,7 +37,7 @@ export default class PresentationCommand extends OutputAPICommand<PresentationDe
 		}
 
 		function buildDisplayTypeTable(items: { displayType: string }[]): string {
-			const subTable = new Table({ head: ['Display Type'] })
+			const subTable = tableGenerator.newOutputTable({ head: ['Display Type'] })
 			for (const item of items) {
 				subTable.push([item.displayType])
 			}
@@ -49,7 +45,7 @@ export default class PresentationCommand extends OutputAPICommand<PresentationDe
 		}
 
 		function buildLabelDisplayTypeTable(items: { label: string; displayType: string }[]): string {
-			const subTable = new Table({ head: ['Label', 'Display Type'] })
+			const subTable = tableGenerator.newOutputTable({ head: ['Label', 'Display Type'] })
 			for (const item of items) {
 				subTable.push([item.label, item.displayType])
 			}
@@ -68,7 +64,7 @@ export default class PresentationCommand extends OutputAPICommand<PresentationDe
 
 		let detailViews = 'No detail views'
 		if (presentation.detailView?.length) {
-			const subTable = new Table({ head: ['Capability', 'Version', 'Component'] })
+			const subTable = tableGenerator.newOutputTable({ head: ['Capability', 'Version', 'Component'] })
 			for (const detailView of presentation.detailView) {
 				subTable.push([
 					detailView.capability,
@@ -89,7 +85,7 @@ export default class PresentationCommand extends OutputAPICommand<PresentationDe
 			automationActions = `Automation Actions\n${buildLabelDisplayTypeTable(presentation.automation.actions)}`
 		}
 
-		return `Basic Information\n${table.toString()}\n\n` +
+		return `Basic Information\n${basicInfo}\n\n` +
 			`${dashboardStates}\n\n` +
 			`${dashboardActions}\n\n` +
 			`${dashboardBasicPlus}\n\n` +

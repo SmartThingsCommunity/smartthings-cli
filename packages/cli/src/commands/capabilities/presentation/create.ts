@@ -16,9 +16,7 @@ export default class CapabilitiesPresentationCreate extends SelectingInputOutput
 	primaryKeyName = 'id'
 	sortKeyName = 'id'
 
-	protected tableHeadings(): string[] {
-		return ['id', 'version']
-	}
+	protected listTableFieldDefinitions = ['id', 'version']
 
 	private getCustomByNamespace = getCustomByNamespace
 	protected getIdFromUser = getIdFromUser
@@ -38,9 +36,7 @@ export default class CapabilitiesPresentationCreate extends SelectingInputOutput
 		// this.log(`presentation = ${JSON.stringify(saved)}`)
 	}
 
-	protected buildObjectTableOutput(presentation: CapabilityPresentation): string {
-		return buildTableOutput(presentation)
-	}
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesPresentationCreate)

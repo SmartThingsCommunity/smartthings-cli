@@ -27,9 +27,7 @@ export default class Devices extends OutputAPICommand<PresentationDeviceConfig> 
 		required: true,
 	}]
 
-	protected buildTableOutput(deviceConfig: PresentationDeviceConfig): string {
-		return buildTableOutput(deviceConfig)
-	}
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(Devices)

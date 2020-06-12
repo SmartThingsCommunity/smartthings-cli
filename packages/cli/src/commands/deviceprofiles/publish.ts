@@ -1,6 +1,7 @@
 import { DeviceProfile, DeviceProfileStatus } from '@smartthings/core-sdk'
 
 import { OutputAPICommand } from '@smartthings/cli-lib'
+
 import { buildTableOutput } from '../deviceprofiles'
 
 
@@ -23,9 +24,7 @@ export default class DeviceProfilePublishCommand extends OutputAPICommand<Device
 		'$ smartthings deviceprofiles:publish 5                                     # publish the 5th profile in the list',
 	]
 
-	protected buildTableOutput(deviceProfile: DeviceProfile): string {
-		return buildTableOutput(this, deviceProfile)
-	}
+	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfilePublishCommand)

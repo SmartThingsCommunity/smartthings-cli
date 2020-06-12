@@ -1,29 +1,31 @@
-import { InputOutputAPICommand } from '@smartthings/cli-lib'
-import { Location, LocationUpdate } from '@smartthings/core-sdk'
+import { Location, LocationItem, LocationUpdate } from '@smartthings/core-sdk'
 
-import { buildTableOutput } from '../locations'
+import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
+
+import { tableFieldDefinitions } from '../locations'
 
 
-export default class LocationsUpdateCommand extends InputOutputAPICommand <LocationUpdate, Location> {
+export default class LocationsUpdateCommand extends SelectingInputOutputAPICommand<LocationUpdate, Location, LocationItem> {
 	static description = 'update a location'
 
-	static flags = InputOutputAPICommand.flags
+	static flags = SelectingInputOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
-		description: 'location UUID',
-		required: true,
+		description: 'the location id',
 	}]
 
 	primaryKeyName = 'locationId'
 	sortKeyName = 'name'
 
-	protected buildTableOutput = buildTableOutput
+	protected tableFieldDefinitions = tableFieldDefinitions
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(LocationsUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(data => { return this.client.locations.update(args.id, data) })
+		this.processNormally(args.id,
+			() => this.client.locations.list(),
+			(id, location) => this.client.locations.update(id, location))
 	}
 }
