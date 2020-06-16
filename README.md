@@ -5,12 +5,16 @@
 [![Downloads/week](https://img.shields.io/npm/dw/smartthings-cli.svg)](https://npmjs.org/package/smartthings-cli)
 [![License](https://img.shields.io/npm/l/smartthings-cli.svg)](https://github.com/SmartThingsCommunity/smartthings-cli/blob/master/package.json)
 
+# General Usage
+
 :exclamation: NOTE: If you're here to use the CLI, you can go directly to the
 [README for the cli package](packages/cli/README.md).
 
 :exclamation: NOTE: This CLI is currently considered an alpha release. It has
 currently has only a few specific features implemented and is a work in
 progress.
+
+# Build Informtion
 
 This is the monorepo for the SmartThings CLI. Currently, the following
 packages are included:
