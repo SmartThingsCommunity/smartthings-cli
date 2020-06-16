@@ -108,7 +108,7 @@ export async function getCustomByNamespace(this: APICommand, namespace?: string)
 			"you haven't created any capabilities yet.")
 	}
 
-	let capabilities: ({ namespace: string } & CapabilitySummary)[] = []
+	let capabilities: CapabilitySummaryWithNamespace[] = []
 	for (const namespace of namespaces) {
 		const caps = await this.client.capabilities.list(namespace)
 		capabilities = capabilities.concat(caps.map(capability => { return { ...capability, namespace } }))

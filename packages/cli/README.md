@@ -129,6 +129,9 @@ Commands are organized in a hierarchy that maps the API hierarchy.
 * [`smartthings presentation:device-config VID`](#smartthings-presentationdevice-config-vid)
 * [`smartthings presentation:device-config:create`](#smartthings-presentationdevice-configcreate)
 * [`smartthings presentation:device-config:generate ID`](#smartthings-presentationdevice-configgenerate-id)
+* [`smartthings rooms [IDORINDEX]`](#smartthings-rooms-idorindex)
+* [`smartthings rooms:create`](#smartthings-roomscreate)
+* [`smartthings rooms:update [ID] [VERSION]`](#smartthings-roomsupdate-id-version)
 
 ## `smartthings apps [ID]`
 
@@ -1256,6 +1259,84 @@ OPTIONS
 ```
 
 _See code: [dist/commands/presentation/device-config/generate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/presentation/device-config/generate.ts)_
+
+## `smartthings rooms [IDORINDEX]`
+
+get a specific room
+
+```
+USAGE
+  $ smartthings rooms [IDORINDEX]
+
+ARGUMENTS
+  IDORINDEX  the room id
+
+OPTIONS
+  -h, --help                   show CLI help
+  -j, --json                   use JSON format of input and/or output
+  -l, --locationId=locationId  a specific locationId to query; will use all by default
+  -o, --output=output          specify output file
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+  -y, --yaml                   use YAML format of input and/or output
+  --compact                    use compact table format with no lines between body rows
+  --expanded                   use expanded table format with a line between each body row
+  --indent=indent              specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/rooms.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rooms.ts)_
+
+## `smartthings rooms:create`
+
+create a Room for a user
+
+```
+USAGE
+  $ smartthings rooms:create
+
+OPTIONS
+  -d, --dry-run                produce JSON but don't actually submit
+  -h, --help                   show CLI help
+  -i, --input=input            specify input file
+  -j, --json                   use JSON format of input and/or output
+  -l, --locationid=locationid  a specific location to query; will use all by default
+  -o, --output=output          specify output file
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+  -y, --yaml                   use YAML format of input and/or output
+  --compact                    use compact table format with no lines between body rows
+  --expanded                   use expanded table format with a line between each body row
+  --indent=indent              specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/rooms/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rooms/create.ts)_
+
+## `smartthings rooms:update [ID] [VERSION]`
+
+update a capability
+
+```
+USAGE
+  $ smartthings rooms:update [ID] [VERSION]
+
+ARGUMENTS
+  ID       the capability id
+  VERSION  the capability version
+
+OPTIONS
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/rooms/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rooms/update.ts)_
 <!-- commandsstop -->
 
 # Logging
