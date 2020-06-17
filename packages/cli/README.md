@@ -126,6 +126,7 @@ Commands are organized in a hierarchy that maps the API hierarchy.
 * [`smartthings locations:create`](#smartthings-locationscreate)
 * [`smartthings locations:delete [ID]`](#smartthings-locationsdelete-id)
 * [`smartthings locations:rooms [IDORINDEX]`](#smartthings-locationsrooms-idorindex)
+* [`smartthings locations:rooms:create`](#smartthings-locationsroomscreate)
 * [`smartthings locations:update ID`](#smartthings-locationsupdate-id)
 * [`smartthings presentation VID`](#smartthings-presentation-vid)
 * [`smartthings presentation:device-config VID`](#smartthings-presentationdevice-config-vid)
@@ -1196,6 +1197,34 @@ ALIASES
 ```
 
 _See code: [dist/commands/locations/rooms.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/rooms.ts)_
+
+## `smartthings locations:rooms:create`
+
+create a Room for a user
+
+```
+USAGE
+  $ smartthings locations:rooms:create
+
+OPTIONS
+  -d, --dry-run                produce JSON but don't actually submit
+  -h, --help                   show CLI help
+  -i, --input=input            specify input file
+  -j, --json                   use JSON format of input and/or output
+  -l, --locationid=locationid  a specific location to query
+  -o, --output=output          specify output file
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+  -y, --yaml                   use YAML format of input and/or output
+  --compact                    use compact table format with no lines between body rows
+  --expanded                   use expanded table format with a line between each body row
+  --indent=indent              specify indentation for formatting JSON or YAML output
+
+ALIASES
+  $ smartthings rooms:create
+```
+
+_See code: [dist/commands/locations/rooms/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/rooms/create.ts)_
 
 ## `smartthings locations:update ID`
 
