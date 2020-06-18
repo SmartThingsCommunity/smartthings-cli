@@ -126,7 +126,11 @@ Commands are organized in a hierarchy that maps the API hierarchy.
 * [`smartthings locations:create`](#smartthings-locationscreate)
 * [`smartthings locations:delete [ID]`](#smartthings-locationsdelete-id)
 * [`smartthings locations:rooms [IDORINDEX]`](#smartthings-locationsrooms-idorindex)
+<<<<<<< HEAD
 * [`smartthings locations:rooms:create`](#smartthings-locationsroomscreate)
+=======
+* [`smartthings locations:rooms:delete [IDORINDEX]`](#smartthings-locationsroomsdelete-idorindex)
+>>>>>>> 8a25e0f... added rooms:delete command
 * [`smartthings locations:update ID`](#smartthings-locationsupdate-id)
 * [`smartthings presentation VID`](#smartthings-presentation-vid)
 * [`smartthings presentation:device-config VID`](#smartthings-presentationdevice-config-vid)
@@ -1212,6 +1216,27 @@ OPTIONS
   -i, --input=input            specify input file
   -j, --json                   use JSON format of input and/or output
   -l, --locationid=locationid  a specific location to query
+  $ smartthings rooms:create
+```
+
+_See code: [dist/commands/locations/rooms/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/rooms/create.ts)_
+
+## `smartthings locations:rooms:delete [IDORINDEX]`
+
+delete a room
+
+```
+USAGE
+  $ smartthings locations:rooms:delete [IDORINDEX]
+
+ARGUMENTS
+  IDORINDEX  room UUID or number in the list
+
+OPTIONS
+  -h, --help                   show CLI help
+  -j, --json                   use JSON format of input and/or output
+  -l, --locationId=locationId  a specific location to query
+>>>>>>> 8a25e0f... added rooms:delete command
   -o, --output=output          specify output file
   -p, --profile=profile        [default: default] configuration profile
   -t, --token=token            the auth token to use
@@ -1221,10 +1246,10 @@ OPTIONS
   --indent=indent              specify indentation for formatting JSON or YAML output
 
 ALIASES
-  $ smartthings rooms:create
+  $ smartthings rooms:delete
 ```
 
-_See code: [dist/commands/locations/rooms/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/rooms/create.ts)_
+_See code: [dist/commands/locations/rooms/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/rooms/delete.ts)_
 
 ## `smartthings locations:update ID`
 
