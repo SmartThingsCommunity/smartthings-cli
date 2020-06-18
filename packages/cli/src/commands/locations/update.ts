@@ -1,8 +1,7 @@
-import { buildTableOutput } from '../locations'
-
 import { InputOutputAPICommand } from '@smartthings/cli-lib'
-
 import { Location, LocationUpdate } from '@smartthings/core-sdk'
+
+import { buildTableOutput } from '../locations'
 
 
 export default class LocationsUpdateCommand extends InputOutputAPICommand <LocationUpdate, Location> {
