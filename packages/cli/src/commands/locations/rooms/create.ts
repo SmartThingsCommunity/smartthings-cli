@@ -6,7 +6,7 @@ import { InputOutputAPICommand } from '@smartthings/cli-lib'
 
 
 export default class RoomsCreate extends InputOutputAPICommand<RoomRequest, Room> {
-	static description = 'create a Room for a user'
+	static description = 'create a room'
 
 	static flags = {
 		...InputOutputAPICommand.flags,
