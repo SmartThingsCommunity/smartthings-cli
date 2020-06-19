@@ -17,8 +17,8 @@ export default class RoomsDeleteCommand extends SelectingAPICommand<Room> {
 	}
 
 	static args = [{
-		name: 'idOrIndex',
-		description: 'room UUID or number in the list',
+		name: 'id',
+		description: 'room UUID',
 	}]
 
 	static aliases = ['rooms:delete']
@@ -35,7 +35,7 @@ export default class RoomsDeleteCommand extends SelectingAPICommand<Room> {
 
 		const roomsPromise = this.getRoomsByLocation(flags.locationId)
 		this.processNormally(
-			args.idOrIndex,
+			args.id,
 			() => roomsPromise,
 			async (id) => {
 				const room = (await roomsPromise).find(room => room.roomId === id)
