@@ -16,7 +16,7 @@ export async function getRoomsByLocation(this: APICommand, locationId?: string):
 	}
 
 	if (!locations || locations.length == 0) {
-		throw Error('could not find any locations for you account. Perhaps ' +
+		throw Error('could not find any locations for your account. Perhaps ' +
 			"you haven't created any locations yet.")
 	}
 
@@ -45,7 +45,7 @@ export default class RoomsCommand extends ListingOutputAPICommand<Room, RoomWith
 
 	static args = [{
 		name: 'idOrIndex',
-		description: 'the room id',
+		description: 'room UUID or index',
 	}]
 
 	static aliases = ['rooms']

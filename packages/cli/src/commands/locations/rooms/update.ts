@@ -17,7 +17,7 @@ export default class RoomsUpdateCommand extends SelectingInputOutputAPICommand <
 	}
 
 	static args = [{
-		name: 'idOrIndex',
+		name: 'id',
 		description: 'room UUID',
 	}]
 
@@ -37,7 +37,7 @@ export default class RoomsUpdateCommand extends SelectingInputOutputAPICommand <
 
 		const roomsPromise = this.getRoomsByLocation(flags.locationId)
 		this.processNormally(
-			args.idOrIndex,
+			args.id,
 			() => roomsPromise,
 			async (id, data) => {
 				const room = (await roomsPromise).find(room => room.roomId === id)

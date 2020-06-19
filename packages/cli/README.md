@@ -127,13 +127,17 @@ Commands are organized in a hierarchy that maps the API hierarchy.
 * [`smartthings locations:delete [ID]`](#smartthings-locationsdelete-id)
 * [`smartthings locations:rooms [IDORINDEX]`](#smartthings-locationsrooms-idorindex)
 * [`smartthings locations:rooms:create`](#smartthings-locationsroomscreate)
-* [`smartthings locations:rooms:delete [IDORINDEX]`](#smartthings-locationsroomsdelete-idorindex)
-* [`smartthings locations:rooms:update [IDORINDEX]`](#smartthings-locationsroomsupdate-idorindex)
+* [`smartthings locations:rooms:delete [ID]`](#smartthings-locationsroomsdelete-id)
+* [`smartthings locations:rooms:update [ID]`](#smartthings-locationsroomsupdate-id)
 * [`smartthings locations:update [ID]`](#smartthings-locationsupdate-id)
 * [`smartthings presentation VID`](#smartthings-presentation-vid)
 * [`smartthings presentation:device-config VID`](#smartthings-presentationdevice-config-vid)
 * [`smartthings presentation:device-config:create`](#smartthings-presentationdevice-configcreate)
 * [`smartthings presentation:device-config:generate ID`](#smartthings-presentationdevice-configgenerate-id)
+* [`smartthings rules [IDORINDEX]`](#smartthings-rules-idorindex)
+* [`smartthings rules:create`](#smartthings-rulescreate)
+* [`smartthings rules:delete [ID]`](#smartthings-rulesdelete-id)
+* [`smartthings rules:update [ID]`](#smartthings-rulesupdate-id)
 * [`smartthings schema [ID]`](#smartthings-schema-id)
 * [`smartthings schema:create`](#smartthings-schemacreate)
 * [`smartthings schema:delete [ID]`](#smartthings-schemadelete-id)
@@ -1144,7 +1148,7 @@ USAGE
   $ smartthings locations:rooms [IDORINDEX]
 
 ARGUMENTS
-  IDORINDEX  the room id
+  IDORINDEX  room UUID or index
 
 OPTIONS
   -h, --help                   show CLI help
@@ -1192,16 +1196,16 @@ ALIASES
 
 _See code: [dist/commands/locations/rooms/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/rooms/create.ts)_
 
-## `smartthings locations:rooms:delete [IDORINDEX]`
+## `smartthings locations:rooms:delete [ID]`
 
 delete a room
 
 ```
 USAGE
-  $ smartthings locations:rooms:delete [IDORINDEX]
+  $ smartthings locations:rooms:delete [ID]
 
 ARGUMENTS
-  IDORINDEX  room UUID or number in the list
+  ID  room UUID
 
 OPTIONS
   -h, --help                   show CLI help
@@ -1215,16 +1219,16 @@ ALIASES
 
 _See code: [dist/commands/locations/rooms/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/rooms/delete.ts)_
 
-## `smartthings locations:rooms:update [IDORINDEX]`
+## `smartthings locations:rooms:update [ID]`
 
 update a room
 
 ```
 USAGE
-  $ smartthings locations:rooms:update [IDORINDEX]
+  $ smartthings locations:rooms:update [ID]
 
 ARGUMENTS
-  IDORINDEX  room UUID
+  ID  room UUID
 
 OPTIONS
   -h, --help                   show CLI help
@@ -1373,6 +1377,104 @@ OPTIONS
 ```
 
 _See code: [dist/commands/presentation/device-config/generate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/presentation/device-config/generate.ts)_
+
+## `smartthings rules [IDORINDEX]`
+
+get a specific rule
+
+```
+USAGE
+  $ smartthings rules [IDORINDEX]
+
+ARGUMENTS
+  IDORINDEX  rule UUID or index
+
+OPTIONS
+  -h, --help                   show CLI help
+  -j, --json                   use JSON format of input and/or output
+  -l, --locationId=locationId  a specific locationId to query
+  -o, --output=output          specify output file
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+  -y, --yaml                   use YAML format of input and/or output
+  --compact                    use compact table format with no lines between body rows
+  --expanded                   use expanded table format with a line between each body row
+  --indent=indent              specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/rules.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules.ts)_
+
+## `smartthings rules:create`
+
+create a rule
+
+```
+USAGE
+  $ smartthings rules:create
+
+OPTIONS
+  -d, --dry-run                produce JSON but don't actually submit
+  -h, --help                   show CLI help
+  -i, --input=input            specify input file
+  -j, --json                   use JSON format of input and/or output
+  -l, --locationid=locationid  a specific location to query
+  -o, --output=output          specify output file
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+  -y, --yaml                   use YAML format of input and/or output
+  --compact                    use compact table format with no lines between body rows
+  --expanded                   use expanded table format with a line between each body row
+  --indent=indent              specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/rules/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules/create.ts)_
+
+## `smartthings rules:delete [ID]`
+
+delete a rule
+
+```
+USAGE
+  $ smartthings rules:delete [ID]
+
+ARGUMENTS
+  ID  rule UUID
+
+OPTIONS
+  -h, --help                   show CLI help
+  -l, --locationId=locationId  a specific location to query
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+```
+
+_See code: [dist/commands/rules/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules/delete.ts)_
+
+## `smartthings rules:update [ID]`
+
+update a rule
+
+```
+USAGE
+  $ smartthings rules:update [ID]
+
+ARGUMENTS
+  ID  rule UUID
+
+OPTIONS
+  -h, --help                   show CLI help
+  -i, --input=input            specify input file
+  -j, --json                   use JSON format of input and/or output
+  -l, --locationId=locationId  a specific locationId to query
+  -o, --output=output          specify output file
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+  -y, --yaml                   use YAML format of input and/or output
+  --compact                    use compact table format with no lines between body rows
+  --expanded                   use expanded table format with a line between each body row
+  --indent=indent              specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/rules/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules/update.ts)_
 
 ## `smartthings schema [ID]`
 
