@@ -1,10 +1,10 @@
-import { SchemaAppRequest, SchemaCreateReponse} from '@smartthings/core-sdk'
+import { SchemaAppRequest, SchemaCreateResponse} from '@smartthings/core-sdk'
 import { InputOutputAPICommand } from '@smartthings/cli-lib'
 import { flags } from '@oclif/command'
 import { addSchemaPermission } from '../../lib/aws-utils'
 
 
-export default class SchemaAppCreateCommand extends InputOutputAPICommand<SchemaAppRequest, SchemaCreateReponse> {
+export default class SchemaAppCreateCommand extends InputOutputAPICommand<SchemaAppRequest, SchemaCreateResponse> {
 	static description = 'update an ST Schema connector'
 
 	static flags = {
@@ -13,7 +13,7 @@ export default class SchemaAppCreateCommand extends InputOutputAPICommand<Schema
 			description: 'authorize connector\'s Lambda functions to be called by SmartThings',
 		})}
 
-	protected buildTableOutput(data: SchemaCreateReponse): string {
+	protected buildTableOutput(data: SchemaCreateResponse): string {
 		const table = this.newOutputTable()
 		table.push(['endpointAppId', data.endpointAppId])
 		table.push(['stClientId', data.stClientId])
