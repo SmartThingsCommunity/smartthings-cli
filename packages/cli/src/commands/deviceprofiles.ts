@@ -1,6 +1,8 @@
 import { DeviceProfile } from '@smartthings/core-sdk'
 
-import { APICommand, ListingOutputAPICommand } from '@smartthings/cli-lib'
+import {APICommand, ListingOutputAPICommand, TableFieldDefinition} from '@smartthings/cli-lib'
+
+import { flags } from '@oclif/command'
 
 
 export function buildTableOutput(this: APICommand, data: DeviceProfile): string {
@@ -21,7 +23,13 @@ export function buildTableOutput(this: APICommand, data: DeviceProfile): string 
 export default class DeviceProfilesList extends ListingOutputAPICommand<DeviceProfile, DeviceProfile> {
 	static description = 'list all device profiles available in a user account or retrieve a single profile'
 
-	static flags = ListingOutputAPICommand.flags
+	static flags = {
+		...ListingOutputAPICommand.flags,
+		verbose: flags.boolean({
+			description: 'include vid and mnmn in list output',
+			char: 'v',
+		}),
+	}
 
 	static args = [{
 		name: 'id',
@@ -42,13 +50,19 @@ export default class DeviceProfilesList extends ListingOutputAPICommand<DevicePr
 	primaryKeyName = 'id'
 	sortKeyName = 'name'
 
-	protected listTableFieldDefinitions = ['name', 'status', 'id']
+
+	protected listTableFieldDefinitions: TableFieldDefinition<DeviceProfile>[] = ['name', 'status', 'id']
 
 	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfilesList)
 		await super.setup(args, argv, flags)
+
+		if (this.flags.verbose) {
+			this.listTableFieldDefinitions.push({ label: 'vid', value: (item) => item.metadata ? item.metadata.vid : '' })
+			this.listTableFieldDefinitions.push({ label: 'mnmn', value: (item) => item.metadata ? item.metadata.mnmn : '' })
+		}
 
 		this.processNormally(
 			args.id,
