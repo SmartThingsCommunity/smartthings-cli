@@ -109,6 +109,7 @@ Commands are organized in a hierarchy that maps the API hierarchy.
 * [`smartthings deviceprofiles [ID]`](#smartthings-deviceprofiles-id)
 * [`smartthings deviceprofiles:create`](#smartthings-deviceprofilescreate)
 * [`smartthings deviceprofiles:delete [ID]`](#smartthings-deviceprofilesdelete-id)
+* [`smartthings deviceprofiles:presentation [ID]`](#smartthings-deviceprofilespresentation-id)
 * [`smartthings deviceprofiles:publish ID`](#smartthings-deviceprofilespublish-id)
 * [`smartthings deviceprofiles:update ID`](#smartthings-deviceprofilesupdate-id)
 * [`smartthings devices [ID]`](#smartthings-devices-id)
@@ -116,6 +117,7 @@ Commands are organized in a hierarchy that maps the API hierarchy.
 * [`smartthings devices:commands ID`](#smartthings-devicescommands-id)
 * [`smartthings devices:components-status ID COMPONENTID`](#smartthings-devicescomponents-status-id-componentid)
 * [`smartthings devices:delete [ID]`](#smartthings-devicesdelete-id)
+* [`smartthings devices:presentation [ID]`](#smartthings-devicespresentation-id)
 * [`smartthings devices:status ID`](#smartthings-devicesstatus-id)
 * [`smartthings generate:java`](#smartthings-generatejava)
 * [`smartthings generate:node`](#smartthings-generatenode)
@@ -130,7 +132,7 @@ Commands are organized in a hierarchy that maps the API hierarchy.
 * [`smartthings locations:rooms:delete [IDORINDEX]`](#smartthings-locationsroomsdelete-idorindex)
 * [`smartthings locations:rooms:update [IDORINDEX]`](#smartthings-locationsroomsupdate-idorindex)
 * [`smartthings locations:update [ID]`](#smartthings-locationsupdate-id)
-* [`smartthings presentation VID`](#smartthings-presentation-vid)
+* [`smartthings presentation VID [MNMN]`](#smartthings-presentation-vid-mnmn)
 * [`smartthings presentation:device-config VID`](#smartthings-presentationdevice-config-vid)
 * [`smartthings presentation:device-config:create`](#smartthings-presentationdevice-configcreate)
 * [`smartthings presentation:device-config:generate ID`](#smartthings-presentationdevice-configgenerate-id)
@@ -776,6 +778,31 @@ EXAMPLES
 
 _See code: [dist/commands/deviceprofiles/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/delete.ts)_
 
+## `smartthings deviceprofiles:presentation [ID]`
+
+get the presentation associated with a device profile
+
+```
+USAGE
+  $ smartthings deviceprofiles:presentation [ID]
+
+ARGUMENTS
+  ID  device profile UUID or the number of the profile from list
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/deviceprofiles/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/presentation.ts)_
+
 ## `smartthings deviceprofiles:publish ID`
 
 publish a device profile (published profiles cannot be modified)
@@ -955,6 +982,31 @@ OPTIONS
 ```
 
 _See code: [dist/commands/devices/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/delete.ts)_
+
+## `smartthings devices:presentation [ID]`
+
+get a device presentation
+
+```
+USAGE
+  $ smartthings devices:presentation [ID]
+
+ARGUMENTS
+  ID  the device id or number in the list
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/devices/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/presentation.ts)_
 
 ## `smartthings devices:status ID`
 
@@ -1271,16 +1323,17 @@ OPTIONS
 
 _See code: [dist/commands/locations/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/locations/update.ts)_
 
-## `smartthings presentation VID`
+## `smartthings presentation VID [MNMN]`
 
 query device presentation by vid
 
 ```
 USAGE
-  $ smartthings presentation VID
+  $ smartthings presentation VID [MNMN]
 
 ARGUMENTS
-  VID  system generated identifier that corresponds to a device presentation
+  VID   system generated identifier that corresponds to a device presentation
+  MNMN  manufacturer ID. Defaults to SmartThingsCommunity
 
 OPTIONS
   -h, --help             show CLI help
