@@ -9,9 +9,11 @@ import {
 	CapabilityArgument,
 	Capability,
 	CapabilitySchemaPropertyName,
+	HttpClientParams,
 } from '@smartthings/core-sdk'
 
 import { buildTableOutput } from '../capabilities'
+import { flags } from '@oclif/command'
 
 
 const enum Type {
@@ -24,7 +26,13 @@ const enum Type {
 export default class CapabilitiesCreate extends InputOutputAPICommand<CapabilityCreate, Capability> {
 	static description = 'create a capability for a user'
 
-	static flags = InputOutputAPICommand.flags
+	static flags = {
+		...InputOutputAPICommand.flags,
+		namespace: flags.string({
+			char: 'n',
+			description: 'the namespace to create the capability under',
+		}),
+	}
 
 	protected buildTableOutput = buildTableOutput
 
@@ -32,8 +40,21 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 		const { args, argv, flags } = this.parse(CapabilitiesCreate)
 		await super.setup(args, argv, flags)
 
+		const params: HttpClientParams = {}
+		if (flags.namespace) {
+			params.namespace = flags.namespace
+		}
+
 		this.processNormally(capability => {
-			return this.client.capabilities.create(capability)
+			return this.client.capabilities.create(capability, params)
+				.catch(error => {
+					if (error.response?.status == 403 && flags.namespace) {
+						throw Error('Unable to create capability under specified namespace. ' +
+							'Either the namespace does not exist or you do not have permission.')
+					}
+
+					throw error
+				})
 		})
 	}
 
