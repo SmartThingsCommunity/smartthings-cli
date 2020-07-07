@@ -100,15 +100,15 @@ function formatFromFilename(filename: string): IOFormat {
  *   need to display a list to the user to choose from.
  */
 function writeOutputPrivate<T>(data: T, outputOptions: OutputOptions,
-		buildTableOutput: (data: T) => string, forceTableOutput?: boolean): void {
+		buildTableOutput?: (data: T) => string, forceTableOutput?: boolean): void {
 	let output: string
 
-	if (forceTableOutput) {
+	if (forceTableOutput && buildTableOutput) {
 		output = buildTableOutput(data)
-	} else if (outputOptions.format === IOFormat.JSON) {
-		output = JSON.stringify(data, null, outputOptions.indentLevel)
-	} else if (outputOptions.format === IOFormat.YAML) {
+	} else if (outputOptions.format === IOFormat.YAML ) {
 		output = yaml.safeDump(data, { indent: outputOptions.indentLevel })
+	} else if ((outputOptions.format === IOFormat.JSON) || !buildTableOutput) {
+		output = JSON.stringify(data, null, outputOptions.indentLevel)
 	} else {
 		output = buildTableOutput(data)
 	}
@@ -386,7 +386,7 @@ export abstract class InputOutputAPICommand<I, O> extends APICommand {
 	protected processNormally(executeCommand: (input: I) => Promise<O>): void {
 		if (this.flags['dry-run']) {
 			this.readInput().then(input => {
-				this.log(JSON.stringify(input, null, 4))
+				writeOutputPrivate(input, this.outputOptions)
 			}).catch(err => {
 				this.logger.error(`caught error ${err}`)
 				process.exit(1)
