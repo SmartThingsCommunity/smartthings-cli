@@ -26,25 +26,7 @@ export const defaultClientIdProvider: ClientIdProvider = {
 }
 
 // All the scopes the clientId we are using is configured to use.
-const scopes = [
-	'r:devices:*',
-	// 'l:devices',
-	'w:devices:*',
-	'x:devices:*',
-
-	'r:locations:*',
-	'w:locations:*',
-	'x:locations:*',
-
-	// 'r:customcapability',
-	// 'w:customcapability',
-
-	'r:deviceprofiles',
-	// 'w:deviceprofiles',
-
-	// 'r:apps:*',
-	// 'w:apps:*',
-]
+const scopes = ['controller%3AstCli']
 const postConfig = {
 	headers: {
 		'Content-Type': 'application/x-www-form-urlencoded',
@@ -122,7 +104,7 @@ export class LoginAuthenticator implements Authenticator {
 		if (!LoginAuthenticator.credentialsFile) {
 			throw new Error('credentials file location not set')
 		}
-		this.authenticationInfo = {
+		const authenticationInfo = {
 			accessToken: response.data.access_token,
 			refreshToken: response.data.refresh_token,
 			expires: new Date(Date.now() + response.data.expires_in * 1000),
@@ -131,7 +113,7 @@ export class LoginAuthenticator implements Authenticator {
 			deviceId: response.data.device_id,
 		}
 		const credentialsFileData = this.readCredentialsFile()
-		credentialsFileData[this.profileName] = this.authenticationInfo
+		credentialsFileData[this.profileName] = authenticationInfo
 		fs.writeFileSync(LoginAuthenticator.credentialsFile, JSON.stringify(credentialsFileData, null, 4))
 		fs.chmod(LoginAuthenticator.credentialsFile, 0o600, err => {
 			if (err) {
@@ -139,6 +121,7 @@ export class LoginAuthenticator implements Authenticator {
 				throw err
 			}
 		})
+		this.authenticationInfo = authenticationInfo
 	}
 
 	async login(): Promise<void> {
@@ -205,6 +188,7 @@ export class LoginAuthenticator implements Authenticator {
 		// eslint-disable-next-line no-async-promise-executor
 		return new Promise(async (resolve, reject) => {
 			while (!this.authenticationInfo && Date.now() < startTime + maxDelay) {
+				process.stderr.write('.')
 				await this.delay(1000)
 			}
 			server.close((err) => {
