@@ -1,7 +1,12 @@
 import { SelectingAPICommandBase } from '@smartthings/cli-lib'
 
-import { capabilityIdInputArgs, getCustomByNamespace, getIdFromUser,
-	CapabilityId, CapabilitySummaryWithNamespace } from '../capabilities'
+import {
+	capabilityIdInputArgs,
+	getCustomByNamespace,
+	getIdFromUser,
+	CapabilityId,
+	CapabilitySummaryWithNamespace,
+} from '../capabilities'
 
 
 export default class CapabilitiesDeleteCommand extends SelectingAPICommandBase<CapabilityId, CapabilitySummaryWithNamespace> {
@@ -23,9 +28,9 @@ export default class CapabilitiesDeleteCommand extends SelectingAPICommandBase<C
 		const { args, argv, flags } = this.parse(CapabilitiesDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		this.processNormally({ id: args.id, version: args.version },
 			async () => this.getCustomByNamespace(),
-			async (id) => { this.client.capabilities.delete(id.id, id.version)},
+			async (id) => { this.client.capabilities.delete(id.id, id.version) },
 			'capability {{id}} deleted')
 	}
 }
