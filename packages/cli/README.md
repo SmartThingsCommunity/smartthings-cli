@@ -44,21 +44,7 @@ following location:
 
 The CLI supports an automatic login flow that pops up a browser window
 asking you to log in and give the CLI permission to access your account.
-Note, however, that this method of authentication does not support many
-necessary scopes, so using a personal access token is currently necessary.
-
-1. Create your token on the
-   [personal access tokens page](https://account.smartthings.com/tokens),
-   giving it permissions for all of the things you want to do with the CLI.
-1. Add the following lines to your configuration file (See "Configuration" above):
-
-```yaml
-default:
-  token: <your personal access token>
-```
-
-Learn more about SmartThings authorization and permissions in the
-[on-line documentation](https://smartthings.developer.samsung.com/docs/auth-and-permissions.html).
+The CLI will automatically request login as needed.
 
 ## Profiles
 
