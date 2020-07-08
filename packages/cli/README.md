@@ -32,7 +32,22 @@ progress.
 1. Run `smartthings --help` to make sure it's working.
 1. Run a specific command with `smartthings <command>`
 
-# Configuration
+## Input and Output Considerations
+
+Many commands in the CLI handle complex input and/or output, mostly for use with
+the SmartThings REST API. Input can always be passed as JSON or YAML and in
+a couple cases a "question and answer" mode is provided. The output format
+will match the input format unless otherwise specified.
+
+| Name | Shortcut | Description |
+| -- | -- | -- |
+| json | j | Write output in JSON format. |
+| yaml | y | Write output in YAML format. |
+| indent | | Specify the number of spaces for YAML or JSON output |
+| input | i | Specify a filename for input. |
+| output | o | Specify a filename for output. The extension of this file will control its type unless overridden with `--json` or `--yaml`. |
+
+## Configuration
 
 The CLI can be configured by creating a YAML file called `config.yaml` in the
 following location:
@@ -46,12 +61,7 @@ The CLI supports an automatic login flow that pops up a browser window
 asking you to log in and give the CLI permission to access your account.
 The CLI will automatically request login as needed.
 
-## Profiles
-
-Top level keys in config file represent profiles (with the exception of the `logging` key).
-The profile named "default" is used unless another is specified using the --profile command
-line option. Profiles can inherit values from other profiles using [built-in YAML
-features](https://github.com/darvid/trine/wiki/YAML-Primer).
+More details about configuration of the CLI can be found on the [configuration documentation page](doc/configuration.md).
 
 # Helpful Hints
 
@@ -62,12 +72,19 @@ features](https://github.com/darvid/trine/wiki/YAML-Primer).
    	* `smartthings capabilities --help`,
    	* `smartthings capabilities:presentation --help`
    	* `smartthings capabilities:presentation:create --help`
-1. In general, the CLI accepts JSON data in YAML or JSON format and will
-   output data in either format as well.
+1. The CLI accepts data in YAML or JSON format and can
+   output data in either format as well as the default table format.
+1. Commands that take input accept stdin or a file specified
+   by the `--input` (shortcut `-i`) flag.
+1. Commands that output data will output the data to stdout unless a file
+   is specified the using `--output (shortcut `-o`) flag.
+1. When a command takes input and results in output, the format of the output
+   will match the input format unless an output filename is specified
+   using `--output` with a different extension.
 
 # Commands
 
-Commands are organized in a hierarchy that maps the API hierarchy.
+Commands are organized in a hierarchy that maps to the API hierarchy.
 
 <!-- commands -->
 * [`smartthings apps [ID]`](#smartthings-apps-id)
