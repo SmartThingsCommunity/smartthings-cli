@@ -615,4 +615,40 @@ export abstract class SelectingInputOutputAPICommand<I, O, L> extends SelectingI
 	protected getIdFromUser = stringGetIdFromUser
 }
 
+export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand {
+	protected abstract async getIdFromUser(items: L[]): Promise<ID>
+
+	protected async processNormally(id: ID | undefined,
+			listCallback: ListCallback<L>,
+			actionCallback: GetCallback<ID, O>): Promise<void> {
+		try {
+			let inputId: ID
+			if (id) {
+				this.log(`using id from command line = ${id}`)
+				inputId = id
+			} else {
+				const items = this.sort(await listCallback())
+				if (items.length === 0) {
+					this.log('no items found')
+					process.exit(0)
+				}
+				writeOutputPrivate(items, this.outputOptions, this.buildListTableOutput.bind(this), true)
+				inputId = await this.getIdFromUser(items)
+			}
+			const output = await actionCallback(inputId)
+			this.writeOutput(output)
+		} catch (err) {
+			this.logger.error(`caught error ${err}`)
+			process.exit(1)
+		}
+	}
+
+	static flags = outputFlags
+}
+export interface SelectingOutputAPICommandBase<ID, O, L> extends Outputting<O>, Listing<L> {}
+applyMixins(SelectingOutputAPICommandBase, [Outputable, Outputting, Listing], { mergeFunctions: true })
+
+export abstract class SelectingOutputAPICommand<O, L> extends SelectingOutputAPICommandBase<string, O, L> {
+	protected getIdFromUser = stringGetIdFromUser
+}
 /* eslint-enable no-process-exit */

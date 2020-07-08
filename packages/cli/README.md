@@ -75,12 +75,12 @@ Commands are organized in a hierarchy that maps the API hierarchy.
 * [`smartthings apps:create`](#smartthings-appscreate)
 * [`smartthings apps:delete [ID]`](#smartthings-appsdelete-id)
 * [`smartthings apps:oauth [ID]`](#smartthings-appsoauth-id)
-* [`smartthings apps:oauth:generate ID`](#smartthings-appsoauthgenerate-id)
-* [`smartthings apps:oauth:update ID`](#smartthings-appsoauthupdate-id)
-* [`smartthings apps:register ID`](#smartthings-appsregister-id)
-* [`smartthings apps:settings ID`](#smartthings-appssettings-id)
-* [`smartthings apps:settings:update ID`](#smartthings-appssettingsupdate-id)
-* [`smartthings apps:update ID`](#smartthings-appsupdate-id)
+* [`smartthings apps:oauth:generate [ID]`](#smartthings-appsoauthgenerate-id)
+* [`smartthings apps:oauth:update [ID]`](#smartthings-appsoauthupdate-id)
+* [`smartthings apps:register [ID]`](#smartthings-appsregister-id)
+* [`smartthings apps:settings [ID]`](#smartthings-appssettings-id)
+* [`smartthings apps:settings:update [ID]`](#smartthings-appssettingsupdate-id)
+* [`smartthings apps:update [ID]`](#smartthings-appsupdate-id)
 * [`smartthings autocomplete [SHELL]`](#smartthings-autocomplete-shell)
 * [`smartthings capabilities [ID] [VERSION]`](#smartthings-capabilities-id-version)
 * [`smartthings capabilities:create`](#smartthings-capabilitiescreate)
@@ -95,9 +95,9 @@ Commands are organized in a hierarchy that maps the API hierarchy.
 * [`smartthings deviceprofiles [ID]`](#smartthings-deviceprofiles-id)
 * [`smartthings deviceprofiles:create`](#smartthings-deviceprofilescreate)
 * [`smartthings deviceprofiles:delete [ID]`](#smartthings-deviceprofilesdelete-id)
+* [`smartthings deviceprofiles:device-config [ID]`](#smartthings-deviceprofilesdevice-config-id)
 * [`smartthings deviceprofiles:presentation [ID]`](#smartthings-deviceprofilespresentation-id)
-* [`smartthings deviceprofiles:publish ID`](#smartthings-deviceprofilespublish-id)
-* [`smartthings deviceprofiles:update ID`](#smartthings-deviceprofilesupdate-id)
+* [`smartthings deviceprofiles:publish [ID]`](#smartthings-deviceprofilespublish-id)
 * [`smartthings devices [ID]`](#smartthings-devices-id)
 * [`smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID`](#smartthings-devicescapabilities-status-id-componentid-capabilityid)
 * [`smartthings devices:commands ID`](#smartthings-devicescommands-id)
@@ -256,19 +256,18 @@ OPTIONS
 
 _See code: [dist/commands/apps/oauth.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/oauth.ts)_
 
-## `smartthings apps:oauth:generate ID`
+## `smartthings apps:oauth:generate [ID]`
 
 update the OAuth settings of the app and regenerate the clientId and clientSecret
 
 ```
 USAGE
-  $ smartthings apps:oauth:generate ID
+  $ smartthings apps:oauth:generate [ID]
 
 ARGUMENTS
   ID  the app id
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -283,19 +282,18 @@ OPTIONS
 
 _See code: [dist/commands/apps/oauth/generate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/oauth/generate.ts)_
 
-## `smartthings apps:oauth:update ID`
+## `smartthings apps:oauth:update [ID]`
 
 update the OAuth settings of the app
 
 ```
 USAGE
-  $ smartthings apps:oauth:update ID
+  $ smartthings apps:oauth:update [ID]
 
 ARGUMENTS
   ID  the app id
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -310,13 +308,13 @@ OPTIONS
 
 _See code: [dist/commands/apps/oauth/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/oauth/update.ts)_
 
-## `smartthings apps:register ID`
+## `smartthings apps:register [ID]`
 
 register the app
 
 ```
 USAGE
-  $ smartthings apps:register ID
+  $ smartthings apps:register [ID]
 
 ARGUMENTS
   ID  the app id
@@ -329,13 +327,13 @@ OPTIONS
 
 _See code: [dist/commands/apps/register.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/register.ts)_
 
-## `smartthings apps:settings ID`
+## `smartthings apps:settings [ID]`
 
 get OAuth settings of the app
 
 ```
 USAGE
-  $ smartthings apps:settings ID
+  $ smartthings apps:settings [ID]
 
 ARGUMENTS
   ID  the app id
@@ -354,19 +352,18 @@ OPTIONS
 
 _See code: [dist/commands/apps/settings.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/settings.ts)_
 
-## `smartthings apps:settings:update ID`
+## `smartthings apps:settings:update [ID]`
 
 update the OAuth settings of the app
 
 ```
 USAGE
-  $ smartthings apps:settings:update ID
+  $ smartthings apps:settings:update [ID]
 
 ARGUMENTS
   ID  the app id
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -381,19 +378,18 @@ OPTIONS
 
 _See code: [dist/commands/apps/settings/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/apps/settings/update.ts)_
 
-## `smartthings apps:update ID`
+## `smartthings apps:update [ID]`
 
 update the OAuth settings of the app
 
 ```
 USAGE
-  $ smartthings apps:update ID
+  $ smartthings apps:update [ID]
 
 ARGUMENTS
   ID  the app id
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -770,6 +766,31 @@ EXAMPLES
 
 _See code: [dist/commands/deviceprofiles/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/delete.ts)_
 
+## `smartthings deviceprofiles:device-config [ID]`
+
+get the presentation associated with a device profile
+
+```
+USAGE
+  $ smartthings deviceprofiles:device-config [ID]
+
+ARGUMENTS
+  ID  device profile UUID or the number of the profile from list
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/deviceprofiles/device-config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/device-config.ts)_
+
 ## `smartthings deviceprofiles:presentation [ID]`
 
 get the presentation associated with a device profile
@@ -795,13 +816,13 @@ OPTIONS
 
 _See code: [dist/commands/deviceprofiles/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/presentation.ts)_
 
-## `smartthings deviceprofiles:publish ID`
+## `smartthings deviceprofiles:publish [ID]`
 
 publish a device profile (published profiles cannot be modified)
 
 ```
 USAGE
-  $ smartthings deviceprofiles:publish ID
+  $ smartthings deviceprofiles:publish [ID]
 
 ARGUMENTS
   ID  Device profile UUID or number in the list
@@ -816,40 +837,9 @@ OPTIONS
   --compact              use compact table format with no lines between body rows
   --expanded             use expanded table format with a line between each body row
   --indent=indent        specify indentation for formatting JSON or YAML output
-
-EXAMPLES
-  $ smartthings deviceprofiles:publish 63b8c91e-9686-4c43-9afb-fbd9f77e3bb0  # publish the profile with this UUID
-  $ smartthings deviceprofiles:publish 5                                     # publish the 5th profile in the list
 ```
 
 _See code: [dist/commands/deviceprofiles/publish.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/publish.ts)_
-
-## `smartthings deviceprofiles:update ID`
-
-update a device profile
-
-```
-USAGE
-  $ smartthings deviceprofiles:update ID
-
-ARGUMENTS
-  ID  device profile UUID or number in the list
-
-OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-```
-
-_See code: [dist/commands/deviceprofiles/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/update.ts)_
 
 ## `smartthings devices [ID]`
 
@@ -1443,8 +1433,6 @@ OPTIONS
   --indent=indent              specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/rules.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules.ts)_
-
 ## `smartthings rules:create`
 
 create a rule
@@ -1468,8 +1456,6 @@ OPTIONS
   --indent=indent              specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/rules/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules/create.ts)_
-
 ## `smartthings rules:delete [ID]`
 
 delete a rule
@@ -1487,8 +1473,6 @@ OPTIONS
   -p, --profile=profile        [default: default] configuration profile
   -t, --token=token            the auth token to use
 ```
-
-_See code: [dist/commands/rules/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules/delete.ts)_
 
 ## `smartthings rules:update [ID]`
 
@@ -1514,8 +1498,6 @@ OPTIONS
   --expanded                   use expanded table format with a line between each body row
   --indent=indent              specify indentation for formatting JSON or YAML output
 ```
-
-_See code: [dist/commands/rules/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules/update.ts)_
 
 ## `smartthings schema [ID]`
 
@@ -1600,9 +1582,16 @@ ARGUMENTS
 
 OPTIONS
   -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
   --authorize            authorize Lambda functions to be called by SmartThings
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/schema/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/schema/update.ts)_

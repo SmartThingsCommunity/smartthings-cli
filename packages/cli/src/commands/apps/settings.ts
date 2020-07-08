@@ -21,7 +21,6 @@ export default class AppSettingsCommand extends ListingOutputAPICommand<AppSetti
 	static args = [{
 		name: 'id',
 		description: 'the app id',
-		required: true,
 	}]
 
 	primaryKeyName = 'appId'
