@@ -14,7 +14,7 @@
 currently has only a few specific features implemented and is a work in
 progress.
 
-# Build Informtion
+# Build Information
 
 This is the monorepo for the SmartThings CLI. Currently, the following
 packages are included:

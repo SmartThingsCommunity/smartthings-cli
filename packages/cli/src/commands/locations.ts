@@ -14,7 +14,7 @@ export default class LocationsCommand extends ListingOutputAPICommand<Location, 
 	static flags = ListingOutputAPICommand.flags
 
 	static args = [{
-		name: 'id',
+		name: 'idOrIndex',
 		description: 'the location id or number in list',
 	}]
 
@@ -28,7 +28,7 @@ export default class LocationsCommand extends ListingOutputAPICommand<Location, 
 		await super.setup(args, argv, flags)
 
 		this.processNormally(
-			args.id,
+			args.idOrIndex,
 			() => this.client.locations.list(),
 			(id) => this.client.locations.get(id),
 		)
