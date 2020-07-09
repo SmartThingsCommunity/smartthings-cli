@@ -1,9 +1,22 @@
 import { DeviceProfile, DeviceProfileRequest } from '@smartthings/core-sdk'
 
-import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
+import {APICommand, SelectingInputOutputAPICommand} from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../devicedefs'
 
+export function buildTableOutput(this: APICommand, data: DeviceProfile): string {
+	const table = this.tableGenerator.newOutputTable()
+	table.push(['Name', data.name])
+	for (const comp of data.components) {
+		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
+	}
+	table.push(['Id', data.id])
+	table.push(['Device Type', data.metadata?.deviceType ?? ''])
+	table.push(['OCF Device Type', data.metadata?.ocfDeviceType ?? ''])
+	table.push(['mnmn', data.metadata?.mnmn ?? ''])
+	table.push(['vid', data.metadata?.vid ?? ''])
+	table.push(['Status', data.status])
+	return table.toString()
+}
 
 export default class DeviceProfileUpdateCommand extends SelectingInputOutputAPICommand<DeviceProfileRequest, DeviceProfile, DeviceProfile> {
 	static description = 'update a device profile'
