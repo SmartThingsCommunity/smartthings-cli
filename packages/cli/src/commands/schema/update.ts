@@ -1,17 +1,17 @@
 import { flags } from '@oclif/command'
 
-import { SchemaAppRequest } from '@smartthings/core-sdk'
+import { SchemaApp, SchemaAppRequest, Status } from '@smartthings/core-sdk'
 
-import { InputAPICommand } from '@smartthings/cli-lib'
+import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
 
 import { addSchemaPermission} from '../../lib/aws-utils'
 
 
-export default class SchemaUpdateCommand extends InputAPICommand<SchemaAppRequest> {
+export default class SchemaUpdateCommand extends SelectingInputOutputAPICommand<SchemaAppRequest, Status, SchemaApp> {
 	static description = 'update an ST Schema connector'
 
 	static flags = {
-		...InputAPICommand.flags,
+		...SelectingInputOutputAPICommand.flags,
 		authorize: flags.boolean({
 			description: 'authorize Lambda functions to be called by SmartThings',
 		}),
@@ -30,26 +30,28 @@ export default class SchemaUpdateCommand extends InputAPICommand<SchemaAppReques
 		const { args, argv, flags } = this.parse(SchemaUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally('successfully updated', async data => {
-			if (flags.authorize) {
-				if (data.hostingType === 'lambda') {
-					if (data.lambdaArn) {
-						addSchemaPermission(data.lambdaArn)
+		this.processNormally(args.id,
+			() => { return this.client.apps.list() },
+			async (id, data) => {
+				if (flags.authorize) {
+					if (data.hostingType === 'lambda') {
+						if (data.lambdaArn) {
+							await addSchemaPermission(data.lambdaArn)
+						}
+						if (data.lambdaArnAP) {
+							await addSchemaPermission(data.lambdaArnAP)
+						}
+						if (data.lambdaArnCN) {
+							await addSchemaPermission(data.lambdaArnCN)
+						}
+						if (data.lambdaArnEU) {
+							await addSchemaPermission(data.lambdaArnEU)
+						}
+					} else {
+						throw Error('Authorization is not applicable to web-hook schema connectors')
 					}
-					if (data.lambdaArnAP) {
-						addSchemaPermission(data.lambdaArnAP)
-					}
-					if (data.lambdaArnCN) {
-						addSchemaPermission(data.lambdaArnCN)
-					}
-					if (data.lambdaArnEU) {
-						addSchemaPermission(data.lambdaArnEU)
-					}
-				} else {
-					throw Error('Authorization is not applicable to web-hook schema connectors')
 				}
-			}
-			await this.client.schema.update(args.id, data)
-		})
+				return this.client.schema.update(args.id, data)
+			})
 	}
 }

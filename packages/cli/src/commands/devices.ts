@@ -22,7 +22,8 @@ export function buildTableOutput(this: APICommand, data: Device): string {
 		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
 	}
 	table.push(['Child Devices',  data.childDevices ? data.childDevices.map(it => it.deviceId).join('\n') : ''  ])
-	table.push(['Profile Id', data.profileId ?? ''])
+	// @ts-ignore
+	table.push(['Profile Id', data.profileId ?? (data.profile?.id ?? '')])
 	table.push(['Installed App Id', data.app?.installedAppId ?? ''])
 	table.push(['External App Id', data.app?.externalId ?? ''])
 	table.push(['App Profile Id', data.app?.profileId ?? ''])

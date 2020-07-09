@@ -1,19 +1,18 @@
 import { DeviceProfile, DeviceProfileRequest } from '@smartthings/core-sdk'
 
-import { InputOutputAPICommand } from '@smartthings/cli-lib'
+import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../deviceprofiles'
+import { buildTableOutput } from '../devicedefs'
 
 
-export default class DeviceProfileUpdateCommand extends InputOutputAPICommand<DeviceProfileRequest, DeviceProfile> {
+export default class DeviceProfileUpdateCommand extends SelectingInputOutputAPICommand<DeviceProfileRequest, DeviceProfile, DeviceProfile> {
 	static description = 'update a device profile'
 
-	static flags = InputOutputAPICommand.flags
+	static flags = SelectingInputOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
 		description: 'device profile UUID or number in the list',
-		required: true,
 	}]
 
 	primaryKeyName = 'id'
@@ -25,14 +24,18 @@ export default class DeviceProfileUpdateCommand extends InputOutputAPICommand<De
 		const { args, argv, flags } = this.parse(DeviceProfileUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(data => { return this.client.deviceProfiles.update(args.id, cleanupRequest(data)) })
+		this.processNormally(args.id,
+			() => { return this.client.deviceProfiles.list() },
+			async (id, data) => {
+				return this.client.deviceProfiles.update(id, cleanupRequest(data))
+			})
 	}
 }
 
 // Cleanup is done so that the result of a device profile get can be modified and
 // used in an update operation without having to delete the status, owner, and
 // component name fields, which aren't accepted in the update API call.
-function cleanupRequest(deviceProfileRequest: Partial<DeviceProfile>): DeviceProfileRequest {
+export function cleanupRequest(deviceProfileRequest: Partial<DeviceProfile>): DeviceProfileRequest {
 	delete deviceProfileRequest.id
 	delete deviceProfileRequest.status
 	delete deviceProfileRequest.owner
@@ -42,5 +45,8 @@ function cleanupRequest(deviceProfileRequest: Partial<DeviceProfile>): DevicePro
 			delete component.label
 		}
 	}
+	// @ts-ignore
+	delete deviceProfileRequest.restrictions
+
 	return deviceProfileRequest
 }

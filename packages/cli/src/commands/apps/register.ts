@@ -1,15 +1,16 @@
-import { SimpleAPICommand } from '@smartthings/cli-lib'
+import { App } from '@smartthings/core-sdk'
+
+import {SelectingAPICommand} from '@smartthings/cli-lib'
 
 
-export default class AppRegisterCommand extends SimpleAPICommand {
+export default class AppRegisterCommand extends SelectingAPICommand<App> {
 	static description = 'register the app'
 
-	static flags = SimpleAPICommand.flags
+	static flags = SelectingAPICommand.flags
 
 	static args = [{
 		name: 'id',
 		description: 'the app id',
-		required: true,
 	}]
 
 	primaryKeyName = 'appId'
@@ -19,7 +20,9 @@ export default class AppRegisterCommand extends SimpleAPICommand {
 		const { args, argv, flags } = this.parse(AppRegisterCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(`app ${args.id} registered`,
-			async () => { await this.client.apps.register(args.id) })
+		this.processNormally(args.id,
+			async () => await this.client.apps.list(),
+			async (id) => { await this.client.apps.register(id) },
+			'app {{id}} registered')
 	}
 }

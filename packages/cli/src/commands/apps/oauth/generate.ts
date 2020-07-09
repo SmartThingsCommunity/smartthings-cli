@@ -1,18 +1,17 @@
-import { AppOAuth, AppOAuthResponse } from '@smartthings/core-sdk'
+import { App, AppOAuth, AppOAuthResponse } from '@smartthings/core-sdk'
 
-import { InputOutputAPICommand } from '@smartthings/cli-lib'
+import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
 import { tableFieldDefinitions } from '../oauth'
 
 
-export default class AppOauthGenerateCommand extends InputOutputAPICommand<AppOAuth, AppOAuthResponse> {
+export default class AppOauthGenerateCommand extends SelectingInputOutputAPICommand<AppOAuth, AppOAuthResponse, App> {
 	static description = 'update the OAuth settings of the app and regenerate the clientId and clientSecret'
 
-	static flags = InputOutputAPICommand.flags
+	static flags = SelectingInputOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
 		description: 'the app id',
-		required: true,
 	}]
 
 	primaryKeyName = 'appId'
@@ -24,6 +23,8 @@ export default class AppOauthGenerateCommand extends InputOutputAPICommand<AppOA
 		const { args, argv, flags } = this.parse(AppOauthGenerateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally((data) => { return this.client.apps.regenerateOauth(args.id, data) })
+		this.processNormally(args.id,
+			() => { return this.client.apps.list() },
+			async (id, data) => { return this.client.apps.regenerateOauth(id, data) })
 	}
 }
