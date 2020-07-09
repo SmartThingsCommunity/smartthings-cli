@@ -102,8 +102,7 @@ Commands are organized in a hierarchy that maps to the API hierarchy.
 * [`smartthings capabilities [ID] [VERSION]`](#smartthings-capabilities-id-version)
 * [`smartthings capabilities:create`](#smartthings-capabilitiescreate)
 * [`smartthings capabilities:delete [ID] [VERSION]`](#smartthings-capabilitiesdelete-id-version)
-* [`smartthings capabilities:list-namespaces`](#smartthings-capabilitieslist-namespaces)
-* [`smartthings capabilities:list-standard`](#smartthings-capabilitieslist-standard)
+* [`smartthings capabilities:namespaces`](#smartthings-capabilitiesnamespaces)
 * [`smartthings capabilities:presentation [ID] [VERSION]`](#smartthings-capabilitiespresentation-id-version)
 * [`smartthings capabilities:presentation:create [ID] [VERSION]`](#smartthings-capabilitiespresentationcreate-id-version)
 * [`smartthings capabilities:presentation:update [ID] [VERSION]`](#smartthings-capabilitiespresentationupdate-id-version)
@@ -463,6 +462,7 @@ OPTIONS
   -n, --namespace=namespace  a specific namespace to query; will use all by default
   -o, --output=output        specify output file
   -p, --profile=profile      [default: default] configuration profile
+  -s, --standard             show standard SmartThings capabilities
   -t, --token=token          the auth token to use
   -y, --yaml                 use YAML format of input and/or output
   --compact                  use compact table format with no lines between body rows
@@ -517,13 +517,13 @@ OPTIONS
 
 _See code: [dist/commands/capabilities/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/delete.ts)_
 
-## `smartthings capabilities:list-namespaces`
+## `smartthings capabilities:namespaces`
 
 list all capability namespaces currently available in a user account
 
 ```
 USAGE
-  $ smartthings capabilities:list-namespaces
+  $ smartthings capabilities:namespaces
 
 OPTIONS
   -h, --help             show CLI help
@@ -537,29 +537,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/capabilities/list-namespaces.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/list-namespaces.ts)_
-
-## `smartthings capabilities:list-standard`
-
-list all standard capabilities
-
-```
-USAGE
-  $ smartthings capabilities:list-standard
-
-OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-```
-
-_See code: [dist/commands/capabilities/list-standard.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/list-standard.ts)_
+_See code: [dist/commands/capabilities/namespaces.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/capabilities/namespaces.ts)_
 
 ## `smartthings capabilities:presentation [ID] [VERSION]`
 
@@ -1450,6 +1428,8 @@ OPTIONS
   --indent=indent              specify indentation for formatting JSON or YAML output
 ```
 
+_See code: [dist/commands/rules.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules.ts)_
+
 ## `smartthings rules:create`
 
 create a rule
@@ -1473,6 +1453,8 @@ OPTIONS
   --indent=indent              specify indentation for formatting JSON or YAML output
 ```
 
+_See code: [dist/commands/rules/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules/create.ts)_
+
 ## `smartthings rules:delete [ID]`
 
 delete a rule
@@ -1490,6 +1472,8 @@ OPTIONS
   -p, --profile=profile        [default: default] configuration profile
   -t, --token=token            the auth token to use
 ```
+
+_See code: [dist/commands/rules/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules/delete.ts)_
 
 ## `smartthings rules:update [ID]`
 
@@ -1515,6 +1499,8 @@ OPTIONS
   --expanded                   use expanded table format with a line between each body row
   --indent=indent              specify indentation for formatting JSON or YAML output
 ```
+
+_See code: [dist/commands/rules/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules/update.ts)_
 
 ## `smartthings schema [ID]`
 
