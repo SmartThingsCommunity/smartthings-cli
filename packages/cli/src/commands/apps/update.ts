@@ -43,9 +43,7 @@ export default class AppUpdateCommand extends SelectingInputOutputAPICommand<App
 							await Promise.all(requests)
 						}
 					} else {
-						this.logger.error('Authorization is not applicable to web-hook SmartApps')
-						// eslint-disable-next-line no-process-exit
-						process.exit(1)
+						throw new Error('Authorization is not applicable to web-hook SmartApps')
 					}
 				}
 				return this.client.apps.update(id, data)

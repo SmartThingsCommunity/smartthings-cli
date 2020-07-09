@@ -1,7 +1,7 @@
 import inquirer from 'inquirer'
 import { flags } from '@oclif/command'
 
-import { Capability, CapabilitySummary } from '@smartthings/core-sdk'
+import { Capability, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace} from '@smartthings/core-sdk'
 
 import { APICommand, ListCallback, Listing, ListingOutputAPICommandBase } from '@smartthings/cli-lib'
 
@@ -28,6 +28,30 @@ export const capabilityIdOrIndexInputArgs = [
 	},
 ]
 
+function attributeType(attr: CapabilityJSONSchema): string {
+	if (attr.type === 'array') {
+		if (Array.isArray(attr.items)) {
+			return 'array[' + attr.items.map(it => it.type).join(', ') + ']'
+		} else if (attr.items) {
+			return `array<${attr.items.type}>`
+		}
+	} else if (attr.type === 'object') {
+		if (attr.properties) {
+			return '{\n' + Object.keys(attr.properties).map(it => {
+				// @ts-ignore
+				const item = attr.properties[it]
+				return `  ${it}: ${item ? item.type : 'undefined'}`
+			}).join('\n') + '\n}'
+		} else {
+			return attr.title || 'object'
+		}
+	}
+	if (attr.enum) {
+		return `enum<${attr.type}>`
+	}
+	return attr.type || 'undefined'
+}
+
 export function buildTableOutput(this: APICommand, capability: Capability): string {
 	enum SubItemTypes {
 		COMMANDS = 'commands',
@@ -37,23 +61,29 @@ export function buildTableOutput(this: APICommand, capability: Capability): stri
 	const makeTable = (capability: Capability, type: SubItemTypes): string => {
 		const headers = type === SubItemTypes.ATTRIBUTES
 			? ['Name', 'Type', 'Setter']
-			: ['Name', '# of Arguments']
+			: ['Name', 'Arguments']
 		const table = this.tableGenerator.newOutputTable({
 			head: headers,
-			colWidths: headers.map(() => {
-				return 30
-			}),
+			// colWidths: headers.map(() => {
+			// 	return 36
+			// }),
 		})
 		for (const name in capability[type]) {
 			if (type === SubItemTypes.ATTRIBUTES) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				const subItem = capability[SubItemTypes.ATTRIBUTES]![name]
-				table.push([name, subItem.schema.properties.value.type, subItem.setter || ''])
+				//table.push([name, subItem.schema.properties.value.type, subItem.setter || ''])
+				table.push([name, attributeType(subItem.schema.properties.value), subItem.setter || ''])
 			} else {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				const subItem = capability[SubItemTypes.COMMANDS]![name]
+
+				// @ts-ignore
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				table.push([name, subItem!.arguments!.length])
+				table.push([name, subItem!.arguments!.map((it: CapabilityArgument) => it.optional ?
+					`${it.name}: ${it.schema?.type} (optional)` :
+					`${it.name}: ${it.schema?.type}`)
+					.join('\n')])
 			}
 		}
 		return table.toString()
@@ -93,7 +123,7 @@ export async function getCustomByNamespace(this: APICommand, namespace?: string)
 		this.log(`namespace specified: ${namespace}`)
 		namespaces = [namespace]
 	} else {
-		namespaces = (await this.client.capabilities.listNamespaces()).map(ns => ns.name)
+		namespaces = (await this.client.capabilities.listNamespaces()).map((ns: CapabilityNamespace) => ns.name)
 	}
 
 	if (!namespaces || namespaces.length == 0) {
@@ -104,9 +134,14 @@ export async function getCustomByNamespace(this: APICommand, namespace?: string)
 	let capabilities: CapabilitySummaryWithNamespace[] = []
 	for (const namespace of namespaces) {
 		const caps = await this.client.capabilities.list(namespace)
-		capabilities = capabilities.concat(caps.map(capability => { return { ...capability, namespace } }))
+		capabilities = capabilities.concat(caps.map((capability: CapabilitySummary) => { return { ...capability, namespace } }))
 	}
 	return capabilities
+}
+
+export async function getStandard(this: APICommand): Promise<CapabilitySummaryWithNamespace[]> {
+	const caps = await this.client.capabilities.listStandard()
+	return caps.map((capability: CapabilitySummary) => { return { ...capability, namespace: 'st' } })
 }
 
 export async function getIdFromUser(this: APICommand & { primaryKeyName: string },
@@ -191,6 +226,10 @@ export default class CapabilitiesCommand extends ListingOutputAPICommandBase<Cap
 			char: 'n',
 			description: 'a specific namespace to query; will use all by default',
 		}),
+		standard: flags.boolean({
+			char: 's',
+			description: 'show standard SmartThings capabilities',
+		}),
 	}
 
 	static args = capabilityIdOrIndexInputArgs
@@ -205,6 +244,7 @@ export default class CapabilitiesCommand extends ListingOutputAPICommandBase<Cap
 	protected translateToId = translateToId
 
 	private getCustomByNamespace = getCustomByNamespace
+	private getStandard = getStandard
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesCommand)
@@ -215,7 +255,12 @@ export default class CapabilitiesCommand extends ListingOutputAPICommandBase<Cap
 			: args.id
 		this.processNormally(
 			idOrIndex,
-			() => this.getCustomByNamespace(flags.namespace),
+			() => {
+				if (flags.standard) {
+					return this.getStandard()
+				}
+				return this.getCustomByNamespace(flags.namespace)
+			},
 			(id) =>  this.client.capabilities.get(id.id, id.version))
 	}
 }
