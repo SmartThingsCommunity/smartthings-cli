@@ -15,6 +15,7 @@ export default class DeviceProfileDeleteCommand extends SelectingAPICommand<Devi
 
 	primaryKeyName = 'id'
 	sortKeyName = 'name'
+	listTableFieldDefinitions = ['name', 'status', 'id']
 
 	static examples = [
 		'$ smartthings deviceprofiles:delete 63b8c91e-9686-4c43-9afb-fbd9f77e3bb0  # delete profile with this UUID',

@@ -30,6 +30,7 @@ export default class DeviceProfileUpdateCommand extends SelectingInputOutputAPIC
 
 	primaryKeyName = 'id'
 	sortKeyName = 'name'
+	listTableFieldDefinitions = ['name', 'status', 'id']
 
 	protected buildTableOutput = buildTableOutput
 

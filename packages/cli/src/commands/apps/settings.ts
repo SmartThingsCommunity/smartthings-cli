@@ -1,6 +1,6 @@
 import { App, AppSettings } from '@smartthings/core-sdk'
 
-import { APICommand, ListingOutputAPICommand } from '@smartthings/cli-lib'
+import {APICommand, SelectingOutputAPICommand} from '@smartthings/cli-lib'
 
 
 export function buildTableOutput(this: APICommand, appSettings: AppSettings): string {
@@ -13,10 +13,10 @@ export function buildTableOutput(this: APICommand, appSettings: AppSettings): st
 	return table.toString()
 }
 
-export default class AppSettingsCommand extends ListingOutputAPICommand<AppSettings, App> {
+export default class AppSettingsCommand extends SelectingOutputAPICommand<AppSettings, App> {
 	static description = 'get OAuth settings of the app'
 
-	static flags = ListingOutputAPICommand.flags
+	static flags = SelectingOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -25,6 +25,7 @@ export default class AppSettingsCommand extends ListingOutputAPICommand<AppSetti
 
 	primaryKeyName = 'appId'
 	sortKeyName = 'displayName'
+	acceptIndexId = true
 
 	protected buildTableOutput = buildTableOutput
 

@@ -1,14 +1,14 @@
 import { App, AppOAuth } from '@smartthings/core-sdk'
 
-import { ListingOutputAPICommand } from '@smartthings/cli-lib'
+import {SelectingOutputAPICommand} from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions = ['clientName', 'scope', 'redirectUris']
 
-export default class AppOauthCommand extends ListingOutputAPICommand<AppOAuth, App> {
+export default class AppOauthCommand extends SelectingOutputAPICommand<AppOAuth, App> {
 	static description = 'get OAuth settings of the app'
 
-	static flags = ListingOutputAPICommand.flags
+	static flags = SelectingOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -17,6 +17,7 @@ export default class AppOauthCommand extends ListingOutputAPICommand<AppOAuth, A
 
 	primaryKeyName = 'appId'
 	sortKeyName = 'displayName'
+	acceptIndexId = true
 
 	protected tableFieldDefinitions = tableFieldDefinitions
 

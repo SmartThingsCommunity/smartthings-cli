@@ -444,29 +444,30 @@ export interface ListingOutputAPICommandBase<ID, O, L> extends Outputting<O>, Li
 applyMixins(ListingOutputAPICommandBase, [Outputable, Outputting, Listing], { mergeFunctions: true })
 
 export abstract class ListingOutputAPICommand<O, L> extends ListingOutputAPICommandBase<string, O, L> {
-	protected async translateToId(idOrIndex: string,
-			listFunction: ListCallback<L>): Promise<string> {
-		if (!idOrIndex.match(validIndex)) {
-			// idOrIndex isn't a valid index so has to be an id (or bad)
-			return idOrIndex
-		}
-
-		const index = Number.parseInt(idOrIndex)
-
-		const items = this.sort(await listFunction())
-		const matchingItem: L = items[index - 1]
-		if (!(this.primaryKeyName in matchingItem)) {
-			throw Error(`did not find key ${this.primaryKeyName} in data`)
-		}
-		// @ts-ignore
-		const pk = matchingItem[this.primaryKeyName]
-		if (typeof pk === 'string') {
-			return pk
-		}
-
-		throw Error(`invalid type ${typeof pk} for primary key`  +
-			` ${this.primaryKeyName} in ${JSON.stringify(matchingItem)}`)
-	}
+	protected translateToId = stringTranslateToId
+	// protected async translateToId(idOrIndex: string,
+	// 		listFunction: ListCallback<L>): Promise<string> {
+	// 	if (!idOrIndex.match(validIndex)) {
+	// 		// idOrIndex isn't a valid index so has to be an id (or bad)
+	// 		return idOrIndex
+	// 	}
+	//
+	// 	const index = Number.parseInt(idOrIndex)
+	//
+	// 	const items = this.sort(await listFunction())
+	// 	const matchingItem: L = items[index - 1]
+	// 	if (!(this.primaryKeyName in matchingItem)) {
+	// 		throw Error(`did not find key ${this.primaryKeyName} in data`)
+	// 	}
+	// 	// @ts-ignore
+	// 	const pk = matchingItem[this.primaryKeyName]
+	// 	if (typeof pk === 'string') {
+	// 		return pk
+	// 	}
+	//
+	// 	throw Error(`invalid type ${typeof pk} for primary key`  +
+	// 		` ${this.primaryKeyName} in ${JSON.stringify(matchingItem)}`)
+	// }
 
 	static flags = ListingOutputAPICommandBase.flags
 }
@@ -494,7 +495,11 @@ export abstract class SelectingAPICommandBase<ID, L> extends APICommand {
 		try {
 			let inputId
 			if (id) {
-				inputId = id
+				if (typeof id !== 'string' || !id.match(validIndex)) {
+					inputId = id
+				} else {
+					throw new Error('List index references not supported for this command. Specify id instead or omit argument and select from list')
+				}
 			} else {
 				const items = this.sort(await listCallback())
 				if (items.length === 0) {
@@ -517,6 +522,32 @@ export abstract class SelectingAPICommandBase<ID, L> extends APICommand {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface SelectingAPICommandBase<ID, L> extends Outputable, Listing<L> {}
 applyMixins(SelectingAPICommandBase, [Outputable, Listing], { mergeFunctions: true })
+
+async function stringTranslateToId<L>(this: APICommand & { readonly primaryKeyName: string; sort(list: L[]): L[] },
+		idOrIndex: string,
+		listFunction: ListCallback<L>): Promise<string> {
+
+	if (!idOrIndex.match(validIndex)) {
+		// idOrIndex isn't a valid index so has to be an id (or bad)
+		return idOrIndex
+	}
+
+	const index = Number.parseInt(idOrIndex)
+
+	const items = this.sort(await listFunction())
+	const matchingItem: L = items[index - 1]
+	if (!(this.primaryKeyName in matchingItem)) {
+		throw Error(`did not find key ${this.primaryKeyName} in data`)
+	}
+	// @ts-ignore
+	const pk = matchingItem[this.primaryKeyName]
+	if (typeof pk === 'string') {
+		return pk
+	}
+
+	throw Error(`invalid type ${typeof pk} for primary key`  +
+		` ${this.primaryKeyName} in ${JSON.stringify(matchingItem)}`)
+}
 
 async function stringGetIdFromUser<L>(this: APICommand & { readonly primaryKeyName: string }, items: L[]): Promise<string> {
 	const convertToId = (itemIdOrIndex: string): string | false => {
@@ -618,14 +649,22 @@ export abstract class SelectingInputOutputAPICommand<I, O, L> extends SelectingI
 export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand {
 	protected abstract async getIdFromUser(items: L[]): Promise<ID>
 
-	protected async processNormally(id: ID | undefined,
+	protected abstract async translateToId(idOrIndex: ID | string,
+		listFunction: ListCallback<L>): Promise<ID>
+
+	protected acceptIndexId = false
+
+	protected async processNormally(idOrIndex: ID | string | undefined,
 			listCallback: ListCallback<L>,
 			actionCallback: GetCallback<ID, O>): Promise<void> {
 		try {
 			let inputId: ID
-			if (id) {
-				this.log(`using id from command line = ${id}`)
-				inputId = id
+			if (idOrIndex) {
+				if (this.acceptIndexId || typeof idOrIndex !== 'string' || !idOrIndex.match(validIndex)) {
+					inputId = await this.translateToId(idOrIndex, listCallback)
+				} else {
+					throw new Error('List index references not supported for this command. Specify id instead or omit argument and select from list')
+				}
 			} else {
 				const items = this.sort(await listCallback())
 				if (items.length === 0) {
@@ -650,5 +689,6 @@ applyMixins(SelectingOutputAPICommandBase, [Outputable, Outputting, Listing], { 
 
 export abstract class SelectingOutputAPICommand<O, L> extends SelectingOutputAPICommandBase<string, O, L> {
 	protected getIdFromUser = stringGetIdFromUser
+	protected translateToId = stringTranslateToId
 }
 /* eslint-enable no-process-exit */
