@@ -445,30 +445,6 @@ applyMixins(ListingOutputAPICommandBase, [Outputable, Outputting, Listing], { me
 
 export abstract class ListingOutputAPICommand<O, L> extends ListingOutputAPICommandBase<string, O, L> {
 	protected translateToId = stringTranslateToId
-	// protected async translateToId(idOrIndex: string,
-	// 		listFunction: ListCallback<L>): Promise<string> {
-	// 	if (!idOrIndex.match(validIndex)) {
-	// 		// idOrIndex isn't a valid index so has to be an id (or bad)
-	// 		return idOrIndex
-	// 	}
-	//
-	// 	const index = Number.parseInt(idOrIndex)
-	//
-	// 	const items = this.sort(await listFunction())
-	// 	const matchingItem: L = items[index - 1]
-	// 	if (!(this.primaryKeyName in matchingItem)) {
-	// 		throw Error(`did not find key ${this.primaryKeyName} in data`)
-	// 	}
-	// 	// @ts-ignore
-	// 	const pk = matchingItem[this.primaryKeyName]
-	// 	if (typeof pk === 'string') {
-	// 		return pk
-	// 	}
-	//
-	// 	throw Error(`invalid type ${typeof pk} for primary key`  +
-	// 		` ${this.primaryKeyName} in ${JSON.stringify(matchingItem)}`)
-	// }
-
 	static flags = ListingOutputAPICommandBase.flags
 }
 
