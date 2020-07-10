@@ -17,6 +17,7 @@ export default class DeviceProfilePublishCommand extends SelectingOutputAPIComma
 
 	primaryKeyName = 'id'
 	sortKeyName = 'name'
+	listTableFieldDefinitions = ['name', 'status', 'id']
 
 	protected buildTableOutput = buildTableOutput
 

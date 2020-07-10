@@ -1,16 +1,16 @@
 import { Device, PresentationDevicePresentation } from '@smartthings/core-sdk'
 
-import { ListingOutputAPICommand } from '@smartthings/cli-lib'
+import {SelectingOutputAPICommand} from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../presentation'
 
 
 export const tableFieldDefinitions = ['clientName', 'scope', 'redirectUris']
 
-export default class DevicePresentationCommand extends ListingOutputAPICommand<PresentationDevicePresentation, Device> {
+export default class DevicePresentationCommand extends SelectingOutputAPICommand<PresentationDevicePresentation, Device> {
 	static description = 'get a device presentation'
 
-	static flags = ListingOutputAPICommand.flags
+	static flags = SelectingOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -19,6 +19,7 @@ export default class DevicePresentationCommand extends ListingOutputAPICommand<P
 
 	primaryKeyName = 'deviceId'
 	sortKeyName = 'label'
+	acceptIndexId = true
 
 	protected buildTableOutput(presentation: PresentationDevicePresentation): string {
 		return buildTableOutput(presentation, this.tableGenerator)

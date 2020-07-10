@@ -1,14 +1,14 @@
 import { DeviceProfile, PresentationDevicePresentation } from '@smartthings/core-sdk'
 
-import { ListingOutputAPICommand } from '@smartthings/cli-lib'
+import {SelectingOutputAPICommand} from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../presentation'
 
 
-export default class ProfilePresentationCommand extends ListingOutputAPICommand<PresentationDevicePresentation, DeviceProfile> {
+export default class ProfilePresentationCommand extends SelectingOutputAPICommand<PresentationDevicePresentation, DeviceProfile> {
 	static description = 'get the presentation associated with a device profile'
 
-	static flags = ListingOutputAPICommand.flags
+	static flags = SelectingOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -17,6 +17,8 @@ export default class ProfilePresentationCommand extends ListingOutputAPICommand<
 
 	primaryKeyName = 'id'
 	sortKeyName = 'name'
+	listTableFieldDefinitions = ['name', 'status', 'id']
+	acceptIndexId = true
 
 	protected buildTableOutput(presentation: PresentationDevicePresentation): string {
 		return buildTableOutput(presentation, this.tableGenerator)

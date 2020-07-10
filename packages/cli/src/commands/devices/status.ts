@@ -1,23 +1,31 @@
-import { APICommand } from '@smartthings/cli-lib'
+import { Device, DeviceStatus } from '@smartthings/core-sdk'
+
+import {SelectingOutputAPICommand} from '@smartthings/cli-lib'
 
 
-export default class DevicesStatus extends APICommand {
+export default class DeviceStatusCommand extends SelectingOutputAPICommand<DeviceStatus, Device> {
 	static description = "get the current status of all of a device's component's attributes"
 
-	static flags = APICommand.flags
+	static flags = SelectingOutputAPICommand.flags
 
 	static args = [{
 		name: 'id',
 		description: 'the device id',
-		required: true,
 	}]
 
+	primaryKeyName = 'deviceId'
+	sortKeyName = 'label'
+	listTableFieldDefinitions = ['label', 'name', 'type', 'deviceId']
+	acceptIndexId = true
+
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DevicesStatus)
+		const { args, argv, flags } = this.parse(DeviceStatusCommand)
 		await super.setup(args, argv, flags)
 
-		this.client.devices.getStatus(args.id).then(async status => {
-			this.log(JSON.stringify(status, null, 4))
-		})
+		this.processNormally(
+			args.id,
+			() => this.client.devices.list(),
+			(id) => this.client.devices.getStatus(id),
+		)
 	}
 }

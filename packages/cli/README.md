@@ -16,7 +16,6 @@ progress.
 
 <!-- toc -->
 * [Usage](#usage)
-* [Configuration](#configuration)
 * [Helpful Hints](#helpful-hints)
 * [Commands](#commands)
 * [Logging](#logging)
@@ -115,19 +114,20 @@ Commands are organized in a hierarchy that maps to the API hierarchy.
 * [`smartthings deviceprofiles:device-config [ID]`](#smartthings-deviceprofilesdevice-config-id)
 * [`smartthings deviceprofiles:presentation [ID]`](#smartthings-deviceprofilespresentation-id)
 * [`smartthings deviceprofiles:publish [ID]`](#smartthings-deviceprofilespublish-id)
+* [`smartthings deviceprofiles:update [ID]`](#smartthings-deviceprofilesupdate-id)
 * [`smartthings devices [ID]`](#smartthings-devices-id)
 * [`smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID`](#smartthings-devicescapabilities-status-id-componentid-capabilityid)
 * [`smartthings devices:commands ID`](#smartthings-devicescommands-id)
 * [`smartthings devices:components-status ID COMPONENTID`](#smartthings-devicescomponents-status-id-componentid)
 * [`smartthings devices:delete [ID]`](#smartthings-devicesdelete-id)
 * [`smartthings devices:presentation [ID]`](#smartthings-devicespresentation-id)
-* [`smartthings devices:status ID`](#smartthings-devicesstatus-id)
+* [`smartthings devices:status [ID]`](#smartthings-devicesstatus-id)
 * [`smartthings generate:java`](#smartthings-generatejava)
 * [`smartthings generate:node`](#smartthings-generatenode)
 * [`smartthings help [COMMAND]`](#smartthings-help-command)
 * [`smartthings installedapps [ID]`](#smartthings-installedapps-id)
 * [`smartthings installedapps:delete [ID]`](#smartthings-installedappsdelete-id)
-* [`smartthings locations [ID]`](#smartthings-locations-id)
+* [`smartthings locations [IDORINDEX]`](#smartthings-locations-idorindex)
 * [`smartthings locations:create`](#smartthings-locationscreate)
 * [`smartthings locations:delete [ID]`](#smartthings-locationsdelete-id)
 * [`smartthings locations:rooms [IDORINDEX]`](#smartthings-locationsrooms-idorindex)
@@ -858,6 +858,32 @@ OPTIONS
 
 _See code: [dist/commands/deviceprofiles/publish.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/publish.ts)_
 
+## `smartthings deviceprofiles:update [ID]`
+
+update a device profile
+
+```
+USAGE
+  $ smartthings deviceprofiles:update [ID]
+
+ARGUMENTS
+  ID  device profile UUID or number in the list
+
+OPTIONS
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/deviceprofiles/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/deviceprofiles/update.ts)_
+
 ## `smartthings devices [ID]`
 
 list all devices available in a user account or retrieve a single device
@@ -1007,21 +1033,27 @@ OPTIONS
 
 _See code: [dist/commands/devices/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/presentation.ts)_
 
-## `smartthings devices:status ID`
+## `smartthings devices:status [ID]`
 
 get the current status of all of a device's component's attributes
 
 ```
 USAGE
-  $ smartthings devices:status ID
+  $ smartthings devices:status [ID]
 
 ARGUMENTS
   ID  the device id
 
 OPTIONS
   -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/devices/status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/status.ts)_
@@ -1118,16 +1150,16 @@ OPTIONS
 
 _See code: [dist/commands/installedapps/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/installedapps/delete.ts)_
 
-## `smartthings locations [ID]`
+## `smartthings locations [IDORINDEX]`
 
 get a specific Location
 
 ```
 USAGE
-  $ smartthings locations [ID]
+  $ smartthings locations [IDORINDEX]
 
 ARGUMENTS
-  ID  the location id or number in list
+  IDORINDEX  the location id or number in list
 
 OPTIONS
   -h, --help             show CLI help
@@ -1450,6 +1482,8 @@ OPTIONS
   --indent=indent              specify indentation for formatting JSON or YAML output
 ```
 
+_See code: [dist/commands/rules.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules.ts)_
+
 ## `smartthings rules:create`
 
 create a rule
@@ -1473,6 +1507,8 @@ OPTIONS
   --indent=indent              specify indentation for formatting JSON or YAML output
 ```
 
+_See code: [dist/commands/rules/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules/create.ts)_
+
 ## `smartthings rules:delete [ID]`
 
 delete a rule
@@ -1490,6 +1526,8 @@ OPTIONS
   -p, --profile=profile        [default: default] configuration profile
   -t, --token=token            the auth token to use
 ```
+
+_See code: [dist/commands/rules/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules/delete.ts)_
 
 ## `smartthings rules:update [ID]`
 
@@ -1515,6 +1553,8 @@ OPTIONS
   --expanded                   use expanded table format with a line between each body row
   --indent=indent              specify indentation for formatting JSON or YAML output
 ```
+
+_See code: [dist/commands/rules/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/rules/update.ts)_
 
 ## `smartthings schema [ID]`
 
