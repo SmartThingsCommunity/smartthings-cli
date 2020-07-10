@@ -28,6 +28,26 @@ export const capabilityIdOrIndexInputArgs = [
 	},
 ]
 
+function joinEnums(enums: string[], width: number): string {
+	let result = ''
+	let lineWidth = 0
+	for (const item of enums) {
+		if (result) {
+			if (lineWidth + item.length + 2 <= width) {
+				result += ', '
+				lineWidth += item.length + 2
+			} else {
+				result += '\n'
+				lineWidth = 0
+			}
+		} else {
+			lineWidth += item.length + 2
+		}
+		result += item
+	}
+	return result
+}
+
 function attributeType(attr: CapabilityJSONSchema): string {
 	if (attr.type === 'array') {
 		if (Array.isArray(attr.items)) {
@@ -47,7 +67,7 @@ function attributeType(attr: CapabilityJSONSchema): string {
 		}
 	}
 	if (attr.enum) {
-		return `enum<${attr.type}>`
+		return `enum {${joinEnums(attr.enum, 50)}}`
 	}
 	return attr.type || 'undefined'
 }
@@ -82,7 +102,7 @@ export function buildTableOutput(this: APICommand, capability: Capability): stri
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				table.push([name, subItem!.arguments!.map((it: CapabilityArgument) => it.optional ?
 					`${it.name}: ${it.schema?.type} (optional)` :
-					`${it.name}: ${it.schema?.type}`)
+					`${it.name}: ${attributeType(it.schema)}`)
 					.join('\n')])
 			}
 		}
@@ -229,7 +249,7 @@ export default class CapabilitiesCommand extends ListingOutputAPICommandBase<Cap
 		standard: flags.boolean({
 			char: 's',
 			description: 'show standard SmartThings capabilities',
-		}),
+		})
 	}
 
 	static args = capabilityIdOrIndexInputArgs
