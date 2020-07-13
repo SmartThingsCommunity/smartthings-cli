@@ -115,12 +115,15 @@ Commands are organized in a hierarchy that maps to the API hierarchy.
 * [`smartthings deviceprofiles:publish [ID]`](#smartthings-deviceprofilespublish-id)
 * [`smartthings deviceprofiles:update [ID]`](#smartthings-deviceprofilesupdate-id)
 * [`smartthings devices [ID]`](#smartthings-devices-id)
-* [`smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID`](#smartthings-devicescapabilities-status-id-componentid-capabilityid)
-* [`smartthings devices:commands ID`](#smartthings-devicescommands-id)
-* [`smartthings devices:components-status ID COMPONENTID`](#smartthings-devicescomponents-status-id-componentid)
+* [`smartthings devices:capability-status [ID] [COMPONENT] [CAPABILITY]`](#smartthings-devicescapability-status-id-component-capability)
+* [`smartthings devices:commands [ID]`](#smartthings-devicescommands-id)
+* [`smartthings devices:component-status [ID] [COMPONENT]`](#smartthings-devicescomponent-status-id-component)
 * [`smartthings devices:delete [ID]`](#smartthings-devicesdelete-id)
+* [`smartthings devices:health [ID]`](#smartthings-deviceshealth-id)
 * [`smartthings devices:presentation [ID]`](#smartthings-devicespresentation-id)
+* [`smartthings devices:rename [ID] [LABEL]`](#smartthings-devicesrename-id-label)
 * [`smartthings devices:status [ID]`](#smartthings-devicesstatus-id)
+* [`smartthings devices:update [ID] [LABEL]`](#smartthings-devicesupdate-id-label)
 * [`smartthings generate:java`](#smartthings-generatejava)
 * [`smartthings generate:node`](#smartthings-generatenode)
 * [`smartthings help [COMMAND]`](#smartthings-help-command)
@@ -906,66 +909,82 @@ OPTIONS
 
 _See code: [dist/commands/devices.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices.ts)_
 
-## `smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID`
+## `smartthings devices:capability-status [ID] [COMPONENT] [CAPABILITY]`
 
-get the current status of a device component's capability
-
-```
-USAGE
-  $ smartthings devices:capabilities-status ID COMPONENTID CAPABILITYID
-
-ARGUMENTS
-  ID            the device id
-  COMPONENTID   the component id
-  CAPABILITYID  the capability id
-
-OPTIONS
-  -h, --help             show CLI help
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-```
-
-_See code: [dist/commands/devices/capabilities-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/capabilities-status.ts)_
-
-## `smartthings devices:commands ID`
-
-execute commands on a device
+get the current status of all of a device's component's attributes
 
 ```
 USAGE
-  $ smartthings devices:commands ID
+  $ smartthings devices:capability-status [ID] [COMPONENT] [CAPABILITY]
 
 ARGUMENTS
-  ID  the device on which you want to execute a command
+  ID          the device id
+  COMPONENT   the component id
+  CAPABILITY  the capability id
 
 OPTIONS
-  -d, --data=data        JSON data for command(s)
   -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+## `smartthings devices:commands [ID]`
+
+get the current status of all of a device's component's attributes
+
+```
+USAGE
+  $ smartthings devices:commands [ID]
+
+ARGUMENTS
+  ID  the device id
+
+OPTIONS
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/devices/commands.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/commands.ts)_
 
-## `smartthings devices:components-status ID COMPONENTID`
+## `smartthings devices:component-status [ID] [COMPONENT]`
 
-get the status of all attributes of a the component
+get the current status of all of a device's component's attributes
 
 ```
 USAGE
-  $ smartthings devices:components-status ID COMPONENTID
+  $ smartthings devices:component-status [ID] [COMPONENT]
 
 ARGUMENTS
-  ID           the device id
-  COMPONENTID  the component id
+  ID         the device id
+  COMPONENT  the component id
 
 OPTIONS
   -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/devices/components-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/components-status.ts)_
+_See code: [dist/commands/devices/component-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/component-status.ts)_
 
 ## `smartthings devices:delete [ID]`
 
@@ -985,6 +1004,31 @@ OPTIONS
 ```
 
 _See code: [dist/commands/devices/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/delete.ts)_
+
+## `smartthings devices:health [ID]`
+
+get the current health status of a device
+
+```
+USAGE
+  $ smartthings devices:health [ID]
+
+ARGUMENTS
+  ID  the device id
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
+_See code: [dist/commands/devices/health.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/health.ts)_
 
 ## `smartthings devices:presentation [ID]`
 
@@ -1011,6 +1055,30 @@ OPTIONS
 
 _See code: [dist/commands/devices/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/presentation.ts)_
 
+## `smartthings devices:rename [ID] [LABEL]`
+
+get the current status of all of a device's component's attributes
+
+```
+USAGE
+  $ smartthings devices:rename [ID] [LABEL]
+
+ARGUMENTS
+  ID     the device id
+  LABEL  the new device label
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
+
 ## `smartthings devices:status [ID]`
 
 get the current status of all of a device's component's attributes
@@ -1035,6 +1103,31 @@ OPTIONS
 ```
 
 _See code: [dist/commands/devices/status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0/dist/commands/devices/status.ts)_
+
+## `smartthings devices:update [ID] [LABEL]`
+
+get the current status of all of a device's component's attributes
+
+```
+USAGE
+  $ smartthings devices:update [ID] [LABEL]
+
+ARGUMENTS
+  ID     the device id
+  LABEL  the new device label
+
+OPTIONS
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+```
 
 ## `smartthings generate:java`
 

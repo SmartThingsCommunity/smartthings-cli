@@ -2,6 +2,7 @@ import fs from 'fs'
 import inquirer from 'inquirer'
 import path from 'path'
 import yaml from 'js-yaml'
+import stringArgv from 'string-argv'
 import { flags } from '@oclif/command'
 
 import { APICommand } from './api-command'
@@ -73,10 +74,17 @@ export interface OutputOptions {
 	indentLevel: number
 }
 
+export type InputArgv = string[]
+
+export interface IdAndArgs<ID> {
+	id: ID
+	argv: InputArgv
+}
+
 export type ListCallback<L> = () => Promise<L[]>
-export type GetCallback<ID, O> = (id: ID) => Promise<O>
-export type UpdateCallback<ID, I, O> = (id: ID, data: I) => Promise<O>
-export type ActionCallback<ID> = (id: ID) => Promise<void>
+export type GetCallback<ID, O> = (id: ID, argv?: InputArgv) => Promise<O>
+export type UpdateCallback<ID, I, O> = (id: ID, data: I, argv?: InputArgv) => Promise<O>
+export type ActionCallback<ID> = (id: ID, argv?: InputArgv) => Promise<void>
 
 function formatFromFilename(filename: string): IOFormat {
 	const ext = path.extname(filename).toLowerCase()
@@ -462,14 +470,15 @@ export abstract class ListingOutputAPICommand<O, L> extends ListingOutputAPIComm
  * SelectingAPICommand instead.
  */
 export abstract class SelectingAPICommandBase<ID, L> extends APICommand {
-	protected abstract async getIdFromUser(items: L[]): Promise<ID>
+	protected abstract async getIdFromUser(items: L[]): Promise<IdAndArgs<ID>>
 
 	protected async processNormally(id: ID | undefined,
 			listCallback: ListCallback<L>,
 			actionCallback: ActionCallback<ID>,
 			successMessage: string): Promise<void> {
 		try {
-			let inputId
+			let inputId: ID
+			let inputArgv: InputArgv = []
 			if (id) {
 				if (typeof id !== 'string' || !id.match(validIndex)) {
 					inputId = id
@@ -483,9 +492,11 @@ export abstract class SelectingAPICommandBase<ID, L> extends APICommand {
 					process.exit(0)
 				}
 				this.writeListOutput(items)
-				inputId = await this.getIdFromUser(items)
+				const input = await this.getIdFromUser(items)
+				inputId = input.id
+				inputArgv = input.argv
 			}
-			await actionCallback(inputId)
+			await actionCallback(inputId, inputArgv)
 			this.log(successMessage.replace('{{id}}', JSON.stringify(inputId)))
 		} catch (err) {
 			this.logger.error(`caught error ${err}`)
@@ -525,17 +536,19 @@ async function stringTranslateToId<L>(this: APICommand & { readonly primaryKeyNa
 		` ${this.primaryKeyName} in ${JSON.stringify(matchingItem)}`)
 }
 
-async function stringGetIdFromUser<L>(this: APICommand & { readonly primaryKeyName: string }, items: L[]): Promise<string> {
-	const convertToId = (itemIdOrIndex: string): string | false => {
-		if (itemIdOrIndex.length === 0) {
+async function stringGetIdFromUser<L>(this: APICommand & { readonly primaryKeyName: string; readonly inputPrompt: string}, items: L[]): Promise<IdAndArgs<string>> {
+	const convertToId = (input: string): IdAndArgs<string> | false => {
+		const argv = stringArgv(input)
+		if (argv.length === 0 && argv[0].length === 0) {
 			return false
 		}
+		const itemIdOrIndex = argv[0]
 		const matchingItem = items.find((item) => {
 			// @ts-ignore
 			return (this.primaryKeyName in item) && itemIdOrIndex === item[this.primaryKeyName]
 		})
 		if (matchingItem) {
-			return itemIdOrIndex
+			return {id: itemIdOrIndex, argv: argv.slice(1)}
 		}
 
 		if (!itemIdOrIndex.match(validIndex)) {
@@ -548,7 +561,7 @@ async function stringGetIdFromUser<L>(this: APICommand & { readonly primaryKeyNa
 			// @ts-ignore
 			const pk = items[index - 1][this.primaryKeyName]
 			if (typeof pk === 'string') {
-				return pk
+				return {id: pk, argv: argv.slice(1)}
 			} else {
 				throw Error(`invalid type ${typeof pk} for primary key`  +
 					` ${this.primaryKeyName} in ${JSON.stringify(items[index - 1])}`)
@@ -557,22 +570,24 @@ async function stringGetIdFromUser<L>(this: APICommand & { readonly primaryKeyNa
 			return false
 		}
 	}
+
 	const itemIdOrIndex: string = (await inquirer.prompt({
 		type: 'input',
 		name: 'itemIdOrIndex',
-		message: 'Enter id or index',
+		message: this.inputPrompt,
 		validate: (input) => {
 			return convertToId(input)
 				? true
 				: `Invalid id or index ${itemIdOrIndex}. Please enter an index or valid id.`
 		},
 	})).itemIdOrIndex
-	const inputId = convertToId(itemIdOrIndex)
-	if (inputId === false) {
+	const result = convertToId(itemIdOrIndex)
+	if (result === false) {
 		throw Error(`unable to convert ${itemIdOrIndex} to id`)
 	}
-	return inputId
+	return result
 }
+
 
 /**
  * A version of SelectingAPICommandBase for APIs that use strings for
@@ -583,13 +598,14 @@ export abstract class SelectingAPICommand<L> extends SelectingAPICommandBase<str
 }
 
 export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends APICommand {
-	protected abstract async getIdFromUser(items: L[]): Promise<ID>
+	protected abstract async getIdFromUser(items: L[]): Promise<IdAndArgs<ID>>
 
 	protected async processNormally(id: ID | undefined,
 			listCallback: ListCallback<L>,
 			updateCallback: UpdateCallback<ID, I, O>): Promise<void> {
 		try {
 			let inputId: ID
+			let inputArgv: InputArgv = []
 			if (id) {
 				this.log(`using id from command line = ${id}`)
 				inputId = id
@@ -600,12 +616,14 @@ export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends AP
 					process.exit(0)
 				}
 				writeOutputPrivate(items, this.outputOptions, this.buildListTableOutput.bind(this), true)
-				inputId = await this.getIdFromUser(items)
+				const input = await this.getIdFromUser(items)
+				inputId = input.id
+				inputArgv = input.argv
 			} else {
 				throw Error('When input data comes in via stdin, id is required on command line')
 			}
 			const input: I = await this.readInput()
-			const output = await updateCallback(inputId, input)
+			const output = await updateCallback(inputId, input, inputArgv)
 			this.writeOutput(output)
 		} catch (err) {
 			this.logger.error(`caught error ${err}`)
@@ -623,18 +641,20 @@ export abstract class SelectingInputOutputAPICommand<I, O, L> extends SelectingI
 }
 
 export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand {
-	protected abstract async getIdFromUser(items: L[]): Promise<ID>
+	protected abstract async getIdFromUser(items: L[]): Promise<IdAndArgs<ID>>
 
 	protected abstract async translateToId(idOrIndex: ID | string,
 		listFunction: ListCallback<L>): Promise<ID>
 
 	protected acceptIndexId = false
+	protected inputPrompt = 'Enter id or index'
 
 	protected async processNormally(idOrIndex: ID | string | undefined,
 			listCallback: ListCallback<L>,
 			actionCallback: GetCallback<ID, O>): Promise<void> {
 		try {
 			let inputId: ID
+			let inputArgv: InputArgv = []
 			if (idOrIndex) {
 				if (this.acceptIndexId || typeof idOrIndex !== 'string' || !idOrIndex.match(validIndex)) {
 					inputId = await this.translateToId(idOrIndex, listCallback)
@@ -648,9 +668,11 @@ export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand
 					process.exit(0)
 				}
 				writeOutputPrivate(items, this.outputOptions, this.buildListTableOutput.bind(this), true)
-				inputId = await this.getIdFromUser(items)
+				const input = await this.getIdFromUser(items)
+				inputId = input.id
+				inputArgv = input.argv
 			}
-			const output = await actionCallback(inputId)
+			const output = await actionCallback(inputId, inputArgv)
 			this.writeOutput(output)
 		} catch (err) {
 			this.logger.error(`caught error ${err}`)

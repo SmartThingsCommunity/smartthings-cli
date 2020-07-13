@@ -3,7 +3,7 @@ import { flags } from '@oclif/command'
 
 import { Capability, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace} from '@smartthings/core-sdk'
 
-import { APICommand, ListCallback, Listing, ListingOutputAPICommandBase } from '@smartthings/cli-lib'
+import { APICommand, ListCallback, Listing, ListingOutputAPICommandBase, IdAndArgs } from '@smartthings/cli-lib'
 
 
 export const capabilityIdInputArgs = [
@@ -165,7 +165,7 @@ export async function getStandard(this: APICommand): Promise<CapabilitySummaryWi
 }
 
 export async function getIdFromUser(this: APICommand & { primaryKeyName: string },
-		items: CapabilitySummaryWithNamespace[]): Promise<CapabilityId> {
+		items: CapabilitySummaryWithNamespace[]): Promise<IdAndArgs<CapabilityId>> {
 	const convertToId = (itemIdOrIndex: string): string | false => {
 		if (itemIdOrIndex.length === 0) {
 			return false
@@ -215,7 +215,7 @@ export async function getIdFromUser(this: APICommand & { primaryKeyName: string 
 	//    - if not, use the one there is
 	//    - if so, ask the user which one
 
-	return { 'id': inputId, 'version': 1 }
+	return {id: { 'id': inputId, 'version': 1 }, argv: []}
 }
 
 export async function translateToId(this: Listing<CapabilitySummaryWithNamespace>,  idOrIndex: string | CapabilityId,

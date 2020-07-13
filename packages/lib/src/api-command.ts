@@ -24,6 +24,7 @@ export abstract class APICommand extends SmartThingsCommand {
 
 	protected token?: string
 	protected clientIdProvider = defaultClientIdProvider
+
 	private _client?: SmartThingsClient
 
 	protected get client(): SmartThingsClient {
