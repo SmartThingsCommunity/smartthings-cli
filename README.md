@@ -31,9 +31,8 @@ packages are included:
 The CLI uses lerna to manage multiple packages in a monorepo.
 
 The CLI depends on the
-[SmartThings Core SDK](https://github.com/SmartThingsCommunity/smartthings-core-sdk)
-which is not yet published. To get this working for testing purposes, you'll
-need to check out both repositories and then:
+[SmartThings Core SDK](https://github.com/SmartThingsCommunity/smartthings-core-sdk).
+To use a pre-release version for testing purposes, you'll need to make any required changes in both checked out repositories and then:
 
 1. Be sure you're using at least NodeJS version 12.
 1. In the root directory of the SDK
@@ -42,7 +41,7 @@ need to check out both repositories and then:
 		you might need to run this with admin privileges.
 1. Install lerna globally with `npm -g i lerna`. (Alternatively, you can use
    `npx lerna` below instead of simply `lerna`.)
-1. In the in the root directory of the CLI repository run `./bootstrap.sh`.
+1. In the in the root directory of the CLI repository run `./bootstrap.sh --reset --link-sdk`.
 1. The bootstrap script will compile the CLI but you can:
 	1. run `lerna run compile` to compile again, or
 	1. run `lerna run watch` to watch for changes and compile on the fly, or
