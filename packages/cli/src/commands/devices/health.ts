@@ -1,5 +1,4 @@
 import { Device, DeviceHealth } from '@smartthings/core-sdk'
-
 import {SelectingOutputAPICommand} from '@smartthings/cli-lib'
 
 

@@ -66,6 +66,7 @@
 		"@types/cli-table": "^0.3.0",
 		"@types/lodash": "^4.14.155",
 		"@types/yeoman-environment": "^2.3.3",
+		"jest": "^26.1.0",
 		"pkg": "^4.4.8",
 		"typescript": "^3.9.3"
 	},
