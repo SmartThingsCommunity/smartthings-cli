@@ -25,7 +25,11 @@ export abstract class SmartThingsCommand extends Command implements Loggable {
 		}),
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	private _args?: { [name: string]: any }
+
 	private _argv?: string[]
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private _flags?: { [name: string]: any }
 
@@ -47,6 +51,14 @@ export abstract class SmartThingsCommand extends Command implements Loggable {
 			throw new Error('SmartThingsCommand not properly initialized')
 		}
 		return this._profileConfig
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	protected get args(): { [name: string]: any } {
+		if (!this._args) {
+			throw new Error('SmartThingsCommand not properly initialized')
+		}
+		return this._args
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -74,6 +86,7 @@ export abstract class SmartThingsCommand extends Command implements Loggable {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	protected async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
+		this._args = args
 		this._argv = argv
 		this._flags = flags
 
@@ -90,5 +103,13 @@ export abstract class SmartThingsCommand extends Command implements Loggable {
 			compact = true
 		}
 		this._tableGenerator = new DefaultTableGenerator(compact)
+	}
+
+	protected abort(message?: string): void {
+		if (message) {
+			this.log(message)
+		}
+		// eslint-disable-next-line no-process-exit
+		process.exit(0)
 	}
 }

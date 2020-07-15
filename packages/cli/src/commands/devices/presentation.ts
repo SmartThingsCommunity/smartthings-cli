@@ -1,7 +1,5 @@
 import { Device, PresentationDevicePresentation } from '@smartthings/core-sdk'
-
 import {SelectingOutputAPICommand} from '@smartthings/cli-lib'
-
 import { buildTableOutput } from '../presentation'
 
 

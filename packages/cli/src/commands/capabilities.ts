@@ -48,7 +48,7 @@ function joinEnums(enums: string[], width: number): string {
 	return result
 }
 
-function attributeType(attr: CapabilityJSONSchema): string {
+export function attributeType(attr: CapabilityJSONSchema, multilineObjects= true): string {
 	if (attr.type === 'array') {
 		if (Array.isArray(attr.items)) {
 			return 'array[' + attr.items.map(it => it.type).join(', ') + ']'
@@ -57,11 +57,19 @@ function attributeType(attr: CapabilityJSONSchema): string {
 		}
 	} else if (attr.type === 'object') {
 		if (attr.properties) {
-			return '{\n' + Object.keys(attr.properties).map(it => {
-				// @ts-ignore
-				const item = attr.properties[it]
-				return `  ${it}: ${item ? item.type : 'undefined'}`
-			}).join('\n') + '\n}'
+			if (multilineObjects) {
+				return '{\n' + Object.keys(attr.properties).map(it => {
+					// @ts-ignore
+					const item = attr.properties[it]
+					return `  ${it}: ${item ? item.type : 'undefined'}`
+				}).join('\n') + '\n}'
+			} else {
+				return '{' + Object.keys(attr.properties).map(it => {
+					// @ts-ignore
+					const item = attr.properties[it]
+					return `${it}: ${item ? item.type : 'undefined'}`
+				}).join(', ') + '}'
+			}
 		} else {
 			return attr.title || 'object'
 		}

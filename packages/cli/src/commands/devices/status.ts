@@ -3,7 +3,7 @@ import { Device, DeviceStatus } from '@smartthings/core-sdk'
 import {APICommand, SelectingOutputAPICommand} from '@smartthings/cli-lib'
 
 
-function prettyPrintAttribute(value: unknown): string {
+export function prettyPrintAttribute(value: unknown): string {
 	let result = JSON.stringify(value)
 	if (result.length > 50) {
 		result = JSON.stringify(value, null, 2)
@@ -14,9 +14,12 @@ function prettyPrintAttribute(value: unknown): string {
 export function buildTableOutput(this: APICommand, data: DeviceStatus): string {
 	let output = ''
 	if (data.components) {
-		for (const componentId of Object.keys(data.components)) {
+		const componentIds = Object.keys(data.components)
+		for (const componentId of componentIds) {
 			const table = this.tableGenerator.newOutputTable({head: ['Capability', 'Attribute','Value']})
-			output += `\n${componentId} component\n`
+			if (componentIds.length > 1) {
+				output += `\n${componentId} component\n`
+			}
 			const component = data.components[componentId]
 			for (const capabilityName of Object.keys(component)) {
 				const capability = component[capabilityName]
