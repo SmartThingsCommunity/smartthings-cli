@@ -216,7 +216,8 @@ export default class DeviceCommandsCommand extends SelectingInputAPICommand<Comm
 		}
 
 		const device = await this.client.devices.get(this.entityId)
-
+		this.log('\n' + device.label)
+		
 		let cmd: Command = {
 			component: 'main',
 			capability: '',
