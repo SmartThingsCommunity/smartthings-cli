@@ -1,0 +1,28 @@
+name: CI/CD
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        # add/remove versions as we move support forward
+        node-version: [12.x]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run bootstrap
+      - run: npm run clean
+      - run: npm run compile
+      - run: npm run lint
+      - run: npm run test
