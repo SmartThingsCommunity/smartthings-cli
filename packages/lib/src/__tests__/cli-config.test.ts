@@ -36,7 +36,7 @@ describe('cliConfig', () => {
 	it('throws error for config file with just a string', function() {
 		const cliConfig = new CLIConfig()
 		cliConfig.init(`${resourcesDir}/string-config.yaml`)
-		expect(cliConfig.loadConfig.bind(cliConfig)).toThrow('invalid config file format')
+		expect(cliConfig.loadConfig.bind(cliConfig)).toThrow('invalid config file format; please specify zero or more profiles')
 	})
 
 	it('getProfile returns profile sub-tree', function() {

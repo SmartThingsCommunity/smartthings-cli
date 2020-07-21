@@ -22,22 +22,23 @@ export class CLIConfig {
 		}
 
 		if (!fs.existsSync(this._configFile)) {
-			return {}
+			this._config = {}
 		}
 
 		if (this._config == null) {
-			// process.stdout.write('reading config file\n')
-			this._config = yaml.safeLoad(fs.readFileSync(`${this._configFile}`, 'utf-8'))
-			// process.stdout.write(JSON.stringify(this._config, null, 4) + '\n')
+			const parsed = yaml.safeLoad(fs.readFileSync(`${this._configFile}`, 'utf-8'))
+			if (parsed) {
+				if (typeof parsed === 'object') {
+					this._config = parsed
+				} else {
+					throw new Error('invalid config file format; please specify zero or more profiles')
+				}
+			}
 		}
 
 		if (!this._config) {
-			// empty file; return empty map
-			return {}
-		}
-
-		if (typeof(this._config) === 'string') {
-			throw new Error('invalid config file format; please specify one or more profiles')
+			// empty file; use empty map
+			this._config = {}
 		}
 
 		return this._config
