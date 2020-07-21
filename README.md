@@ -28,7 +28,14 @@ packages are included:
 
 # Development
 
-The CLI uses lerna to manage multiple packages in a monorepo.
+The CLI uses lerna to manage multiple packages in a monorepo. Dependencies are hoisted during bootstrap by default.
+To disable this, modify the following in `lerna.json`.
+``` json
+"command": {
+    "bootstrap": {
+        "hoist": false
+    }
+```
 
 The CLI depends on the
 [SmartThings Core SDK](https://github.com/SmartThingsCommunity/smartthings-core-sdk).

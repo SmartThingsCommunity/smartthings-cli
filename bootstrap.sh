@@ -25,7 +25,7 @@ fi
 
 # TODO: check for global install of lerna
 
-lerna bootstrap --hoist
+lerna bootstrap
 if [ "$DO_LINK" = "y" ]; then
 	npm link @smartthings/core-sdk
 fi
