@@ -1,5 +1,3 @@
-// import { expect, test } from '@oclif/test'
-import {Command} from '@smartthings/core-sdk'
 import {parseDeviceCommand} from '../../commands/devices/commands'
 
 

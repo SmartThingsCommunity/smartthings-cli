@@ -257,7 +257,7 @@ export default class CapabilitiesCommand extends ListingOutputAPICommandBase<Cap
 		standard: flags.boolean({
 			char: 's',
 			description: 'show standard SmartThings capabilities',
-		})
+		}),
 	}
 
 	static args = capabilityIdOrIndexInputArgs
