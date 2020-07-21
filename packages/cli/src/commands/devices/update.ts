@@ -13,10 +13,6 @@ export default class DeviceUpdateCommand extends SelectingInputOutputAPICommand<
 			name: 'id',
 			description: 'the device id',
 		},
-		{
-			name: 'label',
-			description: 'the new device label',
-		},
 	]
 
 	protected buildTableOutput = buildTableOutput

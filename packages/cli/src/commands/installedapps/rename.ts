@@ -13,11 +13,11 @@ export default class DeviceComponentStatusCommand extends SelectingOutputAPIComm
 	static args = [
 		{
 			name: 'id',
-			description: 'the device id',
+			description: 'the installed app id',
 		},
 		{
 			name: 'name',
-			description: 'the new device name',
+			description: 'the new installed app name',
 		},
 	]
 

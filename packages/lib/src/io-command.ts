@@ -491,7 +491,7 @@ export abstract class SelectingAPICommandBase<ID, L> extends APICommand {
 				this.writeListOutput(items)
 				this._entityId = await this.getIdFromUser(items)
 			}
-			await actionCallback(this._entityId)
+			await actionCallback(this.entityId)
 			if (successMessage) {
 				this.log(successMessage.replace('{{id}}', JSON.stringify(this._entityId)))
 			}
@@ -595,13 +595,9 @@ export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends AP
 	private _entityId?: ID
 	protected abstract async getIdFromUser(items: L[]): Promise<ID>
 
-	protected async translateToId(idOrIndex: ID | string, listFunction: ListCallback<L>): Promise<ID> {
-		// @ts-ignore
-		return idOrIndex
-	}
+	protected translateToId?(idOrIndex: ID | string, listFunction: ListCallback<L>): Promise<ID>
 
 	protected acceptIndexId = false
-	protected inputPrompt = 'Enter id or index'
 
 	protected get entityId(): ID {
 		if (!this._entityId) {
@@ -615,10 +611,17 @@ export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends AP
 			updateCallback: UpdateCallback<ID, I, O>): Promise<void> {
 		try {
 			if (idOrIndex) {
-				if (this.acceptIndexId || typeof idOrIndex !== 'string' || !isIndexArgument(idOrIndex)) {
+				if (this.acceptIndexId) {
+					if (!this.translateToId) {
+						throw new Error('translateToId must be defined if acceptIndexId is true')
+					}
 					this._entityId = await this.translateToId(idOrIndex, listCallback)
+				} else if (typeof idOrIndex === 'string' && isIndexArgument(idOrIndex)) {
+					throw new Error('List index references not supported for this command. Specify'
+						+ ' id instead or omit argument and select from list')
 				} else {
-					throw new Error('List index references not supported for this command. Specify id instead or omit argument and select from list')
+					// @ts-ignore
+					this._entityId = idOrIndex
 				}
 			} else if (this.inputOptions.filename || process.stdin.isTTY) {
 				const items = this.sort(await listCallback())
@@ -632,7 +635,7 @@ export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends AP
 				throw Error('When input data comes in via stdin, id is required on command line')
 			}
 			const input: I = await this.readInput()
-			const output = await updateCallback(this._entityId, input)
+			const output = await updateCallback(this.entityId, input)
 			this.writeOutput(output)
 		} catch (err) {
 			this.logger.error(`caught error ${err}`)
@@ -653,13 +656,9 @@ export abstract class SelectingInputOutputAPICommand<I, O, L> extends SelectingI
 export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand {
 	protected abstract async getIdFromUser(items: L[]): Promise<ID>
 
-	protected async translateToId(idOrIndex: ID | string, listFunction: ListCallback<L>): Promise<ID> {
-		// @ts-ignore
-		return idOrIndex
-	}
+	protected translateToId?(idOrIndex: ID | string, listFunction: ListCallback<L>): Promise<ID>
 
 	protected acceptIndexId = false
-	protected inputPrompt = 'Enter id or index'
 
 	private _entityId?: ID
 	protected get entityId(): ID {
@@ -674,10 +673,17 @@ export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand
 			actionCallback: GetCallback<ID, O>): Promise<void> {
 		try {
 			if (idOrIndex) {
-				if (this.acceptIndexId || typeof idOrIndex !== 'string' || !isIndexArgument(idOrIndex)) {
+				if (this.acceptIndexId) {
+					if (!this.translateToId) {
+						throw new Error('translateToId must be defined if acceptIndexId is true')
+					}
 					this._entityId = await this.translateToId(idOrIndex, listCallback)
+				} else if (typeof idOrIndex === 'string' && isIndexArgument(idOrIndex)) {
+					throw new Error('List index references not supported for this command. Specify'
+						+ ' id instead or omit argument and select from list')
 				} else {
-					throw new Error('List index references not supported for this command. Specify id instead or omit argument and select from list')
+					// @ts-ignore
+					this._entityId = idOrIndex
 				}
 			} else {
 				const items = this.sort(await listCallback())
@@ -688,7 +694,7 @@ export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand
 				writeOutputPrivate(items, this.outputOptions, this.buildListTableOutput.bind(this), true)
 				this._entityId = await this.getIdFromUser(items)
 			}
-			const output = await actionCallback(this._entityId)
+			const output = await actionCallback(this.entityId)
 			this.writeOutput(output)
 		} catch (err) {
 			this.logger.error(`caught error ${err}`)
@@ -710,13 +716,9 @@ export abstract class SelectingInputAPICommandBase<ID, I, L> extends APICommand 
 	private _entityId?: ID
 	protected abstract async getIdFromUser(items: L[]): Promise<ID>
 
-	protected async translateToId(idOrIndex: ID | string, listFunction: ListCallback<L>): Promise<ID> {
-		// @ts-ignore
-		return idOrIndex
-	}
+	protected async translateToId?(idOrIndex: ID | string, listFunction: ListCallback<L>): Promise<ID>
 
 	protected acceptIndexId = false
-	protected inputPrompt = 'Enter id or index'
 
 	protected get entityId(): ID {
 		if (!this._entityId) {
@@ -731,10 +733,17 @@ export abstract class SelectingInputAPICommandBase<ID, I, L> extends APICommand 
 			successMessage?: string): Promise<void> {
 		try {
 			if (idOrIndex) {
-				if (this.acceptIndexId || typeof idOrIndex !== 'string' || !isIndexArgument(idOrIndex)) {
+				if (this.acceptIndexId) {
+					if (!this.translateToId) {
+						throw new Error('translateToId must be defined if acceptIndexId is true')
+					}
 					this._entityId = await this.translateToId(idOrIndex, listCallback)
+				} else if (typeof idOrIndex === 'string' && isIndexArgument(idOrIndex)) {
+					throw new Error('List index references not supported for this command. Specify'
+						+ ' id instead or omit argument and select from list')
 				} else {
-					throw new Error('List index references not supported for this command. Specify id instead or omit argument and select from list')
+					// @ts-ignore
+					this._entityId = idOrIndex
 				}
 			} else if (this.inputOptions.filename || process.stdin.isTTY) {
 				const items = this.sort(await listCallback())
@@ -748,7 +757,7 @@ export abstract class SelectingInputAPICommandBase<ID, I, L> extends APICommand 
 				throw Error('When input data comes in via stdin, id is required on command line')
 			}
 			const input: I = await this.readInput()
-			await actionCallback(this._entityId, input)
+			await actionCallback(this.entityId, input)
 			if (successMessage) {
 				this.log(successMessage.replace('{{id}}', JSON.stringify(this._entityId)))
 			}
