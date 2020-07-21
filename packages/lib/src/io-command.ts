@@ -146,22 +146,31 @@ export abstract class Inputting<I> {
 		return new Promise<I>((resolve, reject) => {
 			if (this.inputOptions.format === IOFormat.COMMON) {
 				reject('invalid state')
-			} else if (this.inputOptions.filename) {
-				resolve(yaml.safeLoad(fs.readFileSync(`${this.inputOptions.filename}`, 'utf-8')))
 			} else {
-				const stdin = process.stdin
-				const inputChunks: string[] = []
-				stdin.resume()
-				stdin.on('data', chunk => {
-					inputChunks.push(chunk.toString())
-				})
-				stdin.on('end', () => {
-					try {
-						resolve(JSON.parse(inputChunks.join()))
-					} catch (err) {
-						reject(err)
+				const finish = (rawInputData: string, filename: string): void => {
+					const data = yaml.safeLoad(rawInputData)
+					if (!data) {
+						reject(`did not get any data from ${filename}`)
+					} else if (typeof data === 'string') {
+						reject(`got simple string from ${filename}`)
+					} else {
+						// @ts-ignore
+						resolve(data)
 					}
-				})
+				}
+				if (this.inputOptions.filename) {
+					finish(fs.readFileSync(`${this.inputOptions.filename}`, 'utf-8'), this.inputOptions.filename)
+				} else {
+					const stdin = process.stdin
+					const inputChunks: string[] = []
+					stdin.resume()
+					stdin.on('data', chunk => {
+						inputChunks.push(chunk.toString())
+					})
+					stdin.on('end', () => {
+						finish(inputChunks.join(''), 'stdin')
+					})
+				}
 			}
 		})
 	}
