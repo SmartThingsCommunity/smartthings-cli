@@ -21,6 +21,9 @@
 		"/oclif.manifest.json",
 		"!*/__tests__"
 	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/SmartThingsCommunity/smartthings-cli.git"
