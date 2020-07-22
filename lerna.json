@@ -3,6 +3,15 @@
 	"command": {
 		"bootstrap": {
 			"hoist": true
+		},
+		"publish": {
+			"allowBranch": "master",
+			"conventionalCommits": true,
+			"createRelease": "github",
+			"gitRemote": "upstream",
+			"message": "chore(release): publish %s",
+			"conventionalPrerelease": true,
+			"preid": "pre"
 		}
 	}
 }
