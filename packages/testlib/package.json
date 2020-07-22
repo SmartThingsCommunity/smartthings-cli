@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli-testlib",
-	"version": "0.0.0-pre.2",
+	"version": "0.0.0-pre.3",
 	"description": "SmartThings unified CLI testing utility methods library",
 	"author": "SmartThings, Inc.",
 	"bugs": "https://github.com/SmartThingsCommunity/smartthings-cli/issues",
