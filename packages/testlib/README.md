@@ -1,4 +1,4 @@
-# testlib
+# @smartthings/cli-testlib
 
 A library to support testing SmartThings CLI plug-ins with Jest.
 
