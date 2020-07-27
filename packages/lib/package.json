@@ -23,14 +23,17 @@
 	},
 	"dependencies": {
 		"axios": "^0.19.2",
+		"cli-table": "^0.3.1",
 		"express": "^4.17.1",
 		"get-port": "^5.1.1",
 		"lodash": "^4.17.19",
+		"log4js": "^6.2.0",
 		"node": "^12.16.2",
 		"open": "^7.0.3",
 		"qs": "^6.9.3"
 	},
 	"devDependencies": {
+		"@types/cli-table": "^0.3.0",
 		"@types/express": "^4.17.6",
 		"@types/lodash": "^4.14.157",
 		"@types/qs": "^6.9.1",
