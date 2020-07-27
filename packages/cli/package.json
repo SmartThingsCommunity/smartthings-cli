@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli",
-	"version": "0.0.0-pre.3",
+	"version": "0.0.0-pre.4",
 	"description": "SmartThings unified CLI",
 	"author": "SmartThings, Inc.",
 	"bin": {
@@ -58,7 +58,7 @@
 		"@oclif/plugin-help": "^2.2.3",
 		"@oclif/plugin-not-found": "^1.2.3",
 		"@oclif/plugin-plugins": "^1.9.0",
-		"@smartthings/cli-lib": "^0.0.0-pre.3",
+		"@smartthings/cli-lib": "^0.0.0-pre.4",
 		"aws-sdk": "^2.690.0",
 		"generator-smartthings": "^1.5.0",
 		"lodash": "^4.17.19",
@@ -67,7 +67,7 @@
 		"yeoman-environment": "^2.9.1"
 	},
 	"devDependencies": {
-		"@smartthings/cli-testlib": "^0.0.0-pre.3",
+		"@smartthings/cli-testlib": "^0.0.0-pre.4",
 		"@types/cli-table": "^0.3.0",
 		"@types/lodash": "^4.14.157",
 		"@types/yeoman-environment": "^2.3.3",
