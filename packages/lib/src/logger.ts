@@ -87,4 +87,10 @@ export class LogManager {
 	}
 }
 
-export const logManager: LogManager = new LogManager()
+/* eslint-disable @typescript-eslint/no-explicit-any */
+if (!('_logManager' in (global as any))) {
+	(global as any)._logManager = new LogManager()
+}
+
+export const logManager: LogManager = (global as any)._logManager
+/* eslint-enable @typescript-eslint/no-explicit-any */
