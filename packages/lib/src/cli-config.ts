@@ -69,4 +69,10 @@ export class CLIConfig {
 	}
 }
 
-export const cliConfig = new CLIConfig()
+/* eslint-disable @typescript-eslint/no-explicit-any */
+if (!('_cliConfig' in (global as any))) {
+	(global as any)._cliConfig = new CLIConfig()
+}
+
+export const cliConfig = (global as any)._cliConfig
+/* eslint-enable @typescript-eslint/no-explicit-any */
