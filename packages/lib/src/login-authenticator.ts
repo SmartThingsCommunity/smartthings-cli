@@ -46,10 +46,20 @@ interface AuthenticationInfo {
 }
 
 
+function credentialsFile(): string {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	if (!('_credentialsFile' in (global as any))) {
+		throw new Error('LoginAuthenticator credentials file not set.')
+	}
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return (global as any)._credentialsFile
+}
+
 export class LoginAuthenticator implements Authenticator {
 	private static credentialsFile?: string
 	public static init(credentialsFile: string): void {
-		LoginAuthenticator.credentialsFile = credentialsFile
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		(global as any)._credentialsFile = credentialsFile
 	}
 	private clientId: string
 
@@ -59,9 +69,6 @@ export class LoginAuthenticator implements Authenticator {
 	constructor(private profileName: string, private clientIdProvider: ClientIdProvider) {
 		this.logger.trace('constructing a LoginAuthenticator')
 		this.clientId = clientIdProvider.clientId
-		if (!LoginAuthenticator.credentialsFile) {
-			throw new Error('LoginAuthenticator credentials file not set.')
-		}
 		// we could consider doing this lazily at some point
 		const credentialsFileData = this.readCredentialsFile()
 		if (profileName in credentialsFileData) {
@@ -89,11 +96,8 @@ export class LoginAuthenticator implements Authenticator {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private readCredentialsFile(): { [profileName: string]: any } {
-		if (!LoginAuthenticator.credentialsFile) {
-			throw new Error('credentials file location not set')
-		}
-		if (fs.existsSync(LoginAuthenticator.credentialsFile)) {
-			const fileData = fs.readFileSync(LoginAuthenticator.credentialsFile)
+		if (fs.existsSync(credentialsFile())) {
+			const fileData = fs.readFileSync(credentialsFile())
 			return JSON.parse(fileData.toString())
 		}
 		return {}
@@ -101,9 +105,6 @@ export class LoginAuthenticator implements Authenticator {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private updateTokenFromResponse(response: AxiosResponse<any>): void {
-		if (!LoginAuthenticator.credentialsFile) {
-			throw new Error('credentials file location not set')
-		}
 		const authenticationInfo = {
 			accessToken: response.data.access_token,
 			refreshToken: response.data.refresh_token,
@@ -114,8 +115,8 @@ export class LoginAuthenticator implements Authenticator {
 		}
 		const credentialsFileData = this.readCredentialsFile()
 		credentialsFileData[this.profileName] = authenticationInfo
-		fs.writeFileSync(LoginAuthenticator.credentialsFile, JSON.stringify(credentialsFileData, null, 4))
-		fs.chmod(LoginAuthenticator.credentialsFile, 0o600, err => {
+		fs.writeFileSync(credentialsFile(), JSON.stringify(credentialsFileData, null, 4))
+		fs.chmod(credentialsFile(), 0o600, err => {
 			if (err) {
 				this.logger.error('failed to set permissions on credentials file')
 				throw err

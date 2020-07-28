@@ -74,5 +74,5 @@ if (!('_cliConfig' in (global as any))) {
 	(global as any)._cliConfig = new CLIConfig()
 }
 
-export const cliConfig = (global as any)._cliConfig
+export const cliConfig: CLIConfig = (global as any)._cliConfig
 /* eslint-enable @typescript-eslint/no-explicit-any */
