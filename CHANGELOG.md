@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.6](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.5...v0.0.0-pre.6) (2020-07-28)
+
+
+### Bug Fixes
+
+* make logManager and credentials work across with plugins ([e267b53](https://github.com/rossiam/smartthings-cli/commit/e267b53d3cef7959dd60fb48efd6d25e953beafb))
+
+
+
+
+
 # [0.0.0-pre.5](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.4...v0.0.0-pre.5) (2020-07-28)
 
 
