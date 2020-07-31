@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.7](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.6...v0.0.0-pre.7) (2020-07-31)
+
+**Note:** Version bump only for package root
+
+
+
+
+
 # [0.0.0-pre.6](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.5...v0.0.0-pre.6) (2020-07-28)
 
 
