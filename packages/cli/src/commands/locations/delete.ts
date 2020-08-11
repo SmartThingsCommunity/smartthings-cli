@@ -10,7 +10,7 @@ export default class LocationsDeleteCommand extends SelectingAPICommand<Location
 
 	static args = [{
 		name: 'id',
-		description: 'location UUID or number in the list',
+		description: 'location id',
 	}]
 
 	primaryKeyName = 'locationId'
