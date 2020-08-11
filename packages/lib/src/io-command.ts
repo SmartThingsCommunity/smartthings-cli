@@ -54,7 +54,8 @@ const outputFlag = {
 export enum IOFormat {
 	YAML = 'yaml',
 	JSON = 'json',
-	// for input, this is Q & A, for output, it's a human-readable table format
+
+	// for input, this is Q & A or command line, for output, it's a human-readable table format
 	COMMON = 'common',
 }
 
@@ -136,9 +137,36 @@ export abstract class Inputting<I> {
 		return this._inputOptions
 	}
 
+	/**
+	 * Implement this method if you want to build input from command line
+	 * options. If this method is implemented, one must also implement
+	 * hasCommandLineInput.
+	 */
+	protected getInputFromCommandLine?(): Promise<I>
+
+	/**
+	 * Implement this if and only if getInputFromCommandLine has been
+	 * implemented. This should return true if command line arguments are
+	 * present that can be used to construct the input.
+	 */
+	protected hasCommandLineInput?(): boolean
+
+	/**
+	 * Implement this method if you want to be able to ask the user for input,
+	 * usually in a question and answer format using inquirer.
+	 */
 	protected getInputFromUser?(): Promise<I>
 
 	protected async readInput(): Promise<I> {
+		if (this.hasCommandLineInput && this.hasCommandLineInput()) {
+			if (this.getInputFromCommandLine) {
+				return this.getInputFromCommandLine()
+			} else {
+				throw new Error('input is required either via' +
+					' file specified with --input option or from stdin')
+			}
+		}
+
 		if (this.inputOptions.format === IOFormat.COMMON && this.getInputFromUser) {
 			return this.getInputFromUser()
 		}
@@ -177,7 +205,10 @@ export abstract class Inputting<I> {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
-		const hasGetInputFromUser = this.getInputFromUser !== undefined
+		if (this.hasCommandLineInput !== undefined && this.getInputFromCommandLine === undefined
+				|| this.hasCommandLineInput === undefined && this.getInputFromCommandLine !== undefined) {
+			throw new Error('invalid code; implement both hasCommandLineInput and getInputFromCommandLine or neither')
+		}
 		let inputFormat: IOFormat
 		if (flags.json) {
 			inputFormat = IOFormat.JSON
@@ -185,8 +216,11 @@ export abstract class Inputting<I> {
 			inputFormat = IOFormat.YAML
 		} else if (flags.input) {
 			inputFormat = formatFromFilename(flags.input)
+		} else if (this.getInputFromUser !== undefined && process.stdin.isTTY
+				|| this.hasCommandLineInput && this.hasCommandLineInput()) {
+			inputFormat = IOFormat.COMMON
 		} else {
-			inputFormat = hasGetInputFromUser && process.stdin.isTTY ? IOFormat.COMMON : IOFormat.YAML
+			inputFormat = IOFormat.YAML
 		}
 
 		this._inputOptions = {

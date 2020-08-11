@@ -7,7 +7,7 @@ import { addLocationsAndRooms } from '../lib/api-helpers'
 import { flags } from '@oclif/command'
 
 
-export type DeviceWithLocation = DeviceListOptions & { location?: string }
+export type DeviceWithLocation = Device & { location?: string }
 
 export function buildTableOutput(this: APICommand, data: Device): string {
 	const table = this.tableGenerator.newOutputTable()

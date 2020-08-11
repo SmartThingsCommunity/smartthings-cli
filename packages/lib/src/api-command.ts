@@ -61,26 +61,3 @@ export abstract class APICommand extends SmartThingsCommand {
 			{ urlProvider: this.clientIdProvider, logger })
 	}
 }
-
-/**
- * TODO: most or all classes that use this should be updated soon to use
- * `SelectingAPICommand` (or in a few cases `SelectingAPICommandBase`).
- */
-export abstract class SimpleAPICommand extends APICommand {
-	/**
-	 * This is just a convenience method that outputs a simple string message
-	 * on success and handles exceptions. This is mostly useful for simple
-	 * things like a DELETE call that don't have any complicated inputs or
-	 * outputs.
-	 *
-	 * @param executeCommand function that does the work
-	 */
-	protected processNormally(successMessage: string, makeRequest: () => Promise<void>): void {
-		makeRequest().then(() => {
-			process.stdout.write(`${successMessage}\n`)
-		}).catch(err => {
-			this.logger.error(`caught error ${err}`)
-			this.exit(1)
-		})
-	}
-}
