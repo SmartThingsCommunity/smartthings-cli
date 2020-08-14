@@ -42,6 +42,18 @@ export async function addLocations(client: SmartThingsClient, list: LocationItem
 	}
 }
 
+function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+	return value !== null && value !== undefined
+}
+
+function uniqueLocationIds(from: LocationItem[]): string[] {
+	// Note -- this `.filter(notEmpty))` is here because the source types such
+	// as InstalledApp are currently defined with optional locationId even
+	// though locationId is actually always set. The filter can be removed
+	// once that issue is corrected.
+	return _.uniq(from.map(it => it.locationId).filter(notEmpty))
+}
+
 export async function addLocationsAndRooms(client: SmartThingsClient, list: LocationRoomItem[]): Promise<void> {
 	const locations = await client.locations.list()
 	const locationMap: {[name: string]: string} = locations.reduce((map, obj) => {
@@ -49,13 +61,7 @@ export async function addLocationsAndRooms(client: SmartThingsClient, list: Loca
 		return map
 	}, new IdNameMap())
 
-	// Note -- this ignore is here because the source types such as InstalledApp are currently defined with
-	// optional locationIds even though the location ID is actually always set. The ignore can be removed
-	// once that issue is corrected.
-	//
-	// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-	// @ts-ignore
-	const locationIds: string[] = _.uniq(list.map(it => it.locationId))
+	const locationIds = uniqueLocationIds(list)
 
 	const roomsList = await Promise.all(locationIds.map((it) => {
 		return client.rooms.list(it)
@@ -88,13 +94,7 @@ export async function addLocationsAndRooms(client: SmartThingsClient, list: Loca
 }
 
 export async function addRooms(client: SmartThingsClient, list: RoomItem[]): Promise<void> {
-	// Note -- this ignore is here because the source types such as InstalledApp are currently defined with
-	// optional locationIds even though the location ID is actually always set. The ignore can be removed
-	// once that issue is corrected.
-	//
-	// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-	// @ts-ignore
-	const locationIds: string[] = _.uniq(list.map(it => it.locationId))
+	const locationIds = uniqueLocationIds(list)
 	const roomsList = await Promise.all(locationIds.map((it) => {
 		return client.rooms.list(it)
 	}))

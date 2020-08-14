@@ -1,7 +1,7 @@
 import inquirer from 'inquirer'
 import { flags } from '@oclif/command'
 
-import { Capability, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace} from '@smartthings/core-sdk'
+import { Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace } from '@smartthings/core-sdk'
 
 import { APICommand, ListCallback, Listing, ListingOutputAPICommandBase } from '@smartthings/cli-lib'
 
@@ -57,16 +57,15 @@ export function attributeType(attr: CapabilityJSONSchema, multilineObjects= true
 		}
 	} else if (attr.type === 'object') {
 		if (attr.properties) {
+			const props = attr.properties
 			if (multilineObjects) {
-				return '{\n' + Object.keys(attr.properties).map(it => {
-					// @ts-ignore
-					const item = attr.properties[it]
+				return '{\n' + Object.keys(props).map(it => {
+					const item = props[it]
 					return `  ${it}: ${item ? item.type : 'undefined'}`
 				}).join('\n') + '\n}'
 			} else {
-				return '{' + Object.keys(attr.properties).map(it => {
-					// @ts-ignore
-					const item = attr.properties[it]
+				return '{' + Object.keys(props).map(it => {
+					const item = props[it]
 					return `${it}: ${item ? item.type : 'undefined'}`
 				}).join(', ') + '}'
 			}
@@ -106,7 +105,6 @@ export function buildTableOutput(this: APICommand, capability: Capability): stri
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				const subItem = capability[SubItemTypes.COMMANDS]![name]
 
-				// @ts-ignore
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				table.push([name, subItem!.arguments!.map((it: CapabilityArgument) => it.optional ?
 					`${it.name}: ${it.schema?.type} (optional)` :
@@ -172,16 +170,12 @@ export async function getStandard(this: APICommand): Promise<CapabilitySummaryWi
 	return caps.map((capability: CapabilitySummary) => { return { ...capability, namespace: 'st' } })
 }
 
-export async function getIdFromUser(this: APICommand & { primaryKeyName: string },
-		items: CapabilitySummaryWithNamespace[]): Promise<CapabilityId> {
+export async function getIdFromUser(this: APICommand, items: (CapabilitySummaryWithNamespace)[]): Promise<CapabilityId> {
 	const convertToId = (itemIdOrIndex: string): string | false => {
 		if (itemIdOrIndex.length === 0) {
 			return false
 		}
-		const matchingItem = items.find((item) => {
-			// @ts-ignore
-			return (this.primaryKeyName in item) && itemIdOrIndex === item[this.primaryKeyName]
-		})
+		const matchingItem = items.find(item => itemIdOrIndex === item.id)
 		if (matchingItem) {
 			return itemIdOrIndex
 		}
@@ -189,13 +183,12 @@ export async function getIdFromUser(this: APICommand & { primaryKeyName: string 
 		const index = Number.parseInt(itemIdOrIndex)
 
 		if (!Number.isNaN(index) && index > 0 && index <= items.length) {
-			// @ts-ignore
-			const id = items[index - 1][this.primaryKeyName]
+			const id = items[index - 1].id
 			if (typeof id === 'string') {
 				return id
 			} else {
 				throw Error(`invalid type ${typeof id} for primary key`  +
-					` ${this.primaryKeyName} in ${JSON.stringify(items[index - 1])}`)
+					` id in ${JSON.stringify(items[index - 1])}`)
 			}
 		} else {
 			return false

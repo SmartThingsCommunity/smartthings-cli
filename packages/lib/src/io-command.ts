@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import fs from 'fs'
 import inquirer from 'inquirer'
 import path from 'path'
@@ -820,3 +821,4 @@ export abstract class SelectingInputAPICommand<I, L> extends SelectingInputAPICo
 	protected translateToId = stringTranslateToId
 }
 /* eslint-enable no-process-exit */
+/* eslint-enable @typescript-eslint/ban-ts-comment */

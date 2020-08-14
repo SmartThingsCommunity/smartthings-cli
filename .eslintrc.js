@@ -80,6 +80,7 @@ module.exports = {
 		],
 		'@typescript-eslint/no-var-requires': 'error',
 		'@typescript-eslint/ban-ts-ignore': 0,
+		'@typescript-eslint/explicit-module-boundary-types': 'off',
 
 		// disallow non-import statements appearing before import statements
 		'import/first': 'error',
