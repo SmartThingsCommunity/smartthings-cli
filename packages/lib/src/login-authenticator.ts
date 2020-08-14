@@ -4,6 +4,7 @@ import express from 'express'
 import fs from 'fs'
 import getPort from 'get-port'
 import open from 'open'
+import path from 'path'
 import qs from 'qs'
 
 import { Authenticator } from '@smartthings/core-sdk'
@@ -60,6 +61,9 @@ export class LoginAuthenticator implements Authenticator {
 	public static init(credentialsFile: string): void {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(global as any)._credentialsFile = credentialsFile
+
+		const cliDir = path.dirname(credentialsFile)
+		fs.mkdirSync(cliDir, { recursive: true })
 	}
 	private clientId: string
 
@@ -96,11 +100,14 @@ export class LoginAuthenticator implements Authenticator {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private readCredentialsFile(): { [profileName: string]: any } {
-		if (fs.existsSync(credentialsFile())) {
-			const fileData = fs.readFileSync(credentialsFile())
-			return JSON.parse(fileData.toString())
+		let fileData = '{}'
+		try {
+			fileData = fs.readFileSync(credentialsFile()).toString()
+		} catch (err) {
+			if (err.code !== 'ENOENT') { throw err }
 		}
-		return {}
+
+		return JSON.parse(fileData)
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
