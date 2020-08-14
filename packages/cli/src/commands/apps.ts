@@ -65,36 +65,30 @@ export default class AppsList extends ListingOutputAPICommand<App, App> {
 			this.tableFieldDefinitions.push('ARN/URL')
 		}
 
-		this.processNormally(
-			args.id,
-			() => {
-				if (flags.verbose) {
-					return this.client.apps.list().then(list => {
-						const objects = list.map(it => {
-							// @ts-ignore
-							return this.client.apps.get(it.appId) // TODO appId should not be optional
-						})
-						return Promise.all(objects).then(list => {
-							for (const item of list) {
-								const uri = item.webhookSmartApp ?
-									item.webhookSmartApp.targetUrl :
-									(item.lambdaSmartApp ? (item.lambdaSmartApp?.functions?.length ? item.lambdaSmartApp?.functions[0] : '') :
-										(item.apiOnly?.subscription?.targetUrl ?? ''))
-
-								// @ts-ignore
-								item['ARN/URL'] = uri.length < 96 ? uri : uri.slice(0,95) + '...'
-							}
-							return list
-						})
+		const listApps = async (): Promise<App[]> => {
+			if (flags.verbose) {
+				return this.client.apps.list().then(list => {
+					const objects = list.map(it => {
+						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+						return this.client.apps.get((it.appId)!) // TODO appId should not be optional
 					})
-				} else {
-					return this.client.apps.list()
-				}
+					return Promise.all(objects).then((list: (App & { 'ARN/URL'?: string })[]) => {
+						for (const item of list) {
+							const uri = (item.webhookSmartApp ?
+								item.webhookSmartApp.targetUrl :
+								(item.lambdaSmartApp ? (item.lambdaSmartApp?.functions?.length ? item.lambdaSmartApp?.functions[0] : '') :
+									(item.apiOnly?.subscription?.targetUrl ?? ''))) ?? ''
 
-			},
-			(id: string) => {
-				return this.client.apps.get(id)
-			},
-		)
+							const arnURL = uri.length < 96 ? uri : uri.slice(0,95) + '...'
+							item['ARN/URL'] = arnURL
+						}
+						return list
+					})
+				})
+			}
+			return this.client.apps.list()
+		}
+
+		this.processNormally(args.id, listApps, id => this.client.apps.get(id))
 	}
 }

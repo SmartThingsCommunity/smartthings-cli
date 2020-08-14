@@ -4,8 +4,8 @@ import yaml from 'js-yaml'
 
 
 export class CLIConfig {
-	private _configFile: string|null = null
-	private _config: object|null = null
+	private _configFile: string | null = null
+	private _config: Record<string, unknown> | null = null
 
 	public init(configFile: string): void {
 		this._configFile = configFile
@@ -29,7 +29,7 @@ export class CLIConfig {
 			const parsed = yaml.safeLoad(fs.readFileSync(`${this._configFile}`, 'utf-8'))
 			if (parsed) {
 				if (typeof parsed === 'object') {
-					this._config = parsed
+					this._config = { ...parsed }
 				} else {
 					throw new Error('invalid config file format; please specify zero or more profiles')
 				}
@@ -52,7 +52,7 @@ export class CLIConfig {
 		return this._config
 	}
 
-	public getProfile(name: string): object {
+	public getProfile(name: string): Record<string, unknown> {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const config: { [name: string]: any } = this.loadConfig()
 		if (!(name in config)) {

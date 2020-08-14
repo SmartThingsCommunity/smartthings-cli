@@ -49,7 +49,7 @@ export default class DeviceProfileUpdateCommand extends SelectingInputOutputAPIC
 // Cleanup is done so that the result of a device profile get can be modified and
 // used in an update operation without having to delete the status, owner, and
 // component name fields, which aren't accepted in the update API call.
-export function cleanupRequest(deviceProfileRequest: Partial<DeviceProfile>): DeviceProfileRequest {
+export function cleanupRequest(deviceProfileRequest: Partial<DeviceProfile & { restrictions: unknown }>): DeviceProfileRequest {
 	delete deviceProfileRequest.id
 	delete deviceProfileRequest.status
 	delete deviceProfileRequest.owner
@@ -59,7 +59,6 @@ export function cleanupRequest(deviceProfileRequest: Partial<DeviceProfile>): De
 			delete component.label
 		}
 	}
-	// @ts-ignore
 	delete deviceProfileRequest.restrictions
 
 	return deviceProfileRequest

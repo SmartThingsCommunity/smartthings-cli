@@ -1,13 +1,13 @@
 import inquirer from 'inquirer'
 
 import { Device, Command, Component, CapabilityReference } from '@smartthings/core-sdk'
-import {SelectingInputAPICommand, isIndexArgument} from '@smartthings/cli-lib'
-import {attributeType} from '../capabilities'
+import { SelectingInputAPICommand, isIndexArgument } from '@smartthings/cli-lib'
+import { attributeType } from '../capabilities'
 
 
 const inputRegex = new RegExp(/^([a-zA-Z0-9]+:)?([a-zA-Z0-9]+:)?([a-zA-Z0-9]+(\(.*\))?)?$/)
 
-export function parseArguments(str: string): (object | string | number)[] {
+export function parseArguments(str: string): (Record<string, unknown> | string | number)[] {
 	return JSON.parse(`[${str}]`)
 }
 
@@ -217,7 +217,7 @@ export default class DeviceCommandsCommand extends SelectingInputAPICommand<Comm
 
 		const device = await this.client.devices.get(this.entityId)
 		this.log('\n' + device.label)
-		
+
 		let cmd: Command = {
 			component: 'main',
 			capability: '',

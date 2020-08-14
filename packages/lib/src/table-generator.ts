@@ -176,6 +176,7 @@ export class DefaultTableGenerator implements TableGenerator {
 			throw Error('both label and value are required if prop is not specified')
 		}
 
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		const matches = _.at(item, propertyName)
 		if (matches.length === 0) {

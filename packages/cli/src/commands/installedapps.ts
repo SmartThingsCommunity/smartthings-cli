@@ -3,7 +3,6 @@ import { flags } from '@oclif/command'
 import { InstalledApp } from '@smartthings/core-sdk'
 
 import { ListingOutputAPICommand, TableFieldDefinition } from '@smartthings/cli-lib'
-
 import { addLocations } from '../lib/api-helpers'
 
 

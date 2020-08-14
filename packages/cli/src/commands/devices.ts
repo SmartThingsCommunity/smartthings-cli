@@ -1,15 +1,14 @@
-import { APICommand, ListingOutputAPICommand } from '@smartthings/cli-lib'
+import { flags } from '@oclif/command'
 
 import { Device, DeviceListOptions } from '@smartthings/core-sdk'
 
+import { APICommand, ListingOutputAPICommand } from '@smartthings/cli-lib'
 import { addLocationsAndRooms } from '../lib/api-helpers'
-
-import { flags } from '@oclif/command'
 
 
 export type DeviceWithLocation = Device & { location?: string }
 
-export function buildTableOutput(this: APICommand, data: Device): string {
+export function buildTableOutput(this: APICommand, data: Device & { profileId?: string }): string {
 	const table = this.tableGenerator.newOutputTable()
 	table.push(['Name', data.name])
 	table.push(['Id', data.deviceId])
@@ -22,7 +21,6 @@ export function buildTableOutput(this: APICommand, data: Device): string {
 		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
 	}
 	table.push(['Child Devices',  data.childDevices ? data.childDevices.map(it => it.deviceId).join('\n') : ''  ])
-	// @ts-ignore
 	table.push(['Profile Id', data.profileId ?? (data.profile?.id ?? '')])
 	table.push(['Installed App Id', data.app?.installedAppId ?? ''])
 	table.push(['External App Id', data.app?.externalId ?? ''])
