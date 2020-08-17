@@ -28,7 +28,8 @@ export default class CapabilitiesDeleteCommand extends SelectingAPICommandBase<C
 		const { args, argv, flags } = this.parse(CapabilitiesDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally({ id: args.id, version: args.version },
+		const optionalId = args.id ? { id: args.id, version: args.version ?? 1 } : undefined
+		this.processNormally(optionalId,
 			async () => this.getCustomByNamespace(),
 			async (id) => { this.client.capabilities.delete(id.id, id.version) },
 			'capability {{id}} deleted')
