@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.8](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.7...v0.0.0-pre.8) (2020-08-17)
+
+
+### Bug Fixes
+
+* corrected processing of command line input into command line id ([25da623](https://github.com/rossiam/smartthings-cli/commit/25da6232e71d3485c833859785306e47a939f2c8))
+* **LoginAuthenticator:** create cli dir on init ([27d7bee](https://github.com/rossiam/smartthings-cli/commit/27d7bee76a0e8b8043686dd6b066f8fb8bd0d2b9))
+
+
+### Features
+
+* add support for building input form command line options ([599c3c2](https://github.com/rossiam/smartthings-cli/commit/599c3c261fd8d84218f477d0118b1a5e2de4a90a))
+
+
+
+
+
 # [0.0.0-pre.7](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.6...v0.0.0-pre.7) (2020-07-31)
 
 **Note:** Version bump only for package root
