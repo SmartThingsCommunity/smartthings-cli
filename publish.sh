@@ -18,6 +18,11 @@
 
 set -e
 
+export GIT_AUTHOR_NAME=smartthingspi
+export GIT_AUTHOR_EMAIL=pi-team@smartthings.com
+export GIT_COMMITTER_NAME=smartthingspi
+export GIT_COMMITTER_EMAIL=pi-team@smartthings.com
+
 if [ -z $GH_TOKEN ]; then
     echo "ERROR: lerna requires GH_TOKEN environment variable to be set to create Github release."
     exit 1
