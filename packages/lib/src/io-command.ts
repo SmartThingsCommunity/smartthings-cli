@@ -128,6 +128,15 @@ function writeOutputPrivate<T>(data: T, outputOptions: OutputOptions,
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Inputting<I> extends Loggable {}
+/**
+ * The "Inputting" mixin is used to add the ability of accepting complex
+ * input in the form of JSON or YAML (from stdin or a file) to a command.
+ *
+ * Additionally, this input can be built via command line if
+ * hasCommandLineInput and getInputFromCommandLine are implemented.
+ * Likewise, implementing getInputFromUser allows a command to also build
+ * input from a Q and A session with the user.
+ */
 export abstract class Inputting<I> {
 	private _inputOptions?: InputOptions
 
@@ -246,8 +255,9 @@ const inputFlags = {
 }
 
 /**
- * Mixin meant to be used along with Outputting and/or Listing that provides
- * instance of OutputOptions.
+ * Since both Outputting and Listing need OutputOptions, this is a simple
+ * mixin that adds it and needs to be included when one or both of those
+ * mixins are used.
  */
 abstract class Outputable {
 	private _outputOptions?: OutputOptions
@@ -302,6 +312,17 @@ const inputOutputFlags = {
 	...outputFlag,
 }
 
+/**
+ * The "Outputting" mixin is used to add the ability of presenting complex
+ * output in the form of JSON, YAML or a more human-readable format.
+ * JSON and YAML output are built-in and require no extra implementation but
+ * for the more human-readable output (which is the default), one must
+ * define the tableFieldDefinitions property or override the buildTableOutput
+ * method. See TableFieldDefinition in table-generator.ts for more details
+ * for how to build tableFieldDefinitions.
+ *
+ * NOTE: this mixin requires that Outputable also be mixed in.
+ */
 export abstract class Outputting<O> extends Outputable {
 	protected tableFieldDefinitions?: TableFieldDefinition<O>[]
 
@@ -330,6 +351,26 @@ export abstract class Outputting<O> extends Outputable {
 	}
 }
 
+/**
+ * The "Listing" mixin is used to add the ability to present a list of resources
+ * in an indexed table format to the user. The index can be used by the user
+ * to specify later which one they want to act on (more about that below).
+ *
+ * Most basically, this is used for top level commands that list resources like
+ * "locations" which lists all the locations. These commands also support
+ * getting (potentially more detailed info) about a specific resource using the
+ * index.
+ *
+ * Note that if you are going to take an action on the resource rather than just
+ * displaying it, you should use one of the "Selecting" commands instead.
+ * See SelectingAPICommandBase for more information.
+ *
+ * By default (not counting the index), the table output only includes the
+ * fields defined by sortKeyName and primaryKeyName but more fields can
+ * be included by defining listTableFieldDefinitions.
+ *
+ * NOTE: this mixin requires that Outputable also be mixed in.
+ */
 export abstract class Listing<L> extends Outputable {
 	abstract readonly primaryKeyName: string
 	abstract readonly sortKeyName: string
@@ -363,6 +404,11 @@ export abstract class Listing<L> extends Outputable {
 	}
 }
 
+/**
+ * Extend this class for your command if you need to accept input but the
+ * API call you're making doesn't have complex output. There are currently
+ * no examples of this in the CLI (as of August 2020).
+ */
 export abstract class InputAPICommand<I> extends APICommand {
 	/**
 	 * This is just a convenience method that outputs a simple string message
@@ -387,6 +433,11 @@ export abstract class InputAPICommand<I> extends APICommand {
 export interface InputAPICommand<I> extends Inputting<I> {}
 applyMixins(InputAPICommand, [Inputting], { mergeFunctions: true })
 
+/**
+ * Extend this class if your command has complex output but doesn't take
+ * complex input and doesn't need to list multiple resources. This is a
+ * relatively rare use-case.
+ */
 export abstract class OutputAPICommand<O> extends APICommand {
 	/**
 	 * This is just a convenience method that outputs the data and handles
@@ -412,7 +463,8 @@ applyMixins(OutputAPICommand, [Outputable, Outputting], { mergeFunctions: true }
 
 /**
  * An API command that has complex input and complex output. This
- * would normally be used for POST and PUT methods.
+ * would normally be used for POST and PUT methods (though in the case of PUT
+ * one of the "Selecting" classes that extend this is more often appropriate).
  *
  * Generic types:
  *   I: the input type
@@ -458,7 +510,14 @@ export abstract class InputOutputAPICommand<I, O> extends APICommand {
 export interface InputOutputAPICommand<I, O> extends Inputting<I>, Outputting<O> {}
 applyMixins(InputOutputAPICommand, [Inputting, Outputable, Outputting], { mergeFunctions: true })
 
-
+/**
+ * Use this as your base when you need to be able to list or get a single
+ * resource.
+ *
+ * This class accepts the identifier type as the ID generic input. In most
+ * cases, your id will be a simple string and you can use
+ * ListingOutputAPICommand which is a little simpler.
+ */
 export abstract class ListingOutputAPICommandBase<ID, O, L> extends APICommand {
 	protected abstract async translateToId(idOrIndex: ID | string,
 		listFunction: ListCallback<L>): Promise<ID>
@@ -486,16 +545,33 @@ export abstract class ListingOutputAPICommandBase<ID, O, L> extends APICommand {
 export interface ListingOutputAPICommandBase<ID, O, L> extends Outputting<O>, Listing<L> {}
 applyMixins(ListingOutputAPICommandBase, [Outputable, Outputting, Listing], { mergeFunctions: true })
 
+/**
+ * Use this as your base when you need to be able to list or get a single
+ * resource. In other words, this is the base for most GET commands.
+ *
+ * This class is used for commands where the identifier is a simple string.
+ * If you need a more complex identifier type, you can use
+ * ListingOutputAPICommandBase.
+ */
 export abstract class ListingOutputAPICommand<O, L> extends ListingOutputAPICommandBase<string, O, L> {
 	protected translateToId = stringTranslateToId
 	static flags = ListingOutputAPICommandBase.flags
 }
 
 /**
- * This class acts on an id via an "action callback" when one is specified.
+ * This class is used for command like "delete" that require a specific resource
+ * to act on.
  *
- * If none is specified, it will query a list of items using the "list callback",
- * display that list to the user and allow them to choose one by id or index.
+ * "Selecting" commands differ from their "Listing" counterparts
+ * in that they query the user for a selected resource immediately after
+ * displaying the list. These "Selecting" classes should be instead of the
+ * "Listing" classes whenever the action has an effect (i.e. it does not
+ * just list details).
+ *
+ * This class acts on an id via an "action callback" when the id is specified
+ * in the first parameter to processNormally. If none is specified, it will
+ * query a list of resources using the "listCallback", display that list to the
+ * user and allow them to choose one by id or index.
  *
  * Generic types:
  *   ID: the type of the id; usually string
@@ -629,7 +705,8 @@ async function stringGetIdFromUser<L>(this: APICommand & { readonly primaryKeyNa
 
 /**
  * A version of SelectingAPICommandBase for APIs that use strings for
- * their id, which is nearly all of them.
+ * their id, which is the most common case. See SelectingAPICommandBase for
+ * more details.
  */
 export abstract class SelectingAPICommand<L> extends SelectingAPICommandBase<string, L> {
 	protected getIdFromUser = stringGetIdFromUser
@@ -689,14 +766,39 @@ export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends AP
 
 	static flags = inputOutputFlags
 }
+
+/**
+ * Use this class when you have both complex input and output and are acting
+ * on a single resource that can easily be listed. The most common use
+ * case for this is an "update" command (which normally uses a PUT). Using
+ * this class gives you all the abilities of "Selecting", "Input" and "Output"
+ * classes.
+ *
+ * NOTE: this class takes an identifier type as a generic argument. In most
+ * cases, you have a simple string for an identifier and can use
+ * SelectingInputOutputAPICommand instead.
+ */
 export interface SelectingInputOutputAPICommandBase<ID, I, O, L> extends Inputting<I>, Outputting<O>, Listing<L> {}
 applyMixins(SelectingInputOutputAPICommandBase, [Inputting, Outputable, Outputting, Listing], { mergeFunctions: true })
 
+/**
+ * A slightly easier-to-use version of SelectingInputOutputAPICommandBase for
+ * the common case of resources that use simple strings for identifiers.
+ */
 export abstract class SelectingInputOutputAPICommand<I, O, L> extends SelectingInputOutputAPICommandBase<string, I, O, L> {
 	protected getIdFromUser = stringGetIdFromUser
 	protected translateToId = stringTranslateToId
 }
 
+/**
+ * Use this class when you have complex output and are acting on a single
+ * resource that can easily be listed. This isn't really common but does pop up
+ * from time to time in our API.
+ *
+ * NOTE: this class takes an identifier type as a generic argument. In most
+ * cases, you have a simple string for an identifier and can use
+ * SelectingOutputAPICommand instead.
+ */
 export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand {
 	protected abstract async getIdFromUser(items: L[]): Promise<ID>
 
@@ -751,11 +853,24 @@ export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand
 export interface SelectingOutputAPICommandBase<ID, O, L> extends Outputting<O>, Listing<L> {}
 applyMixins(SelectingOutputAPICommandBase, [Outputable, Outputting, Listing], { mergeFunctions: true })
 
+/**
+ * A slightly easier-to-use version of SelectingOutputAPICommandBase for the
+ * common case of resources that use simple strings for identifiers.
+ */
 export abstract class SelectingOutputAPICommand<O, L> extends SelectingOutputAPICommandBase<string, O, L> {
 	protected getIdFromUser = stringGetIdFromUser
 	protected translateToId = stringTranslateToId
 }
 
+/**
+ * Use this class when you have complex input and are acting on a single
+ * resource that can easily be listed. This isn't really common but does pop up
+ * from time to time in our API.
+ *
+ * NOTE: this class takes an identifier type as a generic argument. In most
+ * cases, you have a simple string for an identifier and can use
+ * SelectingInputAPICommand instead.
+ */
 export abstract class SelectingInputAPICommandBase<ID, I, L> extends APICommand {
 	private _entityId?: ID
 	protected abstract async getIdFromUser(items: L[]): Promise<ID>
@@ -816,6 +931,10 @@ export abstract class SelectingInputAPICommandBase<ID, I, L> extends APICommand 
 export interface SelectingInputAPICommandBase<ID, I, L> extends Inputting<I>, Listing<L> {}
 applyMixins(SelectingInputAPICommandBase, [Inputting, Outputable, Listing], { mergeFunctions: true })
 
+/**
+ * A slightly easier-to-use version of SelectingInputAPICommandBase for the
+ * common case of resources that use simple strings for identifiers.
+ */
 export abstract class SelectingInputAPICommand<I, L> extends SelectingInputAPICommandBase<string, I, L> {
 	protected getIdFromUser = stringGetIdFromUser
 	protected translateToId = stringTranslateToId
