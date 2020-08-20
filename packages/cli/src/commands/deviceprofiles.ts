@@ -14,8 +14,8 @@ export function buildTableOutput(this: APICommand, data: DeviceProfile): string 
 	table.push(['Id', data.id])
 	table.push(['Device Type', data.metadata?.deviceType ?? ''])
 	table.push(['OCF Device Type', data.metadata?.ocfDeviceType ?? ''])
-	table.push(['mnmn', data.metadata?.mnmn ?? ''])
-	table.push(['vid', data.metadata?.vid ?? ''])
+	table.push(['Manufacturer Name', data.metadata?.mnmn ?? ''])
+	table.push(['Presentation ID', data.metadata?.vid ?? ''])
 	table.push(['Status', data.status])
 	return table.toString()
 }
@@ -26,7 +26,7 @@ export default class DeviceProfilesList extends ListingOutputAPICommand<DevicePr
 	static flags = {
 		...ListingOutputAPICommand.flags,
 		verbose: flags.boolean({
-			description: 'include vid and mnmn in list output',
+			description: 'include presentationId and manufacturerName in list output',
 			char: 'v',
 		}),
 	}
@@ -60,8 +60,8 @@ export default class DeviceProfilesList extends ListingOutputAPICommand<DevicePr
 		await super.setup(args, argv, flags)
 
 		if (this.flags.verbose) {
-			this.listTableFieldDefinitions.push({ label: 'vid', value: (item) => item.metadata ? item.metadata.vid : '' })
-			this.listTableFieldDefinitions.push({ label: 'mnmn', value: (item) => item.metadata ? item.metadata.mnmn : '' })
+			this.listTableFieldDefinitions.push({ label: 'Presentation ID', value: (item) => item.metadata ? item.metadata.vid : '' })
+			this.listTableFieldDefinitions.push({ label: 'Manufacturer Name', value: (item) => item.metadata ? item.metadata.mnmn : '' })
 		}
 
 		this.processNormally(

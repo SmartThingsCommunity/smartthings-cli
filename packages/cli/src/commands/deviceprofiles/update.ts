@@ -13,8 +13,8 @@ export function buildTableOutput(this: APICommand, data: DeviceProfile): string 
 	table.push(['Id', data.id])
 	table.push(['Device Type', data.metadata?.deviceType ?? ''])
 	table.push(['OCF Device Type', data.metadata?.ocfDeviceType ?? ''])
-	table.push(['mnmn', data.metadata?.mnmn ?? ''])
-	table.push(['vid', data.metadata?.vid ?? ''])
+	table.push(['Manufacturer Name', data.metadata?.mnmn ?? ''])
+	table.push(['Presentation ID', data.metadata?.vid ?? ''])
 	table.push(['Status', data.status])
 	return table.toString()
 }

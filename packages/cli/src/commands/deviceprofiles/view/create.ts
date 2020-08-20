@@ -48,8 +48,8 @@ export default class DeviceDefCreateCommand extends InputOutputAPICommand<Device
 		if (!data.metadata) {
 			data.metadata = {}
 		}
-		data.metadata.vid = deviceConfig.vid
-		data.metadata.mnmn = deviceConfig.mnmn
+		data.metadata.vid = deviceConfig.presentationId
+		data.metadata.mnmn = deviceConfig.manufacturerName
 		delete data.view
 
 		// Create the profile

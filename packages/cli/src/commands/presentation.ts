@@ -5,7 +5,7 @@ import {OutputAPICommand, TableGenerator} from '@smartthings/cli-lib'
 
 export function buildTableOutput(presentation: PresentationDevicePresentation, tableGenerator: TableGenerator): string {
 	const basicInfo = tableGenerator.buildTableFromItem(presentation, [
-		{ prop: 'vid', label: 'VID' }, { prop: 'mnmn', label: 'MNMN' }, 'iconUrl',
+		{ prop: 'presentationId', label: 'Presentation ID' }, { prop: 'manufacturerName', label: 'Manufacturer Name' }, 'iconUrl',
 	])
 
 	let dashboardStates = 'No dashboard states'
@@ -90,13 +90,13 @@ export default class PresentationCommand extends OutputAPICommand<PresentationDe
 
 	static args = [
 		{
-			name: 'vid',
+			name: 'presentationId',
 			description: 'system generated identifier that corresponds to a device presentation',
 			required: true,
 		},
 		{
-			name: 'mnmn',
-			description: 'manufacturer ID. Defaults to SmartThingsCommunity',
+			name: 'manufacturerName',
+			description: 'manufacturer name. Defaults to SmartThingsCommunity',
 			required: false,
 		},
 	]
@@ -110,7 +110,7 @@ export default class PresentationCommand extends OutputAPICommand<PresentationDe
 		await super.setup(args, argv, flags)
 
 		this.processNormally(() => {
-			return this.client.presentation.getPresentation(args.vid, args.mnmn)
+			return this.client.presentation.getPresentation(args.presentationId, args.manufacturerName)
 		})
 	}
 }

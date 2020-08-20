@@ -7,8 +7,8 @@ export function buildTableOutput(this: APICommand, deviceConfig: PresentationDev
 	const tableGenerator = this.tableGenerator
 	// This could use more advanced methods of tableGenerator.
 	const table = tableGenerator.newOutputTable()
-	table.push(['VID', deviceConfig.vid])
-	table.push(['MNMN', deviceConfig.mnmn])
+	table.push(['Presentation ID', deviceConfig.presentationId])
+	table.push(['Manufacturer Name', deviceConfig.manufacturerName])
 	if (deviceConfig.type) {
 		table.push(['Type', deviceConfig.type])
 	}
@@ -77,12 +77,12 @@ export function buildTableOutput(this: APICommand, deviceConfig: PresentationDev
 }
 
 export default class Devices extends OutputAPICommand<PresentationDeviceConfig> {
-	static description = 'query device config by vid'
+	static description = 'query device config by presentationId'
 
 	static flags = OutputAPICommand.flags
 
 	static args = [{
-		name: 'vid',
+		name: 'presentationId',
 		description: 'system generated identifier that corresponds to a device presentation',
 		required: true,
 	}]
@@ -94,7 +94,7 @@ export default class Devices extends OutputAPICommand<PresentationDeviceConfig> 
 		await super.setup(args, argv, flags)
 
 		this.processNormally(() => {
-			return this.client.presentation.get(args.vid)
+			return this.client.presentation.get(args.presentationId)
 		})
 	}
 }

@@ -73,8 +73,8 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<D
 				if (!profileData.metadata) {
 					profileData.metadata = {}
 				}
-				profileData.metadata.vid = presentation.vid
-				profileData.metadata.mnmn = presentation.mnmn
+				profileData.metadata.vid = presentation.presentationId
+				profileData.metadata.mnmn = presentation.manufacturerName
 				const profile = await this.client.deviceProfiles.update(id, cleanupRequest(profileData))
 
 				return {...profile, presentation: prunePresentationValues(presentation)}

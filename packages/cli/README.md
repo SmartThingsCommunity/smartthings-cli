@@ -147,8 +147,8 @@ that maps to that hierarchy.
 * [`smartthings plugins:link PLUGIN`](#smartthings-pluginslink-plugin)
 * [`smartthings plugins:uninstall PLUGIN...`](#smartthings-pluginsuninstall-plugin)
 * [`smartthings plugins:update`](#smartthings-pluginsupdate)
-* [`smartthings presentation VID [MNMN]`](#smartthings-presentation-vid-mnmn)
-* [`smartthings presentation:device-config VID`](#smartthings-presentationdevice-config-vid)
+* [`smartthings presentation PRESENTATIONID [MANUFACTURERNAME]`](#smartthings-presentation-presentationid-manufacturername)
+* [`smartthings presentation:device-config PRESENTATIONID`](#smartthings-presentationdevice-config-presentationid)
 * [`smartthings presentation:device-config:create`](#smartthings-presentationdevice-configcreate)
 * [`smartthings presentation:device-config:generate ID`](#smartthings-presentationdevice-configgenerate-id)
 * [`smartthings rules [IDORINDEX]`](#smartthings-rules-idorindex)
@@ -718,7 +718,7 @@ OPTIONS
   -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
-  -v, --verbose          include vid and mnmn in list output
+  -v, --verbose          include presentationId and manufacturerName in list output
   -y, --yaml             use YAML format of input and/or output
   --compact              use compact table format with no lines between body rows
   --expanded             use expanded table format with a line between each body row
@@ -1737,17 +1737,17 @@ OPTIONS
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.9.0/src/commands/plugins/update.ts)_
 
-## `smartthings presentation VID [MNMN]`
+## `smartthings presentation PRESENTATIONID [MANUFACTURERNAME]`
 
 query device presentation by vid
 
 ```
 USAGE
-  $ smartthings presentation VID [MNMN]
+  $ smartthings presentation PRESENTATIONID [MANUFACTURERNAME]
 
 ARGUMENTS
-  VID   system generated identifier that corresponds to a device presentation
-  MNMN  manufacturer ID. Defaults to SmartThingsCommunity
+  PRESENTATIONID    system generated identifier that corresponds to a device presentation
+  MANUFACTURERNAME  manufacturer name. Defaults to SmartThingsCommunity
 
 OPTIONS
   -h, --help             show CLI help
@@ -1763,16 +1763,16 @@ OPTIONS
 
 _See code: [dist/commands/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/presentation.ts)_
 
-## `smartthings presentation:device-config VID`
+## `smartthings presentation:device-config PRESENTATIONID`
 
-query device config by vid
+query device config by presentationId
 
 ```
 USAGE
-  $ smartthings presentation:device-config VID
+  $ smartthings presentation:device-config PRESENTATIONID
 
 ARGUMENTS
-  VID  system generated identifier that corresponds to a device presentation
+  PRESENTATIONID  system generated identifier that corresponds to a device presentation
 
 OPTIONS
   -h, --help             show CLI help

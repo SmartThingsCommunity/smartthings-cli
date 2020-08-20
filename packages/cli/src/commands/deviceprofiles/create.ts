@@ -97,8 +97,8 @@ export async function createWithDefaultConfig(client: SmartThingsClient, data: D
 	if (!deviceProfile.metadata) {
 		deviceProfile.metadata = {}
 	}
-	deviceProfile.metadata.vid = deviceConfig.vid
-	deviceProfile.metadata.mnmn = deviceConfig.mnmn
+	deviceProfile.metadata.vid = deviceConfig.presentationId
+	deviceProfile.metadata.mnmn = deviceConfig.manufacturerName
 
 	// Update the profile with the vid and mnmn
 	deviceProfile = await client.deviceProfiles.update(profileId, deviceProfile)
