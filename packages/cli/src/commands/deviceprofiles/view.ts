@@ -39,8 +39,8 @@ export function buildTableOutput(this: APICommand, data: DeviceDefinition): stri
 	table.push(['Id', data.id])
 	table.push(['Device Type', data.metadata?.deviceType ?? ''])
 	table.push(['OCF Device Type', data.metadata?.ocfDeviceType ?? ''])
-	table.push(['mnmn', data.metadata?.mnmn ?? ''])
-	table.push(['vid', data.metadata?.vid ?? ''])
+	table.push(['Manufacturer Name', data.metadata?.mnmn ?? ''])
+	table.push(['Presentation ID', data.metadata?.vid ?? ''])
 	table.push(['Status', data.status])
 	if (data.view) {
 		if (data.view.dashboard) {
@@ -68,8 +68,8 @@ export function buildTableOutput(this: APICommand, data: DeviceDefinition): stri
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function prunePresentation(view: { [key: string]: any }): void {
-	delete view.mnmn
-	delete view.vid
+	delete view.manufacturerName
+	delete view.presentationId
 	delete view.type
 	if (view.dpInfo === null) {
 		delete view.dpInfo
