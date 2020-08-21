@@ -1,6 +1,7 @@
 import { DeviceProfile, DeviceProfileRequest } from '@smartthings/core-sdk'
 
 import {APICommand, SelectingInputOutputAPICommand} from '@smartthings/cli-lib'
+import {DeviceDefinitionRequest} from './view'
 
 
 export function buildTableOutput(this: APICommand, data: DeviceProfile): string {
@@ -18,7 +19,7 @@ export function buildTableOutput(this: APICommand, data: DeviceProfile): string 
 	return table.toString()
 }
 
-export default class DeviceProfileUpdateCommand extends SelectingInputOutputAPICommand<DeviceProfileRequest, DeviceProfile, DeviceProfile> {
+export default class DeviceProfileUpdateCommand extends SelectingInputOutputAPICommand<DeviceDefinitionRequest, DeviceProfile, DeviceProfile> {
 	static description = 'update a device profile'
 
 	static flags = SelectingInputOutputAPICommand.flags
@@ -41,6 +42,10 @@ export default class DeviceProfileUpdateCommand extends SelectingInputOutputAPIC
 		this.processNormally(args.id,
 			() => { return this.client.deviceProfiles.list() },
 			async (id, data) => {
+				if (data.view) {
+					throw new Error('Input contains "view" property. Use deviceprofiles:view:update instead.')
+				}
+
 				return this.client.deviceProfiles.update(id, cleanupRequest(data))
 			})
 	}
