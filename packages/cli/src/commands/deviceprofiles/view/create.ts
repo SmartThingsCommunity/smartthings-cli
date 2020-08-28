@@ -1,5 +1,5 @@
 import { InputOutputAPICommand } from '@smartthings/cli-lib'
-import {cleanupRequest, generateDefaultConfig} from '../create'
+import {cleanupRequest, createWithDefaultConfig} from '../create'
 import { buildTableOutput, prunePresentationValues, augmentPresentationValues, DeviceDefinition, DeviceDefinitionRequest } from '../view'
 
 
@@ -36,48 +36,40 @@ export default class DeviceDefCreateCommand extends InputOutputAPICommand<Device
 
 	protected buildTableOutput = buildTableOutput
 
+	private async createWithCustomConfig(data: DeviceDefinitionRequest): Promise<DeviceDefinition> {
+		if (!data.view) {
+			throw Error('View property not defined')
+		}
+
+		// create the device config from the view data
+		const deviceConfig = await this.client.presentation.create(augmentPresentationValues(data.view))
+
+		// Set the vid and mnmn from the config
+		if (!data.metadata) {
+			data.metadata = {}
+		}
+		data.metadata.vid = deviceConfig.vid
+		data.metadata.mnmn = deviceConfig.mnmn
+		delete data.view
+
+		// Create the profile
+		const profile = await this.client.deviceProfiles.create(cleanupRequest(data))
+
+		// Return the composite object
+		return {...profile, view: prunePresentationValues(deviceConfig)}
+	}
+
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceDefCreateCommand)
 		await super.setup(args, argv, flags)
 
 		this.processNormally(async (data) => {
-			let profile
-			let deviceConfig
 			if (data.view) {
-				// Create the config
-				deviceConfig = await this.client.presentation.create(augmentPresentationValues(data.view))
-
-				// Set the vid and mnmn from the config
-				if (!data.metadata) {
-					data.metadata = {}
-				}
-				data.metadata.vid = deviceConfig.vid
-				data.metadata.mnmn = deviceConfig.mnmn
-				delete data.view
-
-				profile = await this.client.deviceProfiles.create(cleanupRequest(data))
-			} else {
-				// Create the profile
-				profile = await this.client.deviceProfiles.create(cleanupRequest(data))
-
-				// Generate the default config
-				const deviceConfigData = await generateDefaultConfig(this.client, profile.id, profile)
-
-				// Create the config using the default
-				deviceConfig = await this.client.presentation.create(deviceConfigData)
-
-				// Update the profile to use the vid from the config
-				const profileId = profile.id
-				cleanupRequest(profile)
-				delete profile.name
-				if (!profile.metadata) {
-					profile.metadata = {}
-				}
-				profile.metadata.vid = deviceConfig.vid
-				profile.metadata.mnmn = deviceConfig.mnmn
-				profile = await this.client.deviceProfiles.update(profileId, profile)
+				return this.createWithCustomConfig(data)
 			}
-			return {...profile, presentation: prunePresentationValues(deviceConfig)}
+			const profileAndConfig = await createWithDefaultConfig(this.client, data)
+			return {...profileAndConfig.deviceProfile, view: prunePresentationValues(profileAndConfig.deviceConfig)}
 		})
 	}
 }

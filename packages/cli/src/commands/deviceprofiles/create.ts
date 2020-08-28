@@ -1,17 +1,17 @@
 import {
 	DeviceProfile,
-	DeviceProfileRequest,
+	DeviceProfileRequest, PresentationDeviceConfig,
 	PresentationDeviceConfigCreate,
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
 import { InputOutputAPICommand } from '@smartthings/cli-lib'
 import { buildTableOutput } from '../deviceprofiles'
-import {DeviceDefinitionRequest} from './view'
+import { DeviceDefinitionRequest } from './view'
 import inquirer from 'inquirer'
 
 
-const capabilityBlacklist = ['healthCheck', 'execute']
+const capabilitiesWithoutPresentations = ['healthCheck', 'execute']
 
 export async function generateDefaultConfig(client: SmartThingsClient, deviceProfileId: string,  deviceProfile: DeviceProfileRequest | DeviceDefinitionRequest): Promise<PresentationDeviceConfigCreate> {
 	// Generate the default config
@@ -42,7 +42,7 @@ export async function generateDefaultConfig(client: SmartThingsClient, devicePro
 
 	// Filter capabilities with no UI
 	if (deviceConfig.detailView) {
-		deviceConfig.detailView = deviceConfig.detailView.filter(it => !(capabilityBlacklist.includes(it.capability)))
+		deviceConfig.detailView = deviceConfig.detailView.filter(it => !(capabilitiesWithoutPresentations.includes(it.capability)))
 	}
 
 	// Filter automation entries
@@ -55,7 +55,7 @@ export async function generateDefaultConfig(client: SmartThingsClient, devicePro
 			}))
 			deviceConfig.automation.conditions = deviceConfig.automation.conditions.filter((_v, index) => {
 				const capability = capabilities[index]
-				return capability.attributes && Object.keys(capability.attributes).length > 0 && !(capabilityBlacklist.includes(capability.id || ''))
+				return capability.attributes && Object.keys(capability.attributes).length > 0 && !(capabilitiesWithoutPresentations.includes(capability.id || ''))
 			})
 		}
 
@@ -66,12 +66,45 @@ export async function generateDefaultConfig(client: SmartThingsClient, devicePro
 			}))
 			deviceConfig.automation.actions = deviceConfig.automation.actions.filter((_v, index) => {
 				const capability = capabilities[index]
-				return capability.commands && Object.keys(capability.commands).length > 0 && !(capabilityBlacklist.includes(capability.id || ''))
+				return capability.commands && Object.keys(capability.commands).length > 0 && !(capabilitiesWithoutPresentations.includes(capability.id || ''))
 			})
 		}
 	}
 
 	return deviceConfig
+}
+
+export interface  DeviceProfileAndConfig {
+	deviceProfile: DeviceProfile
+	deviceConfig: PresentationDeviceConfig
+}
+
+export async function createWithDefaultConfig(client: SmartThingsClient, data: DeviceDefinitionRequest): Promise<DeviceProfileAndConfig> {
+
+	// Create the profile
+	let deviceProfile = await client.deviceProfiles.create(cleanupRequest(data))
+
+	// Generate the default config
+	const deviceConfigData = await generateDefaultConfig(client, deviceProfile.id, deviceProfile)
+
+	// Create the config using the default
+	const deviceConfig = await client.presentation.create(deviceConfigData)
+
+	// Update the profile to use the vid from the config
+	const profileId = deviceProfile.id
+	cleanupRequest(deviceProfile)
+	delete deviceProfile.name
+	if (!deviceProfile.metadata) {
+		deviceProfile.metadata = {}
+	}
+	deviceProfile.metadata.vid = deviceConfig.vid
+	deviceProfile.metadata.mnmn = deviceConfig.mnmn
+
+	// Update the profile with the vid and mnmn
+	deviceProfile = await client.deviceProfiles.update(profileId, deviceProfile)
+
+	// Return the composite object
+	return {deviceProfile, deviceConfig}
 }
 
 // Cleanup is done so that the result of a device profile get can be modified and
@@ -115,28 +148,12 @@ export default class DeviceProfileCreateCommand extends InputOutputAPICommand<De
 				throw new Error('Input contains "view" property. Use deviceprofiles:view:create instead.')
 			}
 
-			let profile = await this.client.deviceProfiles.create(cleanupRequest(data))
-
 			if (!data.metadata?.vid) {
-				// Generate the default config
-				const deviceConfigData = await generateDefaultConfig(this.client, profile.id, profile)
-
-				// Create the config using the default
-				const deviceConfig = await this.client.presentation.create(deviceConfigData)
-
-				// Update the profile to use the vid from the config
-				const profileId = profile.id
-				cleanupRequest(profile)
-				delete profile.name
-				if (!profile.metadata) {
-					profile.metadata = {}
-				}
-				profile.metadata.vid = deviceConfig.vid
-				profile.metadata.mnmn = deviceConfig.mnmn
-				profile = await this.client.deviceProfiles.update(profileId, profile)
+				const profileAndConfig = await createWithDefaultConfig(this.client, data)
+				return profileAndConfig.deviceProfile
 			}
 
-			return profile
+			return await this.client.deviceProfiles.create(cleanupRequest(data))
 		})
 	}
 

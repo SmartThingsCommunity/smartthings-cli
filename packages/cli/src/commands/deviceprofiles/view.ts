@@ -1,4 +1,4 @@
-import { DeviceProfile, DeviceProfileRequest, PresentationDeviceConfigEntry, PresentationDeviceConfig } from '@smartthings/core-sdk'
+import { DeviceProfile, DeviceProfileRequest, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
 
 import {
 	APICommand,

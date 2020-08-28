@@ -69,16 +69,12 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<D
 					presentationData = await generateDefaultConfig(this.client, id, profileData)
 				}
 
-				// eslint-disable-next-line no-console
-				//console.log(`Creating presentation from ${JSON.stringify(presentationData, null, 2)}`)
 				const presentation = await this.client.presentation.create(presentationData)
 				if (!profileData.metadata) {
 					profileData.metadata = {}
 				}
 				profileData.metadata.vid = presentation.vid
 				profileData.metadata.mnmn = presentation.mnmn
-				// eslint-disable-next-line no-console
-				console.log(`Updating profile from ${JSON.stringify(cleanupRequest(profileData), null, 2)}`)
 				const profile = await this.client.deviceProfiles.update(id, cleanupRequest(profileData))
 
 				return {...profile, presentation: prunePresentationValues(presentation)}
