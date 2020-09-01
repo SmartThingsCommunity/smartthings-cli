@@ -2,8 +2,7 @@ import { flags } from '@oclif/command'
 
 import { Device, DeviceListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, ListingOutputAPICommand } from '@smartthings/cli-lib'
-import { addLocationsAndRooms } from '../lib/api-helpers'
+import { APICommand, ListingOutputAPICommand, withLocationsAndRooms } from '@smartthings/cli-lib'
 
 
 export type DeviceWithLocation = Device & { location?: string }
@@ -91,7 +90,7 @@ export default class DevicesCommand extends ListingOutputAPICommand<Device, Devi
 			async () => {
 				const devices = await this.client.devices.list(deviceListOptions)
 				if (flags.verbose) {
-					await addLocationsAndRooms(this.client, devices)
+					return await withLocationsAndRooms(this.client, devices)
 				}
 				return devices
 			},

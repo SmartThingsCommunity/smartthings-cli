@@ -48,6 +48,7 @@
 		"compile": "tsc -b",
 		"watch": "tsc -b -w",
 		"build": "npm run clean && npm run compile",
-		"test": "jest"
+		"test": "jest",
+		"test-coverage": "jest --coverage=true"
 	}
 }

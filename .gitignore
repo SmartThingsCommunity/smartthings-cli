@@ -12,3 +12,4 @@ temp_notes.md
 tsconfig.tsbuildinfo
 scratch_pad.txt
 packages/*/smartthings-cli-*.tgz
+coverage

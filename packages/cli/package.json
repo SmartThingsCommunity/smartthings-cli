@@ -89,6 +89,7 @@
 		"postpack": "rm -f oclif.manifest.json",
 		"prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
 		"version": "oclif-dev readme && git add README.md",
-		"package": "pkg package.json --out-path=dist_bin --targets=node12-linux-x64,node12-macos-x64,node12-win-x64"
+		"package": "pkg package.json --out-path=dist_bin --targets=node12-linux-x64,node12-macos-x64,node12-win-x64",
+		"test-coverage": "jest --coverage=true"
 	}
 }
