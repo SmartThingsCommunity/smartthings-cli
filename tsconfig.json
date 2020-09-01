@@ -5,7 +5,7 @@
 		"importHelpers": true,
 		"module": "commonjs",
 		"strict": true,
-		"target": "es2017",
+		"target": "es2019",
 		"esModuleInterop": true,
 		"noErrorTruncation": true,
 	},

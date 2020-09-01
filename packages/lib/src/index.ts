@@ -1,4 +1,5 @@
 export * from './api-command'
+export * from './api-helpers'
 export * from './smartthings-command'
 export * from './cli-config'
 export * from './io-command'

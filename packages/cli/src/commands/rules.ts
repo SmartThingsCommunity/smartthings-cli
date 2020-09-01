@@ -5,7 +5,7 @@ import { APICommand, ListingOutputAPICommand, TableFieldDefinition } from '@smar
 
 
 export const tableFieldDefinitions: TableFieldDefinition<Rule>[] = ['name', 'id',
-	{ label: 'Num Actions', value: (rule) => rule.actions.length.toString() },
+	{ label: 'Num Actions', value: rule => rule.actions.length.toString() },
 	'timeZoneId']
 
 export async function getRulesByLocation(this: APICommand, locationId?: string): Promise<RuleWithLocation[]> {

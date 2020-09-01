@@ -2,8 +2,7 @@ import { flags } from '@oclif/command'
 
 import { InstalledApp } from '@smartthings/core-sdk'
 
-import { ListingOutputAPICommand, TableFieldDefinition } from '@smartthings/cli-lib'
-import { addLocations } from '../lib/api-helpers'
+import { ListingOutputAPICommand, TableFieldDefinition, withLocations } from '@smartthings/cli-lib'
 
 
 export type InstalledAppWithLocation = InstalledApp & { location?: string }
@@ -34,8 +33,8 @@ export default class InstalledAppsCommand extends ListingOutputAPICommand<Instal
 		'singleInstance', 'appId', 'locationId', 'singleInstance',
 		{
 			label: 'Classifications',
-			value: (installedApp) => installedApp.classifications?.join('\n') ?? '',
-			include: (installedApp) => !!installedApp.classifications,
+			value: installedApp => installedApp.classifications?.join('\n') ?? '',
+			include: installedApp => !!installedApp.classifications,
 		},
 	]
 
@@ -52,7 +51,7 @@ export default class InstalledAppsCommand extends ListingOutputAPICommand<Instal
 			async () => {
 				const apps = await this.client.installedApps.list()
 				if (flags.verbose) {
-					await addLocations(this.client, apps)
+					return await withLocations(this.client, apps)
 				}
 				return apps
 			},
