@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.9](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.8...v0.0.0-pre.9) (2020-09-02)
+
+
+### Features
+
+* export api-helpers functions ([d723b85](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d723b85cd8745ee3631ad5976eecd0ae66e50e0a))
+
+
+
+
+
 # [0.0.0-pre.8](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.7...v0.0.0-pre.8) (2020-08-17)
 
 
