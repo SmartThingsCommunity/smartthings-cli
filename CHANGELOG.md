@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.10](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.9...v0.0.0-pre.10) (2020-09-02)
+
+
+### Bug Fixes
+
+* bump core-sdk and log4js versions ([2a3f9ff](https://github.com/rossiam/smartthings-cli/commit/2a3f9fffdabbf5f5babb0cc4aaffe648ddd7ebd8))
+
+
+
+
+
 # [0.0.0-pre.9](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.8...v0.0.0-pre.9) (2020-09-02)
 
 
