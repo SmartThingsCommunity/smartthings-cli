@@ -5,6 +5,7 @@ import { SchemaAppRequest, SchemaCreateResponse } from '@smartthings/core-sdk'
 import { InputOutputAPICommand } from '@smartthings/cli-lib'
 
 import { addSchemaPermission } from '../../lib/aws-utils'
+import { lambdaAuthFlags } from '../../lib/common-flags'
 
 
 export default class SchemaAppCreateCommand extends InputOutputAPICommand<SchemaAppRequest, SchemaCreateResponse> {
@@ -15,6 +16,7 @@ export default class SchemaAppCreateCommand extends InputOutputAPICommand<Schema
 		authorize: flags.boolean({
 			description: 'authorize connector\'s Lambda functions to be called by SmartThings',
 		}),
+		...lambdaAuthFlags,
 	}
 
 	protected tableFieldDefinitions = ['endpointAppId', 'stClientId', 'stClientSecret']
@@ -27,16 +29,16 @@ export default class SchemaAppCreateCommand extends InputOutputAPICommand<Schema
 			if (flags.authorize) {
 				if (data.hostingType === 'lambda') {
 					if (data.lambdaArn) {
-						addSchemaPermission(data.lambdaArn)
+						addSchemaPermission(data.lambdaArn, flags.principal, flags['statement-id'])
 					}
 					if (data.lambdaArnAP) {
-						addSchemaPermission(data.lambdaArnAP)
+						addSchemaPermission(data.lambdaArnAP, flags.principal, flags['statement-id'])
 					}
 					if (data.lambdaArnCN) {
-						addSchemaPermission(data.lambdaArnCN)
+						addSchemaPermission(data.lambdaArnCN, flags.principal, flags['statement-id'])
 					}
 					if (data.lambdaArnEU) {
-						addSchemaPermission(data.lambdaArnEU)
+						addSchemaPermission(data.lambdaArnEU, flags.principal, flags['statement-id'])
 					}
 				} else {
 					this.logger.error('Authorization is not applicable to web-hook schema connectors')

@@ -156,9 +156,10 @@ that maps to that hierarchy.
 * [`smartthings rules:delete [ID]`](#smartthings-rulesdelete-id)
 * [`smartthings rules:update [ID]`](#smartthings-rulesupdate-id)
 * [`smartthings schema [ID]`](#smartthings-schema-id)
+* [`smartthings schema:authorize ARN`](#smartthings-schemaauthorize-arn)
 * [`smartthings schema:create`](#smartthings-schemacreate)
 * [`smartthings schema:delete [ID]`](#smartthings-schemadelete-id)
-* [`smartthings schema:update ID`](#smartthings-schemaupdate-id)
+* [`smartthings schema:update [ID]`](#smartthings-schemaupdate-id)
 
 ## `smartthings apps [ID]`
 
@@ -172,19 +173,27 @@ ARGUMENTS
   ID  the app id or number from list
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -v, --verbose          include URLs and ARNs in table output
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -v, --verbose                    include URLs and ARNs in table output
+  -y, --yaml                       use YAML format of input and/or output
+
+  --classification=classification  filter results by one or more classifications, AUTOMATION, SERVICE, DEVICE,
+                                   CONNECTED_SERVICE
+
+  --compact                        use compact table format with no lines between body rows
+
+  --expanded                       use expanded table format with a line between each body row
+
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+
+  --type=type                      filter results by appType, WEBHOOK_SMART_APP, LAMBDA_SMART_APP, API_ONLY
 ```
 
-_See code: [dist/commands/apps.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/apps.ts)_
+_See code: [dist/commands/apps.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/apps.ts)_
 
 ## `smartthings apps:authorize ARN`
 
@@ -198,9 +207,11 @@ ARGUMENTS
   ARN  the ARN of the AWS Lambda function
 
 OPTIONS
-  -h, --help             show CLI help
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
+  -h, --help                   show CLI help
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+  --principal=principal        use this principal instead of the default when authorizing lambda functions
+  --statement-id=statement-id  use this statement id instead of the default when authorizing lambda functions
 
 EXAMPLES
   $ smartthings apps:authorize arn:aws:lambda:us-east-1:1234567890:function:your-test-app
@@ -214,7 +225,7 @@ EXAMPLES
   It requires your machine to be configured to run the AWS CLI
 ```
 
-_See code: [dist/commands/apps/authorize.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/apps/authorize.ts)_
+_See code: [dist/commands/apps/authorize.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/apps/authorize.ts)_
 
 ## `smartthings apps:create`
 
@@ -225,21 +236,23 @@ USAGE
   $ smartthings apps:create
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --authorize            authorize Lambda functions to be called by SmartThings
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
+  -d, --dry-run                produce JSON but don't actually submit
+  -h, --help                   show CLI help
+  -i, --input=input            specify input file
+  -j, --json                   use JSON format of input and/or output
+  -o, --output=output          specify output file
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+  -y, --yaml                   use YAML format of input and/or output
+  --authorize                  authorize Lambda functions to be called by SmartThings
+  --compact                    use compact table format with no lines between body rows
+  --expanded                   use expanded table format with a line between each body row
+  --indent=indent              specify indentation for formatting JSON or YAML output
+  --principal=principal        use this principal instead of the default when authorizing lambda functions
+  --statement-id=statement-id  use this statement id instead of the default when authorizing lambda functions
 ```
 
-_See code: [dist/commands/apps/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/apps/create.ts)_
+_See code: [dist/commands/apps/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/apps/create.ts)_
 
 ## `smartthings apps:delete [ID]`
 
@@ -258,7 +271,7 @@ OPTIONS
   -t, --token=token      the auth token to use
 ```
 
-_See code: [dist/commands/apps/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/apps/delete.ts)_
+_See code: [dist/commands/apps/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/apps/delete.ts)_
 
 ## `smartthings apps:oauth [ID]`
 
@@ -283,7 +296,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/apps/oauth.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/apps/oauth.ts)_
+_See code: [dist/commands/apps/oauth.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/apps/oauth.ts)_
 
 ## `smartthings apps:oauth:generate [ID]`
 
@@ -309,7 +322,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/apps/oauth/generate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/apps/oauth/generate.ts)_
+_See code: [dist/commands/apps/oauth/generate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/apps/oauth/generate.ts)_
 
 ## `smartthings apps:oauth:update [ID]`
 
@@ -335,11 +348,11 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/apps/oauth/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/apps/oauth/update.ts)_
+_See code: [dist/commands/apps/oauth/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/apps/oauth/update.ts)_
 
 ## `smartthings apps:register [ID]`
 
-register the app
+Send request to app target URL to confirm existence and authorize lifecycle events
 
 ```
 USAGE
@@ -354,7 +367,7 @@ OPTIONS
   -t, --token=token      the auth token to use
 ```
 
-_See code: [dist/commands/apps/register.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/apps/register.ts)_
+_See code: [dist/commands/apps/register.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/apps/register.ts)_
 
 ## `smartthings apps:settings [ID]`
 
@@ -379,7 +392,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/apps/settings.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/apps/settings.ts)_
+_See code: [dist/commands/apps/settings.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/apps/settings.ts)_
 
 ## `smartthings apps:settings:update [ID]`
 
@@ -405,7 +418,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/apps/settings/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/apps/settings/update.ts)_
+_See code: [dist/commands/apps/settings/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/apps/settings/update.ts)_
 
 ## `smartthings apps:update [ID]`
 
@@ -419,20 +432,22 @@ ARGUMENTS
   ID  the app id
 
 OPTIONS
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --authorize            authorize Lambda functions to be called by SmartThings
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
+  -h, --help                   show CLI help
+  -i, --input=input            specify input file
+  -j, --json                   use JSON format of input and/or output
+  -o, --output=output          specify output file
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+  -y, --yaml                   use YAML format of input and/or output
+  --authorize                  authorize Lambda functions to be called by SmartThings
+  --compact                    use compact table format with no lines between body rows
+  --expanded                   use expanded table format with a line between each body row
+  --indent=indent              specify indentation for formatting JSON or YAML output
+  --principal=principal        use this principal instead of the default when authorizing lambda functions
+  --statement-id=statement-id  use this statement id instead of the default when authorizing lambda functions
 ```
 
-_See code: [dist/commands/apps/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/apps/update.ts)_
+_See code: [dist/commands/apps/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/apps/update.ts)_
 
 ## `smartthings autocomplete [SHELL]`
 
@@ -483,7 +498,7 @@ OPTIONS
   --indent=indent            specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/capabilities.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/capabilities.ts)_
+_See code: [dist/commands/capabilities.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/capabilities.ts)_
 
 ## `smartthings capabilities:create`
 
@@ -508,7 +523,7 @@ OPTIONS
   --indent=indent            specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/capabilities/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/capabilities/create.ts)_
+_See code: [dist/commands/capabilities/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/capabilities/create.ts)_
 
 ## `smartthings capabilities:delete [ID] [VERSION]`
 
@@ -528,7 +543,7 @@ OPTIONS
   -t, --token=token      the auth token to use
 ```
 
-_See code: [dist/commands/capabilities/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/capabilities/delete.ts)_
+_See code: [dist/commands/capabilities/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/capabilities/delete.ts)_
 
 ## `smartthings capabilities:namespaces`
 
@@ -550,7 +565,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/capabilities/namespaces.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/capabilities/namespaces.ts)_
+_See code: [dist/commands/capabilities/namespaces.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/capabilities/namespaces.ts)_
 
 ## `smartthings capabilities:presentation [ID] [VERSION]`
 
@@ -577,7 +592,7 @@ OPTIONS
   --indent=indent            specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/capabilities/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/capabilities/presentation.ts)_
+_See code: [dist/commands/capabilities/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/capabilities/presentation.ts)_
 
 ## `smartthings capabilities:presentation:create [ID] [VERSION]`
 
@@ -604,7 +619,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/capabilities/presentation/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/capabilities/presentation/create.ts)_
+_See code: [dist/commands/capabilities/presentation/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/capabilities/presentation/create.ts)_
 
 ## `smartthings capabilities:presentation:update [ID] [VERSION]`
 
@@ -631,7 +646,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/capabilities/presentation/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/capabilities/presentation/update.ts)_
+_See code: [dist/commands/capabilities/presentation/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/capabilities/presentation/update.ts)_
 
 ## `smartthings capabilities:update [ID] [VERSION]`
 
@@ -658,7 +673,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/capabilities/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/capabilities/update.ts)_
+_See code: [dist/commands/capabilities/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/capabilities/update.ts)_
 
 ## `smartthings config [NAME]`
 
@@ -684,7 +699,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/config.ts)_
+_See code: [dist/commands/config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/config.ts)_
 
 ## `smartthings deviceprofiles [ID]`
 
@@ -721,7 +736,7 @@ EXAMPLES
   $ smartthings deviceprofiles 4 -j -o profile.json # write the profile to the file "profile.json"
 ```
 
-_See code: [dist/commands/deviceprofiles.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/deviceprofiles.ts)_
+_See code: [dist/commands/deviceprofiles.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles.ts)_
 
 ## `smartthings deviceprofiles:create`
 
@@ -755,7 +770,7 @@ EXAMPLES
   $ smartthings deviceprofiles:create                      # create a device profile with interactive dialog
 ```
 
-_See code: [dist/commands/deviceprofiles/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/deviceprofiles/create.ts)_
+_See code: [dist/commands/deviceprofiles/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/create.ts)_
 
 ## `smartthings deviceprofiles:delete [ID]`
 
@@ -778,7 +793,7 @@ EXAMPLES
   $ smartthings deviceprofiles:delete 5                                     # delete the 5th profile in the list
 ```
 
-_See code: [dist/commands/deviceprofiles/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/deviceprofiles/delete.ts)_
+_See code: [dist/commands/deviceprofiles/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/delete.ts)_
 
 ## `smartthings deviceprofiles:device-config [ID]`
 
@@ -803,7 +818,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/deviceprofiles/device-config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/deviceprofiles/device-config.ts)_
+_See code: [dist/commands/deviceprofiles/device-config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/device-config.ts)_
 
 ## `smartthings deviceprofiles:presentation [ID]`
 
@@ -828,7 +843,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/deviceprofiles/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/deviceprofiles/presentation.ts)_
+_See code: [dist/commands/deviceprofiles/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/presentation.ts)_
 
 ## `smartthings deviceprofiles:publish [ID]`
 
@@ -853,7 +868,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/deviceprofiles/publish.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/deviceprofiles/publish.ts)_
+_See code: [dist/commands/deviceprofiles/publish.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/publish.ts)_
 
 ## `smartthings deviceprofiles:update [ID]`
 
@@ -879,7 +894,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/deviceprofiles/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/deviceprofiles/update.ts)_
+_See code: [dist/commands/deviceprofiles/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/update.ts)_
 
 ## `smartthings deviceprofiles:view [ID]`
 
@@ -904,7 +919,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/deviceprofiles/view.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/deviceprofiles/view.ts)_
+_See code: [dist/commands/deviceprofiles/view.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/view.ts)_
 
 ## `smartthings deviceprofiles:view:create`
 
@@ -955,7 +970,7 @@ EXAMPLES
          - capability: switch
 ```
 
-_See code: [dist/commands/deviceprofiles/view/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/deviceprofiles/view/create.ts)_
+_See code: [dist/commands/deviceprofiles/view/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/view/create.ts)_
 
 ## `smartthings deviceprofiles:view:update [ID]`
 
@@ -1011,7 +1026,7 @@ EXAMPLES
          - capability: switch
 ```
 
-_See code: [dist/commands/deviceprofiles/view/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/deviceprofiles/view/update.ts)_
+_See code: [dist/commands/deviceprofiles/view/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/view/update.ts)_
 
 ## `smartthings devices [ID]`
 
@@ -1055,7 +1070,7 @@ OPTIONS
   --indent=indent                 specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/devices.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/devices.ts)_
+_See code: [dist/commands/devices.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/devices.ts)_
 
 ## `smartthings devices:capability-status [ID] [COMPONENT] [CAPABILITY]`
 
@@ -1082,7 +1097,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/devices/capability-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/devices/capability-status.ts)_
+_See code: [dist/commands/devices/capability-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/devices/capability-status.ts)_
 
 ## `smartthings devices:commands [ID] [COMMAND]`
 
@@ -1109,7 +1124,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/devices/commands.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/devices/commands.ts)_
+_See code: [dist/commands/devices/commands.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/devices/commands.ts)_
 
 ## `smartthings devices:component-status [ID] [COMPONENT]`
 
@@ -1135,7 +1150,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/devices/component-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/devices/component-status.ts)_
+_See code: [dist/commands/devices/component-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/devices/component-status.ts)_
 
 ## `smartthings devices:delete [ID]`
 
@@ -1154,7 +1169,7 @@ OPTIONS
   -t, --token=token      the auth token to use
 ```
 
-_See code: [dist/commands/devices/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/devices/delete.ts)_
+_See code: [dist/commands/devices/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/devices/delete.ts)_
 
 ## `smartthings devices:health [ID]`
 
@@ -1179,7 +1194,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/devices/health.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/devices/health.ts)_
+_See code: [dist/commands/devices/health.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/devices/health.ts)_
 
 ## `smartthings devices:presentation [ID]`
 
@@ -1204,7 +1219,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/devices/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/devices/presentation.ts)_
+_See code: [dist/commands/devices/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/devices/presentation.ts)_
 
 ## `smartthings devices:rename [ID] [LABEL]`
 
@@ -1230,7 +1245,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/devices/rename.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/devices/rename.ts)_
+_See code: [dist/commands/devices/rename.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/devices/rename.ts)_
 
 ## `smartthings devices:status [ID]`
 
@@ -1255,7 +1270,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/devices/status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/devices/status.ts)_
+_See code: [dist/commands/devices/status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/devices/status.ts)_
 
 ## `smartthings devices:update [ID]`
 
@@ -1281,7 +1296,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/devices/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/devices/update.ts)_
+_See code: [dist/commands/devices/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/devices/update.ts)_
 
 ## `smartthings generate:java`
 
@@ -1296,7 +1311,7 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
 ```
 
-_See code: [dist/commands/generate/java.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/generate/java.ts)_
+_See code: [dist/commands/generate/java.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/generate/java.ts)_
 
 ## `smartthings generate:node`
 
@@ -1311,7 +1326,7 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
 ```
 
-_See code: [dist/commands/generate/node.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/generate/node.ts)_
+_See code: [dist/commands/generate/node.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/generate/node.ts)_
 
 ## `smartthings help [COMMAND]`
 
@@ -1354,7 +1369,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/installedapps.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/installedapps.ts)_
+_See code: [dist/commands/installedapps.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/installedapps.ts)_
 
 ## `smartthings installedapps:delete [ID]`
 
@@ -1373,7 +1388,7 @@ OPTIONS
   -t, --token=token      the auth token to use
 ```
 
-_See code: [dist/commands/installedapps/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/installedapps/delete.ts)_
+_See code: [dist/commands/installedapps/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/installedapps/delete.ts)_
 
 ## `smartthings installedapps:rename [ID] [NAME]`
 
@@ -1399,7 +1414,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/installedapps/rename.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/installedapps/rename.ts)_
+_See code: [dist/commands/installedapps/rename.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/installedapps/rename.ts)_
 
 ## `smartthings locations [IDORINDEX]`
 
@@ -1424,7 +1439,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/locations.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/locations.ts)_
+_See code: [dist/commands/locations.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/locations.ts)_
 
 ## `smartthings locations:create`
 
@@ -1448,7 +1463,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/locations/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/locations/create.ts)_
+_See code: [dist/commands/locations/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/locations/create.ts)_
 
 ## `smartthings locations:delete [ID]`
 
@@ -1467,7 +1482,7 @@ OPTIONS
   -t, --token=token      the auth token to use
 ```
 
-_See code: [dist/commands/locations/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/locations/delete.ts)_
+_See code: [dist/commands/locations/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/locations/delete.ts)_
 
 ## `smartthings locations:rooms [IDORINDEX]`
 
@@ -1496,7 +1511,7 @@ ALIASES
   $ smartthings rooms
 ```
 
-_See code: [dist/commands/locations/rooms.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/locations/rooms.ts)_
+_See code: [dist/commands/locations/rooms.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/locations/rooms.ts)_
 
 ## `smartthings locations:rooms:create`
 
@@ -1524,7 +1539,7 @@ ALIASES
   $ smartthings rooms:create
 ```
 
-_See code: [dist/commands/locations/rooms/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/locations/rooms/create.ts)_
+_See code: [dist/commands/locations/rooms/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/locations/rooms/create.ts)_
 
 ## `smartthings locations:rooms:delete [ID]`
 
@@ -1547,7 +1562,7 @@ ALIASES
   $ smartthings rooms:delete
 ```
 
-_See code: [dist/commands/locations/rooms/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/locations/rooms/delete.ts)_
+_See code: [dist/commands/locations/rooms/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/locations/rooms/delete.ts)_
 
 ## `smartthings locations:rooms:update [ID]`
 
@@ -1577,7 +1592,7 @@ ALIASES
   $ smartthings rooms:update
 ```
 
-_See code: [dist/commands/locations/rooms/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/locations/rooms/update.ts)_
+_See code: [dist/commands/locations/rooms/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/locations/rooms/update.ts)_
 
 ## `smartthings locations:update [ID]`
 
@@ -1603,7 +1618,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/locations/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/locations/update.ts)_
+_See code: [dist/commands/locations/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/locations/update.ts)_
 
 ## `smartthings plugins`
 
@@ -1746,7 +1761,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/presentation.ts)_
+_See code: [dist/commands/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/presentation.ts)_
 
 ## `smartthings presentation:device-config VID`
 
@@ -1771,7 +1786,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/presentation/device-config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/presentation/device-config.ts)_
+_See code: [dist/commands/presentation/device-config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/presentation/device-config.ts)_
 
 ## `smartthings presentation:device-config:create`
 
@@ -1795,7 +1810,7 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/presentation/device-config/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/presentation/device-config/create.ts)_
+_See code: [dist/commands/presentation/device-config/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/presentation/device-config/create.ts)_
 
 ## `smartthings presentation:device-config:generate ID`
 
@@ -1824,7 +1839,7 @@ OPTIONS
                                  integrations
 ```
 
-_See code: [dist/commands/presentation/device-config/generate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/presentation/device-config/generate.ts)_
+_See code: [dist/commands/presentation/device-config/generate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/presentation/device-config/generate.ts)_
 
 ## `smartthings rules [IDORINDEX]`
 
@@ -1850,7 +1865,7 @@ OPTIONS
   --indent=indent              specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/rules.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/rules.ts)_
+_See code: [dist/commands/rules.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/rules.ts)_
 
 ## `smartthings rules:create`
 
@@ -1875,7 +1890,7 @@ OPTIONS
   --indent=indent              specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/rules/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/rules/create.ts)_
+_See code: [dist/commands/rules/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/rules/create.ts)_
 
 ## `smartthings rules:delete [ID]`
 
@@ -1895,7 +1910,7 @@ OPTIONS
   -t, --token=token            the auth token to use
 ```
 
-_See code: [dist/commands/rules/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/rules/delete.ts)_
+_See code: [dist/commands/rules/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/rules/delete.ts)_
 
 ## `smartthings rules:update [ID]`
 
@@ -1922,7 +1937,7 @@ OPTIONS
   --indent=indent              specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/rules/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/rules/update.ts)_
+_See code: [dist/commands/rules/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/rules/update.ts)_
 
 ## `smartthings schema [ID]`
 
@@ -1948,7 +1963,39 @@ OPTIONS
   --indent=indent        specify indentation for formatting JSON or YAML output
 ```
 
-_See code: [dist/commands/schema.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/schema.ts)_
+_See code: [dist/commands/schema.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/schema.ts)_
+
+## `smartthings schema:authorize ARN`
+
+authorize calls to your ST Schema Lambda function from SmartThings
+
+```
+USAGE
+  $ smartthings schema:authorize ARN
+
+ARGUMENTS
+  ARN  the ARN of the AWS Lambda function
+
+OPTIONS
+  -h, --help                   show CLI help
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+  --principal=principal        use this principal instead of the default when authorizing lambda functions
+  --statement-id=statement-id  use this statement id instead of the default when authorizing lambda functions
+
+EXAMPLES
+  $ smartthings apps:authorize arn:aws:lambda:us-east-1:1234567890:function:your-test-app
+
+  Note that this command is the same as running the following with the AWS CLI:
+
+  $ aws lambda add-permission --region us-east-1 \
+       --function-name arn:aws:lambda:us-east-1:1234567890:function:your-test-app \
+       --statement-id smartthings --principal 148790070172 --action lambda:InvokeFunction
+
+  It requires your machine to be configured to run the AWS CLI
+```
+
+_See code: [dist/commands/schema/authorize.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/schema/authorize.ts)_
 
 ## `smartthings schema:create`
 
@@ -1959,21 +2006,23 @@ USAGE
   $ smartthings schema:create
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --authorize            authorize connector's Lambda functions to be called by SmartThings
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
+  -d, --dry-run                produce JSON but don't actually submit
+  -h, --help                   show CLI help
+  -i, --input=input            specify input file
+  -j, --json                   use JSON format of input and/or output
+  -o, --output=output          specify output file
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+  -y, --yaml                   use YAML format of input and/or output
+  --authorize                  authorize connector's Lambda functions to be called by SmartThings
+  --compact                    use compact table format with no lines between body rows
+  --expanded                   use expanded table format with a line between each body row
+  --indent=indent              specify indentation for formatting JSON or YAML output
+  --principal=principal        use this principal instead of the default when authorizing lambda functions
+  --statement-id=statement-id  use this statement id instead of the default when authorizing lambda functions
 ```
 
-_See code: [dist/commands/schema/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/schema/create.ts)_
+_See code: [dist/commands/schema/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/schema/create.ts)_
 
 ## `smartthings schema:delete [ID]`
 
@@ -1992,34 +2041,36 @@ OPTIONS
   -t, --token=token      the auth token to use
 ```
 
-_See code: [dist/commands/schema/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/schema/delete.ts)_
+_See code: [dist/commands/schema/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/schema/delete.ts)_
 
-## `smartthings schema:update ID`
+## `smartthings schema:update [ID]`
 
 update an ST Schema connector
 
 ```
 USAGE
-  $ smartthings schema:update ID
+  $ smartthings schema:update [ID]
 
 ARGUMENTS
   ID  the app id
 
 OPTIONS
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --authorize            authorize Lambda functions to be called by SmartThings
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
+  -h, --help                   show CLI help
+  -i, --input=input            specify input file
+  -j, --json                   use JSON format of input and/or output
+  -o, --output=output          specify output file
+  -p, --profile=profile        [default: default] configuration profile
+  -t, --token=token            the auth token to use
+  -y, --yaml                   use YAML format of input and/or output
+  --authorize                  authorize Lambda functions to be called by SmartThings
+  --compact                    use compact table format with no lines between body rows
+  --expanded                   use expanded table format with a line between each body row
+  --indent=indent              specify indentation for formatting JSON or YAML output
+  --principal=principal        use this principal instead of the default when authorizing lambda functions
+  --statement-id=statement-id  use this statement id instead of the default when authorizing lambda functions
 ```
 
-_See code: [dist/commands/schema/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.8/dist/commands/schema/update.ts)_
+_See code: [dist/commands/schema/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/schema/update.ts)_
 <!-- commandsstop -->
 
 # Logging

@@ -4,14 +4,13 @@ import { addPermission } from '../../lib/aws-utils'
 import { lambdaAuthFlags } from '../../lib/common-flags'
 
 
-export default class AppAuthorize extends APICommand {
-	static description = 'authorize calls to your AWS Lambda function from SmartThings'
+export default class SchemaAppAuthorize extends APICommand {
+	static description = 'authorize calls to your ST Schema Lambda function from SmartThings'
 
 	static flags = {
 		...APICommand.flags,
 		...lambdaAuthFlags,
 	}
-
 	static args = [
 		{
 			name: 'arn',
@@ -27,13 +26,13 @@ export default class AppAuthorize extends APICommand {
 		'',
 		'$ aws lambda add-permission --region us-east-1 \\',
 		'    --function-name arn:aws:lambda:us-east-1:1234567890:function:your-test-app \\',
-		'    --statement-id smartthings --principal 906037444270 --action lambda:InvokeFunction',
+		'    --statement-id smartthings --principal 148790070172 --action lambda:InvokeFunction',
 		'',
 		'It requires your machine to be configured to run the AWS CLI',
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(AppAuthorize)
+		const { args, argv, flags } = this.parse(SchemaAppAuthorize)
 		await super.setup(args, argv, flags)
 
 		addPermission(args.arn, flags.principal, flags['statement-id']).then(async (message) => {
