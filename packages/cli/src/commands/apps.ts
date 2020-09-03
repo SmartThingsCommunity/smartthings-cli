@@ -1,6 +1,6 @@
 import { flags } from '@oclif/command'
 
-import { App } from '@smartthings/core-sdk'
+import { App, AppType, AppClassification, AppListOptions } from '@smartthings/core-sdk'
 
 import { ListingOutputAPICommand, TableFieldDefinition } from '@smartthings/cli-lib'
 
@@ -40,6 +40,19 @@ export default class AppsList extends ListingOutputAPICommand<App, App> {
 
 	static flags = {
 		...ListingOutputAPICommand.flags,
+		type: flags.string({
+			description: 'filter results by appType, WEBHOOK_SMART_APP, LAMBDA_SMART_APP, API_ONLY',
+			multiple: false,
+		}),
+		classification: flags.string({
+			description: 'filter results by one or more classifications, AUTOMATION, SERVICE, DEVICE, CONNECTED_SERVICE',
+			multiple: true,
+		}),
+		// TODO -- uncomment when implemented
+		// tag: flags.string({
+		// 	description: 'filter results by one or more tags, e.g. --tag=industry:energy',
+		// 	multiple: true,
+		// }),
 		verbose: flags.boolean({
 			description: 'include URLs and ARNs in table output',
 			char: 'v',
@@ -66,8 +79,24 @@ export default class AppsList extends ListingOutputAPICommand<App, App> {
 		}
 
 		const listApps = async (): Promise<App[]> => {
+			const appListOptions: AppListOptions = {}
+			if (flags.type) {
+				appListOptions.appType = AppType[flags.type as keyof typeof AppType]
+			}
+			if (flags.classification) {
+				appListOptions.classification = flags.classification.map(it => AppClassification[it as keyof typeof AppClassification])
+			}
+			// TODO -- uncomment when implemented
+			// if (flags.tag) {
+			// 	appListOptions.tag = flags.tag.reduce((map: {[key: string]: string}, it) => {
+			// 		const pos = it.indexOf(':')
+			// 		map[it.slice(0, pos)] = it.slice(pos+1)
+			// 		return map
+			// 	}, {})
+			// }
+			this.log(JSON.stringify(appListOptions, null, 2))
 			if (flags.verbose) {
-				return this.client.apps.list().then(list => {
+				return this.client.apps.list(appListOptions).then(list => {
 					const objects = list.map(it => {
 						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 						return this.client.apps.get((it.appId)!) // TODO appId should not be optional
@@ -86,7 +115,7 @@ export default class AppsList extends ListingOutputAPICommand<App, App> {
 					})
 				})
 			}
-			return this.client.apps.list()
+			return this.client.apps.list(appListOptions)
 		}
 
 		this.processNormally(args.id, listApps, id => this.client.apps.get(id))

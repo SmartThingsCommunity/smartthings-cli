@@ -6,6 +6,7 @@ import { InputOutputAPICommand } from '@smartthings/cli-lib'
 
 import { tableFieldDefinitions } from '../apps'
 import { addPermission } from '../../lib/aws-utils'
+import { lambdaAuthFlags } from '../../lib/common-flags'
 
 
 export default class AppCreateCommand extends InputOutputAPICommand<AppRequest, AppCreationResponse> {
@@ -15,7 +16,9 @@ export default class AppCreateCommand extends InputOutputAPICommand<AppRequest, 
 		...InputOutputAPICommand.flags,
 		authorize: flags.boolean({
 			description: 'authorize Lambda functions to be called by SmartThings',
-		})}
+		}),
+		...lambdaAuthFlags,
+	}
 
 	protected buildTableOutput(data: AppCreationResponse): string {
 		return this.tableGenerator.buildTableFromItem(data.app, tableFieldDefinitions)
@@ -30,7 +33,7 @@ export default class AppCreateCommand extends InputOutputAPICommand<AppRequest, 
 				if (data.lambdaSmartApp) {
 					if (data.lambdaSmartApp.functions) {
 						const requests = data.lambdaSmartApp.functions.map((it) => {
-							return addPermission(it)
+							return addPermission(it, flags.principal, flags['statement-id'])
 						})
 						await Promise.all(requests)
 					}

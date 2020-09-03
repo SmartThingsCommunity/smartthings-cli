@@ -6,6 +6,7 @@ import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
 
 import { tableFieldDefinitions } from '../apps'
 import { addPermission } from '../../lib/aws-utils'
+import { lambdaAuthFlags } from '../../lib/common-flags'
 
 
 export default class AppUpdateCommand extends SelectingInputOutputAPICommand<AppRequest, App, App> {
@@ -15,7 +16,9 @@ export default class AppUpdateCommand extends SelectingInputOutputAPICommand<App
 		...SelectingInputOutputAPICommand.flags,
 		authorize: flags.boolean({
 			description: 'authorize Lambda functions to be called by SmartThings',
-		})}
+		}),
+		...lambdaAuthFlags,
+	}
 
 	static args = [{
 		name: 'id',
@@ -38,7 +41,7 @@ export default class AppUpdateCommand extends SelectingInputOutputAPICommand<App
 					if (data.lambdaSmartApp) {
 						if (data.lambdaSmartApp.functions) {
 							const requests = data.lambdaSmartApp.functions.map((it) => {
-								return addPermission(it)
+								return addPermission(it, flags.principal, flags['statement-id'])
 							})
 							await Promise.all(requests)
 						}

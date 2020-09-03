@@ -2,7 +2,7 @@ import AWS from 'aws-sdk'
 import {AddPermissionRequest} from 'aws-sdk/clients/lambda'
 
 
-export async function addPermission(arn: string, principal = '906037444270'): Promise<string> {
+export async function addPermission(arn: string, principal = '906037444270', statementId = 'smartthings'): Promise<string> {
 	const segs = arn.split(':')
 	if (segs.length < 7) {
 		return 'Invalid Lambda ARN'
@@ -16,8 +16,8 @@ export async function addPermission(arn: string, principal = '906037444270'): Pr
 		const params: AddPermissionRequest = {
 			Action: 'lambda:InvokeFunction',
 			FunctionName: arn,
-			Principal: principal, // TODO environment dependent
-			StatementId: 'smartthings',
+			Principal: principal,
+			StatementId: statementId,
 		}
 
 		await lambda.addPermission(params).promise()
@@ -30,6 +30,6 @@ export async function addPermission(arn: string, principal = '906037444270'): Pr
 	}
 }
 
-export function addSchemaPermission(arn: string): Promise<string> {
-	return addPermission(arn, '148790070172')
+export function addSchemaPermission(arn: string, principal = '148790070172', statementId = 'smartthings'): Promise<string> {
+	return addPermission(arn, principal, statementId)
 }
