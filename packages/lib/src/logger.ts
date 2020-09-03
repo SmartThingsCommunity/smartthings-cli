@@ -1,4 +1,4 @@
-import { configure, Configuration, Logger } from 'log4js'
+import { configure, Configuration, Logger, Level } from 'log4js'
 
 import { Logger as APILogger } from '@smartthings/core-sdk'
 
@@ -8,7 +8,9 @@ class Log4JSLogger implements APILogger {
 	}
 
 	get level(): string {
-		return this.logger.level
+		// The types are defined for log4js don't match up with the reality
+		// of what it's returning.
+		return (this.logger.level as unknown as Level).levelStr
 	}
 
 	set level(level: string) {
@@ -19,6 +21,7 @@ class Log4JSLogger implements APILogger {
 	log(...args: any[]): void {
 		this.logger.log(...args)
 	}
+
 	trace(message: any, ...args: any[]): void {
 		this.logger.trace(message, ...args)
 	}
@@ -87,10 +90,8 @@ export class LogManager {
 	}
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-if (!('_logManager' in (global as any))) {
-	(global as any)._logManager = new LogManager()
+if (!('_logManager' in (global as { _logManager?: LogManager }))) {
+	(global as { _logManager?: LogManager })._logManager = new LogManager()
 }
 
-export const logManager: LogManager = (global as any)._logManager
-/* eslint-enable @typescript-eslint/no-explicit-any */
+export const logManager: LogManager = (global as unknown as { _logManager: LogManager })._logManager
