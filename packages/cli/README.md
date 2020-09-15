@@ -106,6 +106,8 @@ that maps to that hierarchy.
 * [`smartthings capabilities:presentation [ID] [VERSION]`](#smartthings-capabilitiespresentation-id-version)
 * [`smartthings capabilities:presentation:create [ID] [VERSION]`](#smartthings-capabilitiespresentationcreate-id-version)
 * [`smartthings capabilities:presentation:update [ID] [VERSION]`](#smartthings-capabilitiespresentationupdate-id-version)
+* [`smartthings capabilities:translations [ID] [VERSION] [TAG]`](#smartthings-capabilitiestranslations-id-version-tag)
+* [`smartthings capabilities:translations:upsert [ID] [VERSION]`](#smartthings-capabilitiestranslationsupsert-id-version)
 * [`smartthings capabilities:update [ID] [VERSION]`](#smartthings-capabilitiesupdate-id-version)
 * [`smartthings config [NAME]`](#smartthings-config-name)
 * [`smartthings deviceprofiles [ID]`](#smartthings-deviceprofiles-id)
@@ -114,6 +116,9 @@ that maps to that hierarchy.
 * [`smartthings deviceprofiles:device-config [ID]`](#smartthings-deviceprofilesdevice-config-id)
 * [`smartthings deviceprofiles:presentation [ID]`](#smartthings-deviceprofilespresentation-id)
 * [`smartthings deviceprofiles:publish [ID]`](#smartthings-deviceprofilespublish-id)
+* [`smartthings deviceprofiles:translations [ID] [TAG]`](#smartthings-deviceprofilestranslations-id-tag)
+* [`smartthings deviceprofiles:translations:delete [ID] [TAG]`](#smartthings-deviceprofilestranslationsdelete-id-tag)
+* [`smartthings deviceprofiles:translations:upsert [ID]`](#smartthings-deviceprofilestranslationsupsert-id)
 * [`smartthings deviceprofiles:update [ID]`](#smartthings-deviceprofilesupdate-id)
 * [`smartthings deviceprofiles:view [ID]`](#smartthings-deviceprofilesview-id)
 * [`smartthings deviceprofiles:view:create`](#smartthings-deviceprofilesviewcreate)
@@ -648,6 +653,165 @@ OPTIONS
 
 _See code: [dist/commands/capabilities/presentation/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/capabilities/presentation/update.ts)_
 
+## `smartthings capabilities:translations [ID] [VERSION] [TAG]`
+
+Get list of locales supported by the capability
+
+```
+USAGE
+  $ smartthings capabilities:translations [ID] [VERSION] [TAG]
+
+ARGUMENTS
+  ID       the capability id or number in list
+  VERSION  the capability version
+  TAG      the locale tag
+
+OPTIONS
+  -h, --help                 show CLI help
+  -j, --json                 use JSON format of input and/or output
+  -n, --namespace=namespace  a specific namespace to query; will use all by default
+  -o, --output=output        specify output file
+  -p, --profile=profile      [default: default] configuration profile
+  -t, --token=token          the auth token to use
+  -v, --verbose              include list of supported locales in table output
+  -y, --yaml                 use YAML format of input and/or output
+  --compact                  use compact table format with no lines between body rows
+  --expanded                 use expanded table format with a line between each body row
+  --indent=indent            specify indentation for formatting JSON or YAML output
+
+EXAMPLES
+  $ smartthings capabilities:translations
+  ┌───┬─────────────────────────────┬─────────┬──────────┐
+  │ # │ Id                          │ Version │ Status   │
+  ├───┼─────────────────────────────┼─────────┼──────────┤
+  │ 1 │ custom1.outputModulation    │ 1       │ proposed │
+  │ 2 │ custom1.outputVoltage       │ 1       │ proposed │
+  └───┴─────────────────────────────┴─────────┴──────────┘
+  outputModulation (master)$ st capabilities:translations -v
+  ┌───┬─────────────────────────────┬─────────┬──────────┬────────────┐
+  │ # │ Id                          │ Version │ Status   │ Locales    │
+  ├───┼─────────────────────────────┼─────────┼──────────┼────────────┤
+  │ 1 │ custom1.outputModulation    │ 1       │ proposed │ ko, en, es │
+  │ 2 │ custom1.outputVoltage       │ 1       │ proposed │ en         │
+  └───┴─────────────────────────────┴─────────┴──────────┴────────────┘
+
+  outputModulation (master)$ st capabilities:translations 1
+  outputModulation (master)$ st capabilities:translations custom1.outputModulation
+  ┌───┬─────┐
+  │ # │ Tag │
+  ├───┼─────┤
+  │ 1 │ en  │
+  │ 2 │ ko  │
+  └───┴─────┘
+
+  $ smartthings capabilities:translations 1 1
+  $ smartthings capabilities:translations 1 en
+  $ smartthings capabilities:translations custom1.outputModulation 1 1
+  $ smartthings capabilities:translations custom1.outputModulation 1 en
+  Tag: en
+
+  Attributes:
+  ┌────────────────────────┬───────────────────┬────────────────────────────────┬───────────────────────────────────────
+  ─────────────┐
+  │ Name                   │ Label             │ Description                    │ Template                               
+              │
+  ├────────────────────────┼───────────────────┼────────────────────────────────┼───────────────────────────────────────
+  ─────────────┤
+  │ outputModulation       │ Output Modulation │ Power supply output modulation │ The {{attribute}} of {{device.label}} 
+  is {{value}} │
+  │ outputModulation.50hz  │ 50 Hz             │                                │                                        
+              │
+  │ outputModulation.60hz  │ 60 Hz             │                                │                                        
+              │
+  └────────────────────────┴───────────────────┴────────────────────────────────┴───────────────────────────────────────
+  ─────────────┘
+
+  Commands:
+  ┌──────────────────────────────────────┬───────────────────────┬──────────────────────────────────────────────────┐
+  │ Name                                 │ Label                 │ Description                                      │
+  ├──────────────────────────────────────┼───────────────────────┼──────────────────────────────────────────────────┤
+  │ setOutputModulation                  │ Set Output Modulation │ Set the output modulation to the specified value │
+  │ setOutputModulation.outputModulation │ Output Modulation     │ The desired output modulation                    │
+  └──────────────────────────────────────┴───────────────────────┴──────────────────────────────────────────────────┘
+```
+
+_See code: [dist/commands/capabilities/translations.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/capabilities/translations.ts)_
+
+## `smartthings capabilities:translations:upsert [ID] [VERSION]`
+
+Create or update a capability translation
+
+```
+USAGE
+  $ smartthings capabilities:translations:upsert [ID] [VERSION]
+
+ARGUMENTS
+  ID       the capability id
+  VERSION  the capability version
+
+OPTIONS
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+
+EXAMPLES
+  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yml 
+  tag: en
+  label: Output Modulation
+  attributes:
+     outputModulation:
+       label: Output Modulation
+       displayTemplate: 'The {{attribute}} of {{device.label}} is {{value}}'
+       i18n:
+         value:
+           50hz:
+             label: 50 Hz
+           60hz:
+             label: 60 Hz
+  commands:
+     setOutputModulation:
+       label: Set Output Modulation
+       arguments:
+         outputModulation:
+           label: Output Modulation
+
+  $ smartthings capabilities:translations:upsert -i en.yml
+  ┌───┬─────────────────────────────┬─────────┬──────────┐
+  │ # │ Id                          │ Version │ Status   │
+  ├───┼─────────────────────────────┼─────────┼──────────┤
+  │ 1 │ custom1.outputModulation    │ 1       │ proposed │
+  │ 2 │ custom1.outputVoltage       │ 1       │ proposed │
+  └───┴─────────────────────────────┴─────────┴──────────┘
+  ? Enter id or index 1
+  tag: en
+  label: Output Modulation
+  attributes:
+     outputModulation:
+       label: Output Modulation
+       displayTemplate: 'The {{attribute}} of {{device.label}} is {{value}}'
+       i18n:
+         value:
+           50hz:
+             label: 50 Hz
+           60hz:
+             label: 60 Hz
+  commands:
+     setOutputModulation:
+       label: Set Output Modulation
+       arguments:
+         outputModulation:
+           label: Output Modulation
+```
+
+_See code: [dist/commands/capabilities/translations/upsert.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/capabilities/translations/upsert.ts)_
+
 ## `smartthings capabilities:update [ID] [VERSION]`
 
 update a capability
@@ -869,6 +1033,172 @@ OPTIONS
 ```
 
 _See code: [dist/commands/deviceprofiles/publish.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/publish.ts)_
+
+## `smartthings deviceprofiles:translations [ID] [TAG]`
+
+Get list of locales supported by the device profiles
+
+```
+USAGE
+  $ smartthings deviceprofiles:translations [ID] [TAG]
+
+ARGUMENTS
+  ID   UUID or the number of the profile from list
+  TAG  the locale tag or number of the tag from list
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -v, --verbose          include list of locales in table output
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+
+EXAMPLES
+  $ smartthings deviceprofiles:translations
+  ┌────┬─────────────────────┬─────────────┬──────────────────────────────────────┐
+  │ #  │ Name                │ Status      │ Id                                   │
+  ├────┼─────────────────────┼─────────────┼──────────────────────────────────────┤
+  │  1 │ Test Switch         │ DEVELOPMENT │ 58e73d0c-b5a5-4814-b344-c10f4ff357bb │
+  │  2 │ Two Channel Outlet  │ DEVELOPMENT │ 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 │
+  └────┴─────────────────────┴─────────────┴──────────────────────────────────────┘
+
+  $ smartthings deviceprofiles:translations -v
+  ┌────┬─────────────────────┬─────────────┬──────────────────────────────────────┬─────────┐
+  │ #  │ Name                │ Status      │ Id                                   │ Locales │
+  ├────┼─────────────────────┼─────────────┼──────────────────────────────────────┼─────────┤
+  │  1 │ Test Switch         │ DEVELOPMENT │ 58e73d0c-b5a5-4814-b344-c10f4ff357bb │         │
+  │  2 │ Two Channel Outlet  │ DEVELOPMENT │ 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 │ en, es  │
+  └────┴─────────────────────┴─────────────┴──────────────────────────────────────┴─────────┘
+
+  $ smartthings deviceprofiles:translations 2
+  $ smartthings deviceprofiles:translations 3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb
+  ┌───┬─────┐
+  │ # │ Tag │
+  ├───┼─────┤
+  │ 1 │ en  │
+  │ 2 │ es  │
+  └───┴─────┘
+
+  $ smartthings deviceprofiles:translations 2 2
+  $ smartthings deviceprofiles:translations 2 en
+  $ smartthings deviceprofiles:translations 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 en
+  Tag: en
+  ┌───────────┬────────────┬───────────────────────────────┐
+  │ Component │ Label      │ Description                   │
+  ├───────────┼────────────┼───────────────────────────────┤
+  │ main      │ Main Power │ Controls power to all outlets │
+  │ outlet1   │ Outlet One │ Switchable outlet 1 power     │
+  │ outlet2   │ Outlet two │ Switchable outlet 1 power     │
+  └───────────┴────────────┴───────────────────────────────┘
+```
+
+_See code: [dist/commands/deviceprofiles/translations.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/translations.ts)_
+
+## `smartthings deviceprofiles:translations:delete [ID] [TAG]`
+
+delete a device profile translation
+
+```
+USAGE
+  $ smartthings deviceprofiles:translations:delete [ID] [TAG]
+
+ARGUMENTS
+  ID   Device profile UUID or number in the list
+  TAG  the locale tag
+
+OPTIONS
+  -h, --help             show CLI help
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+
+EXAMPLES
+  $ smartthings deviceprofiles:translations:delete 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 en
+  Device profile "3acbf2fc-6be2-4be0-aeb5-44759cbd66c2" translation "en" deleted
+
+  $ smartthings deviceprofiles:translations:delete
+  ┌────┬─────────────────────┬─────────────┬──────────────────────────────────────┐
+  │ #  │ Name                │ Status      │ Id                                   │
+  ├────┼─────────────────────┼─────────────┼──────────────────────────────────────┤
+  │  1 │ Test Switch         │ DEVELOPMENT │ 58e73d0c-b5a5-4814-b344-c10f4ff357bb │
+  │  2 │ Two Channel Outlet  │ DEVELOPMENT │ 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 │
+  └────┴─────────────────────┴─────────────┴──────────────────────────────────────┘
+  ? Enter id or index 2
+  ┌───┬─────┐
+  │ # │ Tag │
+  ├───┼─────┤
+  │ 1 │ en  │
+  │ 2 │ es  │
+  └───┴─────┘
+  ? Enter id or index 1
+  Device profile "3acbf2fc-6be2-4be0-aeb5-44759cbd66c2" translation "en" deleted
+```
+
+_See code: [dist/commands/deviceprofiles/translations/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/translations/delete.ts)_
+
+## `smartthings deviceprofiles:translations:upsert [ID]`
+
+create or update a device profile translation
+
+```
+USAGE
+  $ smartthings deviceprofiles:translations:upsert [ID]
+
+ARGUMENTS
+  ID  UUID or the number of the profile from list
+
+OPTIONS
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+
+EXAMPLES
+  $ smartthings deviceprofiles:translations:upsert 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 -i en.yml
+  tag: en
+  components:
+     main:
+       label: Main Power
+       description: Controls power to all outlets
+     outlet1:
+       label: Outlet One
+       description: Switchable outlet 1 power
+     outlet2:
+       label: Outlet two
+       description: Switchable outlet 1 power
+
+  $ smartthings deviceprofiles:translations:upsert -i en.yml
+  ┌────┬─────────────────────┬─────────────┬──────────────────────────────────────┐
+  │ #  │ Name                │ Status      │ Id                                   │
+  ├────┼─────────────────────┼─────────────┼──────────────────────────────────────┤
+  │  1 │ Test Switch         │ DEVELOPMENT │ 58e73d0c-b5a5-4814-b344-c10f4ff357bb │
+  │  2 │ Two Channel Outlet  │ DEVELOPMENT │ 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 │
+  └────┴─────────────────────┴─────────────┴──────────────────────────────────────┘
+  ? Enter id or index 2
+  tag: en
+  components:
+     main:
+       label: Main Power
+       description: Controls power to all outlets
+     outlet1:
+       label: Outlet One
+       description: Switchable outlet 1 power
+     outlet2:
+       label: Outlet two
+       description: Switchable outlet 1 power
+```
+
+_See code: [dist/commands/deviceprofiles/translations/upsert.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/deviceprofiles/translations/upsert.ts)_
 
 ## `smartthings deviceprofiles:update [ID]`
 
