@@ -1,4 +1,3 @@
-import { flags } from '@oclif/command'
 import { APICommand } from '@smartthings/cli-lib'
 import { addPermission } from '../../lib/aws-utils'
 import { lambdaAuthFlags } from '../../lib/common-flags'
