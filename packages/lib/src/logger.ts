@@ -18,10 +18,6 @@ class Log4JSLogger implements APILogger {
 	}
 
 	/* eslint-disable @typescript-eslint/no-explicit-any */
-	log(...args: any[]): void {
-		this.logger.log(...args)
-	}
-
 	trace(message: any, ...args: any[]): void {
 		this.logger.trace(message, ...args)
 	}

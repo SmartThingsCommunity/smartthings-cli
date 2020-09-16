@@ -90,16 +90,6 @@ describe('logger', () => {
 			expect(logEvents.map(event => event.level.levelStr)).toEqual(['WARN', 'ERROR', 'FATAL'])
 		})
 
-		it('log logs correctly', function() {
-			setupLogManager('trace')
-			const log = logManager.getLogger('my-category')
-
-			log.log('log message without level')
-
-			const logEvents: LoggingEvent[] = recording.replay()
-			expect(logEvents.length).toBe(1)
-		})
-
 		it('is<Level>Enabled returns correct value when level is trace', function() {
 			setupLogManager('trace')
 			const log = logManager.getLogger('my-category')
