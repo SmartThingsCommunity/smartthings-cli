@@ -47,9 +47,9 @@ function mergeFunctions(name: string,
  * Given a class and a set of mixin classes, apply the mixins to the base
  * class.
  *
- * Based on: https://www.typescriptlang.org/docs/handbook/mixins.html but
- * extended to make some (rather rudimentary) attempt to combine multiple
- * functions rather than just overwriting them.
+ * Based on: https://www.typescriptlang.org/docs/handbook/mixins.html#alternative-pattern
+ * but extended to make some (rather rudimentary) attempt to combine multiple functions
+ * rather than just overwriting them.
  *
  * @param derivedCtor The class to which the mixins should be applied.
  * @param baseCtors The mixin classes.
