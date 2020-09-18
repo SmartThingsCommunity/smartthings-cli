@@ -24,16 +24,14 @@ function mergeFunctions(name: string,
 		into: PropertyDescriptor): void {
 	const baseFunction = baseFunctionPropertyDescriptor.value
 	const mergingFunction = mergingFunctionPropertyDescriptor.value
-	if (baseFunction.constructor.name === 'Function'
-			&& mergingFunction.constructor.name === 'Function') {
-		into.value = function(this, ...args: unknown[]) {
+	if (baseFunction.constructor.name === 'Function' && mergingFunction.constructor.name === 'Function') {
+		into.value = function (this, ...args: unknown[]) {
 			// call pre-existing function and then new one
 			baseFunction.apply(this, args)
 			return mergingFunction.apply(this, args)
 		}
-	} else if (baseFunction.constructor.name === 'AsyncFunction'
-			&& mergingFunction.constructor.name === 'AsyncFunction') {
-		into.value = async function(this, ...args: unknown[]) {
+	} else if (baseFunction.constructor.name === 'AsyncFunction' && mergingFunction.constructor.name === 'AsyncFunction') {
+		into.value = async function (this, ...args: unknown[]) {
 			// call pre-existing function and then new one
 			await baseFunction.apply(this, args)
 			return await mergingFunction.apply(this, args)
@@ -62,8 +60,7 @@ export function applyMixins(derivedCtor: any, baseCtors: any[], options?: MixinO
 			const propertyDescriptor = Object.getOwnPropertyDescriptor(baseCtor.prototype, name)
 			const newPropertyDescriptor: PropertyDescriptor = { ...propertyDescriptor }
 			if (options?.mergeFunctions && name !== 'constructor') {
-				if (typeof propertyDescriptor?.value === 'function'
-						&& typeof derivedPropertyDescriptor?.value === 'function') {
+				if (typeof propertyDescriptor?.value === 'function' && typeof derivedPropertyDescriptor?.value === 'function') {
 					mergeFunctions(name, derivedPropertyDescriptor, propertyDescriptor, newPropertyDescriptor)
 				} else {
 					// see if there are any matching methods in parent classes so
@@ -73,8 +70,7 @@ export function applyMixins(derivedCtor: any, baseCtors: any[], options?: MixinO
 					while (!merged && parentPrototype) {
 						const parentPropertyDescriptor = Object.getOwnPropertyDescriptor(parentPrototype, name)
 
-						if (typeof propertyDescriptor?.value === 'function'
-								&& typeof parentPropertyDescriptor?.value === 'function') {
+						if (typeof propertyDescriptor?.value === 'function' && typeof parentPropertyDescriptor?.value === 'function') {
 							mergeFunctions(name, parentPropertyDescriptor, propertyDescriptor, newPropertyDescriptor)
 							merged = true
 						} else {
