@@ -51,12 +51,11 @@ using it).
 
 The CLI uses [log4js](https://log4js-node.github.io/log4js-node/) for logging.
 
-Logging is configured using the `logging` key in the config file. The value of
-this key is passed directly to log4js so any valid log4js configuration can
-be used here. The following categories are used in the CLI:
+Logging is configured using a YAML file called `logging.yaml` in the same
+location as the config file mentioned above. The contents of this file are
+passed directly to log4js so any valid log4js configuration can be included
+here. The following categories are used in the CLI:
 
 * rest-client - This category is used for the SDK that interfaces with the API.
   Turn this on to see detailed information for HTTP calls are made to SmartThings.
 * cli - This is the generic logger used by the CLI.
-
-There are other categories and more may be added later.
