@@ -1,0 +1,3 @@
+appenders:
+  stdout:
+    type: stdout

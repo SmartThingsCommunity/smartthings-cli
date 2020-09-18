@@ -2,11 +2,13 @@ import { LoggingEvent } from 'log4js'
 
 import { Logger } from '@smartthings/core-sdk'
 
-import { logManager } from '../logger'
+import { loadLoggingConfig, logManager } from '../logger'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const recording = require('log4js/lib/appenders/recording')
 
+
+const resourcesDir = './src/__tests__/resources'
 
 describe('logger', () => {
 	function setupLogManager(level: string): void {
@@ -31,6 +33,43 @@ describe('logger', () => {
 	afterEach(() => {
 		recording.erase()
 		jest.clearAllMocks()
+	})
+
+	describe('loadLoggingConfig', () => {
+		it('loads log file correctly', function() {
+			const loggingConfig = loadLoggingConfig(`${resourcesDir}/good-logging.yaml`)
+			expect(loggingConfig).toEqual({ appenders: { stdout: { type: 'stdout' } } })
+		})
+
+		it('returns default for missing file', function() {
+			const defaultLoggingConfig = {
+				appenders: {
+					smartthings: { type: 'file', filename: 'smartthings.log' },
+					stderr: { type: 'stderr' },
+					errors: { type: 'logLevelFilter', appender: 'stderr', level: 'error' },
+				},
+				categories: {
+					default: { appenders: ['smartthings', 'errors'], level: 'warn' },
+					'rest-client': { appenders: ['smartthings', 'errors'], level: 'warn' },
+					cli: { appenders: ['smartthings', 'errors'], level: 'warn' },
+				},
+			}
+
+			const loggingConfig = loadLoggingConfig(`${resourcesDir}/does-not-exists.yaml`)
+			expect(loggingConfig).toEqual(defaultLoggingConfig)
+		})
+
+		it('throws exception for empty file', function() {
+			// We can re-use the files for the config test because we're just
+			// looking for invalid JSON.
+			expect(() => loadLoggingConfig(`${resourcesDir}/empty-config.yaml`)).toThrow()
+		})
+
+		it('throws exception for empty file', function() {
+			// We can re-use the files for the config test because we're just
+			// looking for invalid JSON.
+			expect(() => loadLoggingConfig(`${resourcesDir}/bad-config.yaml`)).toThrow()
+		})
 	})
 
 	describe('logManager', () => {

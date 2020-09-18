@@ -1,14 +1,6 @@
 {
 	"name": "root",
 	"private": true,
-	"dependencies": {
-		"@oclif/command": "^1.5.19",
-		"@oclif/config": "^1.15.1",
-		"@smartthings/core-sdk": "^1.1.2",
-		"js-yaml": "^3.13.1",
-		"log4js": "^6.3.0",
-		"tslib": "^1.11.1"
-	},
 	"devDependencies": {
 		"@oclif/dev-cli": "^1.22.2",
 		"@types/jest": "^26.0.9",
