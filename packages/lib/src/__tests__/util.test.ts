@@ -6,33 +6,69 @@ describe('util', () => {
 		const SOMETHING = 'something'
 		const SOMETHING_ELSE = 'something else'
 
+		// constructor functions
 		const Target = jest.fn()
-
+		const ChildTarget = jest.fn()
 		const Mixin1 = jest.fn()
-
 		const Mixin2 = jest.fn()
+		const Mixin3 = jest.fn()
+		const Mixin4 = jest.fn()
 
 		beforeEach(() => {
 			Target.prototype = {
+				property: SOMETHING,
+
 				constructor: Target,
 
 				method() {
 					return SOMETHING
 				},
+
+				async asyncMethod() {
+					return SOMETHING
+				},
 			}
 
+			ChildTarget.prototype = Object.create(Target.prototype)
+			ChildTarget.prototype.constructor = ChildTarget
+			ChildTarget.prototype.childMethod = () => SOMETHING
+
 			Mixin1.prototype = {
+				property1: SOMETHING,
+
+				constructor: Mixin1,
+
+				async asyncMethod() {
+					return SOMETHING_ELSE
+				},
+
 				method1() {
 					return SOMETHING
 				},
 			}
 
 			Mixin2.prototype = {
+				property: SOMETHING_ELSE,
+				property2: SOMETHING,
+
 				method() {
 					return SOMETHING_ELSE
 				},
 
 				method2() {
+					return SOMETHING
+				},
+			}
+
+			Mixin3.prototype = {
+				method() {
+					return SOMETHING
+				},
+			}
+
+			Mixin4.prototype = {
+				// purposefully not async to cause Error when merging with another async method
+				asyncMethod() {
 					return SOMETHING
 				},
 			}
@@ -42,17 +78,37 @@ describe('util', () => {
 			jest.clearAllMocks()
 		})
 
-		test('target class is setup correctly', () => {
+		test('target classes setup correctly', () => {
 			const target = new Target()
 
 			expect(target).toBeInstanceOf(Target)
 			expect(target.constructor).toStrictEqual(Target)
 			expect(Target.prototype.constructor).toStrictEqual(Target)
+
+			const childTarget = new ChildTarget()
+
+			expect(childTarget).toBeInstanceOf(ChildTarget)
+			expect(childTarget).toBeInstanceOf(Target)
+			expect(childTarget.constructor).toStrictEqual(ChildTarget)
+			expect(ChildTarget.prototype.constructor).toStrictEqual(ChildTarget)
 		})
 
-		test.todo('target class should get simple property from a mixin')
+		it('should mix a simple property into target class', () => {
+			applyMixins(Target, [Mixin1])
+			const target = new Target()
 
-		test.todo('target class should get properties from multiple mixins')
+			expect(target.property).toBe(SOMETHING)
+			expect(target.property1).toBe(SOMETHING)
+		})
+
+		it('should mix properties from multiple mixins into target class, overriding any duplicate names', () => {
+			applyMixins(Target, [Mixin1, Mixin2])
+			const target = new Target()
+
+			expect(target.property).toBe(SOMETHING_ELSE)
+			expect(target.property1).toBe(SOMETHING)
+			expect(target.property2).toBe(SOMETHING)
+		})
 
 		it('should mix a simple method into target class', () => {
 			applyMixins(Target, [Mixin1])
@@ -62,29 +118,76 @@ describe('util', () => {
 			expect(target.method1()).toBe(SOMETHING)
 		})
 
-		it('should mix methods from multiple bases into the target class, overriding any duplicate names', () => {
+		it('should mix methods from multiple mixins into target class, overriding any duplicate names', async () => {
 			const targetMethodSpy = jest.spyOn(Target.prototype, 'method')
+			const targetAsyncMethodSpy = jest.spyOn(Target.prototype, 'asyncMethod')
 
 			applyMixins(Target, [Mixin1, Mixin2])
 			const target = new Target()
 
 			expect(target.method()).toBe(SOMETHING_ELSE)
+			expect(await target.asyncMethod()).toBe(SOMETHING_ELSE)
 			expect(target.method1()).toBe(SOMETHING)
 			expect(target.method2()).toBe(SOMETHING)
 
 			expect(targetMethodSpy).toBeCalledTimes(0)
+			expect(targetAsyncMethodSpy).toBeCalledTimes(0)
 		})
 
 		it('should mixin a method that calls matching methods in order when mergeFunctions = true', () => {
 			const targetMethodSpy = jest.spyOn(Target.prototype, 'method')
 			const mixin2MethodSpy = jest.spyOn(Mixin2.prototype, 'method')
+			const mixin3MethodSpy = jest.spyOn(Mixin3.prototype, 'method')
 
-			applyMixins(Target, [Mixin1, Mixin2], { mergeFunctions: true })
+			applyMixins(Target, [Mixin2, Mixin3], { mergeFunctions: true })
 			const target = new Target()
 
-			expect(target.method()).toBe(SOMETHING_ELSE)
-			expect(targetMethodSpy).toHaveBeenCalled()
-			expect(mixin2MethodSpy).toHaveBeenCalled()
+			expect(target.method()).toBe(SOMETHING)
+			expect(targetMethodSpy).toBeCalledTimes(1)
+			expect(mixin2MethodSpy).toBeCalledTimes(1)
+			expect(mixin3MethodSpy).toBeCalledTimes(1)
+
+			const targetCallOrder = targetMethodSpy.mock.invocationCallOrder[0]
+			const mixin2CallOrder = mixin2MethodSpy.mock.invocationCallOrder[0]
+			const mixin3CallOrder = mixin3MethodSpy.mock.invocationCallOrder[0]
+
+			expect(targetCallOrder).toBeLessThan(mixin2CallOrder)
+			expect(mixin2CallOrder).toBeLessThan(mixin3CallOrder)
+		})
+
+		it('should mixin an async method that calls matching async methods in order when mergeFunctions = true', async () => {
+			const targetMethodSpy = jest.spyOn(Target.prototype, 'asyncMethod')
+			const mixin1MethodSpy = jest.spyOn(Mixin1.prototype, 'asyncMethod')
+
+			applyMixins(Target, [Mixin1], { mergeFunctions: true })
+			const target = new Target()
+
+			expect(await target.asyncMethod()).toBe(SOMETHING_ELSE)
+			expect(targetMethodSpy).toBeCalledTimes(1)
+			expect(mixin1MethodSpy).toBeCalledTimes(1)
+
+			const targetCallOrder = targetMethodSpy.mock.invocationCallOrder[0]
+			const mixin1CallOrder = mixin1MethodSpy.mock.invocationCallOrder[0]
+
+			expect(targetCallOrder).toBeLessThan(mixin1CallOrder)
+		})
+
+		it('should throw error when mergeFunctions = true and matching methods are mix of async/sync', async () => {
+			expect(() => {
+				applyMixins(Target, [Mixin4], { mergeFunctions: true })
+			}).toThrowError()
+		})
+
+		it('should not override target class inherited methods when mergeFunctions = true', () => {
+			const targetMethodSpy = jest.spyOn(Target.prototype, 'method')
+			const mixin2MethodSpy = jest.spyOn(Mixin2.prototype, 'method')
+
+			applyMixins(ChildTarget, [Mixin2], { mergeFunctions: true })
+			const childTarget = new ChildTarget()
+
+			expect(childTarget.method()).toBe(SOMETHING_ELSE)
+			expect(targetMethodSpy).toBeCalledTimes(1)
+			expect(mixin2MethodSpy).toBeCalledTimes(1)
 
 			const targetCallOrder = targetMethodSpy.mock.invocationCallOrder[0]
 			const mixin2CallOrder = mixin2MethodSpy.mock.invocationCallOrder[0]
@@ -92,13 +195,10 @@ describe('util', () => {
 			expect(targetCallOrder).toBeLessThan(mixin2CallOrder)
 		})
 
-		// make a target class that inherits a method from a parent class
-		// attempt to mixin a class with a matching method name
-		// verify that this is not overridden and is called in order
-		test.todo('target class inherited methods should not be overridden on merge')
+		it('should override target class constructor if a mixin constructor exists', () => {
+			applyMixins(Target, [Mixin1])
 
-		test.todo('target constructor should be overridden by any mixin constructors')
-
-		test.todo('merge functions with non matching args?')
+			expect(Target.prototype.constructor).toStrictEqual(Mixin1.prototype.constructor)
+		})
 	})
 })
