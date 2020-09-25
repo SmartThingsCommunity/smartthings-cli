@@ -27,9 +27,7 @@ export abstract class SmartThingsCommand extends Command implements Loggable {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private _args?: { [name: string]: any }
-
 	private _argv?: string[]
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private _flags?: { [name: string]: any }
 
@@ -59,6 +57,16 @@ export abstract class SmartThingsCommand extends Command implements Loggable {
 			throw new Error('SmartThingsCommand not properly initialized')
 		}
 		return this._args
+	}
+
+	/**
+	 * Return input arguments, not including flags.
+	 */
+	protected get inputArgs(): string[] {
+		if (!this._argv) {
+			throw new Error('SmartThingsCommand not properly initialized')
+		}
+		return this._argv
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
