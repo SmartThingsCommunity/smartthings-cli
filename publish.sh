@@ -46,10 +46,20 @@ lerna run compile
 # build binaries
 lerna run package
 
+function zip_binary() {
+	os=$1
+	ext=$2
+	(cd packages/cli/dist_bin
+		mv "cli-$os$ext" "smartthings$ext"
+		zip ../../../smartthings-$os.zip "smartthings$ext"
+		mv "smartthings$ext" "cli-$os$ext"
+	)
+}
+
 # zip package output binaries for uploading (manually for now) to github releases
-zip packages/cli/dist_bin/smartthings-linux.zip packages/cli/dist_bin/cli-linux
-zip packages/cli/dist_bin/smartthings-macos.zip packages/cli/dist_bin/cli-macos
-zip packages/cli/dist_bin/smartthings-win.zip packages/cli/dist_bin/cli-win.exe
+zip_binary linux
+zip_binary macos
+zip_binary win .exe
 
 # ignoring lifecycle scripts for now due to an error running oclif-dev inside the lerna version and publish commands.
 # the "version" npm-scripts all work outside of those commands by running "lerna run version"
