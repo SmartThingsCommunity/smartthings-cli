@@ -51,6 +51,12 @@ will match the input format unless otherwise specified.
 The CLI can be configured by creating a YAML file called `config.yaml` in the
 following location:
 
+The contents of the config.yaml file should appear as follows
+`
+default:
+          token: xxxx-xxx-xxxx
+`
+
 * `$HOME/.config/@smartthings/cli` on OS/X or Linux
 * `%LOCALAPPDATA%\@smartthings\cli` on Windows
 
