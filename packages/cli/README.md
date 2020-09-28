@@ -18,7 +18,6 @@ progress.
 * [Usage](#usage)
 * [Helpful Hints](#helpful-hints)
 * [Commands](#commands)
-* [Logging](#logging)
 <!-- tocstop -->
 
 # Usage
@@ -46,28 +45,15 @@ will match the input format unless otherwise specified.
 | input | i | Specify a filename for input. |
 | output | o | Specify a filename for output. The extension of this file will control its type unless overridden with `--json` or `--yaml`. |
 
-## Configuration
-
-The CLI can be configured by creating a YAML file called `config.yaml` in the
-following location:
-
-The contents of the config.yaml file should appear as follows
-
-```json
-default:
-	token: xxxx-xxx-xxxx
-```
-
-* `$HOME/.config/@smartthings/cli` on OS/X or Linux
-* `%LOCALAPPDATA%\@smartthings\cli` on Windows
-
 ## Authentication
 
 The CLI supports an automatic login flow that pops up a browser window
 asking you to log in and give the CLI permission to access your account.
 The CLI will automatically request login as needed.
 
-More details about configuration of the CLI can be found on the [configuration documentation page](doc/configuration.md).
+Although not recommended, you can use a personal access token for authentication
+by creating a [configuration file](doc/configuration.md) and including the
+token in a `token` key for your profile.
 
 # Helpful Hints
 
@@ -715,6 +701,7 @@ EXAMPLES
   $ smartthings capabilities:translations 1 en
   $ smartthings capabilities:translations custom1.outputModulation 1 1
   $ smartthings capabilities:translations custom1.outputModulation 1 en
+  $ smartthings capabilities:translations custom1.outputModulation en
   Tag: en
 
   Attributes:
@@ -2410,42 +2397,7 @@ OPTIONS
 _See code: [dist/commands/schema/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/schema/update.ts)_
 <!-- commandsstop -->
 
-# Logging
+## Configuration and Logging
 
-The CLI uses [log4js](https://log4js-node.github.io/log4js-node/). By default, messages are logged
-at the WARN level to the file smartthings.log in the current directory. Logging can be configured
-by adding a `logging` top level key in the configuration file. Data from this key is passed
-directly to log4js so you can find information in the [log4js
-documentation](https://log4js-node.github.io/log4js-node/) on how to configure log4js.
-
-The following example mirrors the default behavior:
-
-```yaml
-logging:
-  appenders:
-    smartthings:
-      type: file
-      filename: smartthings.log
-    stderr:
-      type: stderr
-    errors:
-      type: logLevelFilter
-      appender: stderr
-      level: error
-  categories:
-    default:
-      appenders:
-        - smartthings
-        - errors
-      level: warn
-    rest-client:
-      appenders:
-        - smartthings
-        - errors
-      level: warn
-    cli:
-      appenders:
-        - smartthings
-        - errors
-      level: warn
-```
+More details about configuration and logging in the CLI can be found on the
+[configuration documentation page](doc/configuration.md).
