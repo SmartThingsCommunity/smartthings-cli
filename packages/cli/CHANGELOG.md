@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.11](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.10...v0.0.0-pre.11) (2020-09-28)
+
+
+### Bug Fixes
+
+* remove ambiguous log method ([5466cd6](https://github.com/SmartThingsCommunity/smartthings-cli/commit/5466cd6ad3ed8bf35ab79d40f7ec2023cbd81f62))
+* Update to accommodate switch from vid to presentationId ([3756ed7](https://github.com/SmartThingsCommunity/smartthings-cli/commit/3756ed74abf6feca1d0ba44518ebb85de3930904))
+
+
+### Features
+
+* added device profile and capability localizations ([6a48783](https://github.com/SmartThingsCommunity/smartthings-cli/commit/6a487830539eb3660358c8c448ce1de2e3465f8e))
+* app list options and fixes to app and schema commands ([#101](https://github.com/SmartThingsCommunity/smartthings-cli/issues/101)) ([979e409](https://github.com/SmartThingsCommunity/smartthings-cli/commit/979e409c27e8ed9eb33c6fadad65a1811cf413ef))
+* use separate file for logging config ([80b3005](https://github.com/SmartThingsCommunity/smartthings-cli/commit/80b30051abb6670ea36f479e18c202fb3bf7b289))
+
+
+
+
+
 # [0.0.0-pre.10](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.9...v0.0.0-pre.10) (2020-09-02)
 
 
