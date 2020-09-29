@@ -4,7 +4,7 @@
 	"description": "SmartThings unified CLI",
 	"author": "SmartThings, Inc.",
 	"bin": {
-		"smartthings": "./dist/run.js"
+		"smartthings": "./bin/run"
 	},
 	"bugs": "https://github.com/SmartThingsCommunity/smartthings-cli/issues",
 	"homepage": "https://github.com/SmartThingsCommunity/smartthings-cli",
@@ -50,7 +50,8 @@
 		],
 		"assets": [
 			"../../node_modules/generator-smartthings",
-			"../../node_modules/istextorbinary"
+			"../../node_modules/istextorbinary",
+			"../../node_modules/yarn"
 		]
 	},
 	"dependencies": {
@@ -74,7 +75,7 @@
 		"@types/lodash": "^4.14.157",
 		"@types/yeoman-environment": "^2.3.3",
 		"jest": "^26.4.0",
-		"pkg": "^4.4.8",
+		"pkg": "^4.4.9",
 		"typescript": "^3.9.7"
 	},
 	"scripts": {
