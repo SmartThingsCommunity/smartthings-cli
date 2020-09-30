@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.12](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.11...v0.0.0-pre.12) (2020-09-30)
+
+
+### Bug Fixes
+
+* fix issues with binary and node builds ([7989558](https://github.com/rossiam/smartthings-cli/commit/7989558c2cda5b1cf1c2f622285bee1445a54f66))
+
+
+
+
+
 # [0.0.0-pre.11](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.10...v0.0.0-pre.11) (2020-09-28)
 
 
