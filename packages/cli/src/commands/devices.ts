@@ -53,6 +53,10 @@ export default class DevicesCommand extends ListingOutputAPICommand<Device, Devi
 			description: 'filter results by device',
 			multiple: true,
 		}),
+		'installed-app-id': flags.string({
+			char: 'a',
+			description: 'filter results by installed app that created the device',
+		}),
 		verbose: flags.boolean({
 			description: 'include location name in output',
 			char: 'v',
@@ -83,6 +87,7 @@ export default class DevicesCommand extends ListingOutputAPICommand<Device, Devi
 			capabilitiesMode: flags['capabilities-mode'] === 'or' ? 'or' : 'and',
 			locationId: flags['location-id'],
 			deviceId: flags['device-id'],
+			installedAppId: flags['installed-app-id'],
 		}
 
 		this.processNormally(

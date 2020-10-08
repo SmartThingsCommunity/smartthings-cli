@@ -1364,34 +1364,36 @@ ARGUMENTS
   ID  device to retrieve; UUID or the number of the device from list
 
 OPTIONS
-  -C, --capabilities-mode=and|or  Treat capability filter query params as a logical "or" or "and" with a default of
-                                  "and".
+  -C, --capabilities-mode=and|or           Treat capability filter query params as a logical "or" or "and" with a
+                                           default of "and".
 
-  -c, --capability=capability     filter results by capability
+  -a, --installed-app-id=installed-app-id  filter results by installed app that created the device
 
-  -d, --device-id=device-id       filter results by device
+  -c, --capability=capability              filter results by capability
 
-  -h, --help                      show CLI help
+  -d, --device-id=device-id                filter results by device
 
-  -j, --json                      use JSON format of input and/or output
+  -h, --help                               show CLI help
 
-  -l, --location-id=location-id   filter results by location
+  -j, --json                               use JSON format of input and/or output
 
-  -o, --output=output             specify output file
+  -l, --location-id=location-id            filter results by location
 
-  -p, --profile=profile           [default: default] configuration profile
+  -o, --output=output                      specify output file
 
-  -t, --token=token               the auth token to use
+  -p, --profile=profile                    [default: default] configuration profile
 
-  -v, --verbose                   include location name in output
+  -t, --token=token                        the auth token to use
 
-  -y, --yaml                      use YAML format of input and/or output
+  -v, --verbose                            include location name in output
 
-  --compact                       use compact table format with no lines between body rows
+  -y, --yaml                               use YAML format of input and/or output
 
-  --expanded                      use expanded table format with a line between each body row
+  --compact                                use compact table format with no lines between body rows
 
-  --indent=indent                 specify indentation for formatting JSON or YAML output
+  --expanded                               use expanded table format with a line between each body row
+
+  --indent=indent                          specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/devices.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.10/dist/commands/devices.ts)_

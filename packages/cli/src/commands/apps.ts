@@ -94,7 +94,6 @@ export default class AppsList extends ListingOutputAPICommand<App, App> {
 			// 		return map
 			// 	}, {})
 			// }
-			this.log(JSON.stringify(appListOptions, null, 2))
 			if (flags.verbose) {
 				return this.client.apps.list(appListOptions).then(list => {
 					const objects = list.map(it => {
