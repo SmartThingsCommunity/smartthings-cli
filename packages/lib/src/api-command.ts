@@ -8,6 +8,7 @@ import { logManager } from './logger'
 import { LoginAuthenticator, defaultClientIdProvider } from './login-authenticator'
 
 
+// TODO: move this and its tests to listing-io.ts
 const indexPattern = /^[1-9][0-9]*$/
 export function isIndexArgument(str: string): boolean {
 	return !!str.match(indexPattern)

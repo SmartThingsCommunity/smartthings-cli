@@ -1,24 +1,23 @@
-import { OutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, outputList } from '@smartthings/cli-lib'
 
 import { CapabilityNamespace } from '@smartthings/core-sdk'
 
 
-export default class CapabilitiesListNamespaces extends OutputAPICommand<CapabilityNamespace[]> {
+export default class CapabilitiesListNamespaces extends APICommand {
 	static description = 'list all capability namespaces currently available in a user account'
 
-	static flags = OutputAPICommand.flags
-
-	protected tableFieldDefinitions = ['name', 'ownerType', 'ownerId']
-	protected buildTableOutput(items: CapabilityNamespace[]): string {
-		return this.tableGenerator.buildTableFromList(items, this.tableFieldDefinitions)
+	static flags = {
+		...APICommand.flags,
+		...outputList.flags,
 	}
+
+	listTableFieldDefinitions = ['name', 'ownerType', 'ownerId']
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesListNamespaces)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(() => {
-			return this.client.capabilities.listNamespaces()
-		})
+		await outputList<CapabilityNamespace>(this,
+			() => this.client.capabilities.listNamespaces())
 	}
 }

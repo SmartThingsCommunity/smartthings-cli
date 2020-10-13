@@ -12,9 +12,19 @@ export interface Loggable {
 }
 
 /**
+ * Make an interface version of SmartThingsCommand to make its contract easier to mix with other
+ * interfaces and to limit what we need to mock for tests.
+ */
+export interface SmartThingsCommandInterface extends Loggable {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	readonly flags: { [name: string]: any }
+	readonly tableGenerator: TableGenerator
+}
+
+/**
  * The base class for all commands in the SmartThings CLI.
  */
-export abstract class SmartThingsCommand extends Command implements Loggable {
+export abstract class SmartThingsCommand extends Command implements SmartThingsCommandInterface {
 	static flags = {
 		help: flags.help({ char: 'h' }),
 		profile: flags.string({
@@ -44,7 +54,7 @@ export abstract class SmartThingsCommand extends Command implements Loggable {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private _profileConfig?: { [name: string]: any }
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	protected get profileConfig(): { [name: string]: any } {
+	get profileConfig(): { [name: string]: any } {
 		if (!this._profileConfig) {
 			throw new Error('SmartThingsCommand not properly initialized')
 		}
@@ -52,7 +62,7 @@ export abstract class SmartThingsCommand extends Command implements Loggable {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	protected get args(): { [name: string]: any } {
+	get args(): { [name: string]: any } {
 		if (!this._args) {
 			throw new Error('SmartThingsCommand not properly initialized')
 		}
@@ -62,7 +72,7 @@ export abstract class SmartThingsCommand extends Command implements Loggable {
 	/**
 	 * Return input arguments, not including flags.
 	 */
-	protected get inputArgs(): string[] {
+	get inputArgs(): string[] {
 		if (!this._argv) {
 			throw new Error('SmartThingsCommand not properly initialized')
 		}
@@ -70,14 +80,14 @@ export abstract class SmartThingsCommand extends Command implements Loggable {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	protected get flags(): { [name: string]: any } {
+	get flags(): { [name: string]: any } {
 		if (!this._flags) {
 			throw new Error('SmartThingsCommand not properly initialized')
 		}
 		return this._flags
 	}
 
-	protected get profileName(): string {
+	get profileName(): string {
 		if (!this._profileName) {
 			throw new Error('SmartThingsCommand not properly initialized')
 		}
@@ -93,7 +103,7 @@ export abstract class SmartThingsCommand extends Command implements Loggable {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	protected async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
+	async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
 		this._args = args
 		this._argv = argv
 		this._flags = flags
@@ -113,7 +123,7 @@ export abstract class SmartThingsCommand extends Command implements Loggable {
 		this._tableGenerator = new DefaultTableGenerator(compact)
 	}
 
-	protected abort(message?: string): void {
+	abort(message?: string): void {
 		if (message) {
 			this.log(message)
 		}

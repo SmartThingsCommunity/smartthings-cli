@@ -160,7 +160,7 @@ export default class DeviceCommandsCommand extends SelectingInputAPICommand<Comm
 			for (const commandName of commandNames) {
 				const command = capability.commands[commandName]
 				const args = command?.arguments?.map(it =>
-					it.optional ? `[${it.name}<${attributeType(it.schema)}>]` : `${it.name}<${attributeType(it.schema)}>`
+					it.optional ? `[${it.name}<${attributeType(it.schema)}>]` : `${it.name}<${attributeType(it.schema)}>`,
 				).join(', ') || ''
 				table.push([index, `${commandName}(${args})`])
 				index++
@@ -189,9 +189,7 @@ export default class DeviceCommandsCommand extends SelectingInputAPICommand<Comm
 
 			const command = capability.commands[cmd.command]
 			if (command.arguments && command.arguments?.length > 0 && (!cmd.arguments || cmd.arguments.length === 0)) {
-				const args = command?.arguments?.map(it =>
-					it.optional ?`[${it.name}]` :it.name
-				).join(', ') || ''
+				const args = command?.arguments?.map(it => it.optional ?`[${it.name}]` :it.name).join(', ') || ''
 				const input = (await inquirer.prompt({
 					type: 'input',
 					name: 'arguments',

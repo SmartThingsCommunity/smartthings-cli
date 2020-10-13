@@ -93,6 +93,9 @@ export async function createWithDefaultConfig(client: SmartThingsClient, data: D
 	// Update the profile to use the vid from the config
 	const profileId = deviceProfile.id
 	cleanupRequest(deviceProfile)
+	// TODO: I'm guessing name should be optional in PresentationDeviceConfigEntry
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	delete deviceProfile.name
 	if (!deviceProfile.metadata) {
 		deviceProfile.metadata = {}
@@ -246,6 +249,3 @@ export default class DeviceProfileCreateCommand extends InputOutputAPICommand<De
 		return deviceProfile
 	}
 }
-
-
-

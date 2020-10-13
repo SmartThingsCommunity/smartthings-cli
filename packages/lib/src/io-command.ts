@@ -1,44 +1,20 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import fs from 'fs'
 import inquirer from 'inquirer'
-import path from 'path'
 import yaml from 'js-yaml'
 import { flags } from '@oclif/command'
 
 import { APICommand, isIndexArgument } from './api-command'
-import { logManager } from './logger'
-import { TableFieldDefinition, TableGenerator } from './table-generator'
+import { commonIOFlags, inputFlag } from './input'
+import { formatFromFilename, IOFormat } from './io-util'
 import { Loggable } from './smartthings-command'
+import { TableFieldDefinition, TableGenerator } from './table-generator'
 import { applyMixins } from './util'
 
 
 // TODO: TEST TEST TEST
-// TODO: DOCUMENT DOCUMENT DOCUMENT
 
-
-// Flags common to both input and output.
-const commonIOFlags = {
-	indent: flags.integer({
-		description: 'specify indentation for formatting JSON or YAML output',
-	}),
-	json: flags.boolean({
-		description: 'use JSON format of input and/or output',
-		char: 'j',
-	}),
-	yaml: flags.boolean({
-		char: 'y',
-		description: 'use YAML format of input and/or output',
-	}),
-}
-
-const inputFlag = {
-	input: flags.string({
-		char: 'i',
-		description: 'specify input file',
-	}),
-}
-
-const outputFlag = {
+export const outputFlag = {
 	output: flags.string({
 		char: 'o',
 		description: 'specify output file',
@@ -50,14 +26,6 @@ const outputFlag = {
 		description: 'use expanded table format with a line between each body row',
 	}),
 
-}
-
-export enum IOFormat {
-	YAML = 'yaml',
-	JSON = 'json',
-
-	// for input, this is Q & A or command line, for output, it's a human-readable table format
-	COMMON = 'common',
 }
 
 export interface InputOptions {
@@ -74,7 +42,8 @@ export interface OutputOptions {
 }
 
 export type ListCallback<L> = () => Promise<L[]>
-export type GetCallback<ID, O> = (id: ID) => Promise<O>
+export type GetCallback<O> = () => Promise<O>
+export type LookupCallback<ID, O> = (id: ID) => Promise<O>
 export type UpdateCallback<ID, I, O> = (id: ID, data: I) => Promise<O>
 export type ActionCallback<ID> = (id: ID) => Promise<void>
 export type InputActionCallback<ID, I> = (id: ID, data: I) => Promise<void>
@@ -84,18 +53,6 @@ export type NestedGetCallback<ID, NID, O> = (id: ID, nestedId: NID) => Promise<O
 export type NestedUpdateCallback<ID, NID, I, O> = (id: ID, nestedId: NID, data: I) => Promise<O>
 export type NestedActionCallback<ID, NID> = (id: ID, nestedId: NID) => Promise<void>
 export type NestedInputActionCallback<ID, NID, I> = (id: ID, nestedId: NID, data: I) => Promise<void>
-
-function formatFromFilename(filename: string): IOFormat {
-	const ext = path.extname(filename).toLowerCase()
-	if (ext === '.yaml' || ext === '.yml') {
-		return IOFormat.YAML
-	}
-	if (ext === '.json') {
-		return IOFormat.JSON
-	}
-	logManager.getLogger('cli').warn(`could not determine file type from filename "${filename}, assuming YAML`)
-	return IOFormat.YAML
-}
 
 /**
  * Convert and write the data using the given output options.
@@ -132,7 +89,7 @@ function writeOutputPrivate<T>(data: T, outputOptions: OutputOptions,
 
 /* eslint-disable no-process-exit */
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-unused-vars
 export interface Inputting<I> extends Loggable {}
 /**
  * The "Inputting" mixin is used to add the ability of accepting complex
@@ -451,8 +408,7 @@ export abstract class OutputAPICommand<O> extends APICommand {
 	 *
 	 * @param executeCommand function that does the work
 	 */
-	// TODO: maybe add id to match other callbacks (and use GetCallback type)
-	protected processNormally(getData: () => Promise<O>): void {
+	protected processNormally(getData: GetCallback<O>): void {
 		getData().then(data => {
 			this.writeOutput(data)
 		}).catch(err => {
@@ -530,7 +486,7 @@ export abstract class ListingOutputAPICommandBase<ID, O, L> extends APICommand {
 
 	protected async processNormally(idOrIndex: ID | string | undefined,
 			listFunction: ListCallback<L>,
-			getFunction: GetCallback<ID, O>): Promise<void> {
+			getFunction: LookupCallback<ID, O>): Promise<void> {
 		try {
 			if (idOrIndex) {
 				const id: ID = await this.translateToId(idOrIndex, listFunction)
@@ -548,6 +504,7 @@ export abstract class ListingOutputAPICommandBase<ID, O, L> extends APICommand {
 
 	static flags = outputFlags
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ListingOutputAPICommandBase<ID, O, L> extends Outputting<O>, Listing<L> {}
 applyMixins(ListingOutputAPICommandBase, [Outputable, Outputting, Listing], { mergeFunctions: true })
 
@@ -629,7 +586,7 @@ export abstract class SelectingAPICommandBase<ID, L> extends APICommand {
 
 	static flags = APICommand.flags
 }
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-unused-vars
 export interface SelectingAPICommandBase<ID, L> extends Outputable, Listing<L> {}
 applyMixins(SelectingAPICommandBase, [Outputable, Listing], { mergeFunctions: true })
 
@@ -854,6 +811,7 @@ export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends AP
  * cases, you have a simple string for an identifier and can use
  * SelectingInputOutputAPICommand instead.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface SelectingInputOutputAPICommandBase<ID, I, O, L> extends Inputting<I>, Outputting<O>, Listing<L> {}
 applyMixins(SelectingInputOutputAPICommandBase, [Inputting, Outputable, Outputting, Listing], { mergeFunctions: true })
 
@@ -892,7 +850,7 @@ export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand
 
 	protected async processNormally(idOrIndex: ID | string | undefined,
 			listCallback: ListCallback<L>,
-			actionCallback: GetCallback<ID, O>): Promise<void> {
+			actionCallback: LookupCallback<ID, O>): Promise<void> {
 		try {
 			if (idOrIndex) {
 				if (this.acceptIndexId) {
@@ -926,6 +884,7 @@ export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand
 
 	static flags = outputFlags
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface SelectingOutputAPICommandBase<ID, O, L> extends Outputting<O>, Listing<L> {}
 applyMixins(SelectingOutputAPICommandBase, [Outputable, Outputting, Listing], { mergeFunctions: true })
 
@@ -1004,6 +963,7 @@ export abstract class SelectingInputAPICommandBase<ID, I, L> extends APICommand 
 
 	static flags = inputOutputFlags
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface SelectingInputAPICommandBase<ID, I, L> extends Inputting<I>, Listing<L> {}
 applyMixins(SelectingInputAPICommandBase, [Inputting, Outputable, Listing], { mergeFunctions: true })
 
@@ -1093,6 +1053,7 @@ export abstract class NestedListingOutputAPICommandBase<ID, NID, O, L, NL> exten
 
 	static flags = outputFlags
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface NestedListingOutputAPICommandBase<ID, NID, O, L, NL> extends Outputting<O>, Listing<L> {}
 applyMixins(NestedListingOutputAPICommandBase, [Outputable, Outputting, Listing], { mergeFunctions: true })
 
@@ -1221,7 +1182,7 @@ export abstract class NestedSelectingAPICommandBase<ID, NID, L, NL> extends APIC
 
 	static flags = APICommand.flags
 }
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-unused-vars
 export interface NestedSelectingAPICommandBase<ID, NID, L, NL> extends Outputable, Listing<L> {}
 applyMixins(NestedSelectingAPICommandBase, [Outputable, Listing], { mergeFunctions: true })
 

@@ -1,6 +1,6 @@
 import { Location, LocationItem } from '@smartthings/core-sdk'
 
-import { ListingOutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, outputListing } from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions = [
@@ -8,10 +8,13 @@ export const tableFieldDefinitions = [
 	'latitude', 'longitude', 'regionRadius', 'temperatureScale', 'locale',
 ]
 
-export default class LocationsCommand extends ListingOutputAPICommand<Location, LocationItem> {
+export default class LocationsCommand extends APICommand {
 	static description = 'get a specific Location'
 
-	static flags = ListingOutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...outputListing.flags,
+	}
 
 	static args = [{
 		name: 'idOrIndex',
@@ -21,16 +24,15 @@ export default class LocationsCommand extends ListingOutputAPICommand<Location, 
 	primaryKeyName = 'locationId'
 	sortKeyName = 'name'
 
-	protected tableFieldDefinitions = tableFieldDefinitions
+	tableFieldDefinitions = tableFieldDefinitions
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(LocationsCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await outputListing<Location, LocationItem>(this,
 			args.idOrIndex,
 			() => this.client.locations.list(),
-			(id) => this.client.locations.get(id),
-		)
+			id => this.client.locations.get(id))
 	}
 }
