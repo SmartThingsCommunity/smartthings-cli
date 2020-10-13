@@ -15,34 +15,6 @@ describe('smartthings-command', () => {
 	describe('SmartThingsCommand', () => {
 		/* eslint-disable @typescript-eslint/no-explicit-any */
 		class testCommand extends SmartThingsCommand {
-			async setupSuper(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
-				await super.setup(args, argv, flags)
-			}
-
-			getProfileConfig(): { [name: string]: any } {
-				return this.profileConfig
-			}
-
-			getArgs(): { [name: string]: any } {
-				return this.args
-			}
-
-			getInputArgs(): string[] {
-				return this.inputArgs
-			}
-
-			getFlags(): { [name: string]: any } {
-				return this.flags
-			}
-
-			getProfileName(): string {
-				return this.profileName
-			}
-
-			callAbort(message?: string): void {
-				this.abort(message)
-			}
-
 			async run(): Promise<void> {
 				// eslint-disable-line @typescript-eslint/no-empty-function
 			}
@@ -63,40 +35,40 @@ describe('smartthings-command', () => {
 		it('should throw Error when not properly setup', async () => {
 			const message = 'SmartThingsCommand not properly initialized'
 
-			expect(() => { smartThingsCommand.getProfileConfig() }).toThrowError(message)
-			expect(() => { smartThingsCommand.getArgs() }).toThrowError(message)
-			expect(() => { smartThingsCommand.getInputArgs() }).toThrowError(message)
-			expect(() => { smartThingsCommand.getFlags() }).toThrowError(message)
-			expect(() => { smartThingsCommand.getProfileName() }).toThrowError(message)
+			expect(() => { smartThingsCommand.profileConfig }).toThrowError(message)
+			expect(() => { smartThingsCommand.args }).toThrowError(message)
+			expect(() => { smartThingsCommand.inputArgs }).toThrowError(message)
+			expect(() => { smartThingsCommand.flags }).toThrowError(message)
+			expect(() => { smartThingsCommand.profileName }).toThrowError(message)
 			expect(() => { smartThingsCommand.tableGenerator }).toThrowError(message)
 		})
 
 		it('should not throw Error when properly setup', async () => {
-			await smartThingsCommand.setupSuper({}, [], {})
+			await smartThingsCommand.setup({}, [], {})
 
-			expect(() => { smartThingsCommand.getProfileConfig() }).not.toThrow()
-			expect(() => { smartThingsCommand.getArgs() }).not.toThrow()
-			expect(() => { smartThingsCommand.getInputArgs() }).not.toThrow()
-			expect(() => { smartThingsCommand.getFlags() }).not.toThrow()
-			expect(() => { smartThingsCommand.getProfileName() }).not.toThrow()
+			expect(() => { smartThingsCommand.profileConfig }).not.toThrow()
+			expect(() => { smartThingsCommand.args }).not.toThrow()
+			expect(() => { smartThingsCommand.inputArgs }).not.toThrow()
+			expect(() => { smartThingsCommand.flags }).not.toThrow()
+			expect(() => { smartThingsCommand.profileName }).not.toThrow()
 			expect(() => { smartThingsCommand.tableGenerator }).not.toThrow()
 		})
 
 		it('should set profile name to default during setup if not specified elsewhere', async () => {
-			await smartThingsCommand.setupSuper({}, [], {})
+			await smartThingsCommand.setup({}, [], {})
 
-			expect(smartThingsCommand.getProfileName()).toBe('default')
+			expect(smartThingsCommand.profileName).toBe('default')
 		})
 
 		it('should set profile name via flags when passed during setup', async () => {
 			const profileName = 'notDefault'
-			await smartThingsCommand.setupSuper({}, [], { profile: profileName })
+			await smartThingsCommand.setup({}, [], { profile: profileName })
 
-			expect(smartThingsCommand.getProfileName()).toBe(profileName)
+			expect(smartThingsCommand.profileName).toBe(profileName)
 		})
 
 		it('should set tableGenerator to compact by default during setup', async () => {
-			await smartThingsCommand.setupSuper({}, [], {})
+			await smartThingsCommand.setup({}, [], {})
 
 			expect(smartThingsCommand.tableGenerator).toBeInstanceOf(DefaultTableGenerator)
 			expect(DefaultTableGenerator).toBeCalledWith(true)
@@ -112,7 +84,7 @@ describe('smartthings-command', () => {
 				return profileConfig
 			})
 
-			await smartThingsCommand.setupSuper({}, [], {})
+			await smartThingsCommand.setup({}, [], {})
 
 			expect(smartThingsCommand.tableGenerator).toBeInstanceOf(DefaultTableGenerator)
 			expect(DefaultTableGenerator).toBeCalledWith(compact)
@@ -129,7 +101,7 @@ describe('smartthings-command', () => {
 			})
 
 			const expanded = true
-			await smartThingsCommand.setupSuper({}, [], { expanded: expanded })
+			await smartThingsCommand.setup({}, [], { expanded: expanded })
 
 			expect(smartThingsCommand.tableGenerator).toBeInstanceOf(DefaultTableGenerator)
 			expect(DefaultTableGenerator).toBeCalledWith(!compact)
@@ -145,7 +117,7 @@ describe('smartthings-command', () => {
 			})
 
 			const compact = true
-			await smartThingsCommand.setupSuper({}, [], { compact: compact })
+			await smartThingsCommand.setup({}, [], { compact: compact })
 
 			expect(smartThingsCommand.tableGenerator).toBeInstanceOf(DefaultTableGenerator)
 			expect(DefaultTableGenerator).toBeCalledWith(compact)
@@ -156,7 +128,7 @@ describe('smartthings-command', () => {
 			const processSpy = jest.spyOn(process, 'exit').mockImplementation()
 			const message = 'aborting command'
 
-			smartThingsCommand.callAbort(message)
+			smartThingsCommand.abort(message)
 
 			expect(logSpy).toBeCalledWith(message)
 			expect(processSpy).toBeCalledWith(0)

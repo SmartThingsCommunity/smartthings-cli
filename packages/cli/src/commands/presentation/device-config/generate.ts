@@ -2,16 +2,17 @@ import { flags } from '@oclif/command'
 
 import { PresentationDeviceConfig, HttpClientParams } from '@smartthings/core-sdk'
 
-import { OutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, outputItem } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../device-config'
 
 
-export default class Devices extends OutputAPICommand<PresentationDeviceConfig> {
+export default class GeneratePresentationCommand extends APICommand {
 	static description = 'generate the default device configuration'
 
 	static flags = {
-		...OutputAPICommand.flags,
+		...APICommand.flags,
+		...outputItem.flags,
 		dth: flags.boolean({
 			description: 'generate from legacy DTH id instead of a profile id',
 		}),
@@ -27,10 +28,10 @@ export default class Devices extends OutputAPICommand<PresentationDeviceConfig> 
 		required: true,
 	}]
 
-	protected buildTableOutput = buildTableOutput
+	buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(Devices)
+		const { args, argv, flags } = this.parse(GeneratePresentationCommand)
 		await super.setup(args, argv, flags)
 
 		const extraParams: HttpClientParams = {}
@@ -42,8 +43,6 @@ export default class Devices extends OutputAPICommand<PresentationDeviceConfig> 
 		}
 		this.logger.debug(`extraParams = ${JSON.stringify(extraParams)}`)
 
-		this.processNormally(() => {
-			return this.client.presentation.generate(args.id, extraParams)
-		})
+		await outputItem<PresentationDeviceConfig>(this, () => this.client.presentation.generate(args.id, extraParams))
 	}
 }

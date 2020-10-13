@@ -93,6 +93,9 @@ function prunePresentationEntries(entries?: PresentationDeviceConfigEntry[]): vo
 				delete entry.visibleCondition
 			}
 			if (!mcd) {
+				// TODO: I'm guessing component should be optional in PresentationDeviceConfigEntry
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
 				delete entry.component
 			}
 		}

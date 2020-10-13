@@ -45,7 +45,7 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 			params.namespace = flags.namespace
 		}
 
-		this.processNormally(capability => {
+		this.processNormally(async capability => {
 			return this.client.capabilities.create(capability, params)
 				.catch(error => {
 					if (error.response?.status == 403 && flags.namespace) {
