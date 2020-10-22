@@ -18,7 +18,7 @@ export function buildOutputFormatter<T>(command: SmartThingsCommandInterface,
 		outputFormat = inputFormat
 	}
 
-	const indent: number | undefined = command.flags.indent
+	const indent: number | undefined = command.flags.indent || command.profileConfig.indent
 	if (outputFormat === IOFormat.COMMON && commonOutputFormatter) {
 		return commonOutputFormatter
 	}

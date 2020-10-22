@@ -18,6 +18,8 @@ export interface Loggable {
 export interface SmartThingsCommandInterface extends Loggable {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	readonly flags: { [name: string]: any }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	readonly profileConfig: { [name: string]: any }
 	readonly tableGenerator: TableGenerator
 }
 
@@ -35,6 +37,7 @@ export abstract class SmartThingsCommand extends Command implements SmartThingsC
 		}),
 	}
 
+	// TODO: consider using Map<String, any> here and elsewhere (see api-helper for example)
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private _args?: { [name: string]: any }
 	private _argv?: string[]
