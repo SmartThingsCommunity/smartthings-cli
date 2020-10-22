@@ -1,21 +1,17 @@
 ---
-# we aren't using release-it for versioning, so git is "disabled" (commit, tag, push = false)
+# we aren't using release-it for versioning, so git is "disabled" (commit, tag, push, etc. = false)
 # it is needed here to set pushRepo to upstream as it defaults to origin if using --no-git option
 git:
+  changelog: false
   requireCleanWorkingDir: false
-  requireBranch: false
-  requireUpstream: true
-  requireCommits: false
-  addUntrackedFiles: false
   commit: false
   tag: false
   push: false
   pushRepo: upstream
 github:
   release: true
-  releaseName: ${version}
+  releaseName: v${version}
   preRelease: true
-  draft: false
   tokenRef: GH_TOKEN
   assets:
     - smartthings-*.zip
