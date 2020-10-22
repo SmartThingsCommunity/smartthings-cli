@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.13](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.12...v0.0.0-pre.13) (2020-10-22)
+
+
+### Features
+
+* Added option to filter devices by installedAppId ([62628a8](https://github.com/SmartThingsCommunity/smartthings-cli/commit/62628a80ca9c0fcc78339f4f7ecb6122dde44f33))
+
+
+
+
+
 # [0.0.0-pre.12](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.11...v0.0.0-pre.12) (2020-09-30)
 
 
