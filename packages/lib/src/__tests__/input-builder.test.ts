@@ -5,19 +5,23 @@ import { buildInputProcessor } from '../input-builder'
 import { IOFormat } from '../io-util'
 import { SmartThingsCommandInterface } from '../smartthings-command'
 import { DefaultTableGenerator } from '../table-generator'
+
 import { SimpleType } from './io-util.test'
+
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function buildMockCommand(flags: { [name: string]: any } = {}, profileConfig: { [name: string]: any } = {}): SmartThingsCommandInterface {
+	return {
+		logger: new NoLogLogger(),
+		flags,
+		profileConfig,
+		tableGenerator: new DefaultTableGenerator(true),
+	}
+}
 
 
 jest.mock('../input')
 jest.mock('../smartthings-command')
-
-function buildMockCommand(): SmartThingsCommandInterface {
-	return {
-		logger: new NoLogLogger(),
-		flags: {},
-		tableGenerator: new DefaultTableGenerator(true),
-	}
-}
 
 afterEach(() => {
 	jest.resetAllMocks()
