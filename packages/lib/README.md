@@ -1,6 +1,6 @@
 # @smartthings/cli-lib
 
-A library to support writing SmartThings CLI plug-ins with Jest.
+A library to support the SmartThings CLI and plugins written for it.
 
 ## Creating a plugin
 
