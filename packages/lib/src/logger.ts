@@ -5,6 +5,10 @@ import { configure, Configuration as LoggingConfig, Logger, Level } from 'log4js
 import { Logger as APILogger } from '@smartthings/core-sdk'
 
 
+const DEFAULT_LOG_FILE_SIZE = 1_000_000 // bytes
+const LOGGING_DOCS_URL = 'https://github.com/SmartThingsCommunity/smartthings-cli/' +
+	'blob/master/packages/cli/doc/configuration.md#logging'
+
 class Log4JSLogger implements APILogger {
 	constructor(private logger: Logger) {
 	}
@@ -88,32 +92,31 @@ export class LogManager {
 	}
 }
 
-const defaultLoggingConfig: LoggingConfig = {
-	appenders: {
-		smartthings: { type: 'file', filename: 'smartthings.log' },
-		stderr: { type: 'stderr' },
-		errors: { type: 'logLevelFilter', appender: 'stderr', level: 'error' },
-	},
-	categories: {
-		default: { appenders: ['smartthings', 'errors'], level: 'warn' },
-		'rest-client': { appenders: ['smartthings', 'errors'], level: 'warn' },
-		cli: { appenders: ['smartthings', 'errors'], level: 'warn' },
-	},
+export function defaultLoggingConfig(filename: string): LoggingConfig {
+	return {
+		appenders: {
+			smartthings: { type: 'file', filename: filename, maxLogSize: DEFAULT_LOG_FILE_SIZE },
+			stderr: { type: 'stderr' },
+			errors: { type: 'logLevelFilter', appender: 'stderr', level: 'error' },
+		},
+		categories: {
+			default: { appenders: ['smartthings', 'errors'], level: 'warn' },
+			'rest-client': { appenders: ['smartthings', 'errors'], level: 'warn' },
+			cli: { appenders: ['smartthings', 'errors'], level: 'warn' },
+		},
+	}
 }
 
-
-const loggingDocsLink = 'https://github.com/SmartThingsCommunity/' +
-	'smartthings-cli/blob/master/packages/cli/doc/configuration.md#logging'
-export function loadLoggingConfig(filename: string): LoggingConfig {
+export function loadLoggingConfig(filename: string, defaultConfig: LoggingConfig): LoggingConfig {
 	if (!fs.existsSync(filename)) {
-		return defaultLoggingConfig
+		return defaultConfig
 	}
 
 	const parsed = yaml.safeLoad(fs.readFileSync(filename, 'utf-8'))
 	if (parsed && typeof parsed === 'object') {
 		return parsed as LoggingConfig
 	}
-	throw new Error(`invalid or unreadable logging config file format; see ${loggingDocsLink}`)
+	throw new Error(`invalid or unreadable logging config file format; see ${LOGGING_DOCS_URL}`)
 }
 
 if (!('_logManager' in (global as { _logManager?: LogManager }))) {
