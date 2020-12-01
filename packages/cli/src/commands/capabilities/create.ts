@@ -23,6 +23,12 @@ const enum Type {
 	BOOLEAN = 'boolean',
 }
 
+const attributeAndCommandNamePattern = /^[a-z][a-zA-Z]{0,35}$/
+function commandOrAttributeNameValidator(input: string): boolean | string {
+	return !!attributeAndCommandNamePattern.exec(input)
+		|| 'Invalid attribute name;  only letters are allowed and must start with a lowercase letter, max length 36'
+}
+
 export default class CapabilitiesCreate extends InputOutputAPICommand<CapabilityCreate, Capability> {
 	static description = 'create a capability for a user'
 
@@ -123,6 +129,10 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 				type: 'input',
 				name: 'basicCommandName',
 				message,
+				validate: (input) => {
+					// empty string is allowed here because it ends basic command name input
+					return !input || commandOrAttributeNameValidator(input)
+				},
 			})).basicCommandName
 			message = baseMessage
 
@@ -191,15 +201,35 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 		})).type
 	}
 
-	private async promptAndAddAttribute(capability: CapabilityCreate): Promise<void> {
-		const name: string = (await inquirer.prompt({
+	private async promptForAttributeName(): Promise<string> {
+		return (await inquirer.prompt({
 			type: 'input',
 			name: 'attributeName',
 			message: 'Attribute Name: ',
-			validate: (input) => {
-				return input.length > 0 || 'Invalid attribute name'
-			},
+			validate: commandOrAttributeNameValidator,
 		})).attributeName
+	}
+
+	private async promptAndAddAttribute(capability: CapabilityCreate): Promise<void> {
+		let name = await this.promptForAttributeName()
+
+		let userAcknowledgesNoSetter = false
+		while (name.length > 33 && !userAcknowledgesNoSetter) {
+			const answer = (await inquirer.prompt({
+				type: 'list',
+				name: 'answer',
+				message: `Attribute Name ${name} is too long to make a setter.`,
+				choices: [
+					{ name: 'Enter a shorter name (max 33 characters)', value: 'shorter '},
+					{ name: 'I won\'t need a setter', value: 'noSetter' },
+				],
+			})).answer
+			if (answer === 'noSetter') {
+				userAcknowledgesNoSetter = true
+			} else {
+				name = await this.promptForAttributeName()
+			}
+		}
 
 		const type = await this.promptForType('attribute')
 
@@ -262,7 +292,9 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 			}
 		}
 
-		await this.promptAndAddSetter(capability, name, attribute, type)
+		if (!userAcknowledgesNoSetter) {
+			await this.promptAndAddSetter(capability, name, attribute, type)
+		}
 		await this.promptAndAddBasicCommands(capability, attribute, type)
 
 		if (capability.attributes === undefined) {
@@ -292,9 +324,7 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 			type: 'input',
 			name: 'commandName',
 			message: 'Command Name: ',
-			validate: (input) => {
-				return input.length > 0 || 'Invalid command name'
-			},
+			validate: commandOrAttributeNameValidator,
 		})).commandName
 
 		const command: CapabilityCommand = {
