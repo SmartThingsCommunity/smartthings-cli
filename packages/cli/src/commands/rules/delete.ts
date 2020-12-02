@@ -32,15 +32,15 @@ export default class RulesDeleteCommand extends SelectingAPICommand<Rule> {
 		await super.setup(args, argv, flags)
 
 		const rulesPromise = this.getRulesByLocation(flags.locationId)
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => rulesPromise,
-			async (id) => {
+			async id => {
 				const rule = (await rulesPromise).find(RuleWithLocation => RuleWithLocation.id === id)
 				if (!rule) {
 					throw Error(flags.locationId ? `could not find rule with id ${id} in room ${flags.locationId}` : `could not find rule with id ${id}`)
 				}
-				this.client.rules.delete(id, rule.locationId)
+				await this.client.rules.delete(id, rule.locationId)
 			},
 			'rule {{id}} deleted')
 	}

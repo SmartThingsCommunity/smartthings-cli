@@ -54,7 +54,7 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<D
 		const { args, argv, flags } = this.parse(CapabilitiesUpdate)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		await this.processNormally(args.id,
 			() => { return this.client.deviceProfiles.list() },
 			async (id, data) => {
 				const profileData = data

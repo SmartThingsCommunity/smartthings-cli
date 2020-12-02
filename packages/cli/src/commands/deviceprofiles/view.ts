@@ -156,7 +156,7 @@ export default class DeviceViewCommand extends SelectingOutputAPICommand<DeviceD
 		const { args, argv, flags } = this.parse(DeviceViewCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => { return this.client.deviceProfiles.list() },
 			async (id) => {

@@ -24,6 +24,8 @@ module.exports = {
 	},
 	parserOptions: {
 		ecmaVersion: 2018,
+		tsconfigRootDir: __dirname,
+		project: ['./tsconfig.json'],
 	},
 	rules: {
 		indent: 'off',
@@ -81,6 +83,7 @@ module.exports = {
 		'@typescript-eslint/no-var-requires': 'error',
 		'@typescript-eslint/ban-ts-ignore': 0,
 		'@typescript-eslint/explicit-module-boundary-types': 'off',
+		'@typescript-eslint/no-floating-promises': 'error',
 
 		// disallow non-import statements appearing before import statements
 		'import/first': 'error',

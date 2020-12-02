@@ -26,7 +26,7 @@ export default class DeviceUpdateCommand extends SelectingInputOutputAPICommand<
 		const { args, argv, flags } = this.parse(DeviceUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => this.client.devices.list(),
 			(id, data) => {

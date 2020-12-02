@@ -52,7 +52,7 @@ export default class DeviceCapabilityStatusCommand extends SelectingOutputAPICom
 		const { args, argv, flags } = this.parse(DeviceCapabilityStatusCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => this.client.devices.list(),
 			async (id) => {

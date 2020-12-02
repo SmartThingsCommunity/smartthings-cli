@@ -94,7 +94,7 @@ export default class ConfigCommand extends ListingOutputAPICommand<ConfigItem, C
 				}
 			}
 		} else {
-			this.processNormally(
+			await this.processNormally(
 				args.name,
 				async () => {
 					const config = cliConfig.getRawConfigData()

@@ -46,7 +46,7 @@ export default class InstalledAppsCommand extends ListingOutputAPICommand<Instal
 			this.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			async () => {
 				const apps = await this.client.installedApps.list()

@@ -188,7 +188,7 @@ export class LoginAuthenticator implements Authenticator {
 
 		const server = app.listen(port, () => {
 			this.logger.trace(`listening on port ${port}`)
-			open(`http://localhost:${port}/start`)
+			void open(`http://localhost:${port}/start`)
 		})
 
 		const startTime = Date.now()

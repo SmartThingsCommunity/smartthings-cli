@@ -19,7 +19,7 @@ export default class DeviceDeleteCommand extends SelectingAPICommand<Device> {
 		const { args, argv, flags } = this.parse(DeviceDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		await this.processNormally(args.id,
 			() => this.client.devices.list(),
 			async (id) => { await this.client.devices.delete(id) },
 			'device {{id}} deleted')

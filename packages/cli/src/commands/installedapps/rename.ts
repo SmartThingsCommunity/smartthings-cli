@@ -32,7 +32,7 @@ export default class DeviceComponentStatusCommand extends SelectingOutputAPIComm
 		const { args, argv, flags } = this.parse(DeviceComponentStatusCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => this.client.installedApps.list(),
 			async (id) => {

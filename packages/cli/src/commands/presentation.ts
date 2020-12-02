@@ -109,7 +109,7 @@ export default class PresentationCommand extends OutputAPICommand<PresentationDe
 		const { args, argv, flags } = this.parse(PresentationCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(() => {
+		await this.processNormally(() => {
 			return this.client.presentation.getPresentation(args.presentationId, args.manufacturerName)
 		})
 	}

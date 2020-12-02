@@ -93,7 +93,7 @@ export default class Devices extends OutputAPICommand<PresentationDeviceConfig> 
 		const { args, argv, flags } = this.parse(Devices)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(() => {
+		await this.processNormally(() => {
 			return this.client.presentation.get(args.presentationId)
 		})
 	}

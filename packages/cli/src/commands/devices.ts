@@ -90,7 +90,7 @@ export default class DevicesCommand extends ListingOutputAPICommand<Device, Devi
 			installedAppId: flags['installed-app-id'],
 		}
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			async () => {
 				const devices = await this.client.devices.list(deviceListOptions)

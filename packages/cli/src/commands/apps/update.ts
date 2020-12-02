@@ -34,7 +34,7 @@ export default class AppUpdateCommand extends SelectingInputOutputAPICommand<App
 		const { args, argv, flags } = this.parse(AppUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		await this.processNormally(args.id,
 			() => { return this.client.apps.list() },
 			async (id, data) => {
 				if (flags.authorize) {

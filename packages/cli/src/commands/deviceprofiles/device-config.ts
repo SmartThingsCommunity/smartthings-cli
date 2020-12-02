@@ -26,7 +26,7 @@ export default class ProfilePresentationCommand extends SelectingOutputAPIComman
 		const { args, argv, flags } = this.parse(ProfilePresentationCommand	)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => { return this.client.deviceProfiles.list() },
 			async (id) => {

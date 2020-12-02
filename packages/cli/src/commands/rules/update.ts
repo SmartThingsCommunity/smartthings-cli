@@ -33,7 +33,7 @@ export default class RulesUpdateCommand extends SelectingInputOutputAPICommand <
 		await super.setup(args, argv, flags)
 
 		const rulesPromise = this.getRulesByLocation(flags.locationId)
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => rulesPromise,
 			async (id, data) => {

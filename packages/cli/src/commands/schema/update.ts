@@ -32,7 +32,7 @@ export default class SchemaUpdateCommand extends SelectingInputOutputAPICommand<
 		const { args, argv, flags } = this.parse(SchemaUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		await this.processNormally(args.id,
 			() => { return this.client.schema.list() },
 			async (id, data) => {
 				if (flags.authorize) {

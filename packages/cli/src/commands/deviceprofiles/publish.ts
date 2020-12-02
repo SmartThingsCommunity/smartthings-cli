@@ -25,7 +25,7 @@ export default class DeviceProfilePublishCommand extends SelectingOutputAPIComma
 		const { args, argv, flags } = this.parse(DeviceProfilePublishCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => { return this.client.deviceProfiles.list() },
 			(id) => { return this.client.deviceProfiles.updateStatus(id, DeviceProfileStatus.PUBLISHED) },

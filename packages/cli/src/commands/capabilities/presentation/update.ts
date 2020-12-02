@@ -29,7 +29,7 @@ export default class CapabilitiesPresentationUpdate extends SelectingInputOutput
 		const idOrIndex = args.version
 			? { id: args.id, version: args.version }
 			: (args.id ? { id: args.id, version: 1 } : undefined)
-		this.processNormally(idOrIndex,
+		await this.processNormally(idOrIndex,
 			async () => this.getCustomByNamespace(),
 			async (id, capabilityPresentation) => this.client.capabilities.updatePresentation(id.id, id.version, capabilityPresentation))
 	}

@@ -249,7 +249,7 @@ export default class DeviceCommandsCommand extends SelectingInputAPICommand<Comm
 		const { args, argv, flags } = this.parse(DeviceCommandsCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => this.client.devices.list(),
 			async (id, data) => {

@@ -102,7 +102,7 @@ export default class DeviceProfileTranslationsCommand extends NestedListingOutpu
 		const profileIdOrIndex = args.id
 		const tagOrIndex = args.tag
 
-		this.processNormally(
+		await this.processNormally(
 			profileIdOrIndex,
 			tagOrIndex,
 			async () => {

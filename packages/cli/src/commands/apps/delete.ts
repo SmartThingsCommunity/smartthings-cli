@@ -20,7 +20,7 @@ export default class AppDeleteCommand extends SelectingAPICommand<App> {
 		const { args, argv, flags } = this.parse(AppDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		await this.processNormally(args.id,
 			async () => await this.client.apps.list(),
 			async (id) => { await this.client.apps.delete(id) },
 			'app {{id}} deleted')

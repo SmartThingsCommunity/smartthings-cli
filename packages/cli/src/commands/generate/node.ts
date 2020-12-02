@@ -8,6 +8,6 @@ export default class GenerateNode extends GenerateCommand {
 
 	async run(): Promise<void> {
 		this.parse(GenerateNode)
-		this.generate('smartthings:node')
+		await this.generate('smartthings:node')
 	}
 }

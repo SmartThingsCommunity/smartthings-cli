@@ -34,15 +34,15 @@ export default class RoomsDeleteCommand extends SelectingAPICommand<Room> {
 		await super.setup(args, argv, flags)
 
 		const roomsPromise = this.getRoomsByLocation(flags.locationId)
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => roomsPromise,
-			async (id) => {
+			async id => {
 				const room = (await roomsPromise).find(room => room.roomId === id)
 				if (!room) {
 					throw Error(`could not find room with id ${id}`)
 				}
-				this.client.rooms.delete(id, room.locationId)
+				await this.client.rooms.delete(id, room.locationId)
 			},
 			'room {{id}} deleted')
 	}

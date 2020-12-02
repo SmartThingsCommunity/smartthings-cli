@@ -62,7 +62,7 @@ export default class RulesCommand extends ListingOutputAPICommand<Rule, RuleWith
 		const { args, argv, flags } = this.parse(RulesCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.idOrIndex,
 			() => { return this.getRulesByLocation(flags.locationId) },
 			(id) => { return this.client.rules.get(id, flags.locationId) },

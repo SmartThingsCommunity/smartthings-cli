@@ -65,12 +65,12 @@ describe('readDataFromStdin', () => {
 		stdinMock.end()
 		stdinMock.restore()
 
-		expect(result).resolves.toEqual(validYAML)
+		await expect(result).resolves.toEqual(validYAML)
 	})
 
-	it('passes on error', function() {
+	it('passes on error', async function() {
 		jest.spyOn(process.stdin, 'resume').mockImplementation(() => { throw Error('pass through') })
-		expect(readDataFromStdin()).rejects.toThrow('pass through')
+		await expect(readDataFromStdin()).rejects.toThrow('pass through')
 	})
 })
 

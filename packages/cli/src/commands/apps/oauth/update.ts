@@ -24,7 +24,7 @@ export default class AppOauthUpdateCommand extends SelectingInputOutputAPIComman
 		const { args, argv, flags } = this.parse(AppOauthUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		await this.processNormally(args.id,
 			() => { return this.client.apps.list() },
 			async (id, data) => { return this.client.apps.updateOauth(id, data) })
 	}

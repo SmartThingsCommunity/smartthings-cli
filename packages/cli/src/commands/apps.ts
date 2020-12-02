@@ -117,6 +117,6 @@ export default class AppsList extends ListingOutputAPICommand<App, App> {
 			return this.client.apps.list(appListOptions)
 		}
 
-		this.processNormally(args.id, listApps, id => this.client.apps.get(id))
+		await this.processNormally(args.id, listApps, id => this.client.apps.get(id))
 	}
 }
