@@ -24,7 +24,7 @@ export default class LocationsUpdateCommand extends SelectingInputOutputAPIComma
 		const { args, argv, flags } = this.parse(LocationsUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		await this.processNormally(args.id,
 			() => this.client.locations.list(),
 			(id, location) => this.client.locations.update(id, location))
 	}

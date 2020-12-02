@@ -29,16 +29,16 @@ export default class SchemaAppCreateCommand extends InputOutputAPICommand<Schema
 			if (flags.authorize) {
 				if (data.hostingType === 'lambda') {
 					if (data.lambdaArn) {
-						addSchemaPermission(data.lambdaArn, flags.principal, flags['statement-id'])
+						await addSchemaPermission(data.lambdaArn, flags.principal, flags['statement-id'])
 					}
 					if (data.lambdaArnAP) {
-						addSchemaPermission(data.lambdaArnAP, flags.principal, flags['statement-id'])
+						await addSchemaPermission(data.lambdaArnAP, flags.principal, flags['statement-id'])
 					}
 					if (data.lambdaArnCN) {
-						addSchemaPermission(data.lambdaArnCN, flags.principal, flags['statement-id'])
+						await addSchemaPermission(data.lambdaArnCN, flags.principal, flags['statement-id'])
 					}
 					if (data.lambdaArnEU) {
-						addSchemaPermission(data.lambdaArnEU, flags.principal, flags['statement-id'])
+						await addSchemaPermission(data.lambdaArnEU, flags.principal, flags['statement-id'])
 					}
 				} else {
 					this.logger.error('Authorization is not applicable to web-hook schema connectors')

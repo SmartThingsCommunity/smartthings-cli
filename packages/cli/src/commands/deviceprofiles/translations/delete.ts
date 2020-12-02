@@ -52,7 +52,7 @@ export default class DeviceProfileTranslationsDeleteCommand extends NestedSelect
 		const { args, argv, flags } = this.parse(DeviceProfileTranslationsDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			args.tag,
 			async () => await this.client.deviceProfiles.list(),

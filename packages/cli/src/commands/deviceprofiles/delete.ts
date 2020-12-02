@@ -26,7 +26,7 @@ export default class DeviceProfileDeleteCommand extends SelectingAPICommand<Devi
 		const { args, argv, flags } = this.parse(DeviceProfileDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		await this.processNormally(args.id,
 			async () => await this.client.deviceProfiles.list(),
 			async (id) => { await this.client.deviceProfiles.delete(id) },
 			'device profile {{id}} deleted')

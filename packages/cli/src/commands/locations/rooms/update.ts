@@ -36,7 +36,7 @@ export default class RoomsUpdateCommand extends SelectingInputOutputAPICommand <
 		await super.setup(args, argv, flags)
 
 		const roomsPromise = this.getRoomsByLocation(flags.locationId)
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => roomsPromise,
 			async (id, data) => {

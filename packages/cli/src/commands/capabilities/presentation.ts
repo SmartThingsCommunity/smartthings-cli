@@ -100,7 +100,7 @@ export default class PresentationsCommand extends ListingOutputAPICommandBase<Ca
 		const idOrIndex = args.version
 			? { id: args.id, version: args.version }
 			: args.id
-		this.processNormally(
+		await this.processNormally(
 			idOrIndex,
 			() => this.getCustomByNamespace(flags.namespace),
 			(id) =>  this.client.capabilities.getPresentation(id.id, id.version))

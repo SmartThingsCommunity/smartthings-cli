@@ -20,7 +20,7 @@ export default class LocationsDeleteCommand extends SelectingAPICommand<Location
 		const { args, argv, flags } = this.parse(LocationsDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		await this.processNormally(args.id,
 			async () => await this.client.locations.list(),
 			async (id) => { await this.client.locations.delete(id) },
 			'location {{id}} deleted')

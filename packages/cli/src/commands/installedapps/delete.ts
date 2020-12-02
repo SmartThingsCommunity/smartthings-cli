@@ -22,7 +22,7 @@ export default class InstalledAppDeleteCommand extends SelectingAPICommand<Insta
 		const { args, argv, flags } = this.parse(InstalledAppDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		await this.processNormally(args.id,
 			async () => await this.client.installedApps.list(),
 			async (id) => { await this.client.installedApps.delete(id) },
 			'installed app {{id}} deleted')

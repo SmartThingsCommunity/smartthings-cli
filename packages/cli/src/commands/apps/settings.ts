@@ -33,7 +33,7 @@ export default class AppSettingsCommand extends SelectingOutputAPICommand<AppSet
 		const { args, argv, flags } = this.parse(AppSettingsCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => { return this.client.apps.list() },
 			(id) => { return this.client.apps.getSettings(id) },

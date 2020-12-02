@@ -65,7 +65,7 @@ export default class DeviceProfileTranslationsUpsertCommand extends SelectingInp
 		const idOrIndex = args.version
 			? { id: args.id, version: args.version }
 			: args.id
-		this.processNormally(idOrIndex,
+		await this.processNormally(idOrIndex,
 			() => this.client.deviceProfiles.list(),
 			async (id, translations) => {
 				return this.client.deviceProfiles.upsertTranslations(id, translations)

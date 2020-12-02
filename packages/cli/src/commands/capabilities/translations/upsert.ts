@@ -82,7 +82,7 @@ export default class CapabilityTranslationsUpsertCommand extends SelectingInputO
 			? { id: args.id, version: args.version }
 			: args.id
 
-		this.processNormally(idOrIndex,
+		await this.processNormally(idOrIndex,
 			async () => this.getCustomByNamespace(),
 			async (id, translations) => {
 				return this.client.capabilities.upsertTranslations(id.id, id.version, translations)

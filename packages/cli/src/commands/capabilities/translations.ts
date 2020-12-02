@@ -149,7 +149,7 @@ export default class CapabilityTranslationsCommand extends NestedListingOutputAP
 			}
 		}
 
-		this.processNormally(
+		await this.processNormally(
 			capabilityIdOrIndex,
 			tagOrIndex,
 			async () => {

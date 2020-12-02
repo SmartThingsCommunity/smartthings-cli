@@ -43,7 +43,7 @@ export default class SchemaList extends ListingOutputAPICommand<SchemaApp, Schem
 			this.listTableFieldDefinitions.push('ARN/URL')
 		}
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			async () => {
 				const items: SchemaApp[] = await this.client.schema.list()

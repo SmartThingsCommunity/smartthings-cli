@@ -23,7 +23,7 @@ export default class AppRegisterCommand extends SelectingAPICommand<App> {
 		const { args, argv, flags } = this.parse(AppRegisterCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		await this.processNormally(args.id,
 			async () => _.flatten(await Promise.all([
 				this.client.apps.list({appType: AppType.WEBHOOK_SMART_APP}),
 				this.client.apps.list({appType: AppType.API_ONLY}),

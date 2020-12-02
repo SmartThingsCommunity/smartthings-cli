@@ -29,7 +29,7 @@ describe('FileInputProcessor', () => {
 	it('throws exception on read with no filename', () =>  {
 		const processor = new FileInputProcessor()
 		expect(processor.hasInput()).toBe(false)
-		expect(processor.read()).rejects.toEqual(ReferenceError('read called when hasInput returns false'))
+		return expect(processor.read()).rejects.toEqual(ReferenceError('read called when hasInput returns false'))
 	})
 
 	it('returns data as expected', async () =>  {
@@ -267,7 +267,7 @@ describe('CombinedInputProcessor', () => {
 
 		expect(hasInputSpy).toHaveBeenCalledTimes(1)
 
-		expect(processor.read()).rejects.toThrow(ReferenceError('read called when hasInput returns false'))
+		await expect(processor.read()).rejects.toThrow(ReferenceError('read called when hasInput returns false'))
 
 		expect(readSpy).toHaveBeenCalledTimes(0)
 	})

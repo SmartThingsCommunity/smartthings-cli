@@ -27,7 +27,7 @@ export default class DevicePresentationCommand extends SelectingOutputAPICommand
 		const { args, argv, flags } = this.parse(DevicePresentationCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => this.client.devices.list(),
 			(id) => this.client.devices.getPresentation(id),

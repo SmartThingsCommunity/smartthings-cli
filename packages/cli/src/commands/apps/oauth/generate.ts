@@ -23,7 +23,7 @@ export default class AppOauthGenerateCommand extends SelectingInputOutputAPIComm
 		const { args, argv, flags } = this.parse(AppOauthGenerateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(args.id,
+		await this.processNormally(args.id,
 			() => this.client.apps.list(),
 			async (id, data) => { return this.client.apps.regenerateOauth(id, data) })
 	}

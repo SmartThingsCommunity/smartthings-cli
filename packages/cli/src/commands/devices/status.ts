@@ -60,7 +60,7 @@ export default class DeviceStatusCommand extends SelectingOutputAPICommand<Devic
 		const { args, argv, flags } = this.parse(DeviceStatusCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => this.client.devices.list(),
 			(id) => this.client.devices.getStatus(id),

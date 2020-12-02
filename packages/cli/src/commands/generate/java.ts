@@ -8,6 +8,6 @@ export default class GenerateJava extends GenerateCommand {
 
 	async run(): Promise<void> {
 		this.parse(GenerateJava)
-		this.generate('smartthings:java')
+		await this.generate('smartthings:java')
 	}
 }

@@ -64,7 +64,7 @@ export default class DeviceProfilesList extends ListingOutputAPICommand<DevicePr
 			this.listTableFieldDefinitions.push({ label: 'Manufacturer Name', value: (item) => item.metadata ? item.metadata.mnmn : '' })
 		}
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => { return this.client.deviceProfiles.list() },
 			(id) => { return this.client.deviceProfiles.get(id) },

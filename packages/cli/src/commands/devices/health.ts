@@ -22,7 +22,7 @@ export default class DeviceHealthCommand extends SelectingOutputAPICommand<Devic
 		const { args, argv, flags } = this.parse(DeviceHealthCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(
+		await this.processNormally(
 			args.id,
 			() => this.client.devices.list(),
 			(id) => this.client.devices.getHealth(id),

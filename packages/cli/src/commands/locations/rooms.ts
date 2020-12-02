@@ -63,7 +63,7 @@ export default class RoomsCommand extends ListingOutputAPICommand<Room, RoomWith
 		await super.setup(args, argv, flags)
 
 		const roomsPromise = this.getRoomsByLocation(flags.locationId)
-		this.processNormally(
+		await this.processNormally(
 			args.idOrIndex,
 			() => roomsPromise,
 			async (id) => {
