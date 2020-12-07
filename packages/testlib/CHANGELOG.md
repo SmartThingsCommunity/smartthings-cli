@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.14](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.13...v0.0.0-pre.14) (2020-12-07)
+
+**Note:** Version bump only for package @smartthings/cli-testlib
+
+
+
+
+
 # [0.0.0-pre.9](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.8...v0.0.0-pre.9) (2020-09-02)
 
 

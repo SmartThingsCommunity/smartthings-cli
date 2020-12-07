@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.14](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.13...v0.0.0-pre.14) (2020-12-07)
+
+
+### Bug Fixes
+
+* use default version of 1 when not id included in command line without version ([9acace0](https://github.com/john-u/smartthings-cli/commit/9acace0b47388f552f2c50ed46f64c720b1176b9))
+* validate capability command and attribute names ([794d592](https://github.com/john-u/smartthings-cli/commit/794d5928c855dbbe7168479763cc33852c0e4c76))
+
+
+### Features
+
+* **logger:** default log file path to oclif cacheDir ([a1ce523](https://github.com/john-u/smartthings-cli/commit/a1ce523eac18c0ddda4c92bc627658bd394a0862))
+
+
+
+
+
 # [0.0.0-pre.13](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.12...v0.0.0-pre.13) (2020-10-22)
 
 

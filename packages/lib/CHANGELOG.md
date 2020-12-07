@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.14](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.13...v0.0.0-pre.14) (2020-12-07)
+
+
+### Features
+
+* **logger:** default log file path to oclif cacheDir ([a1ce523](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a1ce523eac18c0ddda4c92bc627658bd394a0862))
+
+
+
+
+
 # [0.0.0-pre.13](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.12...v0.0.0-pre.13) (2020-10-22)
 
 **Note:** Version bump only for package @smartthings/cli-lib
