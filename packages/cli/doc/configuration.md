@@ -46,14 +46,18 @@ tight:
 
 ## Logging
 
-Logging is mostly useful when you are developing the CLI itself (rather than
-using it).
+Logging is useful when you are developing the CLI itself or if you need to debug an issue experienced during general use.
+
+By default, a rolling log file will be created at the [OCLIF CLI cache](https://oclif.io/docs/config) directory.
+* macOS: `~/Library/Caches/@smartthings/cli`
+* Unix: `~/.cache/@smartthings/cli`
+* Windows: `%LOCALAPPDATA%\@smartthings\cli`
 
 The CLI uses [log4js](https://log4js-node.github.io/log4js-node/) for logging.
 
-Logging is configured using a YAML file called `logging.yaml` in the same
+Logging can be configured using a YAML file called `logging.yaml` in the same
 location as the config file mentioned above. The contents of this file are
-passed directly to log4js so any valid log4js configuration can be included
+passed directly to log4js (overriding any default behavior) so any valid log4js configuration can be included
 here. The following categories are used in the CLI:
 
 * rest-client - This category is used for the SDK that interfaces with the API.

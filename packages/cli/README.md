@@ -44,7 +44,7 @@ progress.
 NOTE: Some users are experiencing issues with the default login flow. If you are experiencing
 this issue, you can work around it by creating a
 [personal access token](https://smartthings.developer.samsung.com/docs/auth-and-permissions.html)
-and including it in your [configuration file](doc/configuration.md) like this:
+and including it in your [configuration file](https://github.com/SmartThingsCommunity/smartthings-cli/blob/master/packages/cli/doc/configuration.md) like this:
 
 ```yaml
 default:
@@ -75,7 +75,7 @@ asking you to log in and give the CLI permission to access your account.
 The CLI will automatically request login as needed.
 
 Although not recommended, you can use a personal access token for authentication
-by creating a [configuration file](doc/configuration.md) and including the
+by creating a [configuration file](https://github.com/SmartThingsCommunity/smartthings-cli/blob/master/packages/cli/doc/configuration.md) and including the
 token in a `token` key for your profile.
 
 # Helpful Hints
@@ -2427,7 +2427,7 @@ _See code: [dist/commands/schema/update.ts](https://github.com/SmartThingsCommun
 # Configuration and Logging
 
 More details about configuration and logging in the CLI can be found on the
-[configuration documentation page](doc/configuration.md).
+[configuration documentation page](https://github.com/SmartThingsCommunity/smartthings-cli/blob/master/packages/cli/doc/configuration.md).
 
 # Lerna Packages
 
