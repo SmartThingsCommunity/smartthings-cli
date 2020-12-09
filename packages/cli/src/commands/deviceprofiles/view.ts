@@ -163,7 +163,7 @@ export default class DeviceViewCommand extends SelectingOutputAPICommand<DeviceD
 				const profile = await this.client.deviceProfiles.get(id)
 				if (profile.metadata) {
 					try {
-						const view = await this.client.presentation.get(profile.metadata.vid)
+						const view = await this.client.presentation.get(profile.metadata.vid, profile.metadata.mnmn)
 						prunePresentationValues(view)
 						return {...profile, view}
 					} catch (error) {

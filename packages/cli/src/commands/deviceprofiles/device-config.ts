@@ -32,7 +32,7 @@ export default class ProfilePresentationCommand extends SelectingOutputAPIComman
 			async (id) => {
 				const profile = await this.client.deviceProfiles.get(id)
 				if (profile.metadata) {
-					return this.client.presentation.get(profile.metadata.vid)
+					return this.client.presentation.get(profile.metadata.vid, profile.metadata.mnmn)
 				} else {
 					this.logger.error('No presentation defined for device profile')
 					// eslint-disable-next-line no-process-exit
