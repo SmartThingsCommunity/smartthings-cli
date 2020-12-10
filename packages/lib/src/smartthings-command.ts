@@ -21,6 +21,8 @@ export interface SmartThingsCommandInterface extends Loggable {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	readonly profileConfig: { [name: string]: any }
 	readonly tableGenerator: TableGenerator
+
+	exit(code?: number): never
 }
 
 /**

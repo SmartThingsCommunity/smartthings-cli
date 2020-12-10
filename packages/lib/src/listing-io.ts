@@ -1,14 +1,13 @@
 import { isIndexArgument } from './api-command'
-import { formatAndWriteItem, ListDataFunction, LookupDataFunction, CommonOutputProducer } from './basic-io'
-import { listTableFormatter, sort, writeOutput } from './output'
-import { buildOutputFormatter } from './output-builder'
-import { SmartThingsCommand } from './smartthings-command'
+import { outputItem, outputList, IdTranslationFunction, CommonOutputProducer,
+	ListDataFunction, LookupDataFunction, Sorting } from './basic-io'
+import { sort } from './output'
+import { SmartThingsCommandInterface } from './smartthings-command'
 import { TableFieldDefinition } from './table-generator'
 
 
-// TODO: rename and maybe export
-async function newStringTranslateToId<L>(command: { readonly primaryKeyName: string; readonly sortKeyName: string },
-		idOrIndex: string,
+// TODO: drop "new" from name when old one is gone
+async function newStringTranslateToId<L>(command: Sorting, idOrIndex: string,
 		listFunction: ListDataFunction<L>): Promise<string> {
 	if (!isIndexArgument(idOrIndex)) {
 		// idOrIndex isn't a valid index so has to be an id (or bad)
@@ -33,37 +32,26 @@ async function newStringTranslateToId<L>(command: { readonly primaryKeyName: str
 		` ${command.primaryKeyName} in ${JSON.stringify(matchingItem)}`)
 }
 
-
-interface ListingOutputCommandBase<L> extends SmartThingsCommand {
-	primaryKeyName: string
-	sortKeyName: string
+export type ListingOutputCommand<O, L> = SmartThingsCommandInterface & Sorting & CommonOutputProducer<O> & {
 	listTableFieldDefinitions?: TableFieldDefinition<L>[]
 }
-export type ListingOutputCommand<O, L> = ListingOutputCommandBase<L> & CommonOutputProducer<O>
 export async function outputGenericListing<ID, O, L>(command: ListingOutputCommand<O, L>,
 		idOrIndex: ID | string | undefined, listFunction: ListDataFunction<L>, getFunction: LookupDataFunction<ID, O>,
-		translateToId: (idOrIndex: ID | string, listFunction: ListDataFunction<L>) => Promise<ID>): Promise<void> {
+		translateToId: IdTranslationFunction<ID, L>, includeIndex = true): Promise<void> {
 	if (idOrIndex) {
-		const id: ID = await translateToId(idOrIndex, listFunction)
-		const item = await getFunction(id)
-
-		await formatAndWriteItem(command, item)
+		const id = await translateToId(idOrIndex, listFunction)
+		await outputItem<O>(command, () => getFunction(id))
 	} else {
-		const list = sort(await listFunction(), command.sortKeyName)
-		const listTableFieldDefinitions = command.listTableFieldDefinitions ?? [command.sortKeyName, command.primaryKeyName]
-		const commonFormatter = listTableFormatter<L>(command.tableGenerator, listTableFieldDefinitions, true)
-		const outputFormatter = buildOutputFormatter(command, undefined, commonFormatter)
-		await writeOutput(outputFormatter(list), command.flags.output)
+		await outputList<L>(command, listFunction, includeIndex)
 	}
 }
-outputGenericListing.flags = buildOutputFormatter.flags
+outputGenericListing.flags = outputList.flags
 
 export async function outputListing<O, L>(command: ListingOutputCommand<O, L>,
-		idOrIndex: string | undefined,
-		listFunction: ListDataFunction<L>,
-		getFunction: LookupDataFunction<string, O>): Promise<void> {
+		idOrIndex: string | undefined, listFunction: ListDataFunction<L>,
+		getFunction: LookupDataFunction<string, O>, includeIndex = true): Promise<void> {
 	return outputGenericListing<string, O, L>(command, idOrIndex, listFunction, getFunction,
-		(idOrIndex, listFunction) => newStringTranslateToId(command, idOrIndex, listFunction))
+		(idOrIndex, listFunction) => newStringTranslateToId(command, idOrIndex, listFunction), includeIndex)
 }
 outputListing.flags = outputGenericListing.flags
 

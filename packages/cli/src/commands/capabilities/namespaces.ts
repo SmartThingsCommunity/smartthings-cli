@@ -12,6 +12,8 @@ export default class CapabilitiesListNamespaces extends APICommand {
 	}
 
 	listTableFieldDefinitions = ['name', 'ownerType', 'ownerId']
+	sortKeyName = 'name'
+	primaryKeyName = 'name'
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesListNamespaces)

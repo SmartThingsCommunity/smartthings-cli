@@ -1,7 +1,8 @@
 import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
-import {buildTableOutput, DeviceDefinition, DeviceDefinitionRequest, prunePresentationValues, augmentPresentationValues} from '../view'
-import {generateDefaultConfig} from '../create'
-import {cleanupRequest} from '../update'
+
+import { generateDefaultConfig } from '../create'
+import { cleanupRequest } from '../update'
+import { buildTableOutput, DeviceDefinition, DeviceDefinitionRequest, prunePresentationValues, augmentPresentationValues } from '../view'
 
 
 export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<DeviceDefinitionRequest, DeviceDefinition, DeviceDefinition> {
@@ -64,8 +65,6 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<D
 				if (presentationData) {
 					presentationData = augmentPresentationValues(presentationData)
 				} else {
-					// eslint-disable-next-line no-console
-					//console.log('Generating presentation')
 					presentationData = await generateDefaultConfig(this.client, id, profileData)
 				}
 
@@ -77,7 +76,7 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<D
 				profileData.metadata.mnmn = presentation.manufacturerName
 				const profile = await this.client.deviceProfiles.update(id, cleanupRequest(profileData))
 
-				return {...profile, presentation: prunePresentationValues(presentation)}
+				return { ...profile, presentation: prunePresentationValues(presentation) }
 			})
 	}
 }

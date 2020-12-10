@@ -1,12 +1,12 @@
 import { InstalledApp } from '@smartthings/core-sdk'
 
-import { SelectingAPICommand } from '@smartthings/cli-lib'
+import { selectAndActOn, APICommand } from '@smartthings/cli-lib'
 
 
-export default class InstalledAppDeleteCommand extends SelectingAPICommand<InstalledApp> {
+export default class InstalledAppDeleteCommand extends APICommand {
 	static description = 'delete the installed app instance'
 
-	static flags = SelectingAPICommand.flags
+	static flags = APICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -22,9 +22,9 @@ export default class InstalledAppDeleteCommand extends SelectingAPICommand<Insta
 		const { args, argv, flags } = this.parse(InstalledAppDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(args.id,
+		await selectAndActOn<InstalledApp>(this, args.id,
 			async () => await this.client.installedApps.list(),
-			async (id) => { await this.client.installedApps.delete(id) },
+			async id => { await this.client.installedApps.delete(id) },
 			'installed app {{id}} deleted')
 	}
 }
