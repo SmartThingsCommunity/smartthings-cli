@@ -2,16 +2,28 @@ import { flags } from '@oclif/command'
 
 import { InstalledApp } from '@smartthings/core-sdk'
 
-import { ListingOutputAPICommand, TableFieldDefinition, withLocations } from '@smartthings/cli-lib'
+import { APICommand, outputListing, TableFieldDefinition, withLocations } from '@smartthings/cli-lib'
 
 
 export type InstalledAppWithLocation = InstalledApp & { location?: string }
 
-export default class InstalledAppsCommand extends ListingOutputAPICommand<InstalledApp, InstalledAppWithLocation> {
+export const listTableFieldDefinitions = ['displayName', 'installedAppType', 'installedAppStatus', 'installedAppId']
+export const tableFieldDefinitions: TableFieldDefinition<InstalledApp>[] = [
+	'displayName', 'installedAppId', 'installedAppType', 'installedAppStatus',
+	'singleInstance', 'appId', 'locationId', 'singleInstance',
+	{
+		label: 'Classifications',
+		value: installedApp => installedApp.classifications?.join('\n') ?? '',
+		include: installedApp => !!installedApp.classifications,
+	},
+]
+
+export default class InstalledAppsCommand extends APICommand {
 	static description = 'get a specific app or a list of apps'
 
 	static flags = {
-		...ListingOutputAPICommand.flags,
+		...APICommand.flags,
+		...outputListing.flags,
 		verbose: flags.boolean({
 			description: 'include location name in output',
 			char: 'v',
@@ -25,18 +37,8 @@ export default class InstalledAppsCommand extends ListingOutputAPICommand<Instal
 
 	primaryKeyName = 'installedAppId'
 	sortKeyName = 'displayName'
-	protected listTableFieldDefinitions = ['displayName', 'installedAppType',
-		'installedAppStatus', 'installedAppId']
-
-	protected tableFieldDefinitions: TableFieldDefinition<InstalledApp>[] = [
-		'displayName', 'installedAppId', 'installedAppType', 'installedAppStatus',
-		'singleInstance', 'appId', 'locationId', 'singleInstance',
-		{
-			label: 'Classifications',
-			value: installedApp => installedApp.classifications?.join('\n') ?? '',
-			include: installedApp => !!installedApp.classifications,
-		},
-	]
+	listTableFieldDefinitions = listTableFieldDefinitions
+	tableFieldDefinitions = tableFieldDefinitions
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(InstalledAppsCommand)
@@ -46,7 +48,7 @@ export default class InstalledAppsCommand extends ListingOutputAPICommand<Instal
 			this.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 
-		await this.processNormally(
+		await outputListing<InstalledApp, InstalledAppWithLocation>(this,
 			args.id,
 			async () => {
 				const apps = await this.client.installedApps.list()
@@ -55,9 +57,7 @@ export default class InstalledAppsCommand extends ListingOutputAPICommand<Instal
 				}
 				return apps
 			},
-			(id: string) => {
-				return this.client.installedApps.get(id)
-			},
+			id => this.client.installedApps.get(id),
 		)
 	}
 }

@@ -16,6 +16,9 @@ export function buildMockCommand(flags: { [name: string]: any } = {}, profileCon
 		flags,
 		profileConfig,
 		tableGenerator: new DefaultTableGenerator(true),
+		exit(code?: number): never {
+			throw Error(`not implemented; code was ${code}`)
+		},
 	}
 }
 
