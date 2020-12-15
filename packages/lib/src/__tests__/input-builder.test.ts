@@ -1,26 +1,8 @@
-import { NoLogLogger } from '@smartthings/core-sdk'
-
 import * as input from '../input'
 import { buildInputProcessor } from '../input-builder'
 import { IOFormat } from '../io-util'
-import { SmartThingsCommandInterface } from '../smartthings-command'
-import { DefaultTableGenerator } from '../table-generator'
-
-import { SimpleType } from './io-util.test'
-
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function buildMockCommand(flags: { [name: string]: any } = {}, profileConfig: { [name: string]: any } = {}): SmartThingsCommandInterface {
-	return {
-		logger: new NoLogLogger(),
-		flags,
-		profileConfig,
-		tableGenerator: new DefaultTableGenerator(true),
-		exit(code?: number): never {
-			throw Error(`not implemented; code was ${code}`)
-		},
-	}
-}
+import { SimpleType } from './test-lib/simple-type'
+import { buildMockCommand } from './test-lib/mock-command'
 
 
 jest.mock('../input')

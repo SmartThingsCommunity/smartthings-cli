@@ -1,6 +1,7 @@
 import { isIndexArgument } from './api-command'
-import { outputItem, outputList, IdTranslationFunction, CommonOutputProducer,
+import { outputItem, outputList, IdTranslationFunction,
 	ListDataFunction, LookupDataFunction, Sorting } from './basic-io'
+import { CommonOutputProducer } from './format'
 import { sort } from './output'
 import { SmartThingsCommandInterface } from './smartthings-command'
 import { TableFieldDefinition } from './table-generator'

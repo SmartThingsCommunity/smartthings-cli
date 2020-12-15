@@ -2,7 +2,7 @@ import * as ioUtil from '../io-util'
 import { itemTableFormatter, jsonFormatter, listTableFormatter, sort, writeOutput, yamlFormatter } from '../output'
 import { DefaultTableGenerator, TableGenerator } from '../table-generator'
 
-import { SimpleType } from './io-util.test'
+import { SimpleType } from './test-lib/simple-type'
 
 
 afterEach(() => {
