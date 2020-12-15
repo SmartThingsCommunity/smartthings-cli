@@ -1,7 +1,7 @@
 import { CombinedInputProcessor, FileInputProcessor, InputProcessor, StdinInputProcessor, UserInputProcessor } from '../input'
 import { IOFormat } from '../io-util'
 import * as ioUtil from '../io-util'
-import { SimpleType, validData } from './io-util.test'
+import { validData, SimpleType } from './test-lib/simple-type'
 
 
 const resourcesDir = './src/__tests__/resources'

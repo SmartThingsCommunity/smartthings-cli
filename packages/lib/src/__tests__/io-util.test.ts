@@ -4,15 +4,8 @@ import { NoLogLogger } from '@smartthings/core-sdk'
 
 import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, stdinIsTTY } from '../io-util'
 import { LogManager } from '../logger'
+import { validData, validYAML, SimpleType } from './test-lib/simple-type'
 
-
-export interface SimpleType {
-	num: number
-	str: string
-}
-
-export const validYAML = 'num: 5\nstr: my string'
-export const validData = { num: 5, str: 'my string' }
 
 afterEach(() => {
 	jest.clearAllMocks()

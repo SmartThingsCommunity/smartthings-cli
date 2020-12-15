@@ -1,8 +1,8 @@
 import inquirer from 'inquirer'
 
 import { isIndexArgument } from './api-command'
-import { formatAndWriteItem, outputList, CommonListOutputProducer, CommonOutputProducer, ActionFunction, ListDataFunction,
-	Sorting, IdRetrievalFunction } from './basic-io'
+import { outputList, ActionFunction, ListDataFunction, IdRetrievalFunction, Sorting } from './basic-io'
+import { formatAndWriteItem, CommonListOutputProducer, CommonOutputProducer } from './format'
 import { SmartThingsCommandInterface } from './smartthings-command'
 
 

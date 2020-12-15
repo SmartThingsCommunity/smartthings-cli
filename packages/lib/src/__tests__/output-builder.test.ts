@@ -2,9 +2,8 @@ import * as output from '../output'
 import { buildOutputFormatter } from '../output-builder'
 import * as ioUtil from '../io-util'
 import { SmartThingsCommandInterface } from '../smartthings-command'
-
-import { buildMockCommand } from './input-builder.test'
-import { SimpleType } from './io-util.test'
+import { buildMockCommand } from './test-lib/mock-command'
+import { SimpleType } from './test-lib/simple-type'
 
 
 describe('buildOutputFormatter', () => {

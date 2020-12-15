@@ -5,6 +5,6 @@ module.exports = {
 		'**/__tests__/**/*.test.ts',
 	],
 	modulePathIgnorePatterns: [
-        "<rootDir>/dist"
-    ],
+		'<rootDir>/dist',
+	],
 }
