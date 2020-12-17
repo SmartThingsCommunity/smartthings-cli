@@ -1,5 +1,6 @@
+import { flags } from '@oclif/command'
+
 import { commonIOFlags } from './input'
-import { outputFlag } from './io-command'
 import { formatFromFilename, IOFormat } from './io-util'
 import { jsonFormatter, OutputFormatter, yamlFormatter } from './output'
 import { SmartThingsCommandInterface } from './smartthings-command'
@@ -28,7 +29,21 @@ export function buildOutputFormatter<T>(command: SmartThingsCommandInterface,
 	return jsonFormatter(indent ?? 4)
 }
 
+export const outputFlags = {
+	output: flags.string({
+		char: 'o',
+		description: 'specify output file',
+	}),
+	compact: flags.boolean({
+		description: 'use compact table format with no lines between body rows',
+	}),
+	expanded: flags.boolean({
+		description: 'use expanded table format with a line between each body row',
+	}),
+
+}
+
 buildOutputFormatter.flags = {
 	...commonIOFlags,
-	...outputFlag, // TODO: better name; pluralize (currently has conflict)
+	...outputFlags,
 }

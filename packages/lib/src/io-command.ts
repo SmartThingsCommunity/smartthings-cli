@@ -4,29 +4,15 @@ import inquirer from 'inquirer'
 import yaml from 'js-yaml'
 import { flags } from '@oclif/command'
 
-import { APICommand, isIndexArgument } from './api-command'
+import { APICommand } from './api-command'
+import { isIndexArgument } from './command-util'
 import { commonIOFlags, inputFlag } from './input'
 import { formatFromFilename, IOFormat } from './io-util'
+import { outputFlags as outputFlag } from './output-builder'
 import { Loggable } from './smartthings-command'
 import { TableFieldDefinition, TableGenerator } from './table-generator'
 import { applyMixins } from './util'
 
-
-// TODO: TEST TEST TEST
-
-export const outputFlag = {
-	output: flags.string({
-		char: 'o',
-		description: 'specify output file',
-	}),
-	compact: flags.boolean({
-		description: 'use compact table format with no lines between body rows',
-	}),
-	expanded: flags.boolean({
-		description: 'use expanded table format with a line between each body row',
-	}),
-
-}
 
 export interface InputOptions {
 	// no filename means stdin
@@ -517,7 +503,7 @@ applyMixins(ListingOutputAPICommandBase, [Outputable, Outputting, Listing], { me
  * ListingOutputAPICommandBase.
  */
 export abstract class ListingOutputAPICommand<O, L> extends ListingOutputAPICommandBase<string, O, L> {
-	protected translateToId = stringTranslateToId
+	protected translateToId = oldStringTranslateToId
 	static flags = ListingOutputAPICommandBase.flags
 }
 
@@ -590,7 +576,7 @@ export abstract class SelectingAPICommandBase<ID, L> extends APICommand {
 export interface SelectingAPICommandBase<ID, L> extends Outputable, Listing<L> {}
 applyMixins(SelectingAPICommandBase, [Outputable, Listing], { mergeFunctions: true })
 
-export async function stringTranslateToId<L>(this: APICommand & { readonly primaryKeyName: string; sort(list: L[]): L[] },
+async function oldStringTranslateToId<L>(this: APICommand & { readonly primaryKeyName: string; sort(list: L[]): L[] },
 		idOrIndex: string,
 		listFunction: ListCallback<L>): Promise<string> {
 
@@ -636,7 +622,7 @@ export async function stringTranslateToNestedId<ID, NL>(this: APICommand & { rea
 }
 
 
-export async function stringGetIdFromUser<L>(this: APICommand & { readonly primaryKeyName: string }, items: L[]): Promise<string> {
+async function oldStringGetIdFromUser<L>(this: APICommand & { readonly primaryKeyName: string }, items: L[]): Promise<string> {
 	const convertToId = (itemIdOrIndex: string): string | false => {
 		if (itemIdOrIndex.length === 0) {
 			return false
@@ -742,7 +728,7 @@ export async function stringGetNestedIdFromUser<NL>(this: APICommand & { readonl
  * more details.
  */
 export abstract class SelectingAPICommand<L> extends SelectingAPICommandBase<string, L> {
-	protected getIdFromUser = stringGetIdFromUser
+	protected getIdFromUser = oldStringGetIdFromUser
 }
 
 export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends APICommand {
@@ -820,8 +806,8 @@ applyMixins(SelectingInputOutputAPICommandBase, [Inputting, Outputable, Outputti
  * the common case of resources that use simple strings for identifiers.
  */
 export abstract class SelectingInputOutputAPICommand<I, O, L> extends SelectingInputOutputAPICommandBase<string, I, O, L> {
-	protected getIdFromUser = stringGetIdFromUser
-	protected translateToId = stringTranslateToId
+	protected getIdFromUser = oldStringGetIdFromUser
+	protected translateToId = oldStringTranslateToId
 }
 
 /**
@@ -893,8 +879,8 @@ applyMixins(SelectingOutputAPICommandBase, [Outputable, Outputting, Listing], { 
  * common case of resources that use simple strings for identifiers.
  */
 export abstract class SelectingOutputAPICommand<O, L> extends SelectingOutputAPICommandBase<string, O, L> {
-	protected getIdFromUser = stringGetIdFromUser
-	protected translateToId = stringTranslateToId
+	protected getIdFromUser = oldStringGetIdFromUser
+	protected translateToId = oldStringTranslateToId
 }
 
 /**
@@ -972,8 +958,8 @@ applyMixins(SelectingInputAPICommandBase, [Inputting, Outputable, Listing], { me
  * common case of resources that use simple strings for identifiers.
  */
 export abstract class SelectingInputAPICommand<I, L> extends SelectingInputAPICommandBase<string, I, L> {
-	protected getIdFromUser = stringGetIdFromUser
-	protected translateToId = stringTranslateToId
+	protected getIdFromUser = oldStringGetIdFromUser
+	protected translateToId = oldStringTranslateToId
 }
 
 
@@ -1065,7 +1051,7 @@ applyMixins(NestedListingOutputAPICommandBase, [Outputable, Outputting, Listing]
  * If you need more complex identifier types, use the NestedListingOutputAPICommandBase class.
  */
 export abstract class NestedListingOutputAPICommand<O, L, NL> extends NestedListingOutputAPICommandBase<string, string, O, L, NL> {
-	protected translateToId = stringTranslateToId
+	protected translateToId = oldStringTranslateToId
 	protected translateToNestedId = stringTranslateToNestedId
 	static flags = NestedListingOutputAPICommandBase.flags
 }
@@ -1191,7 +1177,7 @@ applyMixins(NestedSelectingAPICommandBase, [Outputable, Listing], { mergeFunctio
  * in the first and second lists
  */
 export abstract class NestedSelectingAPICommand<L, NL> extends NestedSelectingAPICommandBase<string, string, L, NL> {
-	protected getIdFromUser = stringGetIdFromUser
+	protected getIdFromUser = oldStringGetIdFromUser
 	protected getNestedIdFromUser = stringGetNestedIdFromUser
 }
 

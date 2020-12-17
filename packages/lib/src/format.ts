@@ -41,7 +41,7 @@ export async function formatAndWriteList<L>(command: SmartThingsCommandInterface
 	} else if ('listTableFieldDefinitions' in command) {
 		commonFormatter = listTableFormatter<L>(command.tableGenerator, command.listTableFieldDefinitions, includeIndex)
 	} else if ('buildListTableOutput' in command) {
-		commonFormatter = (data: L[]) => command.buildListTableOutput(data)
+		commonFormatter = data => command.buildListTableOutput(data)
 	} else {
 		commonFormatter = listTableFormatter<L>(command.tableGenerator, [command.sortKeyName, command.primaryKeyName], includeIndex)
 	}

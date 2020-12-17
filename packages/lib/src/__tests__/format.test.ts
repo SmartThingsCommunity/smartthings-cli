@@ -7,7 +7,7 @@ import { SimpleType } from './test-lib/simple-type'
 
 
 describe('format', () => {
-	const item = { 'str': 'string', num: 5 }
+	const item = { str: 'string', num: 5 }
 	const list = [item]
 	const baseCommand = {
 		...buildMockCommand(),
@@ -16,15 +16,9 @@ describe('format', () => {
 		},
 	}
 
-	const outputFormatter: jest.Mock<string, [data: unknown]> = jest.fn()
-	const buildOutputFormatterSpy = jest.spyOn(outputBuilder, 'buildOutputFormatter')
-	const writeOutputSpy = jest.spyOn(output, 'writeOutput')
-
-	beforeEach(() => {
-		outputFormatter.mockReturnValue('output')
-		buildOutputFormatterSpy.mockReturnValue(outputFormatter)
-		writeOutputSpy.mockResolvedValue()
-	})
+	const outputFormatter: jest.Mock<string, [data: unknown]> = jest.fn().mockReturnValue('output')
+	const buildOutputFormatterSpy = jest.spyOn(outputBuilder, 'buildOutputFormatter').mockReturnValue(outputFormatter)
+	const writeOutputSpy = jest.spyOn(output, 'writeOutput').mockResolvedValue()
 
 	afterEach(() => {
 		jest.clearAllMocks()
