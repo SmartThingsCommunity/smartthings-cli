@@ -51,7 +51,7 @@ describe('itemTableFormatter', () => {
 		const expected = 'expected result'
 		buildTableFromItem.mockReturnValue(expected)
 
-		const item: SimpleType = { 'str': 'string', num: 5 }
+		const item: SimpleType = { str: 'string', num: 5 }
 
 		const result = formatter(item)
 
@@ -65,7 +65,7 @@ describe('listTableFormatter', () => {
 	const fieldDefinitions = ['str', 'num']
 	const expected = 'expected result'
 
-	const list: SimpleType[] = [{ 'str': 'string1', num: 4 }, { 'str': 'string2', num: 5 }, { 'str': 'string3', num: 6 }]
+	const list: SimpleType[] = [{ str: 'string1', num: 4 }, { str: 'string2', num: 5 }, { str: 'string3', num: 6 }]
 
 	it('returns function that calls tableGenerator.buildTableFromList', () => {
 		const buildTableFromList = jest.fn()

@@ -13,7 +13,7 @@ export type ListDataFunction<L> = () => Promise<L[]>
 export type LookupDataFunction<ID, O> = (id: ID) => Promise<O>
 export type ActionFunction<I, O> = (input: I) => Promise<O>
 export type IdTranslationFunction<ID, L> = (idOrIndex: ID | string, listFunction: ListDataFunction<L>) => Promise<ID>
-export type IdRetrievalFunction<ID, L> = (primaryKeyName: string, list: L[]) => Promise<ID>
+export type IdRetrievalFunction<ID, L> = (command: Sorting, list: L[]) => Promise<ID>
 
 
 export interface Sorting {

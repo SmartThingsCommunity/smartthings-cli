@@ -1,5 +1,5 @@
 import { Config } from '@oclif/config'
-import { APICommand, isIndexArgument } from '../api-command'
+import { APICommand } from '../api-command'
 import { CLIConfig } from '../cli-config'
 import { ClientIdProvider } from '../login-authenticator'
 import { v4 as uuidv4 } from 'uuid'
@@ -78,19 +78,6 @@ describe('api-command', () => {
 			await apiCommand.setup({}, [], {})
 
 			expect(apiCommand.getClientIdProvider()).toStrictEqual(profileConfig.clientIdProvider)
-		})
-	})
-
-	describe('isIndexArgument', () => {
-		const matches = ['1', '2', '9', '10', '101', '999']
-		const noMatches = ['0', '01', '-1', 'apple', 'apple2', '2spooky4me']
-
-		test.each(matches)('should return true for %s', (match) => {
-			expect(isIndexArgument(match)).toBe(true)
-		})
-
-		test.each(noMatches)('should return false for %s', (noMatch) => {
-			expect(isIndexArgument(noMatch)).toBe(false)
 		})
 	})
 })

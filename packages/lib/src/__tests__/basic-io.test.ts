@@ -13,7 +13,7 @@ import { SimpleType } from './test-lib/simple-type'
 
 
 describe('basic-io', () => {
-	const item = { 'str': 'string', num: 5 }
+	const item = { str: 'string', num: 5 }
 	const list = [item]
 	const baseCommand = {
 		...buildMockCommand(),
@@ -21,13 +21,8 @@ describe('basic-io', () => {
 			output: 'output.yaml',
 		},
 	}
-	const formatAndWriteItemSpy = jest.spyOn(format, 'formatAndWriteItem')
-	const formatAndWriteListSpy = jest.spyOn(format, 'formatAndWriteList')
-
-	beforeEach(() => {
-		formatAndWriteItemSpy.mockImplementation(async () => { /* empty */ })
-		formatAndWriteListSpy.mockImplementation(async () => { /* empty */ })
-	})
+	const formatAndWriteItemSpy = jest.spyOn(format, 'formatAndWriteItem').mockImplementation(async () => { /* empty */ })
+	const formatAndWriteListSpy = jest.spyOn(format, 'formatAndWriteList').mockImplementation(async () => { /* empty */ })
 
 	afterEach(() => {
 		jest.clearAllMocks()
@@ -57,7 +52,6 @@ describe('basic-io', () => {
 				listTableFieldDefinitions: [],
 				primaryKeyName: 'num',
 				sortKeyName: 'str',
-
 			}
 
 			const getDataMock = jest.fn().mockResolvedValue(list)
@@ -75,7 +69,6 @@ describe('basic-io', () => {
 				listTableFieldDefinitions: [],
 				primaryKeyName: 'num',
 				sortKeyName: 'str',
-
 			}
 
 			const getDataMock = jest.fn().mockResolvedValue(list)
@@ -95,7 +88,7 @@ describe('basic-io', () => {
 			buildInputProcessorSpy = jest.spyOn(inputBuilder, 'buildInputProcessor')
 		})
 
-		it ('accepts input, executes command and writes output', async () => {
+		it('accepts input, executes command and writes output', async () => {
 			const command = {
 				...baseCommand,
 				tableFieldDefinitions: [],
