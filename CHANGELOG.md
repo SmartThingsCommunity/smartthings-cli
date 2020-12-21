@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.15](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.14...v0.0.0-pre.15) (2020-12-21)
+
+
+### Bug Fixes
+
+* Added support for device presentation manufacturer name ([804eaaa](https://github.com/rossiam/smartthings-cli/commit/804eaaa906d965dd7e66aa98d3e66b166f90fe68))
+* remove unnecessary node dependency in lib ([27c38e3](https://github.com/rossiam/smartthings-cli/commit/27c38e3fddb692b7985e77a0d5147f17f929558a))
+* use InstalledApp fields in installedapps:rename and refactor to use new functional paradigm ([8170818](https://github.com/rossiam/smartthings-cli/commit/817081833d5d260f48a5fda1255b12ff631ca0da))
+
+
+
+
+
 # [0.0.0-pre.14](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.13...v0.0.0-pre.14) (2020-12-07)
 
 
