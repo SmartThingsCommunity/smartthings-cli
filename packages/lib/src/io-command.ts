@@ -481,7 +481,7 @@ applyMixins(InputOutputAPICommand, [Inputting, Outputable, Outputting], { mergeF
  * ListingOutputAPICommand which is a little simpler.
  */
 export abstract class ListingOutputAPICommandBase<ID, O, L> extends APICommand {
-	protected abstract async translateToId(idOrIndex: ID | string,
+	protected abstract translateToId(idOrIndex: ID | string,
 		listFunction: ListCallback<L>): Promise<ID>
 
 	protected async processNormally(idOrIndex: ID | string | undefined,
@@ -544,7 +544,7 @@ export abstract class ListingOutputAPICommand<O, L> extends ListingOutputAPIComm
  * SelectingAPICommand instead.
  */
 export abstract class SelectingAPICommandBase<ID, L> extends APICommand {
-	protected abstract async getIdFromUser(items: L[]): Promise<ID>
+	protected abstract getIdFromUser(items: L[]): Promise<ID>
 
 	private _entityId?: ID
 	protected get entityId(): ID {
@@ -747,7 +747,7 @@ export abstract class SelectingAPICommand<L> extends SelectingAPICommandBase<str
 
 export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends APICommand {
 	private _entityId?: ID
-	protected abstract async getIdFromUser(items: L[]): Promise<ID>
+	protected abstract getIdFromUser(items: L[]): Promise<ID>
 
 	protected translateToId?(idOrIndex: ID | string, listFunction: ListCallback<L>): Promise<ID>
 
@@ -834,7 +834,7 @@ export abstract class SelectingInputOutputAPICommand<I, O, L> extends SelectingI
  * SelectingOutputAPICommand instead.
  */
 export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand {
-	protected abstract async getIdFromUser(items: L[]): Promise<ID>
+	protected abstract getIdFromUser(items: L[]): Promise<ID>
 
 	protected translateToId?(idOrIndex: ID | string, listFunction: ListCallback<L>): Promise<ID>
 
@@ -908,7 +908,7 @@ export abstract class SelectingOutputAPICommand<O, L> extends SelectingOutputAPI
  */
 export abstract class SelectingInputAPICommandBase<ID, I, L> extends APICommand {
 	private _entityId?: ID
-	protected abstract async getIdFromUser(items: L[]): Promise<ID>
+	protected abstract getIdFromUser(items: L[]): Promise<ID>
 
 	protected async translateToId?(idOrIndex: ID | string, listFunction: ListCallback<L>): Promise<ID>
 
@@ -992,11 +992,11 @@ export abstract class NestedListingOutputAPICommandBase<ID, NID, O, L, NL> exten
 
 	protected nestedListTableFieldDefinitions?: TableFieldDefinition<NL>[]
 
-	protected abstract async translateToId(
+	protected abstract translateToId(
 		idOrIndex: ID | string,
 		listFunction: ListCallback<L>): Promise<ID>
 
-	protected abstract async translateToNestedId(
+	protected abstract translateToNestedId(
 		idOrIndex: ID | string,
 		nestedIdOrIndex: NID | string,
 		nestedListFunction: NestedListCallback<ID, NL>): Promise<NID>
@@ -1080,8 +1080,8 @@ export abstract class NestedListingOutputAPICommand<O, L, NL> extends NestedList
  * not can use NestedSelectingAPICommand
  */
 export abstract class NestedSelectingAPICommandBase<ID, NID, L, NL> extends APICommand {
-	protected abstract async getIdFromUser(items: L[]): Promise<ID>
-	protected abstract async getNestedIdFromUser(items: NL[]): Promise<NID>
+	protected abstract getIdFromUser(items: L[]): Promise<ID>
+	protected abstract getNestedIdFromUser(items: NL[]): Promise<NID>
 	abstract readonly nestedPrimaryKeyName: string
 	abstract readonly nestedSortKeyName: string
 
