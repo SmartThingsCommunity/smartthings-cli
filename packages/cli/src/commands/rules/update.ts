@@ -1,18 +1,20 @@
 import { flags } from '@oclif/command'
+
 import { Rule, RuleRequest } from '@smartthings/core-sdk'
 
-import { tableFieldDefinitions, getRulesByLocation, RuleWithLocation } from '../rules'
 import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
 
+import { tableFieldDefinitions, getRulesByLocation, RuleWithLocation, getRule } from '../rules'
 
-export default class RulesUpdateCommand extends SelectingInputOutputAPICommand <RuleRequest, Rule, RuleWithLocation> {
+
+export default class RulesUpdateCommand extends SelectingInputOutputAPICommand<RuleRequest, Rule, RuleWithLocation> {
 	static description = 'update a rule'
 
 	static flags = {
 		...SelectingInputOutputAPICommand.flags,
-		locationId: flags.string({
+		'location-id': flags.string({
 			char: 'l',
-			description: 'a specific locationId to query',
+			description: 'a specific location to query',
 		}),
 	}
 
@@ -24,7 +26,6 @@ export default class RulesUpdateCommand extends SelectingInputOutputAPICommand <
 	primaryKeyName = 'id'
 	sortKeyName = 'name'
 
-	protected getRulesByLocation = getRulesByLocation
 	protected listTableFieldDefinitions = ['name', 'id', 'locationId', 'locationName']
 	protected tableFieldDefinitions = tableFieldDefinitions
 
@@ -32,16 +33,11 @@ export default class RulesUpdateCommand extends SelectingInputOutputAPICommand <
 		const { args, argv, flags } = this.parse(RulesUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		const rulesPromise = this.getRulesByLocation(flags.locationId)
-		await this.processNormally(
-			args.id,
-			() => rulesPromise,
+		await this.processNormally( args.id,
+			() => getRulesByLocation(this.client, flags['location-id']),
 			async (id, data) => {
-				const rule = (await rulesPromise).find(RuleWithLocation => RuleWithLocation.id === id)
-				if (!rule) {
-					throw Error(flags.locationId ? `could not find rule with id ${id} in room ${flags.locationId}` : `could not find rule with id ${id}`)
-				}
-				return this.client.rules.update(id, data, rule.locationId)},
-		)
+				const rule = await getRule(this.client, id, flags['location-id'])
+				return this.client.rules.update(id, data, rule.locationId)
+			})
 	}
 }

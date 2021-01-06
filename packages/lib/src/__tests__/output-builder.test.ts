@@ -1,127 +1,77 @@
+import { IOFormat } from '../io-util'
 import * as output from '../output'
 import { buildOutputFormatter } from '../output-builder'
-import * as ioUtil from '../io-util'
-import { SmartThingsCommandInterface } from '../smartthings-command'
+
 import { buildMockCommand } from './test-lib/mock-command'
 import { SimpleType } from './test-lib/simple-type'
 
 
 describe('buildOutputFormatter', () => {
-	let command: SmartThingsCommandInterface
-	let jsonFormatterSpy: jest.SpyInstance<output.OutputFormatter<unknown>, [indent: number]>
-	let yamlFormatterSpy: jest.SpyInstance<output.OutputFormatter<unknown>, [indent: number]>
-	let formatFromFilenameSpy: jest.SpyInstance<ioUtil.IOFormat, [filename: string]>
-
-	beforeEach(() => {
-		command = buildMockCommand()
-		jsonFormatterSpy = jest.spyOn(output, 'jsonFormatter')
-		yamlFormatterSpy = jest.spyOn(output, 'yamlFormatter')
-		formatFromFilenameSpy = jest.spyOn(ioUtil, 'formatFromFilename')
-	})
+	const command = buildMockCommand()
+	const calculateOutputFormatSpy = jest.spyOn(output, 'calculateOutputFormat')
+	const jsonFormatter = jest.fn()
+	const jsonFormatterSpy = jest.spyOn(output, 'jsonFormatter').mockReturnValue(jsonFormatter)
+	const yamlFormatter = jest.fn()
+	const yamlFormatterSpy = jest.spyOn(output, 'yamlFormatter').mockReturnValue(yamlFormatter)
 
 	afterEach(() => {
 		jest.clearAllMocks()
 	})
 
-	it('uses json when specified', () => {
-		command.flags.json = true
+	it ('uses commonOutputFormatter when it exists', () => {
+		calculateOutputFormatSpy.mockReturnValue(IOFormat.COMMON)
+		const commonFormatter = jest.fn()
 
-		buildOutputFormatter<SimpleType>(command)
-		expect(jsonFormatterSpy).toHaveBeenCalledTimes(1)
+		expect(buildOutputFormatter<SimpleType>(command, undefined, commonFormatter)).toBe(commonFormatter)
 
-		jsonFormatterSpy.mockReset()
-		command.flags.input = 'fn.yaml'
-		buildOutputFormatter<SimpleType>(command)
-		expect(jsonFormatterSpy).toHaveBeenCalledTimes(1)
+		expect(calculateOutputFormatSpy).toHaveBeenCalledTimes(1)
+		expect(calculateOutputFormatSpy).toHaveBeenCalledWith(command, undefined)
 	})
 
-	it('uses yaml when specified', () => {
-		command.flags.yaml = true
+	it('uses yamlFormatter with default of 2 for YAML output', () => {
+		calculateOutputFormatSpy.mockReturnValue(IOFormat.YAML)
 
 		buildOutputFormatter<SimpleType>(command)
 
-		expect(yamlFormatterSpy).toHaveBeenCalledTimes(1)
-
-		yamlFormatterSpy.mockReset()
-		command.flags.input = 'fn.json'
-		buildOutputFormatter<SimpleType>(command)
-		expect(yamlFormatterSpy).toHaveBeenCalledTimes(1)
-	})
-
-	it('gets format from filename with input file when not specified', () => {
-		formatFromFilenameSpy.mockReturnValue(ioUtil.IOFormat.JSON)
-		command.flags.output = 'fn.json'
-		buildOutputFormatter<SimpleType>(command)
-		expect(formatFromFilenameSpy).toHaveBeenCalledTimes(1)
-		expect(formatFromFilenameSpy).toHaveBeenCalledWith('fn.json')
-		expect(jsonFormatterSpy).toHaveBeenCalledTimes(1)
-		expect(yamlFormatterSpy).toHaveBeenCalledTimes(0)
-	})
-
-	it('defaults to inputFormat when not specified any other way', () => {
-		buildOutputFormatter<SimpleType>(command, ioUtil.IOFormat.YAML)
-
-		expect(formatFromFilenameSpy).toHaveBeenCalledTimes(0)
-		expect(yamlFormatterSpy).toHaveBeenCalledTimes(1)
-
-		jest.resetAllMocks()
-
-		buildOutputFormatter<SimpleType>(command, ioUtil.IOFormat.JSON)
-
-		expect(formatFromFilenameSpy).toHaveBeenCalledTimes(0)
-		expect(jsonFormatterSpy).toHaveBeenCalledTimes(1)
-	})
-
-	it('falls back on JSON when unspecified and there is no common formatter', () => {
-		buildOutputFormatter<SimpleType>(command)
-
-		expect(formatFromFilenameSpy).toHaveBeenCalledTimes(0)
-		expect(jsonFormatterSpy).toHaveBeenCalledTimes(1)
-	})
-
-	it('defaults to indent of 2 for yaml', () => {
-		command.flags.yaml = true
-
-		buildOutputFormatter<SimpleType>(command)
-
-		expect(formatFromFilenameSpy).toHaveBeenCalledTimes(0)
+		expect(calculateOutputFormatSpy).toHaveBeenCalledTimes(1)
+		expect(calculateOutputFormatSpy).toHaveBeenCalledWith(command, undefined)
 		expect(yamlFormatterSpy).toHaveBeenCalledTimes(1)
 		expect(yamlFormatterSpy).toHaveBeenCalledWith(2)
 	})
 
-	it('defaults to indent of 4 for json', () => {
-		buildOutputFormatter<SimpleType>(command)
+	it('uses jsonFormatter with a default of 4 for JSON output', () => {
+		calculateOutputFormatSpy.mockReturnValue(IOFormat.COMMON)
 
-		expect(formatFromFilenameSpy).toHaveBeenCalledTimes(0)
+		expect(buildOutputFormatter<SimpleType>(command)).toBe(jsonFormatter)
+
+		expect(calculateOutputFormatSpy).toHaveBeenCalledTimes(1)
+		expect(calculateOutputFormatSpy).toHaveBeenCalledWith(command, undefined)
 		expect(jsonFormatterSpy).toHaveBeenCalledTimes(1)
 		expect(jsonFormatterSpy).toHaveBeenCalledWith(4)
 	})
 
 	it('accepts indent from config file over default', () => {
+		calculateOutputFormatSpy.mockReturnValue(IOFormat.JSON)
 		command.profileConfig.indent = 7
 
 		buildOutputFormatter<SimpleType>(command)
 
-		expect(formatFromFilenameSpy).toHaveBeenCalledTimes(0)
+		expect(calculateOutputFormatSpy).toHaveBeenCalledTimes(1)
+		expect(calculateOutputFormatSpy).toHaveBeenCalledWith(command, undefined)
 		expect(jsonFormatterSpy).toHaveBeenCalledTimes(1)
 		expect(jsonFormatterSpy).toHaveBeenCalledWith(7)
 	})
 
 	it('accepts indent from command line over config file and default', () => {
+		calculateOutputFormatSpy.mockReturnValue(IOFormat.YAML)
 		command.profileConfig.indent = 7
 		command.flags.indent = 13
-		command.flags.yaml = true
 
 		buildOutputFormatter<SimpleType>(command)
 
-		expect(formatFromFilenameSpy).toHaveBeenCalledTimes(0)
+		expect(calculateOutputFormatSpy).toHaveBeenCalledTimes(1)
+		expect(calculateOutputFormatSpy).toHaveBeenCalledWith(command, undefined)
 		expect(yamlFormatterSpy).toHaveBeenCalledTimes(1)
 		expect(yamlFormatterSpy).toHaveBeenCalledWith(13)
-	})
-
-	it('uses common formatter when present and no other specified', () => {
-		const commonFormatter = jest.fn()
-		const result = buildOutputFormatter<SimpleType>(command, undefined, commonFormatter)
-		expect(result).toBe(commonFormatter)
 	})
 })

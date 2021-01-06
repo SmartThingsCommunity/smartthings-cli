@@ -1,6 +1,7 @@
 import yaml from 'js-yaml'
 
-import { writeFile } from './io-util'
+import { formatFromFilename, IOFormat, writeFile } from './io-util'
+import { SmartThingsCommandInterface } from './smartthings-command'
 import { TableFieldDefinition, TableGenerator } from './table-generator'
 
 
@@ -16,6 +17,18 @@ export function sort<L>(list: L[], keyName: string): L[] {
 	})
 }
 
+export function calculateOutputFormat(command: SmartThingsCommandInterface, defaultIOFormat?: IOFormat): IOFormat {
+	if (command.flags.json) {
+		return IOFormat.JSON
+	} else if (command.flags.yaml) {
+		return IOFormat.YAML
+	} else if (command.flags.output) {
+		return formatFromFilename(command.flags.output)
+	} else if (defaultIOFormat) {
+		return defaultIOFormat
+	}
+	return IOFormat.COMMON
+}
 
 export type OutputFormatter<T> = (data: T) => string
 

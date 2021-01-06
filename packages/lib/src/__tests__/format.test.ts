@@ -70,6 +70,30 @@ describe('format', () => {
 			expect(commonFormatter(item)).toBe('common output')
 			expect(command.buildTableOutput).toHaveBeenCalledTimes(1)
 		})
+
+		it('uses buildTableOutput when both specified', async () => {
+			const command = {
+				...baseCommand,
+				tableFieldDefinitions: [],
+				buildTableOutput: jest.fn(),
+			}
+
+			await formatAndWriteItem<SimpleType>(command, item, IOFormat.JSON)
+
+			expect(itemTableFormatterSpy).toHaveBeenCalledTimes(0)
+			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(1)
+			expect(buildOutputFormatterSpy).toHaveBeenCalledWith(command, IOFormat.JSON, expect.anything())
+			expect(outputFormatter).toHaveBeenCalledTimes(1)
+			expect(outputFormatter).toHaveBeenCalledWith(item)
+			expect(writeOutputSpy).toHaveBeenCalledTimes(1)
+			expect(writeOutputSpy).toHaveBeenCalledWith('output', 'output.yaml')
+
+			// Call the OutputFormatter that was build to ensure it uses `buildTableOutput`
+			const commonFormatter: output.OutputFormatter<SimpleType> = buildOutputFormatterSpy.mock.calls[0][2] as never
+			command.buildTableOutput.mockReturnValue('common output')
+			expect(commonFormatter(item)).toBe('common output')
+			expect(command.buildTableOutput).toHaveBeenCalledTimes(1)
+		})
 	})
 
 	describe('formatAndWriteList', () => {
@@ -164,6 +188,30 @@ describe('format', () => {
 		it('uses buildListTableOutput when specified', async () => {
 			const command = {
 				...baseCommand,
+				buildListTableOutput: jest.fn(),
+			}
+
+			await formatAndWriteList<SimpleType>(command, list, true)
+
+			expect(listTableFormatterSpy).toHaveBeenCalledTimes(0)
+			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(1)
+			expect(buildOutputFormatterSpy).toHaveBeenCalledWith(command, undefined, expect.anything())
+			expect(outputFormatter).toHaveBeenCalledTimes(1)
+			expect(outputFormatter).toHaveBeenCalledWith(list)
+			expect(writeOutputSpy).toHaveBeenCalledTimes(1)
+			expect(writeOutputSpy).toHaveBeenCalledWith('output', 'output.yaml')
+
+			// Call the OutputFormatter that was build to ensure it uses `buildTableOutput`
+			const commonFormatter: output.OutputFormatter<SimpleType[]> = buildOutputFormatterSpy.mock.calls[0][2] as never
+			command.buildListTableOutput.mockReturnValue('common output')
+			expect(commonFormatter(list)).toBe('common output')
+			expect(command.buildListTableOutput).toHaveBeenCalledTimes(1)
+		})
+
+		it('uses buildListTableOutput when both specified', async () => {
+			const command = {
+				...baseCommand,
+				listTableFieldDefinitions: [],
 				buildListTableOutput: jest.fn(),
 			}
 

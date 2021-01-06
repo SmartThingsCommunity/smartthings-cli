@@ -1,7 +1,7 @@
 import { flags } from '@oclif/command'
 import { LocationItem, Room } from '@smartthings/core-sdk'
 
-import { APICommand, ListingOutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, outputListing } from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions = ['name', 'locationId', 'roomId']
@@ -32,15 +32,16 @@ export type RoomWithLocation = Room & {
 	locationName?: string
 }
 
-export default class RoomsCommand extends ListingOutputAPICommand<Room, RoomWithLocation> {
+export default class RoomsCommand extends APICommand {
 	static description = 'get a specific room'
 
 	static flags = {
-		...ListingOutputAPICommand.flags,
+		...APICommand.flags,
 		locationId: flags.string({
 			char: 'l',
 			description: 'a specific locationId to query',
 		}),
+		...outputListing.flags,
 	}
 
 	static args = [{
@@ -55,18 +56,18 @@ export default class RoomsCommand extends ListingOutputAPICommand<Room, RoomWith
 
 	protected getRoomsByLocation = getRoomsByLocation
 
-	protected listTableFieldDefinitions = tableFieldDefinitions
-	protected tableFieldDefinitions = tableFieldDefinitions
+	listTableFieldDefinitions = tableFieldDefinitions
+	tableFieldDefinitions = tableFieldDefinitions
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(RoomsCommand)
 		await super.setup(args, argv, flags)
 
 		const roomsPromise = this.getRoomsByLocation(flags.locationId)
-		await this.processNormally(
+		await outputListing(this,
 			args.idOrIndex,
 			() => roomsPromise,
-			async (id) => {
+			async id => {
 				const room = (await roomsPromise).find(room => room.roomId === id)
 				if (!room) {
 					throw Error(`could not find room with id ${id}`)
