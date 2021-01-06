@@ -49,12 +49,13 @@ export async function inputAndOutputItem<I, O>(command: SmartThingsCommandInterf
 		executeCommand: ActionFunction<I, O>) : Promise<void> {
 	const inputProcessor = buildInputProcessor<I>(command)
 	if (inputProcessor.hasInput()) {
+		const inputItem = await inputProcessor.read()
 		const defaultIOFormat = inputProcessor.ioFormat
 		if (command.flags['dry-run']) {
 			const outputFormatter = buildOutputFormatter(command, defaultIOFormat)
-			await writeOutput(outputFormatter(await inputProcessor.read()), command.flags.output)
+			await writeOutput(outputFormatter(inputItem), command.flags.output)
 		} else {
-			const item = await executeCommand(await inputProcessor.read())
+			const item = await executeCommand(inputItem)
 			await formatAndWriteItem(command, item, defaultIOFormat)
 		}
 	} else {

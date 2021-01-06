@@ -2,12 +2,11 @@ import { CLIError } from '@oclif/errors'
 
 import { inputAndOutputItem, outputItem, outputList } from '../basic-io'
 import * as format from '../format'
-import { InputProcessor, UserInputProcessor } from '../input'
+import { InputProcessor } from '../input'
 import * as inputBuilder from '../input-builder'
 import { IOFormat } from '../io-util'
 import * as output from '../output'
 import * as outputBuilder from '../output-builder'
-import { SmartThingsCommandInterface } from '../smartthings-command'
 import { buildMockCommand } from './test-lib/mock-command'
 import { SimpleType } from './test-lib/simple-type'
 
@@ -82,11 +81,7 @@ describe('basic-io', () => {
 	})
 
 	describe('inputAndOutputItem', () => {
-		let buildInputProcessorSpy: jest.SpyInstance<InputProcessor<unknown>, [command: SmartThingsCommandInterface, ...alternateInputProcessors: UserInputProcessor<unknown>[]]>
-
-		beforeEach(() => {
-			buildInputProcessorSpy = jest.spyOn(inputBuilder, 'buildInputProcessor')
-		})
+		const buildInputProcessorSpy = jest.spyOn(inputBuilder, 'buildInputProcessor')
 
 		it('accepts input, executes command and writes output', async () => {
 			const command = {
@@ -94,11 +89,21 @@ describe('basic-io', () => {
 				tableFieldDefinitions: [],
 			}
 
-			const inputProcessor = {
-				ioFormat: IOFormat.COMMON,
-				hasInput: () => true,
-				read: async () => item,
+			const ioFormatMock = jest.fn()
+			const hasInputMock = jest.fn()
+			const readMock = jest.fn()
+			class TestInputProcessor implements InputProcessor<SimpleType> {
+				get ioFormat(): IOFormat.COMMON {
+					return ioFormatMock()
+				}
+				hasInput = hasInputMock
+				read = readMock
 			}
+			const inputProcessor = new TestInputProcessor()
+
+			ioFormatMock.mockReturnValue(IOFormat.COMMON)
+			hasInputMock.mockReturnValue(true)
+			readMock.mockResolvedValue(item)
 
 			const executeCommandMock = jest.fn().mockResolvedValue(item)
 			buildInputProcessorSpy.mockReturnValue(inputProcessor)
@@ -109,6 +114,12 @@ describe('basic-io', () => {
 			expect(executeCommandMock).toHaveBeenCalledWith(item)
 			expect(formatAndWriteItemSpy).toHaveBeenCalledTimes(1)
 			expect(formatAndWriteItemSpy).toHaveBeenLastCalledWith(command, item, inputProcessor.ioFormat)
+
+			expect(ioFormatMock).toHaveBeenCalled()
+			expect(hasInputMock).toHaveBeenCalledTimes(1)
+			expect(readMock).toHaveBeenCalledTimes(1)
+			expect(hasInputMock).toHaveBeenCalledBefore(readMock)
+			expect(readMock).toHaveBeenCalledBefore(ioFormatMock)
 		})
 
 		it('accepts and writes input in dry run mode', async () => {
