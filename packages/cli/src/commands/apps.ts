@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { App, AppType, AppClassification, AppListOptions } from '@smartthings/core-sdk'
 
-import { ListingOutputAPICommand, TableFieldDefinition } from '@smartthings/cli-lib'
+import { APICommand, outputListing, TableFieldDefinition } from '@smartthings/cli-lib'
 
 
 const isWebhookSmartApp = (app: App): boolean => !!app.webhookSmartApp
@@ -35,11 +35,12 @@ export const tableFieldDefinitions: TableFieldDefinition<App>[] = [
 	{ prop: 'installMetadata.certified', include: app => app.installMetadata?.certified !== undefined },
 ]
 
-export default class AppsList extends ListingOutputAPICommand<App, App> {
+export default class AppsList extends APICommand {
 	static description = 'get a specific app or a list of apps'
 
 	static flags = {
-		...ListingOutputAPICommand.flags,
+		...APICommand.flags,
+		...outputListing.flags,
 		type: flags.string({
 			description: 'filter results by appType, WEBHOOK_SMART_APP, LAMBDA_SMART_APP, API_ONLY',
 			multiple: false,
@@ -67,8 +68,8 @@ export default class AppsList extends ListingOutputAPICommand<App, App> {
 	primaryKeyName = 'appId'
 	sortKeyName = 'displayName'
 
-	protected tableFieldDefinitions = tableFieldDefinitions
-	protected listTableFieldDefinitions = ['displayName', 'appType', 'appId']
+	tableFieldDefinitions = tableFieldDefinitions
+	listTableFieldDefinitions = ['displayName', 'appType', 'appId']
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppsList)
@@ -117,6 +118,6 @@ export default class AppsList extends ListingOutputAPICommand<App, App> {
 			return this.client.apps.list(appListOptions)
 		}
 
-		await this.processNormally(args.id, listApps, id => this.client.apps.get(id))
+		await outputListing(this, args.id, listApps, id => this.client.apps.get(id))
 	}
 }

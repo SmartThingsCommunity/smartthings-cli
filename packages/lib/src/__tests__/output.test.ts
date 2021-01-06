@@ -1,7 +1,8 @@
 import * as ioUtil from '../io-util'
-import { itemTableFormatter, jsonFormatter, listTableFormatter, sort, writeOutput, yamlFormatter } from '../output'
+import { calculateOutputFormat, itemTableFormatter, jsonFormatter, listTableFormatter, sort, writeOutput, yamlFormatter } from '../output'
 import { DefaultTableGenerator, TableGenerator } from '../table-generator'
 
+import { buildMockCommand } from './test-lib/mock-command'
 import { SimpleType } from './test-lib/simple-type'
 
 
@@ -21,6 +22,42 @@ describe('sort', () => {
 		const input: SimpleType[] = [ st('xyz'), st('abc'), st('ABC') ]
 		const result = sort(input, 'str')
 		expect(result).toEqual([st('abc'), st('ABC'), st('xyz')])
+	})
+})
+
+describe('calculateOutputFormat', () => {
+	it('returns json when specified', () => {
+		const command = buildMockCommand({ json: true })
+
+		expect(calculateOutputFormat(command)).toBe(ioUtil.IOFormat.JSON)
+	})
+
+	it('uses yaml when specified', () => {
+		const command = buildMockCommand({ yaml: true })
+
+		expect(calculateOutputFormat(command)).toBe(ioUtil.IOFormat.YAML)
+	})
+
+	it('gets format using formatFromFilename with output file when not specified', () => {
+		const command = buildMockCommand({ output: 'fn.json' })
+		const formatFromFilenameSpy = jest.spyOn(ioUtil, 'formatFromFilename').mockReturnValue(ioUtil.IOFormat.JSON)
+
+		expect(calculateOutputFormat(command)).toBe(ioUtil.IOFormat.JSON)
+
+		expect(formatFromFilenameSpy).toHaveBeenCalledTimes(1)
+		expect(formatFromFilenameSpy).toHaveBeenCalledWith('fn.json')
+	})
+
+	it('defaults to specified default format', () => {
+		const command = buildMockCommand()
+
+		expect(calculateOutputFormat(command, ioUtil.IOFormat.YAML)).toBe(ioUtil.IOFormat.YAML)
+	})
+
+	it('falls back to common with no other default specified', () => {
+		const command = buildMockCommand()
+
+		expect(calculateOutputFormat(command)).toBe(ioUtil.IOFormat.COMMON)
 	})
 })
 

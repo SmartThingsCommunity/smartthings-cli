@@ -25,9 +25,9 @@ export type CommonListOutputProducer<L> = TableCommonListOutputProducer<L> | Cus
 
 export async function formatAndWriteItem<O>(command: SmartThingsCommandInterface & CommonOutputProducer<O>, item: O,
 		defaultIOFormat?: IOFormat): Promise<void> {
-	const commonFormatter = 'tableFieldDefinitions' in command
-		? itemTableFormatter<O>(command.tableGenerator, command.tableFieldDefinitions)
-		: (data: O) => command.buildTableOutput(data)
+	const commonFormatter = 'buildTableOutput' in command
+		? (data: O) => command.buildTableOutput(data)
+		: itemTableFormatter<O>(command.tableGenerator, command.tableFieldDefinitions)
 	const outputFormatter = buildOutputFormatter(command, defaultIOFormat, commonFormatter)
 	await writeOutput(outputFormatter(item), command.flags.output)
 }
@@ -38,10 +38,10 @@ export async function formatAndWriteList<L>(command: SmartThingsCommandInterface
 	if (list.length === 0) {
 		const pluralName = command.pluralItemName ?? (command.itemName ? `${command.itemName}s` : 'items')
 		commonFormatter = () => `no ${pluralName} found`
-	} else if ('listTableFieldDefinitions' in command) {
-		commonFormatter = listTableFormatter<L>(command.tableGenerator, command.listTableFieldDefinitions, includeIndex)
 	} else if ('buildListTableOutput' in command) {
 		commonFormatter = data => command.buildListTableOutput(data)
+	} else if ('listTableFieldDefinitions' in command) {
+		commonFormatter = listTableFormatter<L>(command.tableGenerator, command.listTableFieldDefinitions, includeIndex)
 	} else {
 		commonFormatter = listTableFormatter<L>(command.tableGenerator, [command.sortKeyName, command.primaryKeyName], includeIndex)
 	}

@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { Device, DeviceListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, ListingOutputAPICommand, withLocationsAndRooms } from '@smartthings/cli-lib'
+import { APICommand, outputListing, withLocationsAndRooms } from '@smartthings/cli-lib'
 
 
 export type DeviceWithLocation = Device & { location?: string }
@@ -27,11 +27,12 @@ export function buildTableOutput(this: APICommand, data: Device & { profileId?: 
 	return table.toString()
 }
 
-export default class DevicesCommand extends ListingOutputAPICommand<Device, DeviceWithLocation> {
+export default class DevicesCommand extends APICommand {
 	static description = 'list all devices available in a user account or retrieve a single device'
 
 	static flags = {
-		...ListingOutputAPICommand.flags,
+		...APICommand.flags,
+		...outputListing.flags,
 		'location-id': flags.string({
 			char: 'l',
 			description: 'filter results by location',
@@ -70,9 +71,9 @@ export default class DevicesCommand extends ListingOutputAPICommand<Device, Devi
 
 	primaryKeyName = 'deviceId'
 	sortKeyName = 'label'
-	protected listTableFieldDefinitions = ['label', 'name', 'type', 'deviceId']
+	listTableFieldDefinitions = ['label', 'name', 'type', 'deviceId']
 
-	protected buildTableOutput = buildTableOutput
+	buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DevicesCommand)
@@ -90,7 +91,7 @@ export default class DevicesCommand extends ListingOutputAPICommand<Device, Devi
 			installedAppId: flags['installed-app-id'],
 		}
 
-		await this.processNormally(
+		await outputListing(this,
 			args.id,
 			async () => {
 				const devices = await this.client.devices.list(deviceListOptions)
@@ -99,7 +100,7 @@ export default class DevicesCommand extends ListingOutputAPICommand<Device, Devi
 				}
 				return devices
 			},
-			(id) => {return this.client.devices.get(id) },
+			id => this.client.devices.get(id),
 		)
 	}
 }

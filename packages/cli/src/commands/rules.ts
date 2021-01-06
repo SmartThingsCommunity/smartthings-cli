@@ -1,20 +1,21 @@
 import { flags } from '@oclif/command'
-import { LocationItem, Rule } from '@smartthings/core-sdk'
+import { CLIError } from '@oclif/errors'
 
-import { APICommand, ListingOutputAPICommand, TableFieldDefinition } from '@smartthings/cli-lib'
+import { LocationItem, Rule, SmartThingsClient } from '@smartthings/core-sdk'
+
+import { APICommand, outputListing, TableFieldDefinition } from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions: TableFieldDefinition<Rule>[] = ['name', 'id',
 	{ label: 'Num Actions', value: rule => rule.actions.length.toString() },
 	'timeZoneId']
 
-export async function getRulesByLocation(this: APICommand, locationId?: string): Promise<RuleWithLocation[]> {
+export async function getRulesByLocation(client: SmartThingsClient, locationId?: string): Promise<RuleWithLocation[]> {
 	let locations: LocationItem[] = []
 	if (locationId) {
-		this.log(`location specified: ${locationId}`)
-		locations = [await this.client.locations.get(locationId)]
+		locations = [await client.locations.get(locationId)]
 	} else {
-		locations = await this.client.locations.list()
+		locations = await client.locations.list()
 	}
 
 	if (!locations || locations.length == 0) {
@@ -24,10 +25,22 @@ export async function getRulesByLocation(this: APICommand, locationId?: string):
 
 	let rules: RuleWithLocation[] = []
 	for (const location of locations) {
-		const locationRules = await this.client.rules.list(location.locationId) ?? []
+		const locationRules = await client.rules.list(location.locationId) ?? []
 		rules = rules.concat(locationRules.map(rule => { return { ...rule, locationId: location.locationId, locationName: location.name } }))
 	}
 	return rules
+}
+
+export async function getRule(client: SmartThingsClient, id: string, locationId?: string): Promise<RuleWithLocation> {
+	if (locationId) {
+		return client.rules.get(id, locationId)
+	}
+	const allRules = await getRulesByLocation(client, locationId)
+	const rule = allRules.find(rule => rule.id === id)
+	if (!rule) {
+		throw new CLIError(`could not find rule with id ${id}` + locationId ? ` in location ${locationId}` : '')
+	}
+	return rule
 }
 
 export type RuleWithLocation = Rule & {
@@ -35,14 +48,15 @@ export type RuleWithLocation = Rule & {
 	locationName?: string
 }
 
-export default class RulesCommand extends ListingOutputAPICommand<Rule, RuleWithLocation> {
+export default class RulesCommand extends APICommand {
 	static description = 'get a specific rule'
 
 	static flags = {
-		...ListingOutputAPICommand.flags,
-		locationId: flags.string({
+		...APICommand.flags,
+		...outputListing.flags,
+		'location-id': flags.string({
 			char: 'l',
-			description: 'a specific locationId to query',
+			description: 'a specific location to query',
 		}),
 	}
 
@@ -54,18 +68,16 @@ export default class RulesCommand extends ListingOutputAPICommand<Rule, RuleWith
 	primaryKeyName = 'id'
 	sortKeyName = 'name'
 
-	protected getRulesByLocation = getRulesByLocation
-	protected listTableFieldDefinitions = ['name', 'roomId', 'locationId', 'locationName']
-	protected tableFieldDefinitions = tableFieldDefinitions
+	listTableFieldDefinitions = ['name', 'id', 'locationId', 'locationName']
+	tableFieldDefinitions = tableFieldDefinitions
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(RulesCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(
-			args.idOrIndex,
-			() => { return this.getRulesByLocation(flags.locationId) },
-			(id) => { return this.client.rules.get(id, flags.locationId) },
+		await outputListing(this, args.idOrIndex,
+			() => getRulesByLocation(this.client, flags['location-id']),
+			id => getRule(this.client, id, flags['location-id']),
 		)
 	}
 }

@@ -1,8 +1,10 @@
 import { flags } from '@oclif/command'
+
 import { Rule } from '@smartthings/core-sdk'
 
-import { getRulesByLocation } from '../rules'
 import { SelectingAPICommand } from '@smartthings/cli-lib'
+
+import { getRule, getRulesByLocation } from '../rules'
 
 
 export default class RulesDeleteCommand extends SelectingAPICommand<Rule> {
@@ -10,7 +12,7 @@ export default class RulesDeleteCommand extends SelectingAPICommand<Rule> {
 
 	static flags = {
 		...SelectingAPICommand.flags,
-		locationId: flags.string({
+		'location-id': flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -24,22 +26,18 @@ export default class RulesDeleteCommand extends SelectingAPICommand<Rule> {
 	primaryKeyName = 'id'
 	sortKeyName = 'name'
 
-	protected getRulesByLocation = getRulesByLocation
 	protected listTableFieldDefinitions = ['name', 'id', 'locationId', 'locationName']
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(RulesDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		const rulesPromise = this.getRulesByLocation(flags.locationId)
+		const rulesPromise = getRulesByLocation(this.client, flags['location-id'])
 		await this.processNormally(
 			args.id,
 			() => rulesPromise,
 			async id => {
-				const rule = (await rulesPromise).find(RuleWithLocation => RuleWithLocation.id === id)
-				if (!rule) {
-					throw Error(flags.locationId ? `could not find rule with id ${id} in room ${flags.locationId}` : `could not find rule with id ${id}`)
-				}
+				const rule = await getRule(this.client, id, flags['location-id'])
 				await this.client.rules.delete(id, rule.locationId)
 			},
 			'rule {{id}} deleted')
