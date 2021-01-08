@@ -153,7 +153,7 @@ export async function getCustomByNamespace(this: APICommand, namespace?: string)
 	}
 
 	if (!namespaces || namespaces.length == 0) {
-		throw Error('could not find any namespaces for you account. Perhaps ' +
+		throw Error('could not find any namespaces for your account. Perhaps ' +
 			"you haven't created any capabilities yet.")
 	}
 
