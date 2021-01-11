@@ -101,6 +101,18 @@ export default class PresentationCommand extends OutputAPICommand<PresentationDe
 		},
 	]
 
+	static examples = [
+		'$ smartthings presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf',
+		'$ smartthings presentation 4ea31e30-2aba-41c7-a3ec-8f97423d565a SmartThings',
+		'$ smartthings presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf --language=ko',
+		'$ smartthings presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf --language=NONE',
+		'',
+		'Specifying only the presentationId defaults to the "SmartThingsCommunity" manufacturer',
+		'name and the language set for the computer\'s operating system. The language can be',
+		'overridden by specifying an ISO language code. If "NONE" is specified for the language',
+		'flag then no language header is specified in the API request',
+	]
+
 	protected buildTableOutput(presentation: PresentationDevicePresentation): string {
 		return buildTableOutput(presentation, this.tableGenerator)
 	}

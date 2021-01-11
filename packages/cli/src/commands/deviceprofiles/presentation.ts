@@ -15,6 +15,17 @@ export default class ProfilePresentationCommand extends SelectingOutputAPIComman
 		description: 'device profile UUID or the number of the profile from list',
 	}]
 
+	static examples = [
+		'$ smartthings deviceprofiles:presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf',
+		'$ smartthings deviceprofiles:presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf --language=ko',
+		'$ smartthings deviceprofiles:presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf --language=NONE',
+		'',
+		'Specifying only the presentationId defaults to the "SmartThingsCommunity" manufacturer',
+		'name and the language set for the computer\'s operating system. The language can be',
+		'overridden by specifying an ISO language code. If "NONE" is specified for the language',
+		'flag then no language header is specified in the API request',
+	]
+
 	primaryKeyName = 'id'
 	sortKeyName = 'name'
 	listTableFieldDefinitions = ['name', 'status', 'id']
