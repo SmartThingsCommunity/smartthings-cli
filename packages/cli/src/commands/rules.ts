@@ -55,7 +55,7 @@ export default class RulesCommand extends ListingOutputAPICommand<Rule, RuleWith
 	sortKeyName = 'name'
 
 	protected getRulesByLocation = getRulesByLocation
-	protected listTableFieldDefinitions = ['name', 'roomId', 'locationId', 'locationName']
+	protected listTableFieldDefinitions = ['name', 'id', 'locationId', 'locationName']
 	protected tableFieldDefinitions = tableFieldDefinitions
 
 	async run(): Promise<void> {
