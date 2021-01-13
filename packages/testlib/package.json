@@ -22,7 +22,6 @@
 		"directory": "packages/testlib"
 	},
 	"dependencies": {
-		"node": "^12.16.2"
 	},
 	"devDependencies": {
 		"typescript": "^4.0.3"
