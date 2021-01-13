@@ -68,7 +68,6 @@
 		"generator-smartthings": "^1.5.0",
 		"inquirer": "^7.3.3",
 		"lodash": "^4.17.19",
-		"node": "^12.16.2",
 		"open": "^7.0.3",
 		"yeoman-environment": "^2.9.1"
 	},
