@@ -1846,16 +1846,16 @@ ARGUMENTS
   IDORINDEX  room UUID or index
 
 OPTIONS
-  -h, --help                   show CLI help
-  -j, --json                   use JSON format of input and/or output
-  -l, --locationId=locationId  a specific locationId to query
-  -o, --output=output          specify output file
-  -p, --profile=profile        [default: default] configuration profile
-  -t, --token=token            the auth token to use
-  -y, --yaml                   use YAML format of input and/or output
-  --compact                    use compact table format with no lines between body rows
-  --expanded                   use expanded table format with a line between each body row
-  --indent=indent              specify indentation for formatting JSON or YAML output
+  -h, --help                     show CLI help
+  -j, --json                     use JSON format of input and/or output
+  -l, --location-id=location-id  a specific location to query
+  -o, --output=output            specify output file
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
+  -y, --yaml                     use YAML format of input and/or output
+  --compact                      use compact table format with no lines between body rows
+  --expanded                     use expanded table format with a line between each body row
+  --indent=indent                specify indentation for formatting JSON or YAML output
 
 ALIASES
   $ smartthings rooms
@@ -1903,10 +1903,10 @@ ARGUMENTS
   ID  room UUID
 
 OPTIONS
-  -h, --help                   show CLI help
-  -l, --locationId=locationId  a specific location to query
-  -p, --profile=profile        [default: default] configuration profile
-  -t, --token=token            the auth token to use
+  -h, --help                     show CLI help
+  -l, --location-id=location-id  a specific location to query
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
 
 ALIASES
   $ smartthings rooms:delete
@@ -1926,17 +1926,17 @@ ARGUMENTS
   ID  room UUID
 
 OPTIONS
-  -h, --help                   show CLI help
-  -i, --input=input            specify input file
-  -j, --json                   use JSON format of input and/or output
-  -l, --locationId=locationId  a specific locationId to query
-  -o, --output=output          specify output file
-  -p, --profile=profile        [default: default] configuration profile
-  -t, --token=token            the auth token to use
-  -y, --yaml                   use YAML format of input and/or output
-  --compact                    use compact table format with no lines between body rows
-  --expanded                   use expanded table format with a line between each body row
-  --indent=indent              specify indentation for formatting JSON or YAML output
+  -h, --help                     show CLI help
+  -i, --input=input              specify input file
+  -j, --json                     use JSON format of input and/or output
+  -l, --location-id=location-id  a specific location to query
+  -o, --output=output            specify output file
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
+  -y, --yaml                     use YAML format of input and/or output
+  --compact                      use compact table format with no lines between body rows
+  --expanded                     use expanded table format with a line between each body row
+  --indent=indent                specify indentation for formatting JSON or YAML output
 
 ALIASES
   $ smartthings rooms:update
@@ -2203,16 +2203,16 @@ ARGUMENTS
   IDORINDEX  rule UUID or index
 
 OPTIONS
-  -h, --help                   show CLI help
-  -j, --json                   use JSON format of input and/or output
-  -l, --locationId=locationId  a specific locationId to query
-  -o, --output=output          specify output file
-  -p, --profile=profile        [default: default] configuration profile
-  -t, --token=token            the auth token to use
-  -y, --yaml                   use YAML format of input and/or output
-  --compact                    use compact table format with no lines between body rows
-  --expanded                   use expanded table format with a line between each body row
-  --indent=indent              specify indentation for formatting JSON or YAML output
+  -h, --help                     show CLI help
+  -j, --json                     use JSON format of input and/or output
+  -l, --location-id=location-id  a specific location to query
+  -o, --output=output            specify output file
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
+  -y, --yaml                     use YAML format of input and/or output
+  --compact                      use compact table format with no lines between body rows
+  --expanded                     use expanded table format with a line between each body row
+  --indent=indent                specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/rules.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.15/dist/commands/rules.ts)_
@@ -2226,18 +2226,18 @@ USAGE
   $ smartthings rules:create
 
 OPTIONS
-  -d, --dry-run                produce JSON but don't actually submit
-  -h, --help                   show CLI help
-  -i, --input=input            specify input file
-  -j, --json                   use JSON format of input and/or output
-  -l, --locationid=locationid  a specific location to query
-  -o, --output=output          specify output file
-  -p, --profile=profile        [default: default] configuration profile
-  -t, --token=token            the auth token to use
-  -y, --yaml                   use YAML format of input and/or output
-  --compact                    use compact table format with no lines between body rows
-  --expanded                   use expanded table format with a line between each body row
-  --indent=indent              specify indentation for formatting JSON or YAML output
+  -d, --dry-run                  produce JSON but don't actually submit
+  -h, --help                     show CLI help
+  -i, --input=input              specify input file
+  -j, --json                     use JSON format of input and/or output
+  -l, --location-id=location-id  (required) a specific location to query
+  -o, --output=output            specify output file
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
+  -y, --yaml                     use YAML format of input and/or output
+  --compact                      use compact table format with no lines between body rows
+  --expanded                     use expanded table format with a line between each body row
+  --indent=indent                specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/rules/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.15/dist/commands/rules/create.ts)_
@@ -2254,10 +2254,10 @@ ARGUMENTS
   ID  rule UUID
 
 OPTIONS
-  -h, --help                   show CLI help
-  -l, --locationId=locationId  a specific location to query
-  -p, --profile=profile        [default: default] configuration profile
-  -t, --token=token            the auth token to use
+  -h, --help                     show CLI help
+  -l, --location-id=location-id  a specific location to query
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
 ```
 
 _See code: [dist/commands/rules/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.15/dist/commands/rules/delete.ts)_
@@ -2274,17 +2274,17 @@ ARGUMENTS
   ID  rule UUID
 
 OPTIONS
-  -h, --help                   show CLI help
-  -i, --input=input            specify input file
-  -j, --json                   use JSON format of input and/or output
-  -l, --locationId=locationId  a specific locationId to query
-  -o, --output=output          specify output file
-  -p, --profile=profile        [default: default] configuration profile
-  -t, --token=token            the auth token to use
-  -y, --yaml                   use YAML format of input and/or output
-  --compact                    use compact table format with no lines between body rows
-  --expanded                   use expanded table format with a line between each body row
-  --indent=indent              specify indentation for formatting JSON or YAML output
+  -h, --help                     show CLI help
+  -i, --input=input              specify input file
+  -j, --json                     use JSON format of input and/or output
+  -l, --location-id=location-id  a specific location to query
+  -o, --output=output            specify output file
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
+  -y, --yaml                     use YAML format of input and/or output
+  --compact                      use compact table format with no lines between body rows
+  --expanded                     use expanded table format with a line between each body row
+  --indent=indent                specify indentation for formatting JSON or YAML output
 ```
 
 _See code: [dist/commands/rules/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.15/dist/commands/rules/update.ts)_
