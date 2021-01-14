@@ -37,9 +37,9 @@ export default class RoomsCommand extends APICommand {
 
 	static flags = {
 		...APICommand.flags,
-		locationId: flags.string({
+		'location-id': flags.string({
 			char: 'l',
-			description: 'a specific locationId to query',
+			description: 'a specific location to query',
 		}),
 		...outputListing.flags,
 	}
@@ -63,7 +63,7 @@ export default class RoomsCommand extends APICommand {
 		const { args, argv, flags } = this.parse(RoomsCommand)
 		await super.setup(args, argv, flags)
 
-		const roomsPromise = this.getRoomsByLocation(flags.locationId)
+		const roomsPromise = this.getRoomsByLocation(flags['location-id'])
 		await outputListing(this,
 			args.idOrIndex,
 			() => roomsPromise,

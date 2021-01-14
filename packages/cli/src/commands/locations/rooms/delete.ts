@@ -10,7 +10,7 @@ export default class RoomsDeleteCommand extends SelectingAPICommand<Room> {
 
 	static flags = {
 		...SelectingAPICommand.flags,
-		locationId: flags.string({
+		'location-id': flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -33,7 +33,7 @@ export default class RoomsDeleteCommand extends SelectingAPICommand<Room> {
 		const { args, argv, flags } = this.parse(RoomsDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		const roomsPromise = this.getRoomsByLocation(flags.locationId)
+		const roomsPromise = this.getRoomsByLocation(flags['location-id'])
 		await this.processNormally(
 			args.id,
 			() => roomsPromise,

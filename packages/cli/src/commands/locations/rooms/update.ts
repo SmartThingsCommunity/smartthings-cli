@@ -10,9 +10,9 @@ export default class RoomsUpdateCommand extends SelectingInputOutputAPICommand <
 
 	static flags = {
 		...SelectingInputOutputAPICommand.flags,
-		locationId: flags.string({
+		'location-id': flags.string({
 			char: 'l',
-			description: 'a specific locationId to query',
+			description: 'a specific location to query',
 		}),
 	}
 
@@ -35,7 +35,7 @@ export default class RoomsUpdateCommand extends SelectingInputOutputAPICommand <
 		const { args, argv, flags } = this.parse(RoomsUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		const roomsPromise = this.getRoomsByLocation(flags.locationId)
+		const roomsPromise = this.getRoomsByLocation(flags['location-id'])
 		await this.processNormally(
 			args.id,
 			() => roomsPromise,
