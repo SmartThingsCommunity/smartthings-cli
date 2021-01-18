@@ -76,7 +76,7 @@ export default class AppsList extends APICommand {
 		await super.setup(args, argv, flags)
 
 		if (flags.verbose) {
-			this.tableFieldDefinitions.push('ARN/URL')
+			this.listTableFieldDefinitions.push('ARN/URL')
 		}
 
 		const listApps = async (): Promise<App[]> => {
