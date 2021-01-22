@@ -232,7 +232,6 @@ ARGUMENTS
 OPTIONS
   -h, --help                   show CLI help
   -p, --profile=profile        [default: default] configuration profile
-  -t, --token=token            the auth token to use
   --principal=principal        use this principal instead of the default when authorizing lambda functions
   --statement-id=statement-id  use this statement id instead of the default when authorizing lambda functions
 
@@ -2329,12 +2328,11 @@ ARGUMENTS
 OPTIONS
   -h, --help                   show CLI help
   -p, --profile=profile        [default: default] configuration profile
-  -t, --token=token            the auth token to use
   --principal=principal        use this principal instead of the default when authorizing lambda functions
   --statement-id=statement-id  use this statement id instead of the default when authorizing lambda functions
 
 EXAMPLES
-  $ smartthings apps:authorize arn:aws:lambda:us-east-1:1234567890:function:your-test-app
+  $ smartthings schema:authorize arn:aws:lambda:us-east-1:1234567890:function:your-test-app
 
   Note that this command is the same as running the following with the AWS CLI:
 

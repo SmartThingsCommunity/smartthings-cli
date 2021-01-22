@@ -1,11 +1,10 @@
 import { flags } from '@oclif/command'
 
-import {CapabilityLocalization, LocaleReference} from '@smartthings/core-sdk'
+import { CapabilityLocalization, LocaleReference } from '@smartthings/core-sdk'
 
-import { APICommand, NestedListingOutputAPICommandBase, stringTranslateToNestedId } from '@smartthings/cli-lib'
+import { APICommand, ListCallback, NestedListingOutputAPICommandBase, stringTranslateToNestedId } from '@smartthings/cli-lib'
 
-import { capabilityIdOrIndexInputArgs, getCustomByNamespace, translateToId,
-	CapabilityId, CapabilitySummaryWithNamespace } from '../capabilities'
+import { CapabilityId, capabilityIdOrIndexInputArgs, CapabilitySummaryWithNamespace, getCustomByNamespace, translateToId } from '../capabilities'
 
 
 export function buildTableOutput(this: APICommand, data: CapabilityLocalization): string {
@@ -123,7 +122,8 @@ export default class CapabilityTranslationsCommand extends NestedListingOutputAP
 	protected nestedListTableFieldDefinition = ['tag']
 
 	protected buildTableOutput = buildTableOutput
-	protected translateToId = translateToId
+	// TODO: clean this up once all of the commands that use the imported `translateToId` function have been converted to the functional API
+	protected translateToId = (idOrIndex: string | CapabilityId, listFunction: ListCallback<CapabilitySummaryWithNamespace>): Promise<CapabilityId> => translateToId(this.sortKeyName, idOrIndex, listFunction)
 	protected translateToNestedId = stringTranslateToNestedId
 
 	private getCustomByNamespace = getCustomByNamespace

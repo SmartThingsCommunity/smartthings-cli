@@ -1,13 +1,13 @@
-import { APICommand } from '@smartthings/cli-lib'
+import { SmartThingsCommand } from '@smartthings/cli-lib'
 import { addPermission } from '../../lib/aws-utils'
 import { lambdaAuthFlags } from '../../lib/common-flags'
 
 
-export default class AppAuthorize extends APICommand {
+export default class AppsAuthorizeCommand extends SmartThingsCommand {
 	static description = 'authorize calls to your AWS Lambda function from SmartThings'
 
 	static flags = {
-		...APICommand.flags,
+		...SmartThingsCommand.flags,
 		...lambdaAuthFlags,
 	}
 
@@ -32,7 +32,7 @@ export default class AppAuthorize extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(AppAuthorize)
+		const { args, argv, flags } = this.parse(AppsAuthorizeCommand)
 		await super.setup(args, argv, flags)
 
 		addPermission(args.arn, flags.principal, flags['statement-id']).then(async (message) => {

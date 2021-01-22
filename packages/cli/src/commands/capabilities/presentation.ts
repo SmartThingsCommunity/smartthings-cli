@@ -2,10 +2,9 @@ import { flags } from '@oclif/command'
 
 import { CapabilityPresentation } from '@smartthings/core-sdk'
 
-import { APICommand, ListingOutputAPICommandBase } from '@smartthings/cli-lib'
+import { APICommand, outputGenericListing } from '@smartthings/cli-lib'
 
-import { capabilityIdOrIndexInputArgs, getCustomByNamespace, translateToId,
-	CapabilityId, CapabilitySummaryWithNamespace } from '../capabilities'
+import { CapabilityId, capabilityIdOrIndexInputArgs, getCustomByNamespace, translateToId } from '../capabilities'
 
 
 export function buildTableOutput(this: APICommand, presentation: CapabilityPresentation): string {
@@ -70,11 +69,12 @@ export function buildTableOutput(this: APICommand, presentation: CapabilityPrese
 		'(Information is summarized, for full details use YAML or JSON flags.)'
 }
 
-export default class PresentationsCommand extends ListingOutputAPICommandBase<CapabilityId, CapabilityPresentation, CapabilitySummaryWithNamespace> {
+export default class PresentationsCommand extends APICommand {
 	static description = 'get presentation information for a specific capability'
 
 	static flags = {
-		...ListingOutputAPICommandBase.flags,
+		...APICommand.flags,
+		...outputGenericListing.flags,
 		namespace: flags.string({
 			char: 'n',
 			description: 'a specific namespace to query; will use all by default',
@@ -86,10 +86,9 @@ export default class PresentationsCommand extends ListingOutputAPICommandBase<Ca
 	primaryKeyName = 'id'
 	sortKeyName = 'id'
 
-	protected listTableFieldDefinitions = ['id', 'version', 'status']
+	listTableFieldDefinitions = ['id', 'version', 'status']
 
-	protected buildTableOutput = buildTableOutput
-	protected translateToId = translateToId
+	buildTableOutput = buildTableOutput
 
 	private getCustomByNamespace = getCustomByNamespace
 
@@ -100,9 +99,9 @@ export default class PresentationsCommand extends ListingOutputAPICommandBase<Ca
 		const idOrIndex = args.version
 			? { id: args.id, version: args.version }
 			: args.id
-		await this.processNormally(
-			idOrIndex,
+		await outputGenericListing(this, idOrIndex,
 			() => this.getCustomByNamespace(flags.namespace),
-			(id) =>  this.client.capabilities.getPresentation(id.id, id.version))
+			(id: CapabilityId) =>  this.client.capabilities.getPresentation(id.id, id.version),
+			(idOrIndex, listFunction) => translateToId(this.sortKeyName, idOrIndex, listFunction))
 	}
 }

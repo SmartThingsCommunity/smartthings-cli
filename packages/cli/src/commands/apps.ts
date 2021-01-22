@@ -35,7 +35,7 @@ export const tableFieldDefinitions: TableFieldDefinition<App>[] = [
 	{ prop: 'installMetadata.certified', include: app => app.installMetadata?.certified !== undefined },
 ]
 
-export default class AppsList extends APICommand {
+export default class AppsCommand extends APICommand {
 	static description = 'get a specific app or a list of apps'
 
 	static flags = {
@@ -72,7 +72,7 @@ export default class AppsList extends APICommand {
 	listTableFieldDefinitions = ['displayName', 'appType', 'appId']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(AppsList)
+		const { args, argv, flags } = this.parse(AppsCommand)
 		await super.setup(args, argv, flags)
 
 		if (flags.verbose) {
