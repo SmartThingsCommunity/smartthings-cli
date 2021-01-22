@@ -459,55 +459,6 @@ export interface InputOutputAPICommand<I, O> extends Inputting<I>, Outputting<O>
 applyMixins(InputOutputAPICommand, [Inputting, Outputable, Outputting], { mergeFunctions: true })
 
 /**
- * Use this as your base when you need to be able to list or get a single
- * resource.
- *
- * This class accepts the identifier type as the ID generic input. In most
- * cases, your id will be a simple string and you can use
- * ListingOutputAPICommand which is a little simpler.
- */
-export abstract class ListingOutputAPICommandBase<ID, O, L> extends APICommand {
-	protected abstract translateToId(idOrIndex: ID | string,
-		listFunction: ListCallback<L>): Promise<ID>
-
-	protected async processNormally(idOrIndex: ID | string | undefined,
-			listFunction: ListCallback<L>,
-			getFunction: LookupCallback<ID, O>): Promise<void> {
-		try {
-			if (idOrIndex) {
-				const id: ID = await this.translateToId(idOrIndex, listFunction)
-				const item = await getFunction(id)
-				this.writeOutput(item)
-			} else {
-				const list = this.sort(await listFunction())
-				writeOutputPrivate(list, this.outputOptions, this.buildListTableOutput.bind(this))
-			}
-		} catch (err) {
-			this.logger.error(`caught error ${err}`)
-			process.exit(1)
-		}
-	}
-
-	static flags = outputFlags
-}
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export interface ListingOutputAPICommandBase<ID, O, L> extends Outputting<O>, Listing<L> {}
-applyMixins(ListingOutputAPICommandBase, [Outputable, Outputting, Listing], { mergeFunctions: true })
-
-/**
- * Use this as your base when you need to be able to list or get a single
- * resource. In other words, this is the base for most GET commands.
- *
- * This class is used for commands where the identifier is a simple string.
- * If you need a more complex identifier type, you can use
- * ListingOutputAPICommandBase.
- */
-export abstract class ListingOutputAPICommand<O, L> extends ListingOutputAPICommandBase<string, O, L> {
-	protected translateToId = oldStringTranslateToId
-	static flags = ListingOutputAPICommandBase.flags
-}
-
-/**
  * This class is used for command like "delete" that require a specific resource
  * to act on.
  *

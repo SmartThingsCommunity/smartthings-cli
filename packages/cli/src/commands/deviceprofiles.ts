@@ -20,7 +20,7 @@ export function buildTableOutput(this: APICommand, data: DeviceProfile): string 
 	return table.toString()
 }
 
-export default class DeviceProfilesList extends APICommand {
+export default class DeviceProfilesCommand extends APICommand {
 	static description = 'list all device profiles available in a user account or retrieve a single profile'
 
 	static flags = {
@@ -56,7 +56,7 @@ export default class DeviceProfilesList extends APICommand {
 	buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceProfilesList)
+		const { args, argv, flags } = this.parse(DeviceProfilesCommand)
 		await super.setup(args, argv, flags)
 
 		if (this.flags.verbose) {

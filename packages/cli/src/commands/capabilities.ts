@@ -3,7 +3,7 @@ import { flags } from '@oclif/command'
 
 import { Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace } from '@smartthings/core-sdk'
 
-import { APICommand, ListCallback, ListingOutputCommand, outputGenericListing, sort } from '@smartthings/cli-lib'
+import { APICommand, ListCallback, outputGenericListing, sort } from '@smartthings/cli-lib'
 
 
 export const capabilityIdInputArgs = [
@@ -219,7 +219,7 @@ export async function getIdFromUser(this: APICommand, items: (CapabilitySummaryW
 	return { 'id': inputId, 'version': 1 }
 }
 
-export async function translateToId(this: ListingOutputCommand<Capability, CapabilitySummaryWithNamespace>,  idOrIndex: string | CapabilityId,
+export async function translateToId(sortKeyName: string,  idOrIndex: string | CapabilityId,
 		listFunction: ListCallback<CapabilitySummaryWithNamespace>): Promise<CapabilityId> {
 	if (typeof idOrIndex !== 'string') {
 		return idOrIndex
@@ -233,7 +233,7 @@ export async function translateToId(this: ListingOutputCommand<Capability, Capab
 		return { id: idOrIndex, version: 1 }
 	}
 
-	const items = sort(await listFunction(), this.sortKeyName)
+	const items = sort(await listFunction(), sortKeyName)
 	const matchingItem: CapabilitySummaryWithNamespace = items[index - 1]
 	return { id: matchingItem.id, version: matchingItem.version }
 }
@@ -262,7 +262,6 @@ export default class CapabilitiesCommand extends APICommand {
 	listTableFieldDefinitions = ['id', 'version', 'status']
 
 	buildTableOutput = buildTableOutput
-	translateToId = translateToId
 
 	private getCustomByNamespace = getCustomByNamespace
 	private getStandard = getStandard
@@ -275,6 +274,6 @@ export default class CapabilitiesCommand extends APICommand {
 		await outputGenericListing<CapabilityId, Capability, CapabilitySummaryWithNamespace>(this, idOrIndex,
 			() => flags.standard ? this.getStandard() : this.getCustomByNamespace(flags.namespace),
 			id =>  this.client.capabilities.get(id.id, id.version),
-			(idOrIndex, listFunction) => this.translateToId(idOrIndex, listFunction))
+			(idOrIndex, listFunction) => translateToId(this.sortKeyName, idOrIndex, listFunction))
 	}
 }
