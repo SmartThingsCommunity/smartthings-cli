@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.16](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.15...v0.0.0-pre.16) (2021-01-22)
+
+
+### Bug Fixes
+
+* correct ordering of InputProcessor calls ([dd4dfd0](https://github.com/SmartThingsCommunity/smartthings-cli/commit/dd4dfd0938f6b6888ce1f0a48840d4b8b0ccdddf))
+
+
+
+
+
 # [0.0.0-pre.14](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.13...v0.0.0-pre.14) (2020-12-07)
 
 **Note:** Version bump only for package @smartthings/cli-testlib

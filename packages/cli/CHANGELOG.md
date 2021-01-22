@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.16](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.15...v0.0.0-pre.16) (2021-01-22)
+
+
+### Bug Fixes
+
+* correct ordering of InputProcessor calls ([dd4dfd0](https://github.com/SmartThingsCommunity/smartthings-cli/commit/dd4dfd0938f6b6888ce1f0a48840d4b8b0ccdddf))
+* Corrected bug display verbose apps table ([0b35655](https://github.com/SmartThingsCommunity/smartthings-cli/commit/0b35655fe0c46aeadf57817ec4d6a21d73a300c5))
+* fix rules lookup without location id and functional refactor ([bfa67b6](https://github.com/SmartThingsCommunity/smartthings-cli/commit/bfa67b6167c32281825559c65e4f38e38ab1d863))
+* use kebab case for all flags ([128dcbb](https://github.com/SmartThingsCommunity/smartthings-cli/commit/128dcbb25e292e179b6483ce76e42a4c3eb290c2))
+
+
+### Features
+
+* Added support for specifying a language header ([00f50b9](https://github.com/SmartThingsCommunity/smartthings-cli/commit/00f50b9d8aadf0275f4e6426d68207903e639829))
+
+
+
+
+
 # [0.0.0-pre.15](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.14...v0.0.0-pre.15) (2020-12-21)
 
 

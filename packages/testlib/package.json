@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli-testlib",
-	"version": "0.0.0-pre.14",
+	"version": "0.0.0-pre.16",
 	"description": "SmartThings unified CLI testing utility methods library",
 	"author": "SmartThings, Inc.",
 	"bugs": "https://github.com/SmartThingsCommunity/smartthings-cli/issues",
@@ -20,8 +20,6 @@
 		"type": "git",
 		"url": "git+https://github.com/SmartThingsCommunity/smartthings-cli.git",
 		"directory": "packages/testlib"
-	},
-	"dependencies": {
 	},
 	"devDependencies": {
 		"typescript": "^4.0.3"
