@@ -1,12 +1,10 @@
-import { LocationItem } from '@smartthings/core-sdk'
-
-import { SelectingAPICommand } from '@smartthings/cli-lib'
+import { APICommand, selectAndActOn } from '@smartthings/cli-lib'
 
 
-export default class LocationsDeleteCommand extends SelectingAPICommand<LocationItem> {
+export default class LocationsDeleteCommand extends APICommand {
 	static description = 'delete a location'
 
-	static flags = SelectingAPICommand.flags
+	static flags = APICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -20,9 +18,9 @@ export default class LocationsDeleteCommand extends SelectingAPICommand<Location
 		const { args, argv, flags } = this.parse(LocationsDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(args.id,
+		await selectAndActOn(this, args.id,
 			async () => await this.client.locations.list(),
-			async (id) => { await this.client.locations.delete(id) },
+			async id => { await this.client.locations.delete(id) },
 			'location {{id}} deleted')
 	}
 }

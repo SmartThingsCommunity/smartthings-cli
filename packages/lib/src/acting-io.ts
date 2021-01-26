@@ -29,7 +29,7 @@ export type SelectingCommand<L> = SmartThingsCommandInterface & Sorting & Common
  */
 export async function selectAndActOnGeneric<ID, O, L>(command: SelectingCommand<L>,
 		id: ID | undefined, listFunction: ListDataFunction<L>, actionFunction: ActionFunction<ID, O>,
-		getIdFromUser: IdRetrievalFunction<ID, L>): Promise<[ID, O]> {
+		getIdFromUser: IdRetrievalFunction<ID, L>, successMessage?: string | undefined): Promise<[ID, O]> {
 	let chosenId: ID
 	if (id) {
 		chosenId = id
@@ -42,9 +42,13 @@ export async function selectAndActOnGeneric<ID, O, L>(command: SelectingCommand<
 		chosenId = await getIdFromUser(command, list)
 	}
 	const updatedItem = await actionFunction(chosenId)
+
+	if (successMessage) {
+		process.stdout.write(`${successMessage.replace('{{id}}', JSON.stringify(chosenId))}\n`)
+	}
+
 	return [chosenId, updatedItem]
 }
-selectActOnAndOutputGeneric.flags = outputList.flags
 
 /**
  * Process a command that selects and item (e.g. a device), performs some action on that device
@@ -65,11 +69,9 @@ export async function selectAndActOn<L>(command: SelectingCommand<L>,
 		id: string | undefined, listFunction: ListDataFunction<L>,
 		actionFunction: ActionFunction<string, void>, successMessage: string): Promise<string> {
 	const [computedId] = await selectAndActOnGeneric<string, void, L>(command, id, listFunction,
-		actionFunction, stringGetIdFromUser)
-	process.stdout.write(`${successMessage.replace('{{id}}', JSON.stringify(computedId))}\n`)
+		actionFunction, stringGetIdFromUser, successMessage)
 	return computedId
 }
-
 
 export type SelectingOutputCommand<O, L> = SelectingCommand<L> & CommonOutputProducer<O>
 

@@ -476,9 +476,6 @@ applyMixins(InputOutputAPICommand, [Inputting, Outputable, Outputting], { mergeF
  * Generic types:
  *   ID: the type of the id; usually string
  *   L: the type of each object returned by the list callback
- *
- * NOTE: most APIs use a simple string for the input type and can use
- * SelectingAPICommand instead.
  */
 export abstract class SelectingAPICommandBase<ID, L> extends APICommand {
 	protected abstract getIdFromUser(items: L[]): Promise<ID>
@@ -671,15 +668,6 @@ export async function stringGetNestedIdFromUser<NL>(this: APICommand & { readonl
 		throw Error(`unable to convert ${itemIdOrIndex} to id`)
 	}
 	return inputId
-}
-
-/**
- * A version of SelectingAPICommandBase for APIs that use strings for
- * their id, which is the most common case. See SelectingAPICommandBase for
- * more details.
- */
-export abstract class SelectingAPICommand<L> extends SelectingAPICommandBase<string, L> {
-	protected getIdFromUser = oldStringGetIdFromUser
 }
 
 export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends APICommand {

@@ -1,11 +1,10 @@
-import { Device } from '@smartthings/core-sdk'
-import { SelectingAPICommand } from '@smartthings/cli-lib'
+import { APICommand, selectAndActOn } from '@smartthings/cli-lib'
 
 
-export default class DeviceDeleteCommand extends SelectingAPICommand<Device> {
+export default class DeviceDeleteCommand extends APICommand {
 	static description = 'delete a device'
 
-	static flags = SelectingAPICommand.flags
+	static flags = APICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -19,9 +18,9 @@ export default class DeviceDeleteCommand extends SelectingAPICommand<Device> {
 		const { args, argv, flags } = this.parse(DeviceDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(args.id,
+		await selectAndActOn(this, args.id,
 			() => this.client.devices.list(),
-			async (id) => { await this.client.devices.delete(id) },
+			async id => { await this.client.devices.delete(id) },
 			'device {{id}} deleted')
 	}
 }

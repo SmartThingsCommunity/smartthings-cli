@@ -1,12 +1,10 @@
-import { SchemaApp } from '@smartthings/core-sdk'
-
-import { SelectingAPICommand } from '@smartthings/cli-lib'
+import { APICommand, selectAndActOn } from '@smartthings/cli-lib'
 
 
-export default class SchemaAppDeleteCommand extends SelectingAPICommand<SchemaApp> {
+export default class SchemaAppDeleteCommand extends APICommand {
 	static description = 'delete the ST Schema connector'
 
-	static flags = SelectingAPICommand.flags
+	static flags = APICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -20,9 +18,9 @@ export default class SchemaAppDeleteCommand extends SelectingAPICommand<SchemaAp
 		const { args, argv, flags } = this.parse(SchemaAppDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(args.id,
+		await selectAndActOn(this, args.id,
 			async () => await this.client.schema.list(),
-			async (id) => { await this.client.schema.delete(id) },
+			async id => { await this.client.schema.delete(id) },
 			'schema app {{id}} deleted')
 	}
 }
