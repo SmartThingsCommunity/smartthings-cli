@@ -82,12 +82,36 @@ export class StdinInputProcessor<T> implements InputProcessor<T> {
 }
 
 /**
- * Can be used for either retrieving input from command line or a Q & A session with the user.
+ * Build an input processor given the necessary functions for doing so.
  */
-export abstract class UserInputProcessor<T> implements InputProcessor<T> {
-	ioFormat = IOFormat.COMMON
-	abstract hasInput(): boolean
-	abstract read(): Promise<T>
+export function inputProcessor<T>(hasInput: () => boolean, read: () => Promise<T>,
+		ioFormat: IOFormat = IOFormat.COMMON): InputProcessor<T> {
+	return { ioFormat, hasInput, read }
+}
+
+export interface CommandLineInputCommand<T> {
+	hasCommandLineInput(): boolean
+	getInputFromCommandLine(): Promise<T>
+}
+/**
+ * Shortcut for building an InputProcessor that can build complex input from the command line
+ * arguments using standard methods in `command` defined in `CommandLineInputCommand`.
+ */
+export function commandLineInputProcessor<T>(command: CommandLineInputCommand<T>): InputProcessor<T> {
+	return inputProcessor(() => command.hasCommandLineInput(), () => command.getInputFromCommandLine())
+}
+
+export interface UserInputCommand<T> {
+	getInputFromUser(): Promise<T>
+}
+/**
+ * Shortcut for building an InputProcessor that queries the user for complex input using a
+ * Q & A session using standard methods in `command` defined in `UserInputCommand`. This should
+ * always be the last one in the list since input processors are checked in order and this can
+ * always provide data.
+ */
+export function userInputProcessor<T>(command: UserInputCommand<T>): InputProcessor<T> {
+	return inputProcessor(() => true, () => command.getInputFromUser())
 }
 
 export class CombinedInputProcessor<T> implements InputProcessor<T> {

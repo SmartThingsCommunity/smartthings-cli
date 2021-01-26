@@ -19,6 +19,6 @@ export default class LocationsCreateCommand extends APICommand {
 		const { args, argv, flags } = this.parse(LocationsCreateCommand)
 		await super.setup(args, argv, flags)
 
-		await inputAndOutputItem<LocationCreate, Location>(this, input => this.client.locations.create(input))
+		await inputAndOutputItem<LocationCreate, Location>(this, (_, input) => this.client.locations.create(input))
 	}
 }
