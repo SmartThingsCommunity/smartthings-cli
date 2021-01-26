@@ -2,7 +2,9 @@ import { CLIError } from '@oclif/errors'
 import { flags } from '@oclif/command'
 
 import { formatAndWriteItem, formatAndWriteList, CommonListOutputProducer, CommonOutputProducer } from './format'
+import { InputProcessor } from './input'
 import { buildInputProcessor } from './input-builder'
+import { IOFormat } from './io-util'
 import { sort, writeOutput } from './output'
 import { buildOutputFormatter } from './output-builder'
 import { SmartThingsCommandInterface } from './smartthings-command'
@@ -11,7 +13,7 @@ import { SmartThingsCommandInterface } from './smartthings-command'
 export type GetDataFunction<O> = () => Promise<O>
 export type ListDataFunction<L> = () => Promise<L[]>
 export type LookupDataFunction<ID, O> = (id: ID) => Promise<O>
-export type ActionFunction<I, O> = (input: I) => Promise<O>
+export type ActionFunction<ID, I, O> = (id: ID, input: I) => Promise<O>
 export type IdTranslationFunction<ID, L> = (idOrIndex: ID | string, listFunction: ListDataFunction<L>) => Promise<ID>
 export type IdRetrievalFunction<ID, L> = (command: Sorting, list: L[]) => Promise<ID>
 
@@ -25,7 +27,17 @@ export interface Naming {
 	pluralItemName?: string
 }
 
-// TODO: inputItem<I>
+export async function inputItem<I>(command: SmartThingsCommandInterface,
+		...alternateInputProcessors: InputProcessor<I>[]): Promise<[I, IOFormat]> {
+	const inputProcessor = buildInputProcessor<I>(command, ...alternateInputProcessors)
+	if (inputProcessor.hasInput()) {
+		const item = await inputProcessor.read()
+		return [item, inputProcessor.ioFormat]
+	} else {
+		throw new CLIError('input is required either via file specified with --input option or from stdin')
+	}
+}
+inputItem.flags = buildInputProcessor.flags
 
 export async function outputItem<O>(command: SmartThingsCommandInterface & CommonOutputProducer<O>,
 		getData: GetDataFunction<O>): Promise<O> {
@@ -46,20 +58,14 @@ outputList.flags = buildOutputFormatter.flags
 
 
 export async function inputAndOutputItem<I, O>(command: SmartThingsCommandInterface & CommonOutputProducer<O>,
-		executeCommand: ActionFunction<I, O>) : Promise<void> {
-	const inputProcessor = buildInputProcessor<I>(command)
-	if (inputProcessor.hasInput()) {
-		const inputItem = await inputProcessor.read()
-		const defaultIOFormat = inputProcessor.ioFormat
-		if (command.flags['dry-run']) {
-			const outputFormatter = buildOutputFormatter(command, defaultIOFormat)
-			await writeOutput(outputFormatter(inputItem), command.flags.output)
-		} else {
-			const item = await executeCommand(inputItem)
-			await formatAndWriteItem(command, item, defaultIOFormat)
-		}
+		executeAction: ActionFunction<void, I, O>, ...alternateInputProcessors: InputProcessor<I>[]) : Promise<void> {
+	const [itemIn, defaultIOFormat] = await inputItem<I>(command, ...alternateInputProcessors)
+	if (command.flags['dry-run']) {
+		const outputFormatter = buildOutputFormatter(command, defaultIOFormat)
+		await writeOutput(outputFormatter(itemIn), command.flags.output)
 	} else {
-		throw new CLIError('input is required either via file specified with --input option or from stdin')
+		const item = await executeAction(undefined, itemIn)
+		await formatAndWriteItem(command, item, defaultIOFormat)
 	}
 }
 inputAndOutputItem.flags = {

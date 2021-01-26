@@ -1,7 +1,9 @@
 import inquirer from 'inquirer'
 
-import { Device, Command, Component, CapabilityReference } from '@smartthings/core-sdk'
-import { SelectingInputAPICommand, isIndexArgument } from '@smartthings/cli-lib'
+import { Command, Component, CapabilityReference, Device } from '@smartthings/core-sdk'
+
+import { APICommand, commandLineInputProcessor, inputItem, inputProcessor, isIndexArgument, select } from '@smartthings/cli-lib'
+
 import { attributeType } from '../capabilities'
 
 
@@ -61,10 +63,13 @@ export function parseDeviceCommand(str: string, componentId?: string, capability
 	}
 }
 
-export default class DeviceCommandsCommand extends SelectingInputAPICommand<Command[], Device> {
+export default class DeviceCommandsCommand extends APICommand {
 	static description = 'execute a device command'
 
-	static flags = SelectingInputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...inputItem.flags,
+	}
 
 	static args = [
 		{
@@ -82,7 +87,15 @@ export default class DeviceCommandsCommand extends SelectingInputAPICommand<Comm
 	listTableFieldDefinitions = ['label', 'name', 'type', 'deviceId']
 	acceptIndexId = true
 
-	protected async getComponentFromInput(device: Device, cmd: Command): Promise<Command> {
+	hasCommandLineInput(): boolean {
+		return !!this.args.command
+	}
+
+	async getInputFromCommandLine(): Promise<Command[]> {
+		return [parseDeviceCommand(this.args.command)]
+	}
+
+	protected async getComponentFromUser(device: Device, cmd: Command): Promise<Command> {
 		if (device.components && device.components.length > 1) {
 			this.log('\nComponents:')
 			let index = 1
@@ -115,7 +128,7 @@ export default class DeviceCommandsCommand extends SelectingInputAPICommand<Comm
 		return cmd
 	}
 
-	protected async getCapabilityFromInput(component: Component, cmd: Command): Promise<Command> {
+	protected async getCapabilityFromUser(component: Component, cmd: Command): Promise<Command> {
 		if (component.capabilities.length > 1) {
 			this.log('\nCapabilities:')
 			let index = 1
@@ -150,7 +163,7 @@ export default class DeviceCommandsCommand extends SelectingInputAPICommand<Comm
 		return cmd
 	}
 
-	protected async getCommandFromInput(cap: CapabilityReference, cmd: Command): Promise<Command> {
+	protected async getCommandFromUser(cap: CapabilityReference, cmd: Command): Promise<Command> {
 		const capability = await this.client.capabilities.get(cap.id, cap.version || 1)
 		if (capability.commands && Object.keys(capability.commands).length > 0) {
 			this.log('\nCommands:')
@@ -208,12 +221,8 @@ export default class DeviceCommandsCommand extends SelectingInputAPICommand<Comm
 		return cmd
 	}
 
-	protected async getInputFromUser(): Promise<Command[]> {
-		if (this.args.command) {
-			return [parseDeviceCommand(this.args.command)]
-		}
-
-		const device = await this.client.devices.get(this.entityId)
+	async getInputFromUser(deviceId: string): Promise<Command[]> {
+		const device = await this.client.devices.get(deviceId)
 		this.log('\n' + device.label)
 
 		let cmd: Command = {
@@ -222,12 +231,12 @@ export default class DeviceCommandsCommand extends SelectingInputAPICommand<Comm
 			command: '',
 		}
 
-		cmd = await this.getComponentFromInput(device, cmd)
+		cmd = await this.getComponentFromUser(device, cmd)
 
 		if (!cmd.capability) {
 			const component = device.components?.find(it => it.id === cmd.component)
 			if (component) {
-				cmd = await this.getCapabilityFromInput(component, cmd)
+				cmd = await this.getCapabilityFromUser(component, cmd)
 			} else {
 				throw new Error(`Component '${cmd.component}' not found`)
 			}
@@ -235,7 +244,7 @@ export default class DeviceCommandsCommand extends SelectingInputAPICommand<Comm
 			if (!cmd.command) {
 				const cap = component.capabilities.find(it => it.id === cmd.capability)
 				if (cap) {
-					cmd = await this.getCommandFromInput(cap, cmd)
+					cmd = await this.getCommandFromUser(cap, cmd)
 
 				} else {
 					throw new Error(`Capability '${cmd.capability}' of component '${cmd.component}' not found`)
@@ -249,13 +258,10 @@ export default class DeviceCommandsCommand extends SelectingInputAPICommand<Comm
 		const { args, argv, flags } = this.parse(DeviceCommandsCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(
-			args.id,
-			() => this.client.devices.list(),
-			async (id, data) => {
-				await this.client.devices.executeCommands(id, data)
-			},
-			'Command executed successfully',
-		)
+		const deviceId = await select(this, args.id, () => this.client.devices.list())
+		const [commands] = await inputItem<Command[]>(this, commandLineInputProcessor(this),
+			inputProcessor(() => true, () => this.getInputFromUser(deviceId)))
+		await this.client.devices.executeCommands(deviceId, commands)
+		this.log('Command executed successfully')
 	}
 }

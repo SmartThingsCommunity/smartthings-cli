@@ -1,6 +1,6 @@
 import { CLIError } from '@oclif/errors'
 
-import { inputAndOutputItem, outputItem, outputList } from '../basic-io'
+import { inputAndOutputItem, inputItem, outputItem, outputList } from '../basic-io'
 import * as format from '../format'
 import { InputProcessor } from '../input'
 import * as inputBuilder from '../input-builder'
@@ -25,6 +25,51 @@ describe('basic-io', () => {
 
 	afterEach(() => {
 		jest.clearAllMocks()
+	})
+
+	describe('inputItem', () => {
+		const buildInputProcessorSpy = jest.spyOn(inputBuilder, 'buildInputProcessor')
+
+		it('accepts input and returns input', async () => {
+			const ioFormatMock = jest.fn()
+			const hasInputMock = jest.fn()
+			const readMock = jest.fn()
+			class TestInputProcessor implements InputProcessor<SimpleType> {
+				get ioFormat(): IOFormat.COMMON {
+					return ioFormatMock()
+				}
+				hasInput = hasInputMock
+				read = readMock
+			}
+			const inputProcessor = new TestInputProcessor()
+
+			ioFormatMock.mockReturnValue(IOFormat.COMMON)
+			hasInputMock.mockReturnValue(true)
+			readMock.mockResolvedValue(item)
+
+			buildInputProcessorSpy.mockReturnValue(inputProcessor)
+
+			expect(await inputItem(baseCommand)).toEqual([item, IOFormat.COMMON])
+
+			expect(ioFormatMock).toHaveBeenCalled()
+			expect(hasInputMock).toHaveBeenCalledTimes(1)
+			expect(readMock).toHaveBeenCalledTimes(1)
+			expect(hasInputMock).toHaveBeenCalledBefore(readMock)
+			expect(readMock).toHaveBeenCalledBefore(ioFormatMock)
+		})
+
+		it('throws exception when there is no input', async () => {
+			const inputProcessor = {
+				ioFormat: IOFormat.COMMON,
+				hasInput: () => false,
+				read: async () => item,
+			}
+
+			buildInputProcessorSpy.mockReturnValue(inputProcessor)
+
+			await expect(inputItem(baseCommand)).rejects.toThrow(
+				new CLIError('input is required either via file specified with --input option or from stdin'))
+		})
 	})
 
 	describe('outputItem', () => {
@@ -111,7 +156,7 @@ describe('basic-io', () => {
 			await inputAndOutputItem(command, executeCommandMock)
 
 			expect(executeCommandMock).toHaveBeenCalledTimes(1)
-			expect(executeCommandMock).toHaveBeenCalledWith(item)
+			expect(executeCommandMock).toHaveBeenCalledWith(undefined, item)
 			expect(formatAndWriteItemSpy).toHaveBeenCalledTimes(1)
 			expect(formatAndWriteItemSpy).toHaveBeenLastCalledWith(command, item, inputProcessor.ioFormat)
 

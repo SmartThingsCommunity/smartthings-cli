@@ -1,7 +1,7 @@
-import { CombinedInputProcessor, FileInputProcessor, InputProcessor, StdinInputProcessor, UserInputProcessor } from '../input'
+import { CombinedInputProcessor, CommandLineInputCommand, commandLineInputProcessor, FileInputProcessor, inputProcessor, InputProcessor, StdinInputProcessor, UserInputCommand, userInputProcessor } from '../input'
 import { IOFormat } from '../io-util'
 import * as ioUtil from '../io-util'
-import { validData, SimpleType } from './test-lib/simple-type'
+import { SimpleType, validData } from './test-lib/simple-type'
 
 
 const resourcesDir = './src/__tests__/resources'
@@ -69,18 +69,65 @@ describe('StdinInputProcessor', () => {
 	})
 })
 
-describe('UserInputProcessor', () => {
-	class MyUserInputProcessor extends UserInputProcessor<SimpleType> {
-		hasInput(): boolean {
-			throw Error('Method not implemented.')
-		}
-		read(): Promise<SimpleType> {
-			throw Error('Method not implemented.')
-		}
-	}
+describe('simple input processor builder functions', () => {
+	it('inputBuilder defaults to common input', () => {
+		const hasInputMock = jest.fn()
+		const readMock = jest.fn()
 
-	it('specifies JSON format', () =>  {
-		expect(new MyUserInputProcessor().ioFormat).toBe(IOFormat.COMMON)
+		const result = inputProcessor(hasInputMock, readMock)
+
+		expect(result.hasInput).toBe(hasInputMock)
+		expect(result.read).toBe(readMock)
+		expect(result.ioFormat).toBe(IOFormat.COMMON)
+	})
+
+	it('inputBuilder uses specified ioFormat', () => {
+		const hasInputMock = jest.fn()
+		const readMock = jest.fn()
+
+		const result = inputProcessor(hasInputMock, readMock, IOFormat.JSON)
+
+		expect(result.hasInput).toBe(hasInputMock)
+		expect(result.read).toBe(readMock)
+		expect(result.ioFormat).toBe(IOFormat.JSON)
+	})
+
+	it('commandLineInputProcessor uses proper methods from command', async () => {
+		const hasInputMock = jest.fn()
+		const readMock = jest.fn()
+		const command: CommandLineInputCommand<string> = {
+			hasCommandLineInput: hasInputMock,
+			getInputFromCommandLine: readMock,
+		}
+
+		const inputProcessor = commandLineInputProcessor(command)
+
+		expect(inputProcessor.ioFormat).toBe(IOFormat.COMMON)
+
+		hasInputMock.mockReturnValue(true)
+		expect(inputProcessor.hasInput()).toBeTrue()
+		expect(hasInputMock).toHaveBeenCalledTimes(1)
+
+		readMock.mockResolvedValue('happy return value')
+		expect(await inputProcessor.read()).toBe('happy return value')
+		expect(readMock).toHaveBeenCalledTimes(1)
+	})
+
+	it('userInputProcessor uses proper methods from command', async () => {
+		const readMock = jest.fn()
+		const command: UserInputCommand<string> = {
+			getInputFromUser: readMock,
+		}
+
+		const inputProcessor = userInputProcessor(command)
+
+		expect(inputProcessor.ioFormat).toBe(IOFormat.COMMON)
+
+		expect(inputProcessor.hasInput()).toBeTrue()
+
+		readMock.mockResolvedValue('happy return value')
+		expect(await inputProcessor.read()).toBe('happy return value')
+		expect(readMock).toHaveBeenCalledTimes(1)
 	})
 })
 

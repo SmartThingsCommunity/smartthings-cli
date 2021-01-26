@@ -30,7 +30,7 @@ describe('buildInputProcessor', () => {
 			...buildMockCommand(),
 			flags: { input: 'fn' },
 		}
-		function makeProcessor(): input.UserInputProcessor<SimpleType> {
+		function makeProcessor(): input.InputProcessor<SimpleType> {
 			return {
 				ioFormat: IOFormat.JSON,
 				hasInput: () => false,

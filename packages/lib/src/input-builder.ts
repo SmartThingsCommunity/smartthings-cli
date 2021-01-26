@@ -1,6 +1,5 @@
 import { SmartThingsCommandInterface } from './smartthings-command'
-import { CombinedInputProcessor, commonIOFlags, FileInputProcessor, inputFlag, InputProcessor, StdinInputProcessor,
-	UserInputProcessor } from './input'
+import { CombinedInputProcessor, commonIOFlags, FileInputProcessor, inputFlag, InputProcessor, StdinInputProcessor } from './input'
 
 /**
  * Build the most common type of input processor, which can handle data from stdin, a specified
@@ -17,7 +16,7 @@ import { CombinedInputProcessor, commonIOFlags, FileInputProcessor, inputFlag, I
  * the data from command line options.
  */
 export function buildInputProcessor<T>(command: SmartThingsCommandInterface,
-		...alternateInputProcessors: UserInputProcessor<T>[]): InputProcessor<T> {
+		...alternateInputProcessors: InputProcessor<T>[]): InputProcessor<T> {
 	const fileInputProcessor = new FileInputProcessor<T>(command.flags.input)
 	const stdinInputProcessor = new StdinInputProcessor<T>()
 	return new CombinedInputProcessor(fileInputProcessor, stdinInputProcessor, ...alternateInputProcessors)

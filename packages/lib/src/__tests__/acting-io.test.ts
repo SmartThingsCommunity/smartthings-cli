@@ -1,4 +1,4 @@
-import { selectActOnAndOutput, selectActOnAndOutputGeneric, selectAndActOn, selectAndActOnGeneric } from '../acting-io'
+import { select, selectActOnAndOutput, selectActOnAndOutputGeneric, selectAndActOn, selectAndActOnGeneric } from '../acting-io'
 import * as basicIO from '../basic-io'
 import * as commandUtil from '../command-util'
 import * as format from '../format'
@@ -23,14 +23,49 @@ describe('acting-io', () => {
 	const getIdFromUser = jest.fn().mockResolvedValue('chosen id')
 	const getIdFromUserSpy = jest.spyOn(commandUtil, 'stringGetIdFromUser').mockResolvedValue('chosen id')
 	const writeSpy = jest.spyOn(process.stdout, 'write').mockReturnValue(true)
+	const outputListSpy = jest.spyOn(basicIO, 'outputList')
+
 
 	afterEach(() => {
 		jest.clearAllMocks()
 	})
 
-	describe('selectAndActOnGeneric', () => {
-		const outputListSpy = jest.spyOn(basicIO, 'outputList')
+	describe('select', () => {
+		it('returns id when present', async () => {
+			expect(await select(command, 'sample-id', listFunction)).toBe('sample-id')
+			expect(listFunction).toHaveBeenCalledTimes(0)
+			expect(outputListSpy).toHaveBeenCalledTimes(0)
+			expect(getIdFromUserSpy).toHaveBeenCalledTimes(0)
+		})
 
+		it('gets list and asks user for selection with no id', async () => {
+			outputListSpy.mockResolvedValue(list)
+
+			const resultId = await select(command, undefined, listFunction)
+
+			expect(resultId).toBe('chosen id')
+			expect(listFunction).toHaveBeenCalledTimes(0)
+			expect(outputListSpy).toHaveBeenCalledTimes(1)
+			expect(outputListSpy).toHaveBeenCalledWith(command, listFunction, true)
+			expect(getIdFromUserSpy).toHaveBeenCalledTimes(1)
+			expect(getIdFromUserSpy).toHaveBeenCalledWith(command, list)
+		})
+
+		it('exits when nothing to select from', async () => {
+			outputListSpy.mockResolvedValue([])
+			// fake exiting with a special thrown error
+			exitMock.mockImplementation(() => { throw Error('should exit') })
+
+			await expect(select(command, undefined, listFunction)).rejects.toThrow('should exit')
+
+			expect(listFunction).toHaveBeenCalledTimes(0)
+			expect(outputListSpy).toHaveBeenCalledTimes(1)
+			expect(outputListSpy).toHaveBeenCalledWith(command, listFunction, true)
+			expect(getIdFromUserSpy).toHaveBeenCalledTimes(0)
+		})
+	})
+
+	describe('selectAndActOnGeneric', () => {
 		it('acts on specified id', async () => {
 			const [resultId, resultItem] = await selectAndActOnGeneric(command, 'id', listFunction,
 				actionFunction, getIdFromUser)
@@ -40,6 +75,7 @@ describe('acting-io', () => {
 			expect(listFunction).toHaveBeenCalledTimes(0)
 			expect(actionFunction).toHaveBeenCalledTimes(1)
 			expect(actionFunction).toHaveBeenCalledWith('id')
+			expect(outputListSpy).toHaveBeenCalledTimes(0)
 			expect(getIdFromUser).toHaveBeenCalledTimes(0)
 		})
 
@@ -90,8 +126,6 @@ describe('acting-io', () => {
 	})
 
 	describe('selectAndActOn', () => {
-		const outputListSpy = jest.spyOn(basicIO, 'outputList')
-
 		it('acts on specified id', async () => {
 			const resultId = await selectAndActOn(command, 'id', listFunction, actionFunction, 'success')
 
