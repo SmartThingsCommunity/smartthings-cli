@@ -3,7 +3,7 @@ import { flags } from '@oclif/command'
 
 import { Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace } from '@smartthings/core-sdk'
 
-import { APICommand, ListCallback, outputGenericListing, sort } from '@smartthings/cli-lib'
+import { APICommand, ListCallback, outputGenericListing, sort, Sorting } from '@smartthings/cli-lib'
 
 
 export const capabilityIdInputArgs = [
@@ -170,25 +170,25 @@ export async function getStandard(this: APICommand): Promise<CapabilitySummaryWi
 	return caps.map((capability: CapabilitySummary) => { return { ...capability, namespace: 'st' } })
 }
 
-export async function getIdFromUser(this: APICommand, items: (CapabilitySummaryWithNamespace)[]): Promise<CapabilityId> {
+async function getIdFromUserImpl(list: CapabilitySummaryWithNamespace[]): Promise<CapabilityId> {
 	const convertToId = (itemIdOrIndex: string): string | false => {
 		if (itemIdOrIndex.length === 0) {
 			return false
 		}
-		const matchingItem = items.find(item => itemIdOrIndex === item.id)
+		const matchingItem = list.find(item => itemIdOrIndex === item.id)
 		if (matchingItem) {
 			return itemIdOrIndex
 		}
 
 		const index = Number.parseInt(itemIdOrIndex)
 
-		if (!Number.isNaN(index) && index > 0 && index <= items.length) {
-			const id = items[index - 1].id
+		if (!Number.isNaN(index) && index > 0 && index <= list.length) {
+			const id = list[index - 1].id
 			if (typeof id === 'string') {
 				return id
 			} else {
 				throw Error(`invalid type ${typeof id} for primary key`  +
-					` id in ${JSON.stringify(items[index - 1])}`)
+					` id in ${JSON.stringify(list[index - 1])}`)
 			}
 		} else {
 			return false
@@ -217,6 +217,17 @@ export async function getIdFromUser(this: APICommand, items: (CapabilitySummaryW
 	//    - if so, ask the user which one
 
 	return { 'id': inputId, 'version': 1 }
+}
+
+export async function getCapabilityIdFromUser(command: Sorting, list: CapabilitySummaryWithNamespace[]): Promise<CapabilityId> {
+	return getIdFromUserImpl(list)
+}
+
+/**
+ * TODO: remove once functional refactor is complete (io-command classes are unused)
+ */
+export async function getIdFromUser(this: APICommand, items: CapabilitySummaryWithNamespace[]): Promise<CapabilityId> {
+	return getIdFromUserImpl(items)
 }
 
 export async function translateToId(sortKeyName: string,  idOrIndex: string | CapabilityId,

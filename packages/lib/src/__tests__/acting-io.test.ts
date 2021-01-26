@@ -60,6 +60,19 @@ describe('acting-io', () => {
 			expect(getIdFromUser).toHaveBeenCalledWith(command, list)
 		})
 
+		it('substitutes computed id for {{id}} in success message', async () => {
+			const [resultId] = await selectAndActOnGeneric(command, 'world',
+				listFunction, actionFunction, getIdFromUser, 'hello {{id}}')
+
+			expect(resultId).toBe('world')
+			expect(listFunction).toHaveBeenCalledTimes(0)
+			expect(actionFunction).toHaveBeenCalledTimes(1)
+			expect(actionFunction).toHaveBeenCalledWith('world')
+			expect(getIdFromUserSpy).toHaveBeenCalledTimes(0)
+			expect(writeSpy).toHaveBeenCalledTimes(1)
+			expect(writeSpy).toHaveBeenCalledWith('hello "world"\n')
+		})
+
 		it('exits when nothing to select from', async () => {
 			outputListSpy.mockResolvedValue([])
 			// fake exiting with a special thrown error

@@ -1,15 +1,13 @@
 import { flags } from '@oclif/command'
-import { Room } from '@smartthings/core-sdk'
-
 import { getRoomsByLocation } from '../rooms'
-import { SelectingAPICommand } from '@smartthings/cli-lib'
+import { APICommand, selectAndActOn } from '@smartthings/cli-lib'
 
 
-export default class RoomsDeleteCommand extends SelectingAPICommand<Room> {
+export default class RoomsDeleteCommand extends APICommand {
 	static description = 'delete a room'
 
 	static flags = {
-		...SelectingAPICommand.flags,
+		...APICommand.flags,
 		'location-id': flags.string({
 			char: 'l',
 			description: 'a specific location to query',
@@ -34,7 +32,7 @@ export default class RoomsDeleteCommand extends SelectingAPICommand<Room> {
 		await super.setup(args, argv, flags)
 
 		const roomsPromise = this.getRoomsByLocation(flags['location-id'])
-		await this.processNormally(
+		await selectAndActOn(this,
 			args.id,
 			() => roomsPromise,
 			async id => {

@@ -9,7 +9,7 @@ import { lambdaAuthFlags } from '../../lib/common-flags'
 
 
 export default class SchemaAppCreateCommand extends InputOutputAPICommand<SchemaAppRequest, SchemaCreateResponse> {
-	static description = 'update an ST Schema connector'
+	static description = 'create an ST Schema connector'
 
 	static flags = {
 		...InputOutputAPICommand.flags,

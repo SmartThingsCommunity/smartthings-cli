@@ -1,12 +1,10 @@
-import { DeviceProfile } from '@smartthings/core-sdk'
-
-import { SelectingAPICommand } from '@smartthings/cli-lib'
+import { APICommand, selectAndActOn } from '@smartthings/cli-lib'
 
 
-export default class DeviceProfileDeleteCommand extends SelectingAPICommand<DeviceProfile> {
+export default class DeviceProfileDeleteCommand extends APICommand {
 	static description = 'delete a device profile'
 
-	static flags = SelectingAPICommand.flags
+	static flags = APICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -26,9 +24,9 @@ export default class DeviceProfileDeleteCommand extends SelectingAPICommand<Devi
 		const { args, argv, flags } = this.parse(DeviceProfileDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(args.id,
+		await selectAndActOn(this, args.id,
 			async () => await this.client.deviceProfiles.list(),
-			async (id) => { await this.client.deviceProfiles.delete(id) },
+			async id => { await this.client.deviceProfiles.delete(id) },
 			'device profile {{id}} deleted')
 	}
 }
