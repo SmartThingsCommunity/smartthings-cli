@@ -1,6 +1,6 @@
 import { flags } from '@oclif/command'
 
-import { InstalledApp } from '@smartthings/core-sdk'
+import { InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
 
 import { APICommand, outputListing, TableFieldDefinition, withLocations } from '@smartthings/cli-lib'
 
@@ -24,6 +24,11 @@ export default class InstalledAppsCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...outputListing.flags,
+		'location-id': flags.string({
+			char: 'l',
+			description: 'filter results by location',
+			multiple: true,
+		}),
 		verbose: flags.boolean({
 			description: 'include location name in output',
 			char: 'v',
@@ -48,11 +53,15 @@ export default class InstalledAppsCommand extends APICommand {
 			this.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 
+		const listOptions: InstalledAppListOptions = {
+			locationId: flags['location-id'],
+		}
+
 		await outputListing<InstalledApp, InstalledAppWithLocation>(this,
 			args.id,
 			async () => {
-				const apps = await this.client.installedApps.list()
-				if (flags.verbose) {
+				const apps = await this.client.installedApps.list(listOptions)
+				if (this.flags.verbose) {
 					return await withLocations(this.client, apps)
 				}
 				return apps
