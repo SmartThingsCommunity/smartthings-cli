@@ -157,6 +157,8 @@ that maps to that hierarchy.
 * [`smartthings installedapps [ID]`](#smartthings-installedapps-id)
 * [`smartthings installedapps:delete [ID]`](#smartthings-installedappsdelete-id)
 * [`smartthings installedapps:rename [ID] [NAME]`](#smartthings-installedappsrename-id-name)
+* [`smartthings installedschema [ID]`](#smartthings-installedschema-id)
+* [`smartthings installedschema:delete [ID]`](#smartthings-installedschemadelete-id)
 * [`smartthings locations [IDORINDEX]`](#smartthings-locations-idorindex)
 * [`smartthings locations:create`](#smartthings-locationscreate)
 * [`smartthings locations:delete [ID]`](#smartthings-locationsdelete-id)
@@ -1759,17 +1761,18 @@ ARGUMENTS
   ID  the app id
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -v, --verbose          include location name in output
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -h, --help                     show CLI help
+  -j, --json                     use JSON format of input and/or output
+  -l, --location-id=location-id  filter results by location
+  -o, --output=output            specify output file
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
+  -v, --verbose                  include location name in output
+  -y, --yaml                     use YAML format of input and/or output
+  --compact                      use compact table format with no lines between body rows
+  --expanded                     use expanded table format with a line between each body row
+  --indent=indent                specify indentation for formatting JSON or YAML output
+  --language=language            ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
 _See code: [dist/commands/installedapps.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.17/dist/commands/installedapps.ts)_
@@ -1786,10 +1789,12 @@ ARGUMENTS
   ID  installed app UUID
 
 OPTIONS
-  -h, --help             show CLI help
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -h, --help                     show CLI help
+  -l, --location-id=location-id  filter results by location
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
+  -v, --verbose                  include location name in output
+  --language=language            ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
 _See code: [dist/commands/installedapps/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.17/dist/commands/installedapps/delete.ts)_
@@ -1807,19 +1812,71 @@ ARGUMENTS
   NAME  the new installed app name
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -h, --help                     show CLI help
+  -j, --json                     use JSON format of input and/or output
+  -l, --location-id=location-id  filter results by location
+  -o, --output=output            specify output file
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
+  -v, --verbose                  include location name in output
+  -y, --yaml                     use YAML format of input and/or output
+  --compact                      use compact table format with no lines between body rows
+  --expanded                     use expanded table format with a line between each body row
+  --indent=indent                specify indentation for formatting JSON or YAML output
+  --language=language            ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
 _See code: [dist/commands/installedapps/rename.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.17/dist/commands/installedapps/rename.ts)_
+
+## `smartthings installedschema [ID]`
+
+get a specific schema connector instance or a list of instances
+
+```
+USAGE
+  $ smartthings installedschema [ID]
+
+ARGUMENTS
+  ID  the isa id
+
+OPTIONS
+  -h, --help                     show CLI help
+  -j, --json                     use JSON format of input and/or output
+  -l, --location-id=location-id  filter results by location
+  -o, --output=output            specify output file
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
+  -v, --verbose                  include location name in output
+  -y, --yaml                     use YAML format of input and/or output
+  --compact                      use compact table format with no lines between body rows
+  --expanded                     use expanded table format with a line between each body row
+  --indent=indent                specify indentation for formatting JSON or YAML output
+  --language=language            ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+```
+
+_See code: [dist/commands/installedschema.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.17/dist/commands/installedschema.ts)_
+
+## `smartthings installedschema:delete [ID]`
+
+delete the installed schema connector instance
+
+```
+USAGE
+  $ smartthings installedschema:delete [ID]
+
+ARGUMENTS
+  ID  installed schema conntector UUID
+
+OPTIONS
+  -h, --help                     show CLI help
+  -l, --location-id=location-id  filter results by location
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
+  -v, --verbose                  include location name in output
+  --language=language            ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+```
+
+_See code: [dist/commands/installedschema/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.17/dist/commands/installedschema/delete.ts)_
 
 ## `smartthings locations [IDORINDEX]`
 
