@@ -1,7 +1,13 @@
+import _ from 'lodash'
 import { URL } from 'url'
 
+import { logManager } from '../logger'
 import { DefaultTableGenerator, TableFieldDefinition, TableGenerator } from '../table-generator'
 
+import { debugMock, warnMock } from './test-lib/mock-logger'
+
+
+jest.mock('../logger')
 
 /**
  * Quote characters that are special to regular expressions.
@@ -133,8 +139,12 @@ const basicFieldDefinitions: TableFieldDefinition<SimpleData>[] = [
 describe('tableGenerator', () => {
 	let tableGenerator: TableGenerator
 
-	beforeAll(() => {
+	beforeEach(() => {
 		tableGenerator = new DefaultTableGenerator(true)
+	})
+
+	afterEach(() => {
+		jest.clearAllMocks()
 	})
 
 	it('buildTableFromItem converts simple column labels properly', function() {
@@ -254,5 +264,51 @@ describe('tableGenerator', () => {
 		const output = tableGenerator.buildTableFromList([basicData], ['id', 'someNumber'])
 
 		expect(output).toHaveItemValues(['uuid-here', '14.4'])
+	})
+
+	it('throws exception if value missing with no prop', () => {
+		expect(() => tableGenerator.buildTableFromItem(basicData, [{ label: 'Label' }]))
+			.toThrow('both label and value are required if prop is not specified')
+	})
+
+	it('throws exception if label missing with no prop', () => {
+		expect(() => tableGenerator.buildTableFromItem(basicData, [{ value: () => 'some value' }]))
+			.toThrow('both label and value are required if prop is not specified')
+	})
+
+	it('uses empty string for no match', () => {
+		const atSpy = jest.spyOn(_, 'at').mockReturnValue([])
+
+		const output = tableGenerator.buildTableFromList([{}], ['fieldName'])
+
+		expect(output).toHaveItemValues([''])
+		expect(logManager.getLogger).toHaveBeenCalledTimes(1)
+		expect(logManager.getLogger).toHaveBeenCalledWith('table-manager')
+		expect(atSpy).toHaveBeenCalledTimes(1)
+		expect(atSpy).toHaveBeenCalledWith({}, 'fieldName')
+		expect(debugMock).toHaveBeenCalledTimes(1)
+		expect(debugMock).toHaveBeenCalledWith('did not find match for fieldName in {}')
+	})
+
+	it('combines data on multiple matches', () => {
+		const atSpy = jest.spyOn(_, 'at').mockReturnValue(['one', 'two'])
+
+		const output = tableGenerator.buildTableFromList([{}], ['fieldName'])
+
+		expect(output).toHaveItemValues(['one, two'])
+		expect(logManager.getLogger).toHaveBeenCalledTimes(1)
+		expect(logManager.getLogger).toHaveBeenCalledWith('table-manager')
+		expect(atSpy).toHaveBeenCalledTimes(1)
+		expect(atSpy).toHaveBeenCalledWith({}, 'fieldName')
+		expect(warnMock).toHaveBeenCalledTimes(1)
+		expect(warnMock).toHaveBeenCalledWith('found more than one match for fieldName in {}')
+	})
+
+	it('gets logger only once', () => {
+		tableGenerator.buildTableFromList([{}], ['fieldName'])
+		expect(logManager.getLogger).toHaveBeenCalledTimes(1)
+		expect(logManager.getLogger).toHaveBeenCalledWith('table-manager')
+		tableGenerator.buildTableFromList([{}], ['fieldName'])
+		expect(logManager.getLogger).toHaveBeenCalledTimes(1)
 	})
 })

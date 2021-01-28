@@ -1,12 +1,11 @@
 import { flags } from '@oclif/command'
 import osLocale from 'os-locale'
 
-import { SmartThingsClient } from '@smartthings/core-sdk'
-import { BearerTokenAuthenticator } from '@smartthings/core-sdk'
+import { BearerTokenAuthenticator, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { SmartThingsCommand } from './smartthings-command'
 import { logManager } from './logger'
-import { LoginAuthenticator, defaultClientIdProvider } from './login-authenticator'
+import { defaultClientIdProvider, LoginAuthenticator } from './login-authenticator'
+import { SmartThingsCommand } from './smartthings-command'
 
 
 /**
@@ -54,8 +53,8 @@ export abstract class APICommand extends SmartThingsCommand {
 		const logger = logManager.getLogger('rest-client')
 
 		const headers = flags.language ?
-			(flags.language === 'NONE' ? undefined : {'Accept-Language': flags.language}) :
-			{'Accept-Language': await osLocale()}
+			(flags.language === 'NONE' ? undefined : { 'Accept-Language': flags.language }) :
+			{ 'Accept-Language': await osLocale() }
 
 		const authenticator = this.token
 			? new BearerTokenAuthenticator(this.token)
