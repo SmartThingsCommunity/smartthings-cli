@@ -204,6 +204,8 @@ const inputFlags = {
 }
 
 /**
+ * @deprecated use functions from io modules instead
+ *
  * Since both Outputting and Listing need OutputOptions, this is a simple
  * mixin that adds it and needs to be included when one or both of those
  * mixins are used.
@@ -311,8 +313,8 @@ export abstract class Outputting<O> extends Outputable {
  * index.
  *
  * Note that if you are going to take an action on the resource rather than just
- * displaying it, you should use one of the "Selecting" commands instead.
- * See SelectingAPICommandBase for more information.
+ * displaying it, you should use one of the "Selecting" functions instead.
+ * See io modules for more information.
  *
  * By default (not counting the index), the table output only includes the
  * fields defined by sortKeyName and primaryKeyName but more fields can
@@ -457,72 +459,6 @@ export abstract class InputOutputAPICommand<I, O> extends APICommand {
 
 export interface InputOutputAPICommand<I, O> extends Inputting<I>, Outputting<O> {}
 applyMixins(InputOutputAPICommand, [Inputting, Outputable, Outputting], { mergeFunctions: true })
-
-/**
- * This class is used for command like "delete" that require a specific resource
- * to act on.
- *
- * "Selecting" commands differ from their "Listing" counterparts
- * in that they query the user for a selected resource immediately after
- * displaying the list. These "Selecting" classes should be instead of the
- * "Listing" classes whenever the action has an effect (i.e. it does not
- * just list details).
- *
- * This class acts on an id via an "action callback" when the id is specified
- * in the first parameter to processNormally. If none is specified, it will
- * query a list of resources using the "listCallback", display that list to the
- * user and allow them to choose one by id or index.
- *
- * Generic types:
- *   ID: the type of the id; usually string
- *   L: the type of each object returned by the list callback
- */
-export abstract class SelectingAPICommandBase<ID, L> extends APICommand {
-	protected abstract getIdFromUser(items: L[]): Promise<ID>
-
-	private _entityId?: ID
-	protected get entityId(): ID {
-		if (!this._entityId) {
-			throw new Error('Entity ID not set')
-		}
-		return this._entityId
-	}
-
-	protected async processNormally(id: ID | undefined,
-			listCallback: ListCallback<L>,
-			actionCallback: ActionCallback<ID>,
-			successMessage?: string): Promise<void> {
-		try {
-			if (id) {
-				if (typeof id !== 'string' || !isIndexArgument(id)) {
-					this._entityId = id
-				} else {
-					throw new Error('List index references not supported for this command. Specify id instead or omit argument and select from list')
-				}
-			} else {
-				const items = this.sort(await listCallback())
-				if (items.length === 0) {
-					this.log('no items found')
-					process.exit(0)
-				}
-				this.writeListOutput(items)
-				this._entityId = await this.getIdFromUser(items)
-			}
-			await actionCallback(this.entityId)
-			if (successMessage) {
-				this.log(successMessage.replace('{{id}}', JSON.stringify(this._entityId)))
-			}
-		} catch (err) {
-			this.logger.error(`caught error ${err}`)
-			process.exit(1)
-		}
-	}
-
-	static flags = APICommand.flags
-}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-unused-vars
-export interface SelectingAPICommandBase<ID, L> extends Outputable, Listing<L> {}
-applyMixins(SelectingAPICommandBase, [Outputable, Listing], { mergeFunctions: true })
 
 async function oldStringTranslateToId<L>(this: APICommand & { readonly primaryKeyName: string; sort(list: L[]): L[] },
 		idOrIndex: string,
@@ -997,8 +933,7 @@ export abstract class NestedListingOutputAPICommand<O, L, NL> extends NestedList
 
 /**
  * This class is used for command like "delete" that act on a resource from a list
- * property on another listable resource. See SelectingAPICommandBase for more
- * description of the behavior of the class
+ * property on another listable resource.
  *
  * APIs that use a simple string identifier for both listable resource can use
  * NestedSelectingAPICommand while those whose second ID is a string but first is
