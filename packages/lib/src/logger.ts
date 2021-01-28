@@ -92,10 +92,10 @@ export class LogManager {
 	}
 }
 
-export function defaultLoggingConfig(filename: string): LoggingConfig {
+export function defaultLoggingConfig(logFilename: string): LoggingConfig {
 	return {
 		appenders: {
-			smartthings: { type: 'file', filename: filename, maxLogSize: DEFAULT_LOG_FILE_SIZE },
+			smartthings: { type: 'file', filename: logFilename, maxLogSize: DEFAULT_LOG_FILE_SIZE },
 			stderr: { type: 'stderr' },
 			errors: { type: 'logLevelFilter', appender: 'stderr', level: 'error' },
 		},
@@ -107,12 +107,12 @@ export function defaultLoggingConfig(filename: string): LoggingConfig {
 	}
 }
 
-export function loadLoggingConfig(filename: string, defaultConfig: LoggingConfig): LoggingConfig {
-	if (!fs.existsSync(filename)) {
+export function loadLoggingConfig(configFilename: string, defaultConfig: LoggingConfig): LoggingConfig {
+	if (!fs.existsSync(configFilename)) {
 		return defaultConfig
 	}
 
-	const parsed = yaml.safeLoad(fs.readFileSync(filename, 'utf-8'))
+	const parsed = yaml.safeLoad(fs.readFileSync(configFilename, 'utf-8'))
 	if (parsed && typeof parsed === 'object') {
 		return parsed as LoggingConfig
 	}

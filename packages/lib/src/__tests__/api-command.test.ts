@@ -1,16 +1,27 @@
 import { Config } from '@oclif/config'
+import { v4 as uuidv4 } from 'uuid'
+import * as osLocale from 'os-locale'
+
+import { SmartThingsClient } from '@smartthings/core-sdk'
+import * as coreSDK from '@smartthings/core-sdk'
+
 import { APICommand } from '../api-command'
 import { CLIConfig } from '../cli-config'
 import { ClientIdProvider } from '../login-authenticator'
-import { v4 as uuidv4 } from 'uuid'
 
 
+jest.mock('os-locale')
+jest.mock('@smartthings/core-sdk')
 jest.mock('../cli-config')
 jest.mock('../logger')
 jest.mock('../login-authenticator')
 
 
 describe('api-command', () => {
+	afterEach(() => {
+		jest.clearAllMocks()
+	})
+
 	describe('APICommand', () => {
 		class testCommand extends APICommand {
 			getToken(): string | undefined {
@@ -48,6 +59,40 @@ describe('api-command', () => {
 			await apiCommand.setup({}, [], { token: token })
 
 			expect(apiCommand.getToken()).toBe(token)
+			expect(SmartThingsClient).toHaveBeenCalledTimes(1)
+		})
+
+		it('should pass language header on to client', async () => {
+			await apiCommand.setup({}, [], { language: 'es-US' })
+			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
+
+			expect(stClientSpy).toHaveBeenCalledTimes(1)
+
+			const configUsed = stClientSpy.mock.calls[0][1]
+			expect(configUsed?.headers).toEqual({ 'Accept-Language': 'es-US' })
+		})
+
+		it('should skip language header when "NONE" specified', async () => {
+			await apiCommand.setup({}, [], { language: 'NONE' })
+			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
+
+			expect(stClientSpy).toHaveBeenCalledTimes(1)
+
+			const configUsed = stClientSpy.mock.calls[0][1]
+			expect(configUsed).toBeDefined()
+			expect(configUsed?.headers).toBeUndefined()
+		})
+
+		it('should uses os language header when not specified', async () => {
+			const osLocaleSpy = jest.spyOn(osLocale, 'default').mockResolvedValue('fr-CA')
+			await apiCommand.setup({}, [], {})
+			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
+
+			expect(stClientSpy).toHaveBeenCalledTimes(1)
+
+			expect(osLocaleSpy).toHaveBeenCalledTimes(1)
+			const configUsed = stClientSpy.mock.calls[0][1]
+			expect(configUsed?.headers).toEqual({ 'Accept-Language': 'fr-CA' })
 		})
 
 		it('should set token when passed via profileConfig during setup', async () => {
