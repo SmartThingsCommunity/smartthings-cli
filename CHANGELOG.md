@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.18](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.17...v0.0.0-pre.18) (2021-02-01)
+
+
+### Features
+
+* Added commands to list, show, and delete installed ST schema instances ([3158d47](https://github.com/rossiam/smartthings-cli/commit/3158d4715e7ec3f261af74429675f3afa97695e5))
+
+
+
+
+
 # [0.0.0-pre.17](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.16...v0.0.0-pre.17) (2021-01-25)
 
 **Note:** Version bump only for package root
