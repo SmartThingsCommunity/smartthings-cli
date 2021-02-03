@@ -19,9 +19,7 @@ export default class DevicePresentationCommand extends SelectingOutputAPICommand
 	sortKeyName = 'label'
 	acceptIndexId = true
 
-	protected buildTableOutput(presentation: PresentationDevicePresentation): string {
-		return buildTableOutput(presentation, this.tableGenerator)
-	}
+	buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DevicePresentationCommand)
