@@ -1,6 +1,6 @@
 import { PresentationDeviceConfig, PresentationDPInfo, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
 
-import { APICommand, OutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, outputItem } from '@smartthings/cli-lib'
 
 
 export function buildTableOutput(this: APICommand, deviceConfig: PresentationDeviceConfig): string {
@@ -76,10 +76,13 @@ export function buildTableOutput(this: APICommand, deviceConfig: PresentationDev
 		'(Information is summarized, for full details use YAML or JSON flags.)'
 }
 
-export default class Devices extends OutputAPICommand<PresentationDeviceConfig> {
+export default class DeviceConfigPresentationCommand extends APICommand {
 	static description = 'query device config by presentationId'
 
-	static flags = OutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...outputItem.flags,
+	}
 
 	static args = [{
 		name: 'presentationId',
@@ -87,14 +90,12 @@ export default class Devices extends OutputAPICommand<PresentationDeviceConfig> 
 		required: true,
 	}]
 
-	protected buildTableOutput = buildTableOutput
+	buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(Devices)
+		const { args, argv, flags } = this.parse(DeviceConfigPresentationCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(() => {
-			return this.client.presentation.get(args.presentationId)
-		})
+		await outputItem(this, () => this.client.presentation.get(args.presentationId))
 	}
 }

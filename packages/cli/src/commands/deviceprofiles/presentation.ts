@@ -5,7 +5,7 @@ import {SelectingOutputAPICommand} from '@smartthings/cli-lib'
 import { buildTableOutput } from '../presentation'
 
 
-export default class ProfilePresentationCommand extends SelectingOutputAPICommand<PresentationDevicePresentation, DeviceProfile> {
+export default class DeviceProfilePresentationCommand extends SelectingOutputAPICommand<PresentationDevicePresentation, DeviceProfile> {
 	static description = 'get the presentation associated with a device profile'
 
 	static flags = SelectingOutputAPICommand.flags
@@ -31,12 +31,10 @@ export default class ProfilePresentationCommand extends SelectingOutputAPIComman
 	listTableFieldDefinitions = ['name', 'status', 'id']
 	acceptIndexId = true
 
-	protected buildTableOutput(presentation: PresentationDevicePresentation): string {
-		return buildTableOutput(presentation, this.tableGenerator)
-	}
+	buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(ProfilePresentationCommand	)
+		const { args, argv, flags } = this.parse(DeviceProfilePresentationCommand)
 		await super.setup(args, argv, flags)
 
 		await this.processNormally(

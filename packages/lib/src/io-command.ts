@@ -385,33 +385,6 @@ export interface InputAPICommand<I> extends Inputting<I> {}
 applyMixins(InputAPICommand, [Inputting], { mergeFunctions: true })
 
 /**
- * Extend this class if your command has complex output but doesn't take
- * complex input and doesn't need to list multiple resources. This is a
- * relatively rare use-case.
- */
-export abstract class OutputAPICommand<O> extends APICommand {
-	/**
-	 * This is just a convenience method that outputs the data and handles
-	 * exceptions.
-	 *
-	 * @param executeCommand function that does the work
-	 */
-	protected processNormally(getData: GetCallback<O>): void {
-		getData().then(data => {
-			this.writeOutput(data)
-		}).catch(err => {
-			this.logger.error(`caught error ${err}`)
-			process.exit(1)
-		})
-	}
-
-	static flags = outputFlags
-}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface OutputAPICommand<O> extends Outputting<O> {}
-applyMixins(OutputAPICommand, [Outputable, Outputting], { mergeFunctions: true })
-
-/**
  * An API command that has complex input and complex output. This
  * would normally be used for POST and PUT methods (though in the case of PUT
  * one of the "Selecting" classes that extend this is more often appropriate).
