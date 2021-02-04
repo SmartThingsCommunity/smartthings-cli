@@ -10,7 +10,7 @@ export default class RoomsCreate extends InputOutputAPICommand<RoomRequest, Room
 
 	static flags = {
 		...InputOutputAPICommand.flags,
-		locationid: flags.string({
+		'location-id': flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -25,7 +25,7 @@ export default class RoomsCreate extends InputOutputAPICommand<RoomRequest, Room
 		await super.setup(args, argv, flags)
 
 		this.processNormally(location => {
-			return this.client.rooms.create(location, flags.locationid)
+			return this.client.rooms.create(location, flags['location-id'])
 		})
 	}
 }

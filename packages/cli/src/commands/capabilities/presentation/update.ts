@@ -18,9 +18,8 @@ export default class CapabilitiesPresentationUpdate extends SelectingInputOutput
 
 	protected listTableFieldDefinitions = ['id', 'version', 'status']
 
-	protected buildTableOutput = buildTableOutput
-	private getCustomByNamespace = getCustomByNamespace
-	protected getIdFromUser = getIdFromUser
+	protected buildTableOutput: (data: CapabilityPresentation) => string = (data) => buildTableOutput(this.tableGenerator, data)
+	protected getIdFromUser: (items: CapabilitySummaryWithNamespace[]) => Promise<CapabilityId> = items => getIdFromUser(this, items)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesPresentationUpdate)
@@ -30,7 +29,7 @@ export default class CapabilitiesPresentationUpdate extends SelectingInputOutput
 			? { id: args.id, version: args.version }
 			: (args.id ? { id: args.id, version: 1 } : undefined)
 		await this.processNormally(idOrIndex,
-			async () => this.getCustomByNamespace(),
-			async (id, capabilityPresentation) => this.client.capabilities.updatePresentation(id.id, id.version, capabilityPresentation))
+			async () => getCustomByNamespace(this.client),
+			async (id, capabilityPresentation)=> this.client.capabilities.updatePresentation(id.id, id.version, capabilityPresentation))
 	}
 }

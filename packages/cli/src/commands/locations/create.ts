@@ -1,4 +1,4 @@
-import { LocationCreate, Location } from '@smartthings/core-sdk'
+import { LocationCreate } from '@smartthings/core-sdk'
 
 import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
@@ -13,12 +13,11 @@ export default class LocationsCreateCommand extends APICommand {
 		...inputAndOutputItem.flags,
 	}
 
-	tableFieldDefinitions = tableFieldDefinitions
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(LocationsCreateCommand)
 		await super.setup(args, argv, flags)
 
-		await inputAndOutputItem<LocationCreate, Location>(this, (_, input) => this.client.locations.create(input))
+		await inputAndOutputItem(this, { tableFieldDefinitions },
+			(_, input: LocationCreate) => this.client.locations.create(input))
 	}
 }

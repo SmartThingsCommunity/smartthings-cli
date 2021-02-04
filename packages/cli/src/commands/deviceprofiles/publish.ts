@@ -19,7 +19,7 @@ export default class DeviceProfilePublishCommand extends SelectingOutputAPIComma
 	sortKeyName = 'name'
 	listTableFieldDefinitions = ['name', 'status', 'id']
 
-	protected buildTableOutput = buildTableOutput
+	protected buildTableOutput: (data: DeviceProfile) => string = data => buildTableOutput(this.tableGenerator, data)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfilePublishCommand)

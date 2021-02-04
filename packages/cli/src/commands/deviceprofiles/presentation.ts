@@ -31,16 +31,15 @@ export default class DeviceProfilePresentationCommand extends SelectingOutputAPI
 	listTableFieldDefinitions = ['name', 'status', 'id']
 	acceptIndexId = true
 
-	buildTableOutput = buildTableOutput
+	buildTableOutput: (data: PresentationDevicePresentation) => string = data => buildTableOutput(this.tableGenerator, data)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfilePresentationCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(
-			args.id,
-			() => { return this.client.deviceProfiles.list() },
-			async (id) => {
+		await this.processNormally(args.id,
+			() => this.client.deviceProfiles.list(),
+			async id => {
 				const profile = await this.client.deviceProfiles.get(id)
 				if (profile.metadata) {
 					return this.client.presentation.getPresentation(profile.metadata.vid, profile.metadata.mnmn)

@@ -1,4 +1,4 @@
-import { ActionFunction, IdRetrievalFunction, ListDataFunction, outputList, Sorting } from './basic-io'
+import { ActionFunction, IdRetrievalFunction, ListDataFunction, Naming, outputList, Sorting } from './basic-io'
 import { stringGetIdFromUser } from './command-util'
 import { CommonListOutputProducer, CommonOutputProducer, formatAndWriteItem } from './format'
 import { SmartThingsCommandInterface } from './smartthings-command'
@@ -11,29 +11,32 @@ import { SmartThingsCommandInterface } from './smartthings-command'
 
 // TODO: implement equivalent of acceptIndexId from old code
 
-export type SelectingCommand<L> = SmartThingsCommandInterface & Sorting & CommonListOutputProducer<L>
+export type SelectingConfig<L> = Sorting & Naming & CommonListOutputProducer<L>
 
-export async function selectGeneric<ID, L>(command: SelectingCommand<L>, id: ID | undefined,
-		listItems: ListDataFunction<L>, getIdFromUser: IdRetrievalFunction<ID, L>): Promise<ID> {
-	if (id) {
-		return id
+export async function selectGeneric<ID, L>(command: SmartThingsCommandInterface, config: SelectingConfig<L>,
+		preselectedId: ID | undefined, listItems: ListDataFunction<L>,
+		getIdFromUser: IdRetrievalFunction<ID, L>, promptMessage?: string): Promise<ID> {
+	if (preselectedId) {
+		return preselectedId
 	}
 
-	const list = await outputList(command, listItems, true)
+	const list = await outputList(command, config, listItems, true)
 	if (list.length === 0) {
 		// Nothing was found; user was already notified.
 		command.exit(0)
 	}
 
-	return await getIdFromUser(command, list)
+	return await getIdFromUser(config, list, promptMessage)
 }
 
-export async function select<L>(command: SelectingCommand<L>, id: string | undefined,
-		listItems: ListDataFunction<L>): Promise<string> {
-	return selectGeneric(command, id, listItems, stringGetIdFromUser)
+export async function selectFromList<L>(command: SmartThingsCommandInterface, config: SelectingConfig<L>,
+		preselectedId: string | undefined, listItems: ListDataFunction<L>, promptMessage?: string): Promise<string> {
+	return selectGeneric(command, config, preselectedId, listItems, stringGetIdFromUser, promptMessage)
 }
 
 /**
+ * @deprecated Use select and then do your action.
+ *
  * Process a command that selects and item (e.g. a device), performs some action on that device.
  * This method is mainly here to combine shared code for the methods below but could be used
  * elsewhere in circumstances where unusual output might be necessary.
@@ -47,14 +50,14 @@ export async function select<L>(command: SelectingCommand<L>, id: string | undef
  *
  * @returns a tuple containing the id of the item acted on and the result of the action function.
  */
-export async function selectAndActOnGeneric<ID, O, L>(command: SelectingCommand<L>,
+export async function selectAndActOnGeneric<ID, O, L>(command: SmartThingsCommandInterface & SelectingConfig<L>,
 		id: ID | undefined, listItems: ListDataFunction<L>, executeAction: ActionFunction<ID, void, O>,
 		getIdFromUser: IdRetrievalFunction<ID, L>, successMessage?: string): Promise<[ID, O]> {
 	let chosenId: ID
 	if (id) {
 		chosenId = id
 	} else {
-		const list = await outputList(command, listItems, true)
+		const list = await outputList(command, command, listItems, true)
 		if (list.length === 0) {
 			// Nothing was found; user was already notified.
 			command.exit(0)
@@ -71,6 +74,8 @@ export async function selectAndActOnGeneric<ID, O, L>(command: SelectingCommand<
 }
 
 /**
+ * @deprecated Use select and then do your action.
+ *
  * Process a command that selects and item (e.g. a device), performs some action on that device
  * and then simply states that the action has completed. This is useful for actions that don't
  * return data, like deleting an item.
@@ -85,7 +90,7 @@ export async function selectAndActOnGeneric<ID, O, L>(command: SelectingCommand<
  *
  * @returns the id selected and acted on by `actionFunction`
  */
-export async function selectAndActOn<L>(command: SelectingCommand<L>, id: string | undefined,
+export async function selectAndActOn<L>(command: SmartThingsCommandInterface & SelectingConfig<L>, id: string | undefined,
 		listItems: ListDataFunction<L>, executeAction: ActionFunction<string, void, void>,
 		successMessage: string): Promise<string> {
 	const [computedId] = await selectAndActOnGeneric<string, void, L>(command, id, listItems,
@@ -93,9 +98,11 @@ export async function selectAndActOn<L>(command: SelectingCommand<L>, id: string
 	return computedId
 }
 
-export type SelectingOutputCommand<O, L> = SelectingCommand<L> & CommonOutputProducer<O>
+export type SelectingOutputCommand<O, L> = SelectingConfig<L> & CommonOutputProducer<O>
 
 /**
+ * @deprecated use selectFromList, output and then do action
+ *
  * Process a command that selects an item (e.g. a device), performs some action on that device
  * and then outputs the results. Unless your ids are not simple strings, you probably want to
  * use `selectActOnAndOutput` below instead.
@@ -109,16 +116,18 @@ export type SelectingOutputCommand<O, L> = SelectingCommand<L> & CommonOutputPro
  *
  * @returns a tuple containing the id of the item acted on and the result of the action function.
  */
-export async function selectActOnAndOutputGeneric<ID, O, L>(command: SelectingOutputCommand<O, L>,
+export async function selectActOnAndOutputGeneric<ID, O, L>(command: SmartThingsCommandInterface & SelectingOutputCommand<O, L>,
 		id: ID | undefined, listItems: ListDataFunction<L>, executeAction: ActionFunction<ID, void, O>,
 		getIdFromUser: IdRetrievalFunction<ID, L>): Promise<[ID, O]> {
 	const [computedId, updatedItem] = await selectAndActOnGeneric(command, id, listItems, executeAction, getIdFromUser)
-	await formatAndWriteItem(command, updatedItem)
+	await formatAndWriteItem(command, command, updatedItem)
 	return [computedId, updatedItem]
 }
 selectActOnAndOutputGeneric.flags = outputList.flags
 
 /**
+ * @deprecated use selectFromList, output and then do action
+ *
  * Process a command that selects an item (e.g. a device), performs some action on that device
  * and then outputs the results.
  *
@@ -130,7 +139,7 @@ selectActOnAndOutputGeneric.flags = outputList.flags
  *
  * @returns a tuple containing the id of the item acted on and the result of the action function.
  */
-export async function selectActOnAndOutput<O, L>(command: SelectingOutputCommand<O, L>,
+export async function selectActOnAndOutput<O, L>(command: SmartThingsCommandInterface & SelectingOutputCommand<O, L>,
 		id: string | undefined, listItems: ListDataFunction<L>,
 		executeAction: ActionFunction<string, void, O>): Promise<[string, O]> {
 	return selectActOnAndOutputGeneric<string, O, L>(command, id, listItems, executeAction, stringGetIdFromUser)

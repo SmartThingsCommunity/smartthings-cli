@@ -65,17 +65,17 @@ export default class RulesCommand extends APICommand {
 		description: 'rule UUID or index',
 	}]
 
-	primaryKeyName = 'id'
-	sortKeyName = 'name'
-
-	listTableFieldDefinitions = ['name', 'id', 'locationId', 'locationName']
-	tableFieldDefinitions = tableFieldDefinitions
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(RulesCommand)
 		await super.setup(args, argv, flags)
 
-		await outputListing(this, args.idOrIndex,
+		const config = {
+			primaryKeyName: 'id',
+			sortKeyName: 'name',
+			listTableFieldDefinitions: ['name', 'id', 'locationId', 'locationName'],
+			tableFieldDefinitions,
+		}
+		await outputListing(this, config, args.idOrIndex,
 			() => getRulesByLocation(this.client, flags['location-id']),
 			id => getRule(this.client, id, flags['location-id']),
 		)

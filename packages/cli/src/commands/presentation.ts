@@ -1,10 +1,9 @@
 import { PresentationDevicePresentation } from '@smartthings/core-sdk'
 
-import {APICommand, outputItem} from '@smartthings/cli-lib'
+import { APICommand, outputItem, TableGenerator } from '@smartthings/cli-lib'
 
 
-export function buildTableOutput(this: APICommand, presentation: PresentationDevicePresentation): string {
-	const tableGenerator = this.tableGenerator
+export function buildTableOutput(tableGenerator: TableGenerator, presentation: PresentationDevicePresentation): string {
 	const basicInfo = tableGenerator.buildTableFromItem(presentation, [
 		{ prop: 'presentationId', label: 'Presentation ID' }, { prop: 'manufacturerName', label: 'Manufacturer Name' }, 'iconUrl',
 	])
@@ -81,7 +80,7 @@ export function buildTableOutput(this: APICommand, presentation: PresentationDev
 		`${detailViews}\n\n` +
 		`${automationConditions}\n\n` +
 		`${automationActions}\n\n` +
-		'(Information is summarized, for full details use YAML or JSON flags.)'
+		'(Information is summarized, for full details use YAML or JSON flag.)'
 }
 
 export default class PresentationCommand extends APICommand {
@@ -117,12 +116,14 @@ export default class PresentationCommand extends APICommand {
 		'flag then no language header is specified in the API request',
 	]
 
-	buildTableOutput = buildTableOutput
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(PresentationCommand)
 		await super.setup(args, argv, flags)
 
-		await outputItem(this, () => this.client.presentation.getPresentation(args.presentationId, args.manufacturerName))
+		const config = {
+			buildTableOutput: (data: PresentationDevicePresentation) => buildTableOutput(this.tableGenerator, data),
+		}
+		await outputItem(this, config,
+			() => this.client.presentation.getPresentation(args.presentationId, args.manufacturerName))
 	}
 }

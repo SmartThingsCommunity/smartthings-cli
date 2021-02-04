@@ -29,18 +29,16 @@ export default class RoomsUpdateCommand extends SelectingInputOutputAPICommand <
 	protected tableFieldDefinitions = tableFieldDefinitions
 	protected listTableFieldDefinitions = tableFieldDefinitions
 
-	protected getRoomsByLocation = getRoomsByLocation
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(RoomsUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		const roomsPromise = this.getRoomsByLocation(flags['location-id'])
+		const rooms = await getRoomsByLocation(this.client, flags['location-id'])
 		await this.processNormally(
 			args.id,
-			() => roomsPromise,
+			async () => rooms,
 			async (id, data) => {
-				const room = (await roomsPromise).find(room => room.roomId === id)
+				const room = rooms.find(room => room.roomId === id)
 				if (!room) {
 					throw Error(`could not find room with id ${id}`)
 				}

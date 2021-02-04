@@ -17,7 +17,7 @@ export default class CapabilityTranslationsUpsertCommand extends SelectingInputO
 	static args = capabilityIdInputArgs
 
 	static examples = [
-		'$ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yml ',
+		'$ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml ',
 		'tag: en',
 		'label: Output Modulation',
 		'attributes:',
@@ -37,7 +37,7 @@ export default class CapabilityTranslationsUpsertCommand extends SelectingInputO
 		'      outputModulation:',
 		'        label: Output Modulation',
 		'',
-		'$ smartthings capabilities:translations:upsert -i en.yml',
+		'$ smartthings capabilities:translations:upsert -i en.yaml',
 		'┌───┬─────────────────────────────┬─────────┬──────────┐',
 		'│ # │ Id                          │ Version │ Status   │',
 		'├───┼─────────────────────────────┼─────────┼──────────┤',
@@ -71,8 +71,7 @@ export default class CapabilityTranslationsUpsertCommand extends SelectingInputO
 	protected listTableFieldDefinitions = ['id', 'version']
 
 	protected buildTableOutput = buildTableOutput
-	private getCustomByNamespace = getCustomByNamespace
-	protected getIdFromUser = getIdFromUser
+	protected getIdFromUser: (items: CapabilitySummaryWithNamespace[]) => Promise<CapabilityId> = items => getIdFromUser(this, items)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilityTranslationsUpsertCommand)
@@ -83,9 +82,7 @@ export default class CapabilityTranslationsUpsertCommand extends SelectingInputO
 			: args.id
 
 		await this.processNormally(idOrIndex,
-			async () => this.getCustomByNamespace(),
-			async (id, translations) => {
-				return this.client.capabilities.upsertTranslations(id.id, id.version, translations)
-			})
+			async () => getCustomByNamespace(this.client),
+			async (id, translations) => this.client.capabilities.upsertTranslations(id.id, id.version, translations))
 	}
 }

@@ -17,9 +17,8 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommandBa
 
 	protected listTableFieldDefinitions = ['id', 'version']
 
-	protected buildTableOutput = buildTableOutput
-	private getCustomByNamespace = getCustomByNamespace
-	protected getIdFromUser = getIdFromUser
+	protected buildTableOutput: (data: Capability) => string = data => buildTableOutput(this.tableGenerator, data)
+	protected getIdFromUser: (items: CapabilitySummaryWithNamespace[]) => Promise<CapabilityId> = items => getIdFromUser(this, items)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesUpdate)
@@ -29,7 +28,7 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommandBa
 			? { id: args.id, version: args.version }
 			: args.id
 		await this.processNormally(idOrIndex,
-			async () => this.getCustomByNamespace(),
+			async () => getCustomByNamespace(this.client),
 			async (id, capability) => this.client.capabilities.update(id.id, id.version, capability))
 	}
 }

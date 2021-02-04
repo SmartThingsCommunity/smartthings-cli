@@ -2,7 +2,7 @@ import inquirer from 'inquirer'
 
 import { Command, Component, CapabilityReference, Device } from '@smartthings/core-sdk'
 
-import { APICommand, commandLineInputProcessor, inputItem, inputProcessor, isIndexArgument, select } from '@smartthings/cli-lib'
+import { APICommand, commandLineInputProcessor, inputItem, inputProcessor, isIndexArgument, selectFromList } from '@smartthings/cli-lib'
 
 import { attributeType } from '../capabilities'
 
@@ -81,11 +81,6 @@ export default class DeviceCommandsCommand extends APICommand {
 			description: 'the command [<component>]:<capability>:<command>([<arguments>])',
 		},
 	]
-
-	primaryKeyName = 'deviceId'
-	sortKeyName = 'label'
-	listTableFieldDefinitions = ['label', 'name', 'type', 'deviceId']
-	acceptIndexId = true
 
 	hasCommandLineInput(): boolean {
 		return !!this.args.command
@@ -258,7 +253,12 @@ export default class DeviceCommandsCommand extends APICommand {
 		const { args, argv, flags } = this.parse(DeviceCommandsCommand)
 		await super.setup(args, argv, flags)
 
-		const deviceId = await select(this, args.id, () => this.client.devices.list())
+		const config = {
+			primaryKeyName: 'deviceId',
+			sortKeyName: 'label',
+			listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
+		}
+		const deviceId = await selectFromList(this, config, args.id, () => this.client.devices.list())
 		const [commands] = await inputItem<Command[]>(this, commandLineInputProcessor(this),
 			inputProcessor(() => true, () => this.getInputFromUser(deviceId)))
 		await this.client.devices.executeCommands(deviceId, commands)

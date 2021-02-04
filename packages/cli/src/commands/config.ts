@@ -47,25 +47,26 @@ export default class ConfigCommand extends SmartThingsCommand {
 		description: 'the config name',
 	}]
 
-	primaryKeyName = 'name'
-	sortKeyName = 'name'
-
-	listTableFieldDefinitions: TableFieldDefinition<ConfigItem>[] = [
-		'name',
-		{ label: 'Active', value: (item) => reservedKey(item.name) ? 'N/A' : item.active ? 'true' : '' },
-	]
-
-	tableFieldDefinitions: TableFieldDefinition<ConfigItem>[] = [
-		...this.listTableFieldDefinitions,
-		{ label: 'Definition', value: (item) => yaml.safeDump(item.data) },
-	]
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(ConfigCommand)
 		await super.setup(args, argv, flags)
 
+		const listTableFieldDefinitions: TableFieldDefinition<ConfigItem>[] = [
+			'name',
+			{ label: 'Active', value: (item) => reservedKey(item.name) ? 'N/A' : item.active ? 'true' : '' },
+		]
+		const tableFieldDefinitions: TableFieldDefinition<ConfigItem>[] = [
+			...listTableFieldDefinitions,
+			{ label: 'Definition', value: (item) => yaml.safeDump(item.data) },
+		]
+
+		const outputListConfig = {
+			primaryKeyName: 'name',
+			sortKeyName: 'name',
+			listTableFieldDefinitions,
+		}
 		if (this.flags.verbose) {
-			this.listTableFieldDefinitions.push('token')
+			outputListConfig.listTableFieldDefinitions.push('token')
 		}
 
 		const getConfig = async (name: string): Promise<ConfigItem> => {
@@ -78,18 +79,18 @@ export default class ConfigCommand extends SmartThingsCommand {
 				return new ConfigItem(it, config[it], this.profileName)
 			})
 			if (this.flags.verbose && !!list.find(it => it.data?.clientIdProvider?.baseURL)) {
-				this.listTableFieldDefinitions.push('apiUrl')
+				listTableFieldDefinitions.push('apiUrl')
 			}
 			return list
 		}
 
 		if (args.name) {
-			const id = await stringTranslateToId(this, args.name, listConfigs)
-			await outputItem(this, () => getConfig(id))
+			const id = await stringTranslateToId(outputListConfig, args.name, listConfigs)
+			await outputItem(this, { tableFieldDefinitions }, () => getConfig(id))
 		} else {
 			const outputFormat = calculateOutputFormat(this)
 			if (outputFormat === IOFormat.COMMON) {
-				await outputList(this, listConfigs, true)
+				await outputList(this, outputListConfig, listConfigs, true)
 			} else {
 				const outputFormatter = buildOutputFormatter(this)
 				await writeOutput(outputFormatter(cliConfig.getRawConfigData()), this.flags.output)

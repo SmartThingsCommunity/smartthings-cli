@@ -20,7 +20,7 @@ export default class ProfilePresentationCommand extends SelectingOutputAPIComman
 	listTableFieldDefinitions = ['name', 'status', 'id']
 	acceptIndexId = true
 
-	protected buildTableOutput = buildTableOutput
+	protected buildTableOutput: (data: PresentationDeviceConfig) => string = data => buildTableOutput(this.tableGenerator, data)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(ProfilePresentationCommand	)

@@ -2,14 +2,12 @@ import { flags } from '@oclif/command'
 
 import { CapabilityPresentation } from '@smartthings/core-sdk'
 
-import { APICommand, outputGenericListing } from '@smartthings/cli-lib'
+import { APICommand, outputGenericListing, TableGenerator } from '@smartthings/cli-lib'
 
 import { CapabilityId, capabilityIdOrIndexInputArgs, getCustomByNamespace, translateToId } from '../capabilities'
 
 
-export function buildTableOutput(this: APICommand, presentation: CapabilityPresentation): string {
-	const tableGenerator = this.tableGenerator
-
+export function buildTableOutput(tableGenerator: TableGenerator, presentation: CapabilityPresentation): string {
 	const basicInfo = tableGenerator.buildTableFromItem(presentation, ['id', 'version'])
 
 	let dashboardStates = 'No dashboard states'
@@ -66,7 +64,7 @@ export function buildTableOutput(this: APICommand, presentation: CapabilityPrese
 		`${detailView}\n\n` +
 		`${automationConditions}\n\n` +
 		`${automationActions}\n\n` +
-		'(Information is summarized, for full details use YAML or JSON flags.)'
+		'(Information is summarized, for full details use YAML or JSON flag.)'
 }
 
 export default class PresentationsCommand extends APICommand {
@@ -83,15 +81,6 @@ export default class PresentationsCommand extends APICommand {
 
 	static args = capabilityIdOrIndexInputArgs
 
-	primaryKeyName = 'id'
-	sortKeyName = 'id'
-
-	listTableFieldDefinitions = ['id', 'version', 'status']
-
-	buildTableOutput = buildTableOutput
-
-	private getCustomByNamespace = getCustomByNamespace
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(PresentationsCommand)
 		await super.setup(args, argv, flags)
@@ -99,9 +88,15 @@ export default class PresentationsCommand extends APICommand {
 		const idOrIndex = args.version
 			? { id: args.id, version: args.version }
 			: args.id
-		await outputGenericListing(this, idOrIndex,
-			() => this.getCustomByNamespace(flags.namespace),
+		const config = {
+			primaryKeyName: 'id',
+			sortKeyName: 'id',
+			listTableFieldDefinitions: ['id', 'version', 'status'],
+			buildTableOutput: (data: CapabilityPresentation) => buildTableOutput(this.tableGenerator, data),
+		}
+		await outputGenericListing(this, config, idOrIndex,
+			() => getCustomByNamespace(this.client, flags.namespace),
 			(id: CapabilityId) =>  this.client.capabilities.getPresentation(id.id, id.version),
-			(idOrIndex, listFunction) => translateToId(this.sortKeyName, idOrIndex, listFunction))
+			(idOrIndex, listFunction) => translateToId(config.sortKeyName, idOrIndex, listFunction))
 	}
 }

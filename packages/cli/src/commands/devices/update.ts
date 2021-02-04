@@ -15,7 +15,7 @@ export default class DeviceUpdateCommand extends SelectingInputOutputAPICommand<
 		},
 	]
 
-	protected buildTableOutput = buildTableOutput
+	protected buildTableOutput: (data: Device) => string = data => buildTableOutput(this.tableGenerator, data)
 
 	primaryKeyName = 'deviceId'
 	sortKeyName = 'label'

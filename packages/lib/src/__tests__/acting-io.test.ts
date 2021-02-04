@@ -1,4 +1,4 @@
-import { select, selectActOnAndOutput, selectActOnAndOutputGeneric, selectAndActOn, selectAndActOnGeneric } from '../acting-io'
+import { selectActOnAndOutput, selectActOnAndOutputGeneric, selectAndActOn, selectAndActOnGeneric, selectFromList } from '../acting-io'
 import * as basicIO from '../basic-io'
 import * as commandUtil from '../command-util'
 import * as format from '../format'
@@ -13,10 +13,14 @@ describe('acting-io', () => {
 		flags: {
 			output: 'output.yaml',
 		},
+	}
+	const config = {
 		tableFieldDefinitions: [],
 		primaryKeyName: 'str',
 		sortKeyName: 'num',
 	}
+	// for testing deprecated commands
+	const commandAndConfig = { ...command, ...config }
 
 	const listFunction = jest.fn()
 	const actionFunction = jest.fn().mockResolvedValue(item)
@@ -30,9 +34,9 @@ describe('acting-io', () => {
 		jest.clearAllMocks()
 	})
 
-	describe('select', () => {
+	describe('selectFromList', () => {
 		it('returns id when present', async () => {
-			expect(await select(command, 'sample-id', listFunction)).toBe('sample-id')
+			expect(await selectFromList(command, config, 'sample-id', listFunction)).toBe('sample-id')
 			expect(listFunction).toHaveBeenCalledTimes(0)
 			expect(outputListSpy).toHaveBeenCalledTimes(0)
 			expect(getIdFromUserSpy).toHaveBeenCalledTimes(0)
@@ -41,14 +45,27 @@ describe('acting-io', () => {
 		it('gets list and asks user for selection with no id', async () => {
 			outputListSpy.mockResolvedValue(list)
 
-			const resultId = await select(command, undefined, listFunction)
+			const resultId = await selectFromList(command, config, undefined, listFunction)
 
 			expect(resultId).toBe('chosen id')
 			expect(listFunction).toHaveBeenCalledTimes(0)
 			expect(outputListSpy).toHaveBeenCalledTimes(1)
-			expect(outputListSpy).toHaveBeenCalledWith(command, listFunction, true)
+			expect(outputListSpy).toHaveBeenCalledWith(command, config, listFunction, true)
 			expect(getIdFromUserSpy).toHaveBeenCalledTimes(1)
-			expect(getIdFromUserSpy).toHaveBeenCalledWith(command, list)
+			expect(getIdFromUserSpy).toHaveBeenCalledWith(config, list, undefined)
+		})
+
+		it('passes custom prompt on', async () => {
+			outputListSpy.mockResolvedValue(list)
+
+			const resultId = await selectFromList(command, config, undefined, listFunction, 'custom prompt')
+
+			expect(resultId).toBe('chosen id')
+			expect(listFunction).toHaveBeenCalledTimes(0)
+			expect(outputListSpy).toHaveBeenCalledTimes(1)
+			expect(outputListSpy).toHaveBeenCalledWith(command, config, listFunction, true)
+			expect(getIdFromUserSpy).toHaveBeenCalledTimes(1)
+			expect(getIdFromUserSpy).toHaveBeenCalledWith(config, list, 'custom prompt')
 		})
 
 		it('exits when nothing to select from', async () => {
@@ -56,18 +73,18 @@ describe('acting-io', () => {
 			// fake exiting with a special thrown error
 			exitMock.mockImplementation(() => { throw Error('should exit') })
 
-			await expect(select(command, undefined, listFunction)).rejects.toThrow('should exit')
+			await expect(selectFromList(command, config, undefined, listFunction)).rejects.toThrow('should exit')
 
 			expect(listFunction).toHaveBeenCalledTimes(0)
 			expect(outputListSpy).toHaveBeenCalledTimes(1)
-			expect(outputListSpy).toHaveBeenCalledWith(command, listFunction, true)
+			expect(outputListSpy).toHaveBeenCalledWith(command, config, listFunction, true)
 			expect(getIdFromUserSpy).toHaveBeenCalledTimes(0)
 		})
 	})
 
 	describe('selectAndActOnGeneric', () => {
 		it('acts on specified id', async () => {
-			const [resultId, resultItem] = await selectAndActOnGeneric(command, 'id', listFunction,
+			const [resultId, resultItem] = await selectAndActOnGeneric(commandAndConfig, 'id', listFunction,
 				actionFunction, getIdFromUser)
 
 			expect(resultId).toBe('id')
@@ -82,22 +99,22 @@ describe('acting-io', () => {
 		it('gets list and asks user for selection with no id', async () => {
 			outputListSpy.mockResolvedValue(list)
 
-			const [resultId, resultItem] = await selectAndActOnGeneric(command, undefined,
+			const [resultId, resultItem] = await selectAndActOnGeneric(commandAndConfig, undefined,
 				listFunction, actionFunction, getIdFromUser)
 
 			expect(resultId).toBe('chosen id')
 			expect(resultItem).toBe(item)
 			expect(listFunction).toHaveBeenCalledTimes(0)
 			expect(outputListSpy).toHaveBeenCalledTimes(1)
-			expect(outputListSpy).toHaveBeenCalledWith(command, listFunction, true)
+			expect(outputListSpy).toHaveBeenCalledWith(commandAndConfig, commandAndConfig, listFunction, true)
 			expect(actionFunction).toHaveBeenCalledTimes(1)
 			expect(actionFunction).toHaveBeenCalledWith('chosen id')
 			expect(getIdFromUser).toHaveBeenCalledTimes(1)
-			expect(getIdFromUser).toHaveBeenCalledWith(command, list)
+			expect(getIdFromUser).toHaveBeenCalledWith(commandAndConfig, list)
 		})
 
 		it('substitutes computed id for {{id}} in success message', async () => {
-			const [resultId] = await selectAndActOnGeneric(command, 'world',
+			const [resultId] = await selectAndActOnGeneric(commandAndConfig, 'world',
 				listFunction, actionFunction, getIdFromUser, 'hello {{id}}')
 
 			expect(resultId).toBe('world')
@@ -114,12 +131,12 @@ describe('acting-io', () => {
 			// fake exiting with a special thrown error
 			exitMock.mockImplementation(() => { throw Error('should exit') })
 
-			await expect(selectAndActOnGeneric(command, undefined, listFunction, actionFunction,
+			await expect(selectAndActOnGeneric(commandAndConfig, undefined, listFunction, actionFunction,
 				getIdFromUser)).rejects.toThrow('should exit')
 
 			expect(listFunction).toHaveBeenCalledTimes(0)
 			expect(outputListSpy).toHaveBeenCalledTimes(1)
-			expect(outputListSpy).toHaveBeenCalledWith(command, listFunction, true)
+			expect(outputListSpy).toHaveBeenCalledWith(commandAndConfig, commandAndConfig, listFunction, true)
 			expect(actionFunction).toHaveBeenCalledTimes(0)
 			expect(getIdFromUser).toHaveBeenCalledTimes(0)
 		})
@@ -127,7 +144,7 @@ describe('acting-io', () => {
 
 	describe('selectAndActOn', () => {
 		it('acts on specified id', async () => {
-			const resultId = await selectAndActOn(command, 'id', listFunction, actionFunction, 'success')
+			const resultId = await selectAndActOn(commandAndConfig, 'id', listFunction, actionFunction, 'success')
 
 			expect(resultId).toBe('id')
 			expect(listFunction).toHaveBeenCalledTimes(0)
@@ -141,16 +158,16 @@ describe('acting-io', () => {
 		it('gets list and asks user for selection with no id', async () => {
 			outputListSpy.mockResolvedValue(list)
 
-			const resultId = await selectAndActOn(command, undefined, listFunction, actionFunction, 'success')
+			const resultId = await selectAndActOn(commandAndConfig, undefined, listFunction, actionFunction, 'success')
 
 			expect(resultId).toBe('chosen id')
 			expect(listFunction).toHaveBeenCalledTimes(0)
 			expect(outputListSpy).toHaveBeenCalledTimes(1)
-			expect(outputListSpy).toHaveBeenCalledWith(command, listFunction, true)
+			expect(outputListSpy).toHaveBeenCalledWith(commandAndConfig,  commandAndConfig, listFunction, true)
 			expect(actionFunction).toHaveBeenCalledTimes(1)
 			expect(actionFunction).toHaveBeenCalledWith('chosen id')
 			expect(getIdFromUserSpy).toHaveBeenCalledTimes(1)
-			expect(getIdFromUserSpy).toHaveBeenCalledWith(command, list)
+			expect(getIdFromUserSpy).toHaveBeenCalledWith(commandAndConfig, list)
 			expect(writeSpy).toHaveBeenCalledTimes(1)
 			expect(writeSpy).toHaveBeenCalledWith('success\n')
 		})
@@ -160,17 +177,17 @@ describe('acting-io', () => {
 			// fake exiting with a special thrown error
 			exitMock.mockImplementation(() => { throw Error('should exit') })
 
-			await expect(selectAndActOn(command, undefined, listFunction, actionFunction, 'x')).rejects.toThrow('should exit')
+			await expect(selectAndActOn(commandAndConfig, undefined, listFunction, actionFunction, 'x')).rejects.toThrow('should exit')
 
 			expect(listFunction).toHaveBeenCalledTimes(0)
 			expect(outputListSpy).toHaveBeenCalledTimes(1)
-			expect(outputListSpy).toHaveBeenCalledWith(command, listFunction, true)
+			expect(outputListSpy).toHaveBeenCalledWith(commandAndConfig, commandAndConfig, listFunction, true)
 			expect(actionFunction).toHaveBeenCalledTimes(0)
 			expect(getIdFromUserSpy).toHaveBeenCalledTimes(0)
 		})
 
 		it('substitutes computed id for {{id}} in success message', async () => {
-			const resultId = await selectAndActOn(command, 'my-awesome-id', listFunction, actionFunction, '123 {{id}} 321')
+			const resultId = await selectAndActOn(commandAndConfig, 'my-awesome-id', listFunction, actionFunction, '123 {{id}} 321')
 
 			expect(resultId).toBe('my-awesome-id')
 			expect(listFunction).toHaveBeenCalledTimes(0)
@@ -186,7 +203,7 @@ describe('acting-io', () => {
 		const formatAndWriteItemSpy = jest.spyOn(format, 'formatAndWriteItem').mockImplementation(async () => { /* skip */ })
 
 		it('selectActOnAndOutputGeneric writes output', async () => {
-			const [resultId, resultItem] = await selectActOnAndOutputGeneric(command, 'id', listFunction,
+			const [resultId, resultItem] = await selectActOnAndOutputGeneric(commandAndConfig, 'id', listFunction,
 				actionFunction, getIdFromUser)
 
 			expect(resultId).toBe('id')
@@ -197,11 +214,11 @@ describe('acting-io', () => {
 			expect(getIdFromUser).toHaveBeenCalledTimes(0)
 
 			expect(formatAndWriteItemSpy).toHaveBeenCalledTimes(1)
-			expect(formatAndWriteItemSpy).toHaveBeenCalledWith(command, resultItem)
+			expect(formatAndWriteItemSpy).toHaveBeenCalledWith(commandAndConfig, commandAndConfig, resultItem)
 		})
 
 		it('selectActOnAndOutput writes output', async () => {
-			const [resultId, resultItem] = await selectActOnAndOutput(command, 'id', listFunction, actionFunction)
+			const [resultId, resultItem] = await selectActOnAndOutput(commandAndConfig, 'id', listFunction, actionFunction)
 
 			expect(resultId).toBe('id')
 			expect(resultItem).toBe(item)
@@ -211,7 +228,7 @@ describe('acting-io', () => {
 			expect(getIdFromUserSpy).toHaveBeenCalledTimes(0)
 
 			expect(formatAndWriteItemSpy).toHaveBeenCalledTimes(1)
-			expect(formatAndWriteItemSpy).toHaveBeenCalledWith(command, resultItem)
+			expect(formatAndWriteItemSpy).toHaveBeenCalledWith(commandAndConfig, commandAndConfig, resultItem)
 		})
 	})
 })

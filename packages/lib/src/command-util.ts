@@ -17,9 +17,9 @@ export function pluralItemName(command: Naming): string {
 	return command.pluralItemName ?? (command.itemName ? `${command.itemName}s` : 'items')
 }
 
-export async function stringTranslateToId<L>(command: Sorting & Naming, idOrIndex: string,
+export async function stringTranslateToId<L>(config: Sorting & Naming, idOrIndex: string,
 		listFunction: ListDataFunction<L>): Promise<string> {
-	const primaryKeyName = command.primaryKeyName
+	const primaryKeyName = config.primaryKeyName
 	if (!isIndexArgument(idOrIndex)) {
 		// idOrIndex isn't a valid index so has to be an id (or bad)
 		return idOrIndex
@@ -27,7 +27,7 @@ export async function stringTranslateToId<L>(command: Sorting & Naming, idOrInde
 
 	const index = Number.parseInt(idOrIndex)
 
-	const items = sort(await listFunction(), command.sortKeyName)
+	const items = sort(await listFunction(), config.sortKeyName)
 	if (index > items.length) {
 		throw Error(`invalid index ${index} (enter an id or index between 1 and ${items.length} inclusive)`)
 	}
@@ -79,13 +79,13 @@ export function convertToId<L>(itemIdOrIndex: string, primaryKeyName: string, so
 	return false
 }
 
-export async function stringGetIdFromUser<L>(command: Sorting, list: L[]): Promise<string> {
-	const primaryKeyName = command.primaryKeyName
+export async function stringGetIdFromUser<L>(fieldInfo: Sorting, list: L[], prompt?: string): Promise<string> {
+	const primaryKeyName = fieldInfo.primaryKeyName
 
 	const itemIdOrIndex: string = (await inquirer.prompt({
 		type: 'input',
 		name: 'itemIdOrIndex',
-		message: 'Enter id or index',
+		message: prompt ?? 'Enter id or index',
 		validate: input => {
 			return convertToId(input, primaryKeyName, list)
 				? true
