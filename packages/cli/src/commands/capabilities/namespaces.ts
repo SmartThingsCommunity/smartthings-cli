@@ -1,7 +1,5 @@
 import { APICommand, outputList } from '@smartthings/cli-lib'
 
-import { CapabilityNamespace } from '@smartthings/core-sdk'
-
 
 export default class CapabilitiesListNamespacesCommand extends APICommand {
 	static description = 'list all capability namespaces currently available in a user account'
@@ -11,15 +9,16 @@ export default class CapabilitiesListNamespacesCommand extends APICommand {
 		...outputList.flags,
 	}
 
-	listTableFieldDefinitions = ['name', 'ownerType', 'ownerId']
-	sortKeyName = 'name'
-	primaryKeyName = 'name'
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesListNamespacesCommand)
 		await super.setup(args, argv, flags)
 
-		await outputList<CapabilityNamespace>(this,
+		const config = {
+			sortKeyName: 'name',
+			primaryKeyName: 'name',
+			listTableFieldDefinitions: ['name', 'ownerType', 'ownerId'],
+		}
+		await outputList(this, config,
 			() => this.client.capabilities.listNamespaces())
 	}
 }

@@ -23,27 +23,28 @@ export interface CustomCommonListOutputProducer<L> {
 export type CommonListOutputProducer<L> = TableCommonListOutputProducer<L> | CustomCommonListOutputProducer<L> | Sorting
 
 
-export async function formatAndWriteItem<O>(command: SmartThingsCommandInterface & CommonOutputProducer<O>, item: O,
-		defaultIOFormat?: IOFormat): Promise<void> {
-	const commonFormatter = 'buildTableOutput' in command
-		? (data: O) => command.buildTableOutput(data)
-		: itemTableFormatter<O>(command.tableGenerator, command.tableFieldDefinitions)
+export async function formatAndWriteItem<O>(command: SmartThingsCommandInterface,
+		config: CommonOutputProducer<O>, item: O, defaultIOFormat?: IOFormat): Promise<void> {
+	const commonFormatter = 'buildTableOutput' in config
+		? (data: O) => config.buildTableOutput(data)
+		: itemTableFormatter<O>(command.tableGenerator, config.tableFieldDefinitions)
 	const outputFormatter = buildOutputFormatter(command, defaultIOFormat, commonFormatter)
 	await writeOutput(outputFormatter(item), command.flags.output)
 }
 
-export async function formatAndWriteList<L>(command: SmartThingsCommandInterface & CommonListOutputProducer<L> & Naming,
+export async function formatAndWriteList<L>(command: SmartThingsCommandInterface,
+		config: CommonListOutputProducer<L> & Naming,
 		list: L[], includeIndex = false): Promise<void> {
 	let commonFormatter: OutputFormatter<L[]>
 	if (list.length === 0) {
-		const pluralName = command.pluralItemName ?? (command.itemName ? `${command.itemName}s` : 'items')
+		const pluralName = config.pluralItemName ?? (config.itemName ? `${config.itemName}s` : 'items')
 		commonFormatter = () => `no ${pluralName} found`
-	} else if ('buildListTableOutput' in command) {
-		commonFormatter = data => command.buildListTableOutput(data)
-	} else if ('listTableFieldDefinitions' in command) {
-		commonFormatter = listTableFormatter<L>(command.tableGenerator, command.listTableFieldDefinitions, includeIndex)
+	} else if ('buildListTableOutput' in config) {
+		commonFormatter = data => config.buildListTableOutput(data)
+	} else if ('listTableFieldDefinitions' in config) {
+		commonFormatter = listTableFormatter<L>(command.tableGenerator, config.listTableFieldDefinitions, includeIndex)
 	} else {
-		commonFormatter = listTableFormatter<L>(command.tableGenerator, [command.sortKeyName, command.primaryKeyName], includeIndex)
+		commonFormatter = listTableFormatter<L>(command.tableGenerator, [config.sortKeyName, config.primaryKeyName], includeIndex)
 	}
 	const outputFormatter = buildOutputFormatter(command, undefined, commonFormatter)
 	await writeOutput(outputFormatter(list), command.flags.output)

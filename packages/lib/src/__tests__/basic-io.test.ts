@@ -14,7 +14,7 @@ import { SimpleType } from './test-lib/simple-type'
 describe('basic-io', () => {
 	const item = { str: 'string', num: 5 }
 	const list = [item]
-	const baseCommand = {
+	const command = {
 		...buildMockCommand(),
 		flags: {
 			output: 'output.yaml',
@@ -49,7 +49,7 @@ describe('basic-io', () => {
 
 			buildInputProcessorSpy.mockReturnValue(inputProcessor)
 
-			expect(await inputItem(baseCommand)).toEqual([item, IOFormat.COMMON])
+			expect(await inputItem(command)).toEqual([item, IOFormat.COMMON])
 
 			expect(ioFormatMock).toHaveBeenCalled()
 			expect(hasInputMock).toHaveBeenCalledTimes(1)
@@ -67,32 +67,30 @@ describe('basic-io', () => {
 
 			buildInputProcessorSpy.mockReturnValue(inputProcessor)
 
-			await expect(inputItem(baseCommand)).rejects.toThrow(
+			await expect(inputItem(command)).rejects.toThrow(
 				new CLIError('input is required either via file specified with --input option or from stdin'))
 		})
 	})
 
 	describe('outputItem', () => {
 		it('gets data and calls formatAndWriteItem', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				tableFieldDefinitions: [],
 			}
 
 			const getDataMock = jest.fn().mockResolvedValue(item)
 
-			const result = await outputItem<SimpleType>(command, getDataMock)
+			const result = await outputItem<SimpleType>(command, config, getDataMock)
 
 			expect(result).toBe(item)
 			expect(formatAndWriteItemSpy).toHaveBeenCalledTimes(1)
-			expect(formatAndWriteItemSpy).toHaveBeenLastCalledWith(command, item)
+			expect(formatAndWriteItemSpy).toHaveBeenLastCalledWith(command, config, item)
 		})
 	})
 
 	describe('outputList', () => {
 		it('gets data and calls formatAndWriteList', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				listTableFieldDefinitions: [],
 				primaryKeyName: 'num',
 				sortKeyName: 'str',
@@ -100,16 +98,15 @@ describe('basic-io', () => {
 
 			const getDataMock = jest.fn().mockResolvedValue(list)
 
-			const result = await outputList<SimpleType>(command, getDataMock)
+			const result = await outputList<SimpleType>(command, config, getDataMock)
 
 			expect(result).toBe(list)
 			expect(formatAndWriteListSpy).toHaveBeenCalledTimes(1)
-			expect(formatAndWriteListSpy).toHaveBeenLastCalledWith(command, list, false)
+			expect(formatAndWriteListSpy).toHaveBeenLastCalledWith(command, config, list, false)
 		})
 
 		it('passes includeIndex value on to formatAndWriteList', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				listTableFieldDefinitions: [],
 				primaryKeyName: 'num',
 				sortKeyName: 'str',
@@ -117,11 +114,11 @@ describe('basic-io', () => {
 
 			const getDataMock = jest.fn().mockResolvedValue(list)
 
-			const result = await outputList<SimpleType>(command, getDataMock, true)
+			const result = await outputList<SimpleType>(command, config, getDataMock, true)
 
 			expect(result).toBe(list)
 			expect(formatAndWriteListSpy).toHaveBeenCalledTimes(1)
-			expect(formatAndWriteListSpy).toHaveBeenLastCalledWith(command, list, true)
+			expect(formatAndWriteListSpy).toHaveBeenLastCalledWith(command, config, list, true)
 		})
 	})
 
@@ -129,8 +126,7 @@ describe('basic-io', () => {
 		const buildInputProcessorSpy = jest.spyOn(inputBuilder, 'buildInputProcessor')
 
 		it('accepts input, executes command and writes output', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				tableFieldDefinitions: [],
 			}
 
@@ -153,12 +149,12 @@ describe('basic-io', () => {
 			const executeCommandMock = jest.fn().mockResolvedValue(item)
 			buildInputProcessorSpy.mockReturnValue(inputProcessor)
 
-			await inputAndOutputItem(command, executeCommandMock)
+			await inputAndOutputItem(command, config, executeCommandMock)
 
 			expect(executeCommandMock).toHaveBeenCalledTimes(1)
 			expect(executeCommandMock).toHaveBeenCalledWith(undefined, item)
 			expect(formatAndWriteItemSpy).toHaveBeenCalledTimes(1)
-			expect(formatAndWriteItemSpy).toHaveBeenLastCalledWith(command, item, inputProcessor.ioFormat)
+			expect(formatAndWriteItemSpy).toHaveBeenLastCalledWith(command, config, item, inputProcessor.ioFormat)
 
 			expect(ioFormatMock).toHaveBeenCalled()
 			expect(hasInputMock).toHaveBeenCalledTimes(1)
@@ -168,13 +164,15 @@ describe('basic-io', () => {
 		})
 
 		it('accepts and writes input in dry run mode', async () => {
-			const command = {
-				...baseCommand,
-				tableFieldDefinitions: [],
+			const dryRunCommand = {
+				...command,
 				flags: {
-					...baseCommand.flags,
+					...command.flags,
 					'dry-run': true,
 				},
+			}
+			const config = {
+				tableFieldDefinitions: [],
 			}
 
 			const inputProcessor = {
@@ -192,19 +190,18 @@ describe('basic-io', () => {
 			const executeCommandMock = jest.fn()
 			buildInputProcessorSpy.mockReturnValue(inputProcessor)
 
-			await inputAndOutputItem(command, executeCommandMock)
+			await inputAndOutputItem(dryRunCommand, config, executeCommandMock)
 
 			expect(executeCommandMock).toHaveBeenCalledTimes(0)
 
 			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(1)
-			expect(buildOutputFormatterSpy).toHaveBeenCalledWith(command, inputProcessor.ioFormat)
+			expect(buildOutputFormatterSpy).toHaveBeenCalledWith(dryRunCommand, inputProcessor.ioFormat)
 			expect(writeOutputSpy).toHaveBeenCalledTimes(1)
 			expect(writeOutputSpy).toHaveBeenCalledWith('output', 'output.yaml')
 		})
 
 		it('throws exception when input could not be found', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				tableFieldDefinitions: [],
 			}
 
@@ -217,7 +214,7 @@ describe('basic-io', () => {
 			const executeCommandMock = jest.fn().mockResolvedValue(item)
 			buildInputProcessorSpy.mockReturnValue(inputProcessor)
 
-			await expect(inputAndOutputItem(command, executeCommandMock)).rejects.toThrow(
+			await expect(inputAndOutputItem(command, config, executeCommandMock)).rejects.toThrow(
 				new CLIError('input is required either via file specified with --input option or from stdin'))
 
 			expect(executeCommandMock).toHaveBeenCalledTimes(0)

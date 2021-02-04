@@ -21,17 +21,16 @@ export default class LocationsCommand extends APICommand {
 		description: 'the location id or number in list',
 	}]
 
-	primaryKeyName = 'locationId'
-	sortKeyName = 'name'
-
-	tableFieldDefinitions = tableFieldDefinitions
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(LocationsCommand)
 		await super.setup(args, argv, flags)
 
-		await outputListing<Location, LocationItem>(this,
-			args.idOrIndex,
+		const config = {
+			primaryKeyName: 'locationId',
+			sortKeyName: 'name',
+			tableFieldDefinitions,
+		}
+		await outputListing<Location, LocationItem>(this, config, args.idOrIndex,
 			() => this.client.locations.list(),
 			id => this.client.locations.get(id))
 	}

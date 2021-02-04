@@ -15,7 +15,7 @@ export type ListDataFunction<L> = () => Promise<L[]>
 export type LookupDataFunction<ID, O> = (id: ID) => Promise<O>
 export type ActionFunction<ID, I, O> = (id: ID, input: I) => Promise<O>
 export type IdTranslationFunction<ID, L> = (idOrIndex: ID | string, listFunction: ListDataFunction<L>) => Promise<ID>
-export type IdRetrievalFunction<ID, L> = (command: Sorting, list: L[]) => Promise<ID>
+export type IdRetrievalFunction<ID, L> = (command: Sorting, list: L[], promptMessage?: string) => Promise<ID>
 
 
 export interface Sorting {
@@ -39,25 +39,25 @@ export async function inputItem<I>(command: SmartThingsCommandInterface,
 }
 inputItem.flags = buildInputProcessor.flags
 
-export async function outputItem<O>(command: SmartThingsCommandInterface & CommonOutputProducer<O>,
+export async function outputItem<O>(command: SmartThingsCommandInterface, config: CommonOutputProducer<O>,
 		getData: GetDataFunction<O>): Promise<O> {
 	const data = await getData()
 
-	await formatAndWriteItem(command, data)
+	await formatAndWriteItem(command, config, data)
 	return data
 }
 outputItem.flags = buildOutputFormatter.flags
 
-export async function outputList<L>(command: SmartThingsCommandInterface & CommonListOutputProducer<L> & Sorting,
+export async function outputList<L>(command: SmartThingsCommandInterface, config: CommonListOutputProducer<L> & Sorting,
 		getData: GetDataFunction<L[]>, includeIndex = false): Promise<L[]> {
-	const list = sort(await getData(), command.sortKeyName)
-	await formatAndWriteList(command, list, includeIndex)
+	const list = sort(await getData(), config.sortKeyName)
+	await formatAndWriteList(command, config, list, includeIndex)
 	return list
 }
 outputList.flags = buildOutputFormatter.flags
 
 
-export async function inputAndOutputItem<I, O>(command: SmartThingsCommandInterface & CommonOutputProducer<O>,
+export async function inputAndOutputItem<I, O>(command: SmartThingsCommandInterface, config: CommonOutputProducer<O>,
 		executeAction: ActionFunction<void, I, O>, ...alternateInputProcessors: InputProcessor<I>[]) : Promise<void> {
 	const [itemIn, defaultIOFormat] = await inputItem<I>(command, ...alternateInputProcessors)
 	if (command.flags['dry-run']) {
@@ -65,7 +65,7 @@ export async function inputAndOutputItem<I, O>(command: SmartThingsCommandInterf
 		await writeOutput(outputFormatter(itemIn), command.flags.output)
 	} else {
 		const item = await executeAction(undefined, itemIn)
-		await formatAndWriteItem(command, item, defaultIOFormat)
+		await formatAndWriteItem(command, config, item, defaultIOFormat)
 	}
 }
 inputAndOutputItem.flags = {

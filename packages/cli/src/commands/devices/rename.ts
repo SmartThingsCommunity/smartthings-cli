@@ -21,7 +21,7 @@ export default class DeviceComponentStatusCommand extends SelectingOutputAPIComm
 		},
 	]
 
-	protected buildTableOutput = buildTableOutput
+	protected buildTableOutput: (data: Device) => string = data => buildTableOutput(this.tableGenerator, data)
 
 	primaryKeyName = 'deviceId'
 	sortKeyName = 'label'

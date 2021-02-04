@@ -1,6 +1,9 @@
 import { flags } from '@oclif/command'
+import { CLIError } from '@oclif/errors'
+
+import { APICommand, selectFromList } from '@smartthings/cli-lib'
+
 import { getRoomsByLocation } from '../rooms'
-import { APICommand, selectAndActOn } from '@smartthings/cli-lib'
 
 
 export default class RoomsDeleteCommand extends APICommand {
@@ -21,27 +24,22 @@ export default class RoomsDeleteCommand extends APICommand {
 
 	static aliases = ['rooms:delete']
 
-	primaryKeyName = 'roomId'
-	sortKeyName = 'name'
-
-	protected getRoomsByLocation = getRoomsByLocation
-	protected tableHeadings(): string[] { return ['name', 'roomId', 'locationId'] }
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(RoomsDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		const roomsPromise = this.getRoomsByLocation(flags['location-id'])
-		await selectAndActOn(this,
-			args.id,
-			() => roomsPromise,
-			async id => {
-				const room = (await roomsPromise).find(room => room.roomId === id)
-				if (!room) {
-					throw Error(`could not find room with id ${id}`)
-				}
-				await this.client.rooms.delete(id, room.locationId)
-			},
-			'room {{id}} deleted')
+		const config = {
+			primaryKeyName: 'roomId',
+			sortKeyName: 'name',
+			listTableFieldDefinitions: ['name', 'roomId', 'locationId'],
+		}
+		const rooms = await getRoomsByLocation(this.client, flags['location-id'])
+		const roomId = await selectFromList(this, config, args.id, async () => rooms, 'Select a room to delete.')
+		const room = rooms.find(room => room.roomId === roomId)
+		if (!room) {
+			throw new CLIError(`could not find room with id ${roomId}`)
+		}
+		await this.client.rooms.delete(roomId, room.locationId)
+		this.log(`room ${roomId} deleted`)
 	}
 }

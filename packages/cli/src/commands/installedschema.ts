@@ -56,21 +56,21 @@ export default class InstalledSchemaAppsCommand extends APICommand {
 		description: 'the isa id',
 	}]
 
-	primaryKeyName = 'isaId'
-	sortKeyName = 'appName'
-	listTableFieldDefinitions = listTableFieldDefinitions
-	tableFieldDefinitions = tableFieldDefinitions
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(InstalledSchemaAppsCommand)
 		await super.setup(args, argv, flags)
 
+		const config = {
+			primaryKeyName: 'isaId',
+			sortKeyName: 'appName',
+			listTableFieldDefinitions,
+			tableFieldDefinitions,
+		}
 		if (this.flags.verbose) {
-			this.listTableFieldDefinitions.splice(3, 0, 'location')
+			config.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 
-		await outputListing<InstalledSchemaApp, InstalledSchemaAppWithLocation>(this,
-			args.id,
+		await outputListing(this, config, args.id,
 			() => installedSchemaInstances(this.client, flags['location-id'], flags.verbose),
 			id => this.client.schema.getInstalledApp(id),
 		)

@@ -65,18 +65,19 @@ export default class AppsCommand extends APICommand {
 		description: 'the app id or number from list',
 	}]
 
-	primaryKeyName = 'appId'
-	sortKeyName = 'displayName'
-
-	tableFieldDefinitions = tableFieldDefinitions
-	listTableFieldDefinitions = ['displayName', 'appType', 'appId']
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppsCommand)
 		await super.setup(args, argv, flags)
 
+		const config = {
+			primaryKeyName: 'appId',
+			sortKeyName: 'displayName',
+			tableFieldDefinitions: tableFieldDefinitions,
+			listTableFieldDefinitions: ['displayName', 'appType', 'appId'],
+		}
+
 		if (flags.verbose) {
-			this.listTableFieldDefinitions.push('ARN/URL')
+			config.listTableFieldDefinitions.push('ARN/URL')
 		}
 
 		const listApps = async (): Promise<App[]> => {
@@ -118,6 +119,6 @@ export default class AppsCommand extends APICommand {
 			return this.client.apps.list(appListOptions)
 		}
 
-		await outputListing(this, args.id, listApps, id => this.client.apps.get(id))
+		await outputListing(this, config, args.id, listApps, id => this.client.apps.get(id))
 	}
 }

@@ -126,8 +126,6 @@ export default class CapabilityTranslationsCommand extends NestedListingOutputAP
 	protected translateToId = (idOrIndex: string | CapabilityId, listFunction: ListCallback<CapabilitySummaryWithNamespace>): Promise<CapabilityId> => translateToId(this.sortKeyName, idOrIndex, listFunction)
 	protected translateToNestedId = stringTranslateToNestedId
 
-	private getCustomByNamespace = getCustomByNamespace
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilityTranslationsCommand)
 		await super.setup(args, argv, flags)
@@ -153,7 +151,7 @@ export default class CapabilityTranslationsCommand extends NestedListingOutputAP
 			capabilityIdOrIndex,
 			tagOrIndex,
 			async () => {
-				const capabilities =  await this.getCustomByNamespace(flags.namespace)
+				const capabilities =  await getCustomByNamespace(this.client, flags.namespace)
 				if (flags.verbose) {
 					const ops = capabilities.map(it => this.client.capabilities.listLocales(it.id, it.version))
 					const locales = await Promise.all(ops)
@@ -163,11 +161,7 @@ export default class CapabilityTranslationsCommand extends NestedListingOutputAP
 				}
 				return capabilities
 			},
-			(id) => {
-				return this.client.capabilities.listLocales(id.id, id.version)
-			},
-			(id, id2) =>  {
-				return this.client.capabilities.getTranslations(id.id, id.version, id2)
-			})
+			id => this.client.capabilities.listLocales(id.id, id.version),
+			(id, id2) => this.client.capabilities.getTranslations(id.id, id.version, id2))
 	}
 }

@@ -18,8 +18,7 @@ export default class CapabilitiesPresentationCreate extends SelectingInputOutput
 
 	protected listTableFieldDefinitions = ['id', 'version']
 
-	private getCustomByNamespace = getCustomByNamespace
-	protected getIdFromUser = getIdFromUser
+	protected getIdFromUser: (items: CapabilitySummaryWithNamespace[]) => Promise<CapabilityId> = items => getIdFromUser(this, items)
 
 	protected getInputFromUser(): Promise<CapabilityPresentationCreate> {
 		return Promise.reject('Q & A not yet implemented')
@@ -36,7 +35,7 @@ export default class CapabilitiesPresentationCreate extends SelectingInputOutput
 		// this.log(`presentation = ${JSON.stringify(saved)}`)
 	}
 
-	protected buildTableOutput = buildTableOutput
+	protected buildTableOutput: (data: CapabilityPresentation) => string = (data) => buildTableOutput(this.tableGenerator, data)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesPresentationCreate)
@@ -46,7 +45,7 @@ export default class CapabilitiesPresentationCreate extends SelectingInputOutput
 			? { id: args.id, version: args.version }
 			: (args.id ? { id: args.id, version: 1 } : undefined)
 		await this.processNormally(idOrIndex,
-			async () => this.getCustomByNamespace(),
+			async () => getCustomByNamespace(this.client),
 			async (id, presentation) => this.client.capabilities.createPresentation(id.id, id.version, presentation))
 	}
 }

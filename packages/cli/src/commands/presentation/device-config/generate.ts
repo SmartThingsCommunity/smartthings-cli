@@ -28,8 +28,6 @@ export default class GeneratePresentationCommand extends APICommand {
 		required: true,
 	}]
 
-	buildTableOutput = buildTableOutput
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(GeneratePresentationCommand)
 		await super.setup(args, argv, flags)
@@ -43,6 +41,10 @@ export default class GeneratePresentationCommand extends APICommand {
 		}
 		this.logger.debug(`extraParams = ${JSON.stringify(extraParams)}`)
 
-		await outputItem<PresentationDeviceConfig>(this, () => this.client.presentation.generate(args.id, extraParams))
+		const config = {
+			buildTableOutput: (data: PresentationDeviceConfig) => buildTableOutput(this.tableGenerator, data),
+		}
+		await outputItem<PresentationDeviceConfig>(this, config,
+			() => this.client.presentation.generate(args.id, extraParams))
 	}
 }

@@ -17,7 +17,7 @@ export default class DeviceProfileTranslationsUpsertCommand extends SelectingInp
 	]
 
 	static examples = [
-		'$ smartthings deviceprofiles:translations:upsert 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 -i en.yml',
+		'$ smartthings deviceprofiles:translations:upsert 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 -i en.yaml',
 		'tag: en',
 		'components:',
 		'  main:',
@@ -30,7 +30,7 @@ export default class DeviceProfileTranslationsUpsertCommand extends SelectingInp
 		'    label: Outlet two',
 		'    description: Switchable outlet 1 power',
 		'',
-		'$ smartthings deviceprofiles:translations:upsert -i en.yml',
+		'$ smartthings deviceprofiles:translations:upsert -i en.yaml',
 		'┌────┬─────────────────────┬─────────────┬──────────────────────────────────────┐',
 		'│ #  │ Name                │ Status      │ Id                                   │',
 		'├────┼─────────────────────┼─────────────┼──────────────────────────────────────┤',

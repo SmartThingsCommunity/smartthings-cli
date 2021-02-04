@@ -40,7 +40,7 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 		}),
 	}
 
-	protected buildTableOutput = buildTableOutput
+	protected buildTableOutput: (data: Capability) => string = data => buildTableOutput(this.tableGenerator, data)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesCreate)

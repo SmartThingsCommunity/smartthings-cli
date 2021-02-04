@@ -178,5 +178,20 @@ describe('command-util', () => {
 
 			await expect(stringGetIdFromUser(command, list)).rejects.toThrow('unable to convert invalid-id to id')
 		})
+
+		it('handles non-default prompt', async () => {
+			promptSpy.mockResolvedValue({ itemIdOrIndex: 'string-id-a' })
+
+			const chosenId = await stringGetIdFromUser(command, list, 'give me an id')
+
+			expect(chosenId).toBe('string-id-a')
+
+			expect(promptSpy).toHaveBeenCalledTimes(1)
+			expect(promptSpy).toHaveBeenCalledWith({ type: 'input', name: 'itemIdOrIndex',
+				message: 'give me an id', validate: expect.anything() })
+			const validateFunction = (promptSpy.mock.calls[0][0] as { validate: (input: string) => true|string }).validate
+
+			expect(validateFunction('string-id-a')).toBe(true)
+		})
 	})
 })

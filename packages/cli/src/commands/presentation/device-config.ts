@@ -1,10 +1,9 @@
 import { PresentationDeviceConfig, PresentationDPInfo, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
 
-import { APICommand, outputItem } from '@smartthings/cli-lib'
+import { APICommand, outputItem, TableGenerator } from '@smartthings/cli-lib'
 
 
-export function buildTableOutput(this: APICommand, deviceConfig: PresentationDeviceConfig): string {
-	const tableGenerator = this.tableGenerator
+export function buildTableOutput(tableGenerator: TableGenerator, deviceConfig: PresentationDeviceConfig): string {
 	// This could use more advanced methods of tableGenerator.
 	const table = tableGenerator.newOutputTable()
 	table.push(['Presentation ID', deviceConfig.presentationId])
@@ -73,7 +72,7 @@ export function buildTableOutput(this: APICommand, deviceConfig: PresentationDev
 		`${detailView}\n\n` +
 		`${automationConditions}\n\n` +
 		`${automationActions}\n\n` +
-		'(Information is summarized, for full details use YAML or JSON flags.)'
+		'(Information is summarized, for full details use YAML or JSON flag.)'
 }
 
 export default class DeviceConfigPresentationCommand extends APICommand {
@@ -90,12 +89,13 @@ export default class DeviceConfigPresentationCommand extends APICommand {
 		required: true,
 	}]
 
-	buildTableOutput = buildTableOutput
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceConfigPresentationCommand)
 		await super.setup(args, argv, flags)
 
-		await outputItem(this, () => this.client.presentation.get(args.presentationId))
+		const config = {
+			buildTableOutput: (data: PresentationDeviceConfig) => buildTableOutput(this.tableGenerator, data),
+		}
+		await outputItem(this, config, () => this.client.presentation.get(args.presentationId))
 	}
 }

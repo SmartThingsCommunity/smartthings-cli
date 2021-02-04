@@ -1,12 +1,12 @@
-import { DeviceProfile } from '@smartthings/core-sdk'
-
-import {APICommand, outputListing, TableFieldDefinition} from '@smartthings/cli-lib'
-
 import { flags } from '@oclif/command'
 
+import { DeviceProfile } from '@smartthings/core-sdk'
 
-export function buildTableOutput(this: APICommand, data: DeviceProfile): string {
-	const table = this.tableGenerator.newOutputTable()
+import { APICommand, outputListing, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
+
+
+export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile): string {
+	const table = tableGenerator.newOutputTable()
 	table.push(['Name', data.name])
 	for (const comp of data.components) {
 		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
@@ -48,25 +48,24 @@ export default class DeviceProfilesCommand extends APICommand {
 
 	static aliases = ['device-profiles']
 
-	primaryKeyName = 'id'
-	sortKeyName = 'name'
-
-	listTableFieldDefinitions: TableFieldDefinition<DeviceProfile>[] = ['name', 'status', 'id']
-
-	buildTableOutput = buildTableOutput
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfilesCommand)
 		await super.setup(args, argv, flags)
 
+		const config = {
+			primaryKeyName: 'id',
+			sortKeyName: 'name',
+			listTableFieldDefinitions: ['name', 'status', 'id'] as TableFieldDefinition<DeviceProfile>[],
+			buildTableOutput: (data: DeviceProfile) => buildTableOutput(this.tableGenerator, data),
+		}
 		if (this.flags.verbose) {
-			this.listTableFieldDefinitions.push({ label: 'Presentation ID', value: (item) => item.metadata ? item.metadata.vid : '' })
-			this.listTableFieldDefinitions.push({ label: 'Manufacturer Name', value: (item) => item.metadata ? item.metadata.mnmn : '' })
+			config.listTableFieldDefinitions.push({ label: 'Presentation ID', value: item => item.metadata?.vid ?? '' })
+			config.listTableFieldDefinitions.push({ label: 'Manufacturer Name', value: item => item.metadata?.mnmn ?? '' })
 		}
 
-		await outputListing(this, args.id,
-			() => { return this.client.deviceProfiles.list() },
-			(id) => { return this.client.deviceProfiles.get(id) },
+		await outputListing(this, config, args.id,
+			() => this.client.deviceProfiles.list(),
+			id => this.client.deviceProfiles.get(id),
 		)
 	}
 }

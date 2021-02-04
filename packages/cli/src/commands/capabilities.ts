@@ -1,9 +1,9 @@
 import inquirer from 'inquirer'
 import { flags } from '@oclif/command'
 
-import { Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace } from '@smartthings/core-sdk'
+import { Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, ListCallback, outputGenericListing, sort, Sorting } from '@smartthings/cli-lib'
+import { APICommand, ListCallback, outputGenericListing, sort, Sorting, TableGenerator } from '@smartthings/cli-lib'
 
 
 export const capabilityIdInputArgs = [
@@ -79,7 +79,7 @@ export function attributeType(attr: CapabilityJSONSchema, multilineObjects= true
 	return attr.type || 'undefined'
 }
 
-export function buildTableOutput(this: APICommand, capability: Capability): string {
+export function buildTableOutput(tableGenerator: TableGenerator, capability: Capability): string {
 	enum SubItemTypes {
 		COMMANDS = 'commands',
 		ATTRIBUTES = 'attributes'
@@ -89,12 +89,7 @@ export function buildTableOutput(this: APICommand, capability: Capability): stri
 		const headers = type === SubItemTypes.ATTRIBUTES
 			? ['Name', 'Type', 'Setter']
 			: ['Name', 'Arguments']
-		const table = this.tableGenerator.newOutputTable({
-			head: headers,
-			// colWidths: headers.map(() => {
-			// 	return 36
-			// }),
-		})
+		const table = tableGenerator.newOutputTable({ head: headers })
 		for (const name in capability[type]) {
 			if (type === SubItemTypes.ATTRIBUTES) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -143,13 +138,12 @@ export function buildListTableOutput(this: APICommand, capabilities: CapabilityS
  * property in the results. If no namespace is specified, this will make an API
  * call to get all namespaces and list capabilities for all of them.
  */
-export async function getCustomByNamespace(this: APICommand, namespace?: string): Promise<CapabilitySummaryWithNamespace[]> {
+export async function getCustomByNamespace(client: SmartThingsClient, namespace?: string): Promise<CapabilitySummaryWithNamespace[]> {
 	let namespaces: string[] = []
 	if (namespace) {
-		this.log(`namespace specified: ${namespace}`)
 		namespaces = [namespace]
 	} else {
-		namespaces = (await this.client.capabilities.listNamespaces()).map((ns: CapabilityNamespace) => ns.name)
+		namespaces = (await client.capabilities.listNamespaces()).map((ns: CapabilityNamespace) => ns.name)
 	}
 
 	if (!namespaces || namespaces.length == 0) {
@@ -159,18 +153,19 @@ export async function getCustomByNamespace(this: APICommand, namespace?: string)
 
 	let capabilities: CapabilitySummaryWithNamespace[] = []
 	for (const namespace of namespaces) {
-		const caps = await this.client.capabilities.list(namespace)
+		const caps = await client.capabilities.list(namespace)
 		capabilities = capabilities.concat(caps.map((capability: CapabilitySummary) => { return { ...capability, namespace } }))
 	}
 	return capabilities
 }
 
-export async function getStandard(this: APICommand): Promise<CapabilitySummaryWithNamespace[]> {
-	const caps = await this.client.capabilities.listStandard()
+export async function getStandard(client: SmartThingsClient): Promise<CapabilitySummaryWithNamespace[]> {
+	const caps = await client.capabilities.listStandard()
 	return caps.map((capability: CapabilitySummary) => { return { ...capability, namespace: 'st' } })
 }
 
-async function getIdFromUserImpl(list: CapabilitySummaryWithNamespace[]): Promise<CapabilityId> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function getIdFromUser(fieldInfo: Sorting, list: CapabilitySummaryWithNamespace[], promptMessage?: string): Promise<CapabilityId> {
 	const convertToId = (itemIdOrIndex: string): string | false => {
 		if (itemIdOrIndex.length === 0) {
 			return false
@@ -197,11 +192,11 @@ async function getIdFromUserImpl(list: CapabilitySummaryWithNamespace[]): Promis
 	const idOrIndex: string = (await inquirer.prompt({
 		type: 'input',
 		name: 'idOrIndex',
-		message: 'Enter id or index',
-		validate: (input) => {
+		message: promptMessage ?? 'Enter id or index',
+		validate: input => {
 			return convertToId(input)
 				? true
-				: `Invalid id or index ${idOrIndex}. Please enter an index or valid id.`
+				: `Invalid id or index ${input}. Please enter an index or valid id.`
 		},
 	})).idOrIndex
 	const inputId = convertToId(idOrIndex)
@@ -219,17 +214,6 @@ async function getIdFromUserImpl(list: CapabilitySummaryWithNamespace[]): Promis
 	return { 'id': inputId, 'version': 1 }
 }
 
-export async function getCapabilityIdFromUser(command: Sorting, list: CapabilitySummaryWithNamespace[]): Promise<CapabilityId> {
-	return getIdFromUserImpl(list)
-}
-
-/**
- * TODO: remove once functional refactor is complete (io-command classes are unused)
- */
-export async function getIdFromUser(this: APICommand, items: CapabilitySummaryWithNamespace[]): Promise<CapabilityId> {
-	return getIdFromUserImpl(items)
-}
-
 export async function translateToId(sortKeyName: string,  idOrIndex: string | CapabilityId,
 		listFunction: ListCallback<CapabilitySummaryWithNamespace>): Promise<CapabilityId> {
 	if (typeof idOrIndex !== 'string') {
@@ -245,6 +229,9 @@ export async function translateToId(sortKeyName: string,  idOrIndex: string | Ca
 	}
 
 	const items = sort(await listFunction(), sortKeyName)
+	if (index < 1 || index > items.length) {
+		throw Error(`invalid index ${index} (enter an id or index between 1 and ${items.length} inclusive)`)
+	}
 	const matchingItem: CapabilitySummaryWithNamespace = items[index - 1]
 	return { id: matchingItem.id, version: matchingItem.version }
 }
@@ -267,24 +254,20 @@ export default class CapabilitiesCommand extends APICommand {
 
 	static args = capabilityIdOrIndexInputArgs
 
-	primaryKeyName = 'id'
-	sortKeyName = 'id'
-
-	listTableFieldDefinitions = ['id', 'version', 'status']
-
-	buildTableOutput = buildTableOutput
-
-	private getCustomByNamespace = getCustomByNamespace
-	private getStandard = getStandard
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesCommand)
 		await super.setup(args, argv, flags)
 
 		const idOrIndex = args.version ? { id: args.id, version: args.version } : args.id
-		await outputGenericListing<CapabilityId, Capability, CapabilitySummaryWithNamespace>(this, idOrIndex,
-			() => flags.standard ? this.getStandard() : this.getCustomByNamespace(flags.namespace),
-			id =>  this.client.capabilities.get(id.id, id.version),
-			(idOrIndex, listFunction) => translateToId(this.sortKeyName, idOrIndex, listFunction))
+		const config = {
+			primaryKeyName: 'id',
+			sortKeyName: 'id',
+			listTableFieldDefinitions: ['id', 'version', 'status'],
+			buildTableOutput: (data: Capability) => buildTableOutput(this.tableGenerator, data),
+		}
+		await outputGenericListing(this, config, idOrIndex,
+			() => flags.standard ? getStandard(this.client) : getCustomByNamespace(this.client, flags.namespace),
+			(id: CapabilityId) => this.client.capabilities.get(id.id, id.version),
+			(idOrIndex, listFunction) => translateToId(config.sortKeyName, idOrIndex, listFunction))
 	}
 }

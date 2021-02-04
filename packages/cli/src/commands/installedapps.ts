@@ -40,25 +40,25 @@ export default class InstalledAppsCommand extends APICommand {
 		description: 'the app id',
 	}]
 
-	primaryKeyName = 'installedAppId'
-	sortKeyName = 'displayName'
-	listTableFieldDefinitions = listTableFieldDefinitions
-	tableFieldDefinitions = tableFieldDefinitions
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(InstalledAppsCommand)
 		await super.setup(args, argv, flags)
 
+		const config = {
+			primaryKeyName: 'installedAppId',
+			sortKeyName: 'displayName',
+			listTableFieldDefinitions,
+			tableFieldDefinitions,
+		}
 		if (this.flags.verbose) {
-			this.listTableFieldDefinitions.splice(3, 0, 'location')
+			config.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 
 		const listOptions: InstalledAppListOptions = {
 			locationId: flags['location-id'],
 		}
 
-		await outputListing<InstalledApp, InstalledAppWithLocation>(this,
-			args.id,
+		await outputListing<InstalledApp, InstalledAppWithLocation>(this, config, args.id,
 			async () => {
 				const apps = await this.client.installedApps.list(listOptions)
 				if (this.flags.verbose) {

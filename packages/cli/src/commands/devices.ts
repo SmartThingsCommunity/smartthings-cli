@@ -2,13 +2,13 @@ import { flags } from '@oclif/command'
 
 import { Device, DeviceListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing, withLocationsAndRooms } from '@smartthings/cli-lib'
+import { APICommand, outputListing, TableGenerator, withLocationsAndRooms } from '@smartthings/cli-lib'
 
 
 export type DeviceWithLocation = Device & { location?: string }
 
-export function buildTableOutput(this: APICommand, data: Device & { profileId?: string }): string {
-	const table = this.tableGenerator.newOutputTable()
+export function buildTableOutput(tableGenerator: TableGenerator, data: Device & { profileId?: string }): string {
+	const table = tableGenerator.newOutputTable()
 	table.push(['Name', data.name])
 	table.push(['Id', data.deviceId])
 	table.push(['Label', data.label])
@@ -69,18 +69,18 @@ export default class DevicesCommand extends APICommand {
 		description: 'device to retrieve; UUID or the number of the device from list',
 	}]
 
-	primaryKeyName = 'deviceId'
-	sortKeyName = 'label'
-	listTableFieldDefinitions = ['label', 'name', 'type', 'deviceId']
-
-	buildTableOutput = buildTableOutput
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DevicesCommand)
 		await super.setup(args, argv, flags)
 
+		const config = {
+			primaryKeyName: 'deviceId',
+			sortKeyName: 'label',
+			listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
+			buildTableOutput: (data: Device) => buildTableOutput(this.tableGenerator, data),
+		}
 		if (this.flags.verbose) {
-			this.listTableFieldDefinitions.splice(3, 0, 'location', 'room')
+			config.listTableFieldDefinitions.splice(3, 0, 'location', 'room')
 		}
 
 		const deviceListOptions: DeviceListOptions = {
@@ -91,8 +91,7 @@ export default class DevicesCommand extends APICommand {
 			installedAppId: flags['installed-app-id'],
 		}
 
-		await outputListing(this,
-			args.id,
+		await outputListing(this, config, args.id,
 			async () => {
 				const devices = await this.client.devices.list(deviceListOptions)
 				if (flags.verbose) {

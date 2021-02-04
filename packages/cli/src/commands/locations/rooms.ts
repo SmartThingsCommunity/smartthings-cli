@@ -1,28 +1,29 @@
 import { flags } from '@oclif/command'
-import { LocationItem, Room } from '@smartthings/core-sdk'
+import { CLIError } from '@oclif/errors'
+
+import { LocationItem, Room, SmartThingsClient } from '@smartthings/core-sdk'
 
 import { APICommand, outputListing } from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions = ['name', 'locationId', 'roomId']
 
-export async function getRoomsByLocation(this: APICommand, locationId?: string): Promise<RoomWithLocation[]> {
+export async function getRoomsByLocation(client: SmartThingsClient, locationId?: string): Promise<RoomWithLocation[]> {
 	let locations: LocationItem[] = []
 	if (locationId) {
-		this.log(`location specified: ${locationId}`)
-		locations = [await this.client.locations.get(locationId)]
+		locations = [await client.locations.get(locationId)]
 	} else {
-		locations = await this.client.locations.list()
+		locations = await client.locations.list()
 	}
 
 	if (!locations || locations.length == 0) {
-		throw Error('could not find any locations for your account. Perhaps ' +
+		throw new CLIError('could not find any locations for your account. Perhaps ' +
 			"you haven't created any locations yet.")
 	}
 
 	let rooms: RoomWithLocation[] = []
 	for (const location of locations) {
-		const locationRooms = await this.client.rooms.list(location.locationId)
+		const locationRooms = await client.rooms.list(location.locationId)
 		rooms = rooms.concat(locationRooms.map(room => { return { ...room, locationName: location.name } }))
 	}
 	return rooms
@@ -51,24 +52,21 @@ export default class RoomsCommand extends APICommand {
 
 	static aliases = ['rooms']
 
-	primaryKeyName = 'roomId'
-	sortKeyName = 'name'
-
-	protected getRoomsByLocation = getRoomsByLocation
-
-	listTableFieldDefinitions = tableFieldDefinitions
-	tableFieldDefinitions = tableFieldDefinitions
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(RoomsCommand)
 		await super.setup(args, argv, flags)
 
-		const roomsPromise = this.getRoomsByLocation(flags['location-id'])
-		await outputListing(this,
-			args.idOrIndex,
-			() => roomsPromise,
+		const config = {
+			primaryKeyName: 'roomId',
+			sortKeyName: 'name',
+			listTableFieldDefinitions: tableFieldDefinitions,
+			tableFieldDefinitions,
+		}
+		const rooms = await getRoomsByLocation(this.client, flags['location-id'])
+		await outputListing(this, config, args.idOrIndex,
+			async () => rooms,
 			async id => {
-				const room = (await roomsPromise).find(room => room.roomId === id)
+				const room = rooms.find(room => room.roomId === id)
 				if (!room) {
 					throw Error(`could not find room with id ${id}`)
 				}

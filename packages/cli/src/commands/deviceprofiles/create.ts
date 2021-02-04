@@ -140,7 +140,7 @@ export default class DeviceProfileCreateCommand extends InputOutputAPICommand<De
 		'$ smartthings deviceprofiles:create                      # create a device profile with interactive dialog',
 	]
 
-	protected buildTableOutput = buildTableOutput
+	protected buildTableOutput: (data: DeviceProfile) => string = data => buildTableOutput(this.tableGenerator, data)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileCreateCommand)

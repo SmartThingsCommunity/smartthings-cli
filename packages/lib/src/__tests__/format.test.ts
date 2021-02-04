@@ -9,7 +9,7 @@ import { SimpleType } from './test-lib/simple-type'
 describe('format', () => {
 	const item = { str: 'string', num: 5 }
 	const list = [item]
-	const baseCommand = {
+	const command = {
 		...buildMockCommand(),
 		flags: {
 			output: 'output.yaml',
@@ -28,18 +28,17 @@ describe('format', () => {
 		const itemTableFormatterSpy = jest.spyOn(output, 'itemTableFormatter')
 
 		it('uses tableFieldDefinitions when specified', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				tableFieldDefinitions: [],
 			}
 
 			const commonFormatter = jest.fn()
 			itemTableFormatterSpy.mockReturnValue(commonFormatter)
 
-			await formatAndWriteItem(command, item, IOFormat.COMMON)
+			await formatAndWriteItem(command, config, item, IOFormat.COMMON)
 
 			expect(itemTableFormatterSpy).toHaveBeenCalledTimes(1)
-			expect(itemTableFormatterSpy).toHaveBeenCalledWith(command.tableGenerator, command.tableFieldDefinitions)
+			expect(itemTableFormatterSpy).toHaveBeenCalledWith(command.tableGenerator, config.tableFieldDefinitions)
 			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(1)
 			expect(buildOutputFormatterSpy).toHaveBeenCalledWith(command, IOFormat.COMMON, commonFormatter)
 			expect(outputFormatter).toHaveBeenCalledTimes(1)
@@ -49,12 +48,11 @@ describe('format', () => {
 		})
 
 		it('uses buildTableOutput when specified', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				buildTableOutput: jest.fn(),
 			}
 
-			await formatAndWriteItem<SimpleType>(command, item, IOFormat.JSON)
+			await formatAndWriteItem<SimpleType>(command, config, item, IOFormat.JSON)
 
 			expect(itemTableFormatterSpy).toHaveBeenCalledTimes(0)
 			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(1)
@@ -66,19 +64,18 @@ describe('format', () => {
 
 			// Call the OutputFormatter that was build to ensure it uses `buildTableOutput`
 			const commonFormatter: output.OutputFormatter<SimpleType> = buildOutputFormatterSpy.mock.calls[0][2] as never
-			command.buildTableOutput.mockReturnValue('common output')
+			config.buildTableOutput.mockReturnValue('common output')
 			expect(commonFormatter(item)).toBe('common output')
-			expect(command.buildTableOutput).toHaveBeenCalledTimes(1)
+			expect(config.buildTableOutput).toHaveBeenCalledTimes(1)
 		})
 
 		it('uses buildTableOutput when both specified', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				tableFieldDefinitions: [],
 				buildTableOutput: jest.fn(),
 			}
 
-			await formatAndWriteItem<SimpleType>(command, item, IOFormat.JSON)
+			await formatAndWriteItem<SimpleType>(command, config, item, IOFormat.JSON)
 
 			expect(itemTableFormatterSpy).toHaveBeenCalledTimes(0)
 			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(1)
@@ -90,9 +87,9 @@ describe('format', () => {
 
 			// Call the OutputFormatter that was build to ensure it uses `buildTableOutput`
 			const commonFormatter: output.OutputFormatter<SimpleType> = buildOutputFormatterSpy.mock.calls[0][2] as never
-			command.buildTableOutput.mockReturnValue('common output')
+			config.buildTableOutput.mockReturnValue('common output')
 			expect(commonFormatter(item)).toBe('common output')
-			expect(command.buildTableOutput).toHaveBeenCalledTimes(1)
+			expect(config.buildTableOutput).toHaveBeenCalledTimes(1)
 		})
 	})
 
@@ -100,12 +97,11 @@ describe('format', () => {
 		const listTableFormatterSpy= jest.spyOn(output, 'listTableFormatter')
 
 		it('returns no items found when none found', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				buildListTableOutput: jest.fn(),
 			}
 
-			await formatAndWriteList<SimpleType>(command, [], true)
+			await formatAndWriteList<SimpleType>(command, config, [], true)
 
 			expect(listTableFormatterSpy).toHaveBeenCalledTimes(0)
 			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(1)
@@ -121,13 +117,12 @@ describe('format', () => {
 		})
 
 		it('returns no items found when none found; name specified', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				buildListTableOutput: jest.fn(),
 				itemName: 'thing',
 			}
 
-			await formatAndWriteList<SimpleType>(command, [], true)
+			await formatAndWriteList<SimpleType>(command, config, [], true)
 
 			expect(listTableFormatterSpy).toHaveBeenCalledTimes(0)
 			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(1)
@@ -143,13 +138,12 @@ describe('format', () => {
 		})
 
 		it('returns no items found when none found; plural name specified', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				buildListTableOutput: jest.fn(),
 				pluralItemName: 'candies',
 			}
 
-			await formatAndWriteList<SimpleType>(command, [], true)
+			await formatAndWriteList<SimpleType>(command, config, [], true)
 
 			expect(listTableFormatterSpy).toHaveBeenCalledTimes(0)
 			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(1)
@@ -165,18 +159,17 @@ describe('format', () => {
 		})
 
 		it('uses listTableFieldDefinitions when specified', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				listTableFieldDefinitions: [],
 			}
 
 			const commonFormatter = jest.fn()
 			listTableFormatterSpy.mockReturnValue(commonFormatter)
 
-			await formatAndWriteList(command, list)
+			await formatAndWriteList(command, config, list)
 
 			expect(listTableFormatterSpy).toHaveBeenCalledTimes(1)
-			expect(listTableFormatterSpy).toHaveBeenCalledWith(command.tableGenerator, command.listTableFieldDefinitions, false)
+			expect(listTableFormatterSpy).toHaveBeenCalledWith(command.tableGenerator, config.listTableFieldDefinitions, false)
 			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(1)
 			expect(buildOutputFormatterSpy).toHaveBeenCalledWith(command, undefined, commonFormatter)
 			expect(outputFormatter).toHaveBeenCalledTimes(1)
@@ -186,12 +179,11 @@ describe('format', () => {
 		})
 
 		it('uses buildListTableOutput when specified', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				buildListTableOutput: jest.fn(),
 			}
 
-			await formatAndWriteList<SimpleType>(command, list, true)
+			await formatAndWriteList<SimpleType>(command, config, list, true)
 
 			expect(listTableFormatterSpy).toHaveBeenCalledTimes(0)
 			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(1)
@@ -203,19 +195,18 @@ describe('format', () => {
 
 			// Call the OutputFormatter that was build to ensure it uses `buildTableOutput`
 			const commonFormatter: output.OutputFormatter<SimpleType[]> = buildOutputFormatterSpy.mock.calls[0][2] as never
-			command.buildListTableOutput.mockReturnValue('common output')
+			config.buildListTableOutput.mockReturnValue('common output')
 			expect(commonFormatter(list)).toBe('common output')
-			expect(command.buildListTableOutput).toHaveBeenCalledTimes(1)
+			expect(config.buildListTableOutput).toHaveBeenCalledTimes(1)
 		})
 
 		it('uses buildListTableOutput when both specified', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				listTableFieldDefinitions: [],
 				buildListTableOutput: jest.fn(),
 			}
 
-			await formatAndWriteList<SimpleType>(command, list, true)
+			await formatAndWriteList<SimpleType>(command, config, list, true)
 
 			expect(listTableFormatterSpy).toHaveBeenCalledTimes(0)
 			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(1)
@@ -227,14 +218,13 @@ describe('format', () => {
 
 			// Call the OutputFormatter that was build to ensure it uses `buildTableOutput`
 			const commonFormatter: output.OutputFormatter<SimpleType[]> = buildOutputFormatterSpy.mock.calls[0][2] as never
-			command.buildListTableOutput.mockReturnValue('common output')
+			config.buildListTableOutput.mockReturnValue('common output')
 			expect(commonFormatter(list)).toBe('common output')
-			expect(command.buildListTableOutput).toHaveBeenCalledTimes(1)
+			expect(config.buildListTableOutput).toHaveBeenCalledTimes(1)
 		})
 
 		it('uses Sorting fields as a fallback', async () => {
-			const command = {
-				...baseCommand,
+			const config = {
 				primaryKeyName: 'num',
 				sortKeyName: 'str',
 			}
@@ -242,7 +232,7 @@ describe('format', () => {
 			const commonFormatter = jest.fn()
 			listTableFormatterSpy.mockReturnValue(commonFormatter)
 
-			await formatAndWriteList(command, list)
+			await formatAndWriteList(command, config, list)
 
 			expect(listTableFormatterSpy).toHaveBeenCalledTimes(1)
 			expect(listTableFormatterSpy).toHaveBeenCalledWith(command.tableGenerator, ['str', 'num'], false)

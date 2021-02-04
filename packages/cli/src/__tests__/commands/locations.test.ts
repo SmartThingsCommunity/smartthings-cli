@@ -23,7 +23,7 @@ describe('LocationsCommand', () => {
 		await expect(LocationsCommand.run()).resolves.not.toThrow()
 
 		expect(mockListing).toBeCalledTimes(1)
-		expect(mockListing.mock.calls[0][1]).toBeUndefined()
+		expect(mockListing.mock.calls[0][2]).toBeUndefined()
 	})
 
 	it('calls outputListing when id is provided', async () => {
@@ -31,6 +31,6 @@ describe('LocationsCommand', () => {
 		await expect(LocationsCommand.run([locationId])).resolves.not.toThrow()
 
 		expect(mockListing).toBeCalledTimes(1)
-		expect(mockListing.mock.calls[0][1]).toBe(locationId)
+		expect(mockListing.mock.calls[0][2]).toBe(locationId)
 	})
 })

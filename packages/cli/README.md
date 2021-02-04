@@ -802,7 +802,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
-  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yml 
+  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml 
   tag: en
   label: Output Modulation
   attributes:
@@ -822,7 +822,7 @@ EXAMPLES
          outputModulation:
            label: Output Modulation
 
-  $ smartthings capabilities:translations:upsert -i en.yml
+  $ smartthings capabilities:translations:upsert -i en.yaml
   ┌───┬─────────────────────────────┬─────────┬──────────┐
   │ # │ Id                          │ Version │ Status   │
   ├───┼─────────────────────────────┼─────────┼──────────┤
@@ -1165,7 +1165,7 @@ USAGE
   $ smartthings deviceprofiles:translations:delete [ID] [TAG]
 
 ARGUMENTS
-  ID   Device profile UUID or number in the list
+  ID   device profile UUID or number in the list
   TAG  the locale tag
 
 OPTIONS
@@ -1223,7 +1223,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
-  $ smartthings deviceprofiles:translations:upsert 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 -i en.yml
+  $ smartthings deviceprofiles:translations:upsert 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 -i en.yaml
   tag: en
   components:
      main:
@@ -1236,7 +1236,7 @@ EXAMPLES
        label: Outlet two
        description: Switchable outlet 1 power
 
-  $ smartthings deviceprofiles:translations:upsert -i en.yml
+  $ smartthings deviceprofiles:translations:upsert -i en.yaml
   ┌────┬─────────────────────┬─────────────┬──────────────────────────────────────┐
   │ #  │ Name                │ Status      │ Id                                   │
   ├────┼─────────────────────┼─────────────┼──────────────────────────────────────┤
@@ -1988,19 +1988,19 @@ USAGE
   $ smartthings locations:rooms:create
 
 OPTIONS
-  -d, --dry-run                produce JSON but don't actually submit
-  -h, --help                   show CLI help
-  -i, --input=input            specify input file
-  -j, --json                   use JSON format of input and/or output
-  -l, --locationid=locationid  a specific location to query
-  -o, --output=output          specify output file
-  -p, --profile=profile        [default: default] configuration profile
-  -t, --token=token            the auth token to use
-  -y, --yaml                   use YAML format of input and/or output
-  --compact                    use compact table format with no lines between body rows
-  --expanded                   use expanded table format with a line between each body row
-  --indent=indent              specify indentation for formatting JSON or YAML output
-  --language=language          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -d, --dry-run                  produce JSON but don't actually submit
+  -h, --help                     show CLI help
+  -i, --input=input              specify input file
+  -j, --json                     use JSON format of input and/or output
+  -l, --location-id=location-id  a specific location to query
+  -o, --output=output            specify output file
+  -p, --profile=profile          [default: default] configuration profile
+  -t, --token=token              the auth token to use
+  -y, --yaml                     use YAML format of input and/or output
+  --compact                      use compact table format with no lines between body rows
+  --expanded                     use expanded table format with a line between each body row
+  --indent=indent                specify indentation for formatting JSON or YAML output
+  --language=language            ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings rooms:create
