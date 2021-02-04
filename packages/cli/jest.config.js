@@ -4,5 +4,8 @@ module.exports = {
 	testMatch: [
 		'**/__tests__/**/*.test.ts',
 	],
-	setupFilesAfterEnv: ['jest-extended'],
+	setupFilesAfterEnv: [
+		'<rootDir>/src/__tests__/setup/jest.setup.ts',
+		'jest-extended',
+	],
 }
