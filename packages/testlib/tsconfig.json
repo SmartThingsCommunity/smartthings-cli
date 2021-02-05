@@ -4,6 +4,12 @@
 		"outDir": "./dist",
 		"rootDir": "./src"
 	},
+	"references": [
+		{
+			"path": "../lib",
+			"name": "@smartthings/cli-lib"
+		},
+	],
 	"exclude": [
 		"node_modules",
 		"dist"
