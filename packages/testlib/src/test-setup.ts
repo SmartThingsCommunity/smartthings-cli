@@ -1,7 +1,9 @@
 import { cliConfig, LogManager, LoginAuthenticator } from '@smartthings/cli-lib'
 import { NoLogLogger } from '@smartthings/core-sdk'
 
-
+/**
+ * Performs minimal stubbing required to get CLI commands running under jest.
+ */
 export function setup(): void {
 	const configProfileData = {
 		clientIdProvider: {
