@@ -1,4 +1,4 @@
-import { APICommand, selectAndActOn } from '@smartthings/cli-lib'
+import { APICommand, selectFromList } from '@smartthings/cli-lib'
 
 
 export default class DeviceDeleteCommand extends APICommand {
@@ -11,16 +11,18 @@ export default class DeviceDeleteCommand extends APICommand {
 		description: 'device UUID',
 	}]
 
-	primaryKeyName = 'deviceId'
-	sortKeyName = 'name'
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		await selectAndActOn(this, args.id,
+		const config = {
+			primaryKeyName: 'deviceId',
+			sortKeyName: 'name',
+		}
+		const id = await selectFromList(this, config, args.id,
 			() => this.client.devices.list(),
-			async id => { await this.client.devices.delete(id) },
-			'device {{id}} deleted')
+			'Select device to delete.')
+		await this.client.devices.delete(id)
+		this.log(`Device ${id} deleted.`)
 	}
 }
