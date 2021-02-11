@@ -50,7 +50,7 @@ export default class SchemaUpdateCommand extends SelectingInputOutputAPICommand<
 							await addSchemaPermission(data.lambdaArnEU, flags.principal, flags['statement-id'])
 						}
 					} else {
-						throw Error('Authorization is not applicable to web-hook schema connectors')
+						throw Error('Authorization is not applicable to web-hook schema connectors.')
 					}
 				}
 				return this.client.schema.update(id, data)

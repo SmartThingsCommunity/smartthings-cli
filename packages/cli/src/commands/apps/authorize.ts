@@ -38,7 +38,7 @@ export default class AppsAuthorizeCommand extends SmartThingsCommand {
 		addPermission(args.arn, flags.principal, flags['statement-id']).then(async (message) => {
 			this.log(message)
 		}).catch(err => {
-			this.log(`caught error ${err}`)
+			this.log(`Caught error ${err}.`)
 		})
 	}
 }

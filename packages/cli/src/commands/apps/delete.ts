@@ -8,7 +8,7 @@ export default class AppDeleteCommand extends APICommand {
 
 	static args = [{
 		name: 'id',
-		description: 'App profile UUID or number in the list',
+		description: 'app profile UUID or number in the list',
 	}]
 
 	async run(): Promise<void> {

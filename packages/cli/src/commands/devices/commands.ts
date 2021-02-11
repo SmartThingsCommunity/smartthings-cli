@@ -262,6 +262,6 @@ export default class DeviceCommandsCommand extends APICommand {
 		const [commands] = await inputItem<Command[]>(this, commandLineInputProcessor(this),
 			inputProcessor(() => true, () => this.getInputFromUser(deviceId)))
 		await this.client.devices.executeCommands(deviceId, commands)
-		this.log('Command executed successfully')
+		this.log('Command executed successfully.')
 	}
 }

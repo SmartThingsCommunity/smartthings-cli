@@ -4,9 +4,9 @@ import { buildTableOutput, prunePresentationValues, augmentPresentationValues, D
 
 
 export default class DeviceDefCreateCommand extends InputOutputAPICommand<DeviceDefinitionRequest, DeviceDefinition> {
-	static description = 'Create a new device profile and device configuration.\n' +
+	static description = 'create a new device profile and device configuration\n' +
 		'Creates a new device profile and device configuration. Unlike deviceprofiles:create,\n' +
-		'this command accepts a consolidated object that can include a device configration \n' +
+		'this command accepts a consolidated object that can include a device configuration\n' +
 		'in a property named "view".'
 
 	static flags = InputOutputAPICommand.flags
@@ -38,7 +38,7 @@ export default class DeviceDefCreateCommand extends InputOutputAPICommand<Device
 
 	private async createWithCustomConfig(data: DeviceDefinitionRequest): Promise<DeviceDefinition> {
 		if (!data.view) {
-			throw Error('View property not defined')
+			throw Error('View property not defined.')
 		}
 
 		// create the device config from the view data

@@ -40,6 +40,6 @@ export default class RoomsDeleteCommand extends APICommand {
 			throw new CLIError(`could not find room with id ${roomId}`)
 		}
 		await this.client.rooms.delete(roomId, room.locationId)
-		this.log(`room ${roomId} deleted`)
+		this.log(`Room ${roomId} deleted.`)
 	}
 }

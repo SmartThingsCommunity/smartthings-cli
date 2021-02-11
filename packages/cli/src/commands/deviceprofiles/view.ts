@@ -135,7 +135,7 @@ export function augmentPresentationValues(view: DeviceView): DeviceView {
 }
 
 export default class DeviceViewCommand extends SelectingOutputAPICommand<DeviceDefinition, DeviceProfile> {
-	static description = 'Show device profile and device configuration in a single, consolidated view'
+	static description = 'show device profile and device configuration in a single, consolidated view'
 
 	static flags = {
 		...SelectingOutputAPICommand.flags,
@@ -143,7 +143,7 @@ export default class DeviceViewCommand extends SelectingOutputAPICommand<DeviceD
 
 	static args = [{
 		name: 'id',
-		description: 'Device profile UUID or the number from list',
+		description: 'device profile UUID or the number from list',
 	}]
 
 	primaryKeyName = 'id'

@@ -44,7 +44,7 @@ export type CapabilitySummaryWithLocales = CapabilitySummaryWithNamespace & { lo
 
 export default class CapabilityTranslationsCommand extends NestedListingOutputAPICommandBase<CapabilityId, string, CapabilityLocalization, CapabilitySummaryWithLocales, LocaleReference> {
 
-	static description = 'Get list of locales supported by the capability'
+	static description = 'get list of locales supported by the capability'
 
 	static flags = {
 		...NestedListingOutputAPICommandBase.flags,

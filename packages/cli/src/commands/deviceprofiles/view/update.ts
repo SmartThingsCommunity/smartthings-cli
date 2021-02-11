@@ -6,10 +6,10 @@ import { buildTableOutput, DeviceDefinition, DeviceDefinitionRequest, prunePrese
 
 
 export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<DeviceDefinitionRequest, DeviceDefinition, DeviceDefinition> {
-	static description = 'Update a device profile and configuration.\n' +
+	static description = 'update a device profile and configuration\n' +
 		'Updates a device profile and device configuration and sets the vid of the profile\n' +
 		'to the vid of the updated configuration. Unlike deviceprofiles:update this\n' +
-		'command accepts a consolidated object that can include a device configration\n' +
+		'command accepts a consolidated object that can include a device configuration\n' +
 		'in a property named "view".'
 
 	static examples = [
@@ -41,7 +41,7 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<D
 
 	static args = [{
 		name: 'id',
-		description: 'Device profile UUID or the number from list',
+		description: 'device profile UUID or the number from list',
 	}]
 
 	primaryKeyName = 'id'

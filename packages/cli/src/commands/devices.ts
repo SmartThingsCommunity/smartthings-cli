@@ -45,7 +45,7 @@ export default class DevicesCommand extends APICommand {
 		}),
 		'capabilities-mode': flags.string({
 			char: 'C',
-			description: 'Treat capability filter query params as a logical "or" or "and" with a default of "and".',
+			description: 'treat capability filter query params as a logical "or" or "and" with a default of "and".',
 			dependsOn: ['capability'],
 			options: ['and', 'or'],
 		}),

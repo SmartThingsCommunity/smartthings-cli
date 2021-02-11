@@ -34,7 +34,7 @@ export async function inputItem<I>(command: SmartThingsCommandInterface,
 		const item = await inputProcessor.read()
 		return [item, inputProcessor.ioFormat]
 	} else {
-		throw new CLIError('input is required either via file specified with --input option or from stdin')
+		throw new CLIError('Input is required either via file specified with --input option or from stdin.')
 	}
 }
 inputItem.flags = buildInputProcessor.flags

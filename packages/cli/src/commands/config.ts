@@ -37,7 +37,7 @@ export default class ConfigCommand extends SmartThingsCommand {
 		...SmartThingsCommand.flags,
 		...outputListing.flags,
 		verbose: flags.boolean({
-			description: 'Include additional data in table output',
+			description: 'include additional data in table output',
 			char: 'v',
 		}),
 	}

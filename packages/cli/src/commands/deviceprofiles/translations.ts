@@ -21,7 +21,7 @@ export function buildTableOutput(this: APICommand, data: DeviceProfileTranslatio
 export type DeviceProfileWithLocales = DeviceProfile & { locales?: string }
 
 export default class DeviceProfileTranslationsCommand extends NestedListingOutputAPICommand<DeviceProfileTranslations, DeviceProfileWithLocales, LocaleReference> {
-	static description = 'Get list of locales supported by the device profiles'
+	static description = 'get list of locales supported by the device profiles'
 
 	static flags = {
 		...NestedListingOutputAPICommand.flags,

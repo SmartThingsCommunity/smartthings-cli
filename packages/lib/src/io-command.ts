@@ -356,35 +356,6 @@ export abstract class Listing<L> extends Outputable {
 }
 
 /**
- * Extend this class for your command if you need to accept input but the
- * API call you're making doesn't have complex output. There are currently
- * no examples of this in the CLI (as of August 2020).
- */
-export abstract class InputAPICommand<I> extends APICommand {
-	/**
-	 * This is just a convenience method that outputs a simple string message
-	 * on success and handles exceptions. This is mostly useful for simple
-	 * things like a DELETE call that don't have any complicated inputs or
-	 * outputs.
-	 *
-	 * @param executeCommand function that does the work
-	 */
-	protected processNormally(successMessage: string, executeCommand: (data: I) => Promise<void>): void {
-		this.readInput().then(input => {
-			return executeCommand(input)
-		}).then(() => {
-			process.stdout.write(`${successMessage}\n`)
-		}).catch(err => {
-			this.logger.error(`caught error ${err}`)
-			process.exit(1)
-		})
-	}
-}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface InputAPICommand<I> extends Inputting<I> {}
-applyMixins(InputAPICommand, [Inputting], { mergeFunctions: true })
-
-/**
  * An API command that has complex input and complex output. This
  * would normally be used for POST and PUT methods (though in the case of PUT
  * one of the "Selecting" classes that extend this is more often appropriate).
@@ -614,7 +585,7 @@ export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends AP
 			} else if (this.inputOptions.filename || process.stdin.isTTY) {
 				const items = this.sort(await listCallback())
 				if (items.length === 0) {
-					this.log('no items found')
+					this.log('No items found.')
 					process.exit(0)
 				}
 				writeOutputPrivate(items, this.outputOptions, this.buildListTableOutput.bind(this), true)
@@ -702,7 +673,7 @@ export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand
 			} else {
 				const items = this.sort(await listCallback())
 				if (items.length === 0) {
-					this.log('no items found')
+					this.log('No items found.')
 					process.exit(0)
 				}
 				writeOutputPrivate(items, this.outputOptions, this.buildListTableOutput.bind(this), true)

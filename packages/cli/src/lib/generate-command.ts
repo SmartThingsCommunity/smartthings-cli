@@ -11,7 +11,7 @@ export default abstract class GenerateCommand extends SmartThingsCommand {
 		env.lookup(undefined, () => {
 			env.run(name, (err) => {
 				if (err) {
-					this.log(`failed to run yeoman: ${err}`)
+					this.log(`Failed to run yeoman: ${err}.`)
 				}
 			})
 		})

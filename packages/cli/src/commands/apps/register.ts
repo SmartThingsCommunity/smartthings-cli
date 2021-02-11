@@ -6,7 +6,7 @@ import { APICommand, selectFromList } from '@smartthings/cli-lib'
 
 
 export default class AppRegisterCommand extends APICommand {
-	static description = 'Send request to app target URL to confirm existence and authorize lifecycle events'
+	static description = 'send request to app target URL to confirm existence and authorize lifecycle events'
 
 	static flags = APICommand.flags
 

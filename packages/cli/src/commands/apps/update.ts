@@ -46,7 +46,7 @@ export default class AppUpdateCommand extends SelectingInputOutputAPICommand<App
 							await Promise.all(requests)
 						}
 					} else {
-						throw new Error('Authorization is not applicable to web-hook SmartApps')
+						throw new Error('Authorization is not applicable to web-hook SmartApps.')
 					}
 				}
 				return this.client.apps.update(id, data)
