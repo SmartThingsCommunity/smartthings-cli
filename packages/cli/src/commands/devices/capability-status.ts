@@ -20,7 +20,7 @@ export function buildTableOutput(this: APICommand, capability: CapabilityStatus)
 }
 
 export default class DeviceCapabilityStatusCommand extends SelectingOutputAPICommand<CapabilityStatus, Device> {
-	static description = "get the current status of all of a device capabilities's attributes"
+	static description = "get the current status of all of a device capability's attributes"
 
 	static flags = SelectingOutputAPICommand.flags
 

@@ -8,7 +8,7 @@ export default class DeviceProfileDeleteCommand extends APICommand {
 
 	static args = [{
 		name: 'id',
-		description: 'Device profile UUID or number in the list',
+		description: 'device profile UUID or number in the list',
 	}]
 
 	static examples = [

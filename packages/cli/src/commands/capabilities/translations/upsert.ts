@@ -10,7 +10,7 @@ import {buildTableOutput} from '../translations'
 
 
 export default class CapabilityTranslationsUpsertCommand extends SelectingInputOutputAPICommandBase<CapabilityId, CapabilityLocalization, CapabilityLocalization, CapabilitySummaryWithNamespace> {
-	static description = 'Create or update a capability translation'
+	static description = 'create or update a capability translation'
 
 	static flags = SelectingInputOutputAPICommandBase.flags
 

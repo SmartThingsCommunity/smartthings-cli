@@ -41,7 +41,7 @@ export default class SchemaAppCreateCommand extends InputOutputAPICommand<Schema
 						await addSchemaPermission(data.lambdaArnEU, flags.principal, flags['statement-id'])
 					}
 				} else {
-					this.logger.error('Authorization is not applicable to web-hook schema connectors')
+					this.logger.error('Authorization is not applicable to web-hook schema connectors.')
 					// eslint-disable-next-line no-process-exit
 					process.exit(1)
 				}

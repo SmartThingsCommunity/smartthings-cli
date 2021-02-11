@@ -38,7 +38,7 @@ export default class AppCreateCommand extends InputOutputAPICommand<AppRequest, 
 						await Promise.all(requests)
 					}
 				} else {
-					this.logger.error('Authorization is not applicable to web-hook SmartApps')
+					this.logger.error('Authorization is not applicable to web-hook SmartApps.')
 					// eslint-disable-next-line no-process-exit
 					process.exit(1)
 				}

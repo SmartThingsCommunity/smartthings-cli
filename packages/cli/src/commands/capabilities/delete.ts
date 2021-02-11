@@ -23,6 +23,6 @@ export default class CapabilitiesDeleteCommand extends APICommand {
 		const capabilityId = await selectGeneric(this, config, optionalId,
 			() => getCustomByNamespace(this.client), getIdFromUser)
 		await this.client.capabilities.delete(capabilityId.id, capabilityId.version)
-		this.log(`capability ${capabilityId.id} (version ${capabilityId.version}) deleted`)
+		this.log(`Capability ${capabilityId.id} (version ${capabilityId.version}) deleted.`)
 	}
 }
