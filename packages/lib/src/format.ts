@@ -31,6 +31,7 @@ export async function formatAndWriteItem<O>(command: SmartThingsCommandInterface
 	const outputFormatter = buildOutputFormatter(command, defaultIOFormat, commonFormatter)
 	await writeOutput(outputFormatter(item), command.flags.output)
 }
+formatAndWriteItem.flags = buildOutputFormatter.flags
 
 export async function formatAndWriteList<L>(command: SmartThingsCommandInterface,
 		config: CommonListOutputProducer<L> & Naming,

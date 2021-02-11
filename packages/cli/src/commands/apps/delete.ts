@@ -1,4 +1,4 @@
-import { APICommand, selectAndActOn } from '@smartthings/cli-lib'
+import { APICommand, selectFromList } from '@smartthings/cli-lib'
 
 
 export default class AppDeleteCommand extends APICommand {
@@ -11,16 +11,17 @@ export default class AppDeleteCommand extends APICommand {
 		description: 'App profile UUID or number in the list',
 	}]
 
-	primaryKeyName = 'appId'
-	sortKeyName = 'displayName'
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		await selectAndActOn(this, args.id,
-			async () => await this.client.apps.list(),
-			async id => { await this.client.apps.delete(id) },
-			'app {{id}} deleted')
+		const config = {
+			primaryKeyName: 'appId',
+			sortKeyName: 'displayName',
+		}
+		const id = await selectFromList(this, config, args.id, async () => await this.client.apps.list(),
+			'Select an app to delete.')
+		await this.client.apps.delete(id)
+		this.log(`App ${id} deleted.`)
 	}
 }

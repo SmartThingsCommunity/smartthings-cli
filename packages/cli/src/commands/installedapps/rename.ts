@@ -1,8 +1,10 @@
 import { flags } from '@oclif/command'
 import inquirer from 'inquirer'
 
-import { InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
-import {selectActOnAndOutput, APICommand, withLocations} from '@smartthings/cli-lib'
+import { InstalledAppListOptions } from '@smartthings/core-sdk'
+
+import { APICommand, formatAndWriteItem, selectFromList, withLocations } from '@smartthings/cli-lib'
+
 import { listTableFieldDefinitions, tableFieldDefinitions } from '../installedapps'
 
 
@@ -11,7 +13,7 @@ export default class DeviceComponentStatusCommand extends APICommand {
 
 	static flags = {
 		...APICommand.flags,
-		...selectActOnAndOutput.flags,
+		...formatAndWriteItem.flags,
 		'location-id': flags.string({
 			char: 'l',
 			description: 'filter results by location',
@@ -34,28 +36,25 @@ export default class DeviceComponentStatusCommand extends APICommand {
 		},
 	]
 
-	tableFieldDefinitions = tableFieldDefinitions
-
-	itemName = 'installed app'
-	primaryKeyName = 'installedAppId'
-	sortKeyName = 'displayName'
-	listTableFieldDefinitions = listTableFieldDefinitions
-	acceptIndexId = true
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceComponentStatusCommand)
 		await super.setup(args, argv, flags)
 
-		if (this.flags.verbose) {
-			this.listTableFieldDefinitions.splice(3, 0, 'location')
+		const config = {
+			itemName: 'installed app',
+			primaryKeyName: 'installedAppId',
+			sortKeyName: 'displayName',
+			tableFieldDefinitions,
+			listTableFieldDefinitions,
 		}
-
+		if (flags.verbose) {
+			config.listTableFieldDefinitions.splice(3, 0, 'location')
+		}
 		const listOptions: InstalledAppListOptions = {
 			locationId: flags['location-id'],
 		}
 
-		await selectActOnAndOutput<InstalledApp, InstalledApp>(this,
-			args.id,
+		const id = await selectFromList(this, config, args.id,
 			async () => {
 				const apps = await this.client.installedApps.list(listOptions)
 				if (this.flags.verbose) {
@@ -63,15 +62,14 @@ export default class DeviceComponentStatusCommand extends APICommand {
 				}
 				return apps
 			},
-			async id => {
-				const displayName = args.name ??
-					(await inquirer.prompt({
-						type: 'input',
-						name: 'label',
-						message: 'Enter new installed app name:',
-					})).label
-				return this.client.installedApps.update(id, { displayName })
-			},
-		)
+			'Select an app to rename.')
+		const displayName = args.name ??
+			(await inquirer.prompt({
+				type: 'input',
+				name: 'label',
+				message: 'Enter new installed app name:',
+			})).label
+		const updatedApp = await this.client.installedApps.update(id, { displayName })
+		await formatAndWriteItem(this, config, updatedApp)
 	}
 }

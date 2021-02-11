@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
 
-import {selectAndActOn, APICommand, withLocations} from '@smartthings/cli-lib'
+import {selectFromList, APICommand, withLocations} from '@smartthings/cli-lib'
 
 
 export default class InstalledAppDeleteCommand extends APICommand {
@@ -26,24 +26,24 @@ export default class InstalledAppDeleteCommand extends APICommand {
 		description: 'installed app UUID',
 	}]
 
-	primaryKeyName = 'installedAppId'
-	sortKeyName = 'displayName'
-	protected listTableFieldDefinitions = ['displayName', 'installedAppType',
-		'installedAppStatus', 'installedAppId']
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(InstalledAppDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		if (this.flags.verbose) {
-			this.listTableFieldDefinitions.splice(3, 0, 'location')
+		const config = {
+			primaryKeyName: 'installedAppId',
+			sortKeyName: 'displayName',
+			listTableFieldDefinitions: ['displayName', 'installedAppType', 'installedAppStatus', 'installedAppId'],
+		}
+		if (flags.verbose) {
+			config.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 
 		const listOptions: InstalledAppListOptions = {
 			locationId: flags['location-id'],
 		}
 
-		await selectAndActOn<InstalledApp>(this, args.id,
+		const id = await selectFromList<InstalledApp>(this, config, args.id,
 			async () => {
 				const apps = await this.client.installedApps.list(listOptions)
 				if (this.flags.verbose) {
@@ -51,7 +51,8 @@ export default class InstalledAppDeleteCommand extends APICommand {
 				}
 				return apps
 			},
-			async id => { await this.client.installedApps.delete(id) },
-			'installed app {{id}} deleted')
+			'Select an installed app to delete.')
+		await this.client.installedApps.delete(id),
+		this.log(`Installed app ${id} deleted.`)
 	}
 }

@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { InstalledSchemaApp } from '@smartthings/core-sdk'
 
-import {selectAndActOn, APICommand} from '@smartthings/cli-lib'
+import { APICommand, selectFromList } from '@smartthings/cli-lib'
 
 import { installedSchemaInstances } from '../installedschema'
 
@@ -27,21 +27,23 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand {
 		description: 'installed schema connector UUID',
 	}]
 
-	primaryKeyName = 'isaId'
-	sortKeyName = 'appName'
-	listTableFieldDefinitions = ['appName', 'partnerName', 'partnerSTConnection', 'isaId']
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(InstalledSchemaAppDeleteCommand)
 		await super.setup(args, argv, flags)
 
+		const config = {
+			primaryKeyName: 'isaId',
+			sortKeyName: 'appName',
+			listTableFieldDefinitions: ['appName', 'partnerName', 'partnerSTConnection', 'isaId'],
+		}
 		if (this.flags.verbose) {
-			this.listTableFieldDefinitions.splice(3, 0, 'location')
+			config.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 
-		await selectAndActOn<InstalledSchemaApp>(this, args.id,
+		const id = await selectFromList<InstalledSchemaApp>(this, config, args.id,
 			() => installedSchemaInstances(this.client, flags['location-id'], flags.verbose),
-			async id => { await this.client.schema.deleteInstalledApp(id) },
-			'installed schema app {{id}} deleted')
+			'Select an installed schema app to delete.')
+		await this.client.schema.deleteInstalledApp(id)
+		this.log(`Installed schema app ${id} deleted.`)
 	}
 }
