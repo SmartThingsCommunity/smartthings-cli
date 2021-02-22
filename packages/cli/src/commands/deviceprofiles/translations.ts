@@ -1,14 +1,14 @@
 import { flags } from '@oclif/command'
 
-import {DeviceProfile, DeviceProfileTranslations, LocaleReference} from '@smartthings/core-sdk'
+import { DeviceProfile, DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
-import { APICommand, NestedListingOutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, ListingOutputConfig, outputListing, selectFromList, SelectingConfig, stringTranslateToId, TableGenerator } from '@smartthings/cli-lib'
 
 
-export function buildTableOutput(this: APICommand, data: DeviceProfileTranslations): string {
+export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfileTranslations): string {
 	let result = `Tag: ${data.tag}`
 	if (data.components) {
-		const table = this.tableGenerator.newOutputTable({head: ['Component','Label','Description']})
+		const table = tableGenerator.newOutputTable({ head: ['Component','Label','Description'] })
 		for (const name of Object.keys(data.components)) {
 			const component = data.components[name]
 			table.push([name, component.label, component.description || ''])
@@ -20,11 +20,12 @@ export function buildTableOutput(this: APICommand, data: DeviceProfileTranslatio
 
 export type DeviceProfileWithLocales = DeviceProfile & { locales?: string }
 
-export default class DeviceProfileTranslationsCommand extends NestedListingOutputAPICommand<DeviceProfileTranslations, DeviceProfileWithLocales, LocaleReference> {
+export default class DeviceProfileTranslationsCommand extends APICommand {
 	static description = 'Get list of locales supported by the device profiles'
 
 	static flags = {
-		...NestedListingOutputAPICommand.flags,
+		...APICommand.flags,
+		...outputListing.flags,
 		verbose: flags.boolean({
 			description: 'include list of locales in table output',
 			char: 'v',
@@ -50,6 +51,13 @@ export default class DeviceProfileTranslationsCommand extends NestedListingOutpu
 		'│  1 │ Test Switch         │ DEVELOPMENT │ 58e73d0c-b5a5-4814-b344-c10f4ff357bb │',
 		'│  2 │ Two Channel Outlet  │ DEVELOPMENT │ 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 │',
 		'└────┴─────────────────────┴─────────────┴──────────────────────────────────────┘',
+		'? Select a Device Profile. 2',
+		'┌───┬─────┐',
+		'│ # │ Tag │',
+		'├───┼─────┤',
+		'│ 1 │ en  │',
+		'│ 2 │ es  │',
+		'└───┴─────┘',
 		'',
 		'$ smartthings deviceprofiles:translations -v',
 		'┌────┬─────────────────────┬─────────────┬──────────────────────────────────────┬─────────┐',
@@ -58,6 +66,13 @@ export default class DeviceProfileTranslationsCommand extends NestedListingOutpu
 		'│  1 │ Test Switch         │ DEVELOPMENT │ 58e73d0c-b5a5-4814-b344-c10f4ff357bb │         │',
 		'│  2 │ Two Channel Outlet  │ DEVELOPMENT │ 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 │ en, es  │',
 		'└────┴─────────────────────┴─────────────┴──────────────────────────────────────┴─────────┘',
+		'? Select a Device Profile. 2',
+		'┌───┬─────┐',
+		'│ # │ Tag │',
+		'├───┼─────┤',
+		'│ 1 │ en  │',
+		'│ 2 │ es  │',
+		'└───┴─────┘',
 		'',
 		'$ smartthings deviceprofiles:translations 2',
 		'$ smartthings deviceprofiles:translations 3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb',
@@ -81,54 +96,49 @@ export default class DeviceProfileTranslationsCommand extends NestedListingOutpu
 		'└───────────┴────────────┴───────────────────────────────┘',
 	]
 
-	primaryKeyName = 'id'
-	nestedPrimaryKeyName = 'tag'
-	sortKeyName = 'name'
-	nestedSortKeyName = 'tag'
-
-	protected listTableFieldDefinitions = ['name', 'status', 'id']
-	protected nestedListTableFieldDefinitions = ['tag']
-
-	protected buildTableOutput = buildTableOutput
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileTranslationsCommand)
 		await super.setup(args, argv, flags)
 
-		if (this.flags.verbose) {
-			this.listTableFieldDefinitions.splice(3, 0, 'locales')
+		const dpConfig: SelectingConfig<DeviceProfile> = {
+			primaryKeyName: 'id',
+			sortKeyName: 'name',
+			listTableFieldDefinitions: ['name', 'status', 'id'],
+		}
+		if (flags.verbose) {
+			dpConfig.listTableFieldDefinitions.splice(3, 0, 'locales')
 		}
 
-		const profileIdOrIndex = args.id
-		const tagOrIndex = args.tag
+		const listDeviceProfiles = async (): Promise<DeviceProfile[]> => {
+			const deviceProfiles =  await this.client.deviceProfiles.list()
+			if (flags.verbose) {
+				const ops = deviceProfiles.map(async (it) => {
+					try {
+						return await this.client.deviceProfiles.listLocales(it.id)
+					} catch(e) {
+						return []
+					}
+				})
 
-		await this.processNormally(
-			profileIdOrIndex,
-			tagOrIndex,
-			async () => {
-				const deviceProfiles =  await this.client.deviceProfiles.list()
-				if (flags.verbose) {
-					const ops = deviceProfiles.map(async (it) => {
-						try {
-							return await this.client.deviceProfiles.listLocales(it.id)
-						} catch(e) {
-							return []
-						}
-					})
+				const locales = await Promise.all(ops)
 
-					const locales = await Promise.all(ops)
+				return deviceProfiles.map((it, index) => {
+					return { ...it, locales: locales[index].map((it: LocaleReference) => it.tag).sort().join(', ') }
+				})
+			}
+			return deviceProfiles
+		}
+		const preselectedDPId = args.id ? await stringTranslateToId(dpConfig, args.id, listDeviceProfiles) : undefined
+		const deviceProfileId = await selectFromList(this, dpConfig, preselectedDPId, listDeviceProfiles, 'Select a Device Profile.')
 
-					return deviceProfiles.map((it, index) => {
-						return {...it, locales: locales[index].map((it: LocaleReference) => it.tag).sort().join(', ')}
-					})
-				}
-				return deviceProfiles
-			},
-			(id) => {
-				return this.client.deviceProfiles.listLocales(id)
-			},
-			(id, id2) =>  {
-				return this.client.deviceProfiles.getTranslations(id, id2)
-			})
+		const config: ListingOutputConfig<DeviceProfileTranslations, LocaleReference> = {
+			primaryKeyName: 'tag',
+			sortKeyName: 'tag',
+			buildTableOutput: data => buildTableOutput(this.tableGenerator, data),
+			listTableFieldDefinitions: ['tag'],
+		}
+		await outputListing(this, config, args.tag,
+			() => this.client.deviceProfiles.listLocales(deviceProfileId),
+			tag =>  this.client.deviceProfiles.getTranslations(deviceProfileId, tag))
 	}
 }

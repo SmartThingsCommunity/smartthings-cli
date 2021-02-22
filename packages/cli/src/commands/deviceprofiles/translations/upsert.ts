@@ -56,7 +56,7 @@ export default class DeviceProfileTranslationsUpsertCommand extends SelectingInp
 
 	protected listTableFieldDefinitions = ['name', 'status', 'id']
 
-	protected buildTableOutput = buildTableOutput
+	protected buildTableOutput = (data: DeviceProfileTranslations): string => buildTableOutput(this.tableGenerator, data)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileTranslationsUpsertCommand)

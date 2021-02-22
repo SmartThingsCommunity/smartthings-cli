@@ -214,7 +214,7 @@ export async function getIdFromUser(fieldInfo: Sorting, list: CapabilitySummaryW
 	return { 'id': inputId, 'version': 1 }
 }
 
-export async function translateToId(sortKeyName: string,  idOrIndex: string | CapabilityId,
+export async function translateToId(sortKeyName: string, idOrIndex: string | CapabilityId,
 		listFunction: ListCallback<CapabilitySummaryWithNamespace>): Promise<CapabilityId> {
 	if (typeof idOrIndex !== 'string') {
 		return idOrIndex

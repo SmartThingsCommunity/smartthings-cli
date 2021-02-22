@@ -725,6 +725,14 @@ EXAMPLES
   │ 1 │ custom1.outputModulation    │ 1       │ proposed │
   │ 2 │ custom1.outputVoltage       │ 1       │ proposed │
   └───┴─────────────────────────────┴─────────┴──────────┘
+  ? Select a capability. 1
+  ┌───┬─────┐
+  │ # │ Tag │
+  ├───┼─────┤
+  │ 1 │ en  │
+  │ 2 │ ko  │
+  └───┴─────┘
+
   outputModulation (master)$ st capabilities:translations -v
   ┌───┬─────────────────────────────┬─────────┬──────────┬────────────┐
   │ # │ Id                          │ Version │ Status   │ Locales    │
@@ -732,9 +740,17 @@ EXAMPLES
   │ 1 │ custom1.outputModulation    │ 1       │ proposed │ ko, en, es │
   │ 2 │ custom1.outputVoltage       │ 1       │ proposed │ en         │
   └───┴─────────────────────────────┴─────────┴──────────┴────────────┘
+  ? Select a capability. 1
+  ┌───┬─────┐
+  │ # │ Tag │
+  ├───┼─────┤
+  │ 1 │ en  │
+  │ 1 │ es  │
+  │ 2 │ ko  │
+  └───┴─────┘
 
-  outputModulation (master)$ st capabilities:translations 1
-  outputModulation (master)$ st capabilities:translations custom1.outputModulation
+  $ smartthings capabilities:translations 1
+  $ smartthings capabilities:translations custom1.outputModulation
   ┌───┬─────┐
   │ # │ Tag │
   ├───┼─────┤
@@ -1123,6 +1139,13 @@ EXAMPLES
   │  1 │ Test Switch         │ DEVELOPMENT │ 58e73d0c-b5a5-4814-b344-c10f4ff357bb │
   │  2 │ Two Channel Outlet  │ DEVELOPMENT │ 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 │
   └────┴─────────────────────┴─────────────┴──────────────────────────────────────┘
+  ? Select a Device Profile. 2
+  ┌───┬─────┐
+  │ # │ Tag │
+  ├───┼─────┤
+  │ 1 │ en  │
+  │ 2 │ es  │
+  └───┴─────┘
 
   $ smartthings deviceprofiles:translations -v
   ┌────┬─────────────────────┬─────────────┬──────────────────────────────────────┬─────────┐
@@ -1131,6 +1154,13 @@ EXAMPLES
   │  1 │ Test Switch         │ DEVELOPMENT │ 58e73d0c-b5a5-4814-b344-c10f4ff357bb │         │
   │  2 │ Two Channel Outlet  │ DEVELOPMENT │ 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 │ en, es  │
   └────┴─────────────────────┴─────────────┴──────────────────────────────────────┴─────────┘
+  ? Select a Device Profile. 2
+  ┌───┬─────┐
+  │ # │ Tag │
+  ├───┼─────┤
+  │ 1 │ en  │
+  │ 2 │ es  │
+  └───┴─────┘
 
   $ smartthings deviceprofiles:translations 2
   $ smartthings deviceprofiles:translations 3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb

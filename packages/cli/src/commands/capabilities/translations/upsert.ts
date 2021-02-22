@@ -70,7 +70,7 @@ export default class CapabilityTranslationsUpsertCommand extends SelectingInputO
 
 	protected listTableFieldDefinitions = ['id', 'version']
 
-	protected buildTableOutput = buildTableOutput
+	protected buildTableOutput = (data: CapabilityLocalization): string => buildTableOutput(this.tableGenerator, data)
 	protected getIdFromUser: (items: CapabilitySummaryWithNamespace[]) => Promise<CapabilityId> = items => getIdFromUser(this, items)
 
 	async run(): Promise<void> {

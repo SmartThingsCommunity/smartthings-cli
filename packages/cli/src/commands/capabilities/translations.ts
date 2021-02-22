@@ -1,16 +1,17 @@
 import { flags } from '@oclif/command'
 
-import { CapabilityLocalization, LocaleReference } from '@smartthings/core-sdk'
+import { CapabilityLocalization, DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
-import { APICommand, ListCallback, NestedListingOutputAPICommandBase, stringTranslateToNestedId } from '@smartthings/cli-lib'
+import { APICommand, ListingOutputConfig, outputListing, selectGeneric, SelectingConfig, TableGenerator } from '@smartthings/cli-lib'
 
-import { CapabilityId, capabilityIdOrIndexInputArgs, CapabilitySummaryWithNamespace, getCustomByNamespace, translateToId } from '../capabilities'
+import { CapabilityId, capabilityIdOrIndexInputArgs, CapabilitySummaryWithNamespace, getCustomByNamespace,
+	getIdFromUser, translateToId } from '../capabilities'
 
 
-export function buildTableOutput(this: APICommand, data: CapabilityLocalization): string {
+export function buildTableOutput(tableGenerator: TableGenerator, data: CapabilityLocalization): string {
 	let result = `Tag: ${data.tag}`
 	if (data.attributes) {
-		const table = this.tableGenerator.newOutputTable({head: ['Name','Label','Description', 'Template']})
+		const table = tableGenerator.newOutputTable({head: ['Name','Label','Description', 'Template']})
 		for (const name of Object.keys(data.attributes)) {
 			const attr = data.attributes[name]
 			table.push([name, attr.label, attr.description || '', attr.displayTemplate || ''])
@@ -24,7 +25,7 @@ export function buildTableOutput(this: APICommand, data: CapabilityLocalization)
 		result += '\n\nAttributes:\n' + table.toString()
 	}
 	if (data.commands) {
-		const table = this.tableGenerator.newOutputTable({head: ['Name','Label','Description']})
+		const table = tableGenerator.newOutputTable({head: ['Name','Label','Description']})
 		for (const name of Object.keys(data.commands)) {
 			const cmd = data.commands[name]
 			table.push([name, cmd.label || '', cmd.description || ''])
@@ -42,12 +43,13 @@ export function buildTableOutput(this: APICommand, data: CapabilityLocalization)
 
 export type CapabilitySummaryWithLocales = CapabilitySummaryWithNamespace & { locales?: string }
 
-export default class CapabilityTranslationsCommand extends NestedListingOutputAPICommandBase<CapabilityId, string, CapabilityLocalization, CapabilitySummaryWithLocales, LocaleReference> {
+export default class CapabilityTranslationsCommand extends APICommand {
 
 	static description = 'Get list of locales supported by the capability'
 
 	static flags = {
-		...NestedListingOutputAPICommandBase.flags,
+		...APICommand.flags,
+		...outputListing.flags,
 		namespace: flags.string({
 			char: 'n',
 			description: 'a specific namespace to query; will use all by default',
@@ -58,10 +60,10 @@ export default class CapabilityTranslationsCommand extends NestedListingOutputAP
 		}),
 	}
 
-	static args = [...capabilityIdOrIndexInputArgs, {
-		name: 'tag',
-		description: 'the locale tag',
-	}]
+	static args = [
+		...capabilityIdOrIndexInputArgs,
+		{ name: 'tag', description: 'the locale tag' },
+	]
 
 	static examples = [
 		'$ smartthings capabilities:translations',
@@ -71,6 +73,14 @@ export default class CapabilityTranslationsCommand extends NestedListingOutputAP
 		'│ 1 │ custom1.outputModulation    │ 1       │ proposed │',
 		'│ 2 │ custom1.outputVoltage       │ 1       │ proposed │',
 		'└───┴─────────────────────────────┴─────────┴──────────┘',
+		'? Select a capability. 1',
+		'┌───┬─────┐',
+		'│ # │ Tag │',
+		'├───┼─────┤',
+		'│ 1 │ en  │',
+		'│ 2 │ ko  │',
+		'└───┴─────┘',
+		'',
 		'outputModulation (master)$ st capabilities:translations -v',
 		'┌───┬─────────────────────────────┬─────────┬──────────┬────────────┐',
 		'│ # │ Id                          │ Version │ Status   │ Locales    │',
@@ -78,9 +88,17 @@ export default class CapabilityTranslationsCommand extends NestedListingOutputAP
 		'│ 1 │ custom1.outputModulation    │ 1       │ proposed │ ko, en, es │',
 		'│ 2 │ custom1.outputVoltage       │ 1       │ proposed │ en         │',
 		'└───┴─────────────────────────────┴─────────┴──────────┴────────────┘',
+		'? Select a capability. 1',
+		'┌───┬─────┐',
+		'│ # │ Tag │',
+		'├───┼─────┤',
+		'│ 1 │ en  │',
+		'│ 1 │ es  │',
+		'│ 2 │ ko  │',
+		'└───┴─────┘',
 		'',
-		'outputModulation (master)$ st capabilities:translations 1',
-		'outputModulation (master)$ st capabilities:translations custom1.outputModulation',
+		'$ smartthings capabilities:translations 1',
+		'$ smartthings capabilities:translations custom1.outputModulation',
 		'┌───┬─────┐',
 		'│ # │ Tag │',
 		'├───┼─────┤',
@@ -113,55 +131,63 @@ export default class CapabilityTranslationsCommand extends NestedListingOutputAP
 		'└──────────────────────────────────────┴───────────────────────┴──────────────────────────────────────────────────┘',
 	]
 
-	primaryKeyName = 'id'
-	nestedPrimaryKeyName = 'tag'
-	sortKeyName = 'id'
-	nestedSortKeyName = 'tag'
-
-	protected listTableFieldDefinitions = ['id', 'version', 'status']
-	protected nestedListTableFieldDefinition = ['tag']
-
-	protected buildTableOutput = buildTableOutput
-	// TODO: clean this up once all of the commands that use the imported `translateToId` function have been converted to the functional API
-	protected translateToId = (idOrIndex: string | CapabilityId, listFunction: ListCallback<CapabilitySummaryWithNamespace>): Promise<CapabilityId> => translateToId(this.sortKeyName, idOrIndex, listFunction)
-	protected translateToNestedId = stringTranslateToNestedId
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilityTranslationsCommand)
 		await super.setup(args, argv, flags)
 
-		if (this.flags.verbose) {
-			this.listTableFieldDefinitions.splice(3, 0, 'locales')
+		const capConfig: SelectingConfig<CapabilitySummaryWithNamespace> = {
+			primaryKeyName: 'id',
+			sortKeyName: 'id',
+			listTableFieldDefinitions: ['id', 'version', 'status'],
+		}
+		if (flags.verbose) {
+			capConfig.listTableFieldDefinitions.splice(3, 0, 'locales')
+		}
+		const listCapabilities = async (): Promise<CapabilitySummaryWithLocales[]> => {
+			const capabilities =  await getCustomByNamespace(this.client, flags.namespace)
+			if (flags.verbose) {
+				const ops = capabilities.map(it => this.client.capabilities.listLocales(it.id, it.version))
+				const locales = await Promise.all(ops)
+				return capabilities.map((it, index) => {
+					return { ...it, locales: locales[index].map(it => it.tag).sort().join(', ') }
+				})
+			}
+			return capabilities
 		}
 
-		let capabilityIdOrIndex = args.id
-		let tagOrIndex = undefined
+		let preselectedCapabilityId: CapabilityId | undefined = undefined
+		let preselectedTag: string | undefined = undefined
 		if (argv.length === 3) {
-			capabilityIdOrIndex = { id: args.id, version: args.version }
-			tagOrIndex = args.tag
+			// capabilityId, capabilityVersion, tag
+			preselectedCapabilityId = { id: args.id, version: args.version }
+			preselectedTag = args.tag
 		} else if (argv.length === 2) {
 			if (isNaN(args.id) && !isNaN(args.version)) {
-				capabilityIdOrIndex = { id: args.id, version: args.version }
+				// capabilityId, capabilityVersion, no tag specified
+				preselectedCapabilityId = { id: args.id, version: args.version }
 			} else {
-				tagOrIndex = args.version
+				// capability id or index, no capability version specified, tag specified
+				preselectedCapabilityId = await translateToId(capConfig.primaryKeyName, args.id, listCapabilities)
+				preselectedTag = args.version
 			}
+		} else {
+			// capability id or index, no tag specified
+			preselectedCapabilityId = await translateToId(capConfig.primaryKeyName, args.id, listCapabilities)
 		}
 
-		await this.processNormally(
-			capabilityIdOrIndex,
-			tagOrIndex,
-			async () => {
-				const capabilities =  await getCustomByNamespace(this.client, flags.namespace)
-				if (flags.verbose) {
-					const ops = capabilities.map(it => this.client.capabilities.listLocales(it.id, it.version))
-					const locales = await Promise.all(ops)
-					return capabilities.map((it, index) => {
-						return {...it, locales: locales[index].map(it => it.tag).sort().join(', ')}
-					})
-				}
-				return capabilities
-			},
-			id => this.client.capabilities.listLocales(id.id, id.version),
-			(id, id2) => this.client.capabilities.getTranslations(id.id, id.version, id2))
+		const capabilityId = await selectGeneric(this, capConfig, preselectedCapabilityId, listCapabilities,
+			getIdFromUser, 'Select a capability.')
+
+		const config: ListingOutputConfig<DeviceProfileTranslations, LocaleReference> = {
+			primaryKeyName: 'tag',
+			sortKeyName: 'tag',
+			listTableFieldDefinitions: ['tag'],
+			buildTableOutput: data => buildTableOutput(this.tableGenerator, data),
+		}
+
+		await outputListing(this, config, preselectedTag,
+			() => this.client.capabilities.listLocales(capabilityId.id, capabilityId.version),
+			tag => this.client.capabilities.getTranslations(capabilityId.id, capabilityId.version, tag),
+			true)
 	}
 }
