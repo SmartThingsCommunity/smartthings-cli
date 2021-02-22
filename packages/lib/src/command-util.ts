@@ -42,7 +42,7 @@ export async function stringTranslateToId<L>(config: Sorting & Naming, idOrIndex
 		return pk
 	}
 
-	throw Error(`invalid type ${typeof pk} for primary key`  +
+	throw Error(`invalid type ${typeof pk} for primary key` +
 		` ${primaryKeyName} in ${JSON.stringify(matchingItem)}`)
 }
 
@@ -73,7 +73,7 @@ export function convertToId<L>(itemIdOrIndex: string, primaryKeyName: string, so
 		if (typeof pk === 'string') {
 			return pk
 		}
-		throw Error(`invalid type ${typeof pk} for primary key`  +
+		throw Error(`invalid type ${typeof pk} for primary key` +
 			` ${primaryKeyName} in ${JSON.stringify(sortedList[index - 1])}`)
 	}
 	return false

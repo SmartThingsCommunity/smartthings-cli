@@ -26,7 +26,7 @@ const enum Type {
 const attributeAndCommandNamePattern = /^[a-z][a-zA-Z]{0,35}$/
 function commandOrAttributeNameValidator(input: string): boolean | string {
 	return !!attributeAndCommandNamePattern.exec(input)
-		|| 'Invalid attribute name;  only letters are allowed and must start with a lowercase letter, max length 36'
+		|| 'Invalid attribute name; only letters are allowed and must start with a lowercase letter, max length 36'
 }
 
 export default class CapabilitiesCreate extends InputOutputAPICommand<CapabilityCreate, Capability> {

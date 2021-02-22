@@ -459,25 +459,6 @@ async function oldStringTranslateToId<L>(this: APICommand & { readonly primaryKe
 		` ${this.primaryKeyName} in ${JSON.stringify(matchingItem)}`)
 }
 
-export async function stringTranslateToNestedId<ID, NL>(this: APICommand & { readonly nestedPrimaryKeyName: string; nestedSort(list: NL[]): NL[] },
-		id: ID,
-		nestedIdOrIndex: string,
-		listFunction: NestedListCallback<ID, NL>): Promise<string> {
-
-	let nestedPk = nestedIdOrIndex
-	if (isIndexArgument(nestedIdOrIndex)) {
-		const index = Number.parseInt(nestedIdOrIndex)
-		const items = this.nestedSort(await listFunction(id))
-		const matchingItem: NL = items[index - 1]
-		if (!(this.nestedPrimaryKeyName in matchingItem)) {
-			throw Error(`did not find key ${this.nestedPrimaryKeyName} in data ${JSON.stringify(items)}`)
-		}
-
-		nestedPk = (matchingItem as unknown as { [name: string]: string })[this.nestedPrimaryKeyName]
-	}
-	return nestedPk
-}
-
 
 async function oldStringGetIdFromUser<L>(this: APICommand & { readonly primaryKeyName: string }, items: L[]): Promise<string> {
 	const convertToId = (itemIdOrIndex: string): string | false => {
@@ -729,100 +710,6 @@ applyMixins(SelectingOutputAPICommandBase, [Outputable, Outputting, Listing], { 
 export abstract class SelectingOutputAPICommand<O, L> extends SelectingOutputAPICommandBase<string, O, L> {
 	protected getIdFromUser = oldStringGetIdFromUser
 	protected translateToId = oldStringTranslateToId
-}
-
-
-/**
- * Use this as your base when you need to be able to list or get a single
- * resource from a list originating from another resource, which itself can be listed
- *
- * This class accepts the identifier types of both the primary and secondary lists as the ID and NID generic inputs.
- * In most cases, your ids will be a simple strings and you can use NestedListingOutputAPICommand class,
- * which is a little simpler. If the first ID is not a string but the second ID is, you can use the
- * NestedListingOutputAPICommand class.
- */
-export abstract class NestedListingOutputAPICommandBase<ID, NID, O, L, NL> extends APICommand {
-	abstract readonly nestedPrimaryKeyName: string
-	abstract readonly nestedSortKeyName: string
-
-	protected nestedListTableFieldDefinitions?: TableFieldDefinition<NL>[]
-
-	protected abstract translateToId(
-		idOrIndex: ID | string,
-		listFunction: ListCallback<L>): Promise<ID>
-
-	protected abstract translateToNestedId(
-		idOrIndex: ID | string,
-		nestedIdOrIndex: NID | string,
-		nestedListFunction: NestedListCallback<ID, NL>): Promise<NID>
-
-	protected nestedSort(list: NL[]): NL[] {
-		return list.sort((a, b) => {
-			const av = (a as unknown as { [name: string]: string })[this.nestedSortKeyName].toLowerCase()
-			const bv = (b as unknown as { [name: string]: string })[this.nestedSortKeyName].toLowerCase()
-			return av === bv ? 0 : av < bv ? -1 : 1
-		})
-	}
-
-	protected buildNestedListTable(sortedList: NL[]): string {
-		const definitions: TableFieldDefinition<NL>[] = this.nestedListTableFieldDefinitions ?? [
-			this.nestedSortKeyName,
-			this.nestedPrimaryKeyName,
-		]
-		let count = 0
-		definitions.unshift({
-			label: '#',
-			value: () => (++count).toString(),
-		})
-		return this.tableGenerator.buildTableFromList(sortedList, definitions)
-	}
-
-	protected async processNormally(
-			idOrIndex: ID | string | undefined,
-			nestedIdOrIndex: string | undefined,
-			listFunction: ListCallback<L>,
-			nestedListFunction: NestedListCallback<ID, NL>,
-			getFunction: NestedGetCallback<ID, NID, O>): Promise<void> {
-
-		try {
-			if (idOrIndex) {
-				const id: ID = await this.translateToId(idOrIndex, listFunction)
-				if (nestedIdOrIndex) {
-					const nestedId: NID = await this.translateToNestedId(id, nestedIdOrIndex, nestedListFunction)
-					const item = await getFunction(id, nestedId)
-					this.writeOutput(item)
-				} else {
-					const list = this.nestedSort(await nestedListFunction(id))
-					writeOutputPrivate(list, this.outputOptions, this.buildNestedListTable.bind(this))
-				}
-
-			} else {
-				const list = this.sort(await listFunction())
-				writeOutputPrivate(list, this.outputOptions, this.buildListTableOutput.bind(this))
-			}
-		} catch (err) {
-			this.logger.error(`caught error ${err}`)
-			process.exit(1)
-		}
-	}
-
-	static flags = outputFlags
-}
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export interface NestedListingOutputAPICommandBase<ID, NID, O, L, NL> extends Outputting<O>, Listing<L> {}
-applyMixins(NestedListingOutputAPICommandBase, [Outputable, Outputting, Listing], { mergeFunctions: true })
-
-/**
- * Use this as your base when you need to be able to list or get a single
- * resource from a list that is itself a property of another listable resource.
- *
- * This class is used for commands where both identifiers are simple strings.
- * If you need more complex identifier types, use the NestedListingOutputAPICommandBase class.
- */
-export abstract class NestedListingOutputAPICommand<O, L, NL> extends NestedListingOutputAPICommandBase<string, string, O, L, NL> {
-	protected translateToId = oldStringTranslateToId
-	protected translateToNestedId = stringTranslateToNestedId
-	static flags = NestedListingOutputAPICommandBase.flags
 }
 
 /* eslint-enable no-process-exit */
