@@ -1,12 +1,13 @@
 import { InputOutputAPICommand } from '@smartthings/cli-lib'
-import {cleanupRequest, createWithDefaultConfig} from '../create'
+
+import { cleanupRequest, createWithDefaultConfig } from '../create'
 import { buildTableOutput, prunePresentationValues, augmentPresentationValues, DeviceDefinition, DeviceDefinitionRequest } from '../view'
 
 
 export default class DeviceDefCreateCommand extends InputOutputAPICommand<DeviceDefinitionRequest, DeviceDefinition> {
-	static description = 'Create a new device profile and device configuration.\n' +
+	static description = 'create a new device profile and device configuration\n' +
 		'Creates a new device profile and device configuration. Unlike deviceprofiles:create,\n' +
-		'this command accepts a consolidated object that can include a device configration \n' +
+		'this command accepts a consolidated object that can include a device configuration\n' +
 		'in a property named "view".'
 
 	static flags = InputOutputAPICommand.flags
@@ -34,7 +35,7 @@ export default class DeviceDefCreateCommand extends InputOutputAPICommand<Device
 		'      - capability: switch  ',
 	]
 
-	protected buildTableOutput = buildTableOutput
+	protected buildTableOutput = (data: DeviceDefinition): string => buildTableOutput(this.tableGenerator, data)
 
 	private async createWithCustomConfig(data: DeviceDefinitionRequest): Promise<DeviceDefinition> {
 		if (!data.view) {
@@ -56,7 +57,7 @@ export default class DeviceDefCreateCommand extends InputOutputAPICommand<Device
 		const profile = await this.client.deviceProfiles.create(cleanupRequest(data))
 
 		// Return the composite object
-		return {...profile, view: prunePresentationValues(deviceConfig)}
+		return { ...profile, view: prunePresentationValues(deviceConfig) }
 	}
 
 
@@ -69,7 +70,7 @@ export default class DeviceDefCreateCommand extends InputOutputAPICommand<Device
 				return this.createWithCustomConfig(data)
 			}
 			const profileAndConfig = await createWithDefaultConfig(this.client, data)
-			return {...profileAndConfig.deviceProfile, view: prunePresentationValues(profileAndConfig.deviceConfig)}
+			return { ...profileAndConfig.deviceProfile, view: prunePresentationValues(profileAndConfig.deviceConfig) }
 		})
 	}
 }

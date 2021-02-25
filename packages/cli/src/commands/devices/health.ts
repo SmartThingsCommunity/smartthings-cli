@@ -1,31 +1,27 @@
-import { Device, DeviceHealth } from '@smartthings/core-sdk'
-import {SelectingOutputAPICommand} from '@smartthings/cli-lib'
+import { APICommand, formatAndWriteItem } from '@smartthings/cli-lib'
+
+import { chooseDevice } from '../devices'
 
 
-export default class DeviceHealthCommand extends SelectingOutputAPICommand<DeviceHealth, Device> {
+export default class DeviceHealthCommand extends APICommand {
 	static description = 'get the current health status of a device'
 
-	static flags = SelectingOutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...formatAndWriteItem.flags,
+	}
 
 	static args = [{
 		name: 'id',
 		description: 'the device id',
 	}]
 
-	primaryKeyName = 'deviceId'
-	sortKeyName = 'label'
-	listTableFieldDefinitions = ['label', 'name', 'type', 'deviceId']
-	tableFieldDefinitions = ['deviceId', 'state', 'lastUpdatedDate']
-	acceptIndexId = true
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceHealthCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(
-			args.id,
-			() => this.client.devices.list(),
-			(id) => this.client.devices.getHealth(id),
-		)
+		const deviceId = await chooseDevice(this, args.id)
+		const health = await this.client.devices.getHealth(deviceId)
+		await formatAndWriteItem(this, { tableFieldDefinitions: ['deviceId', 'state', 'lastUpdatedDate'] }, health)
 	}
 }

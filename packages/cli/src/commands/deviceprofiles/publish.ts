@@ -1,34 +1,30 @@
-import { DeviceProfile, DeviceProfileStatus } from '@smartthings/core-sdk'
+import { DeviceProfileStatus } from '@smartthings/core-sdk'
 
-import { SelectingOutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, formatAndWriteItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../deviceprofiles'
+import { buildTableOutput, chooseDeviceProfile } from '../deviceprofiles'
 
 
-export default class DeviceProfilePublishCommand extends SelectingOutputAPICommand<DeviceProfile, DeviceProfile> {
+export default class DeviceProfilePublishCommand extends APICommand {
 	static description = 'publish a device profile (published profiles cannot be modified)'
 
-	static flags = SelectingOutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...formatAndWriteItem.flags,
+	}
 
 	static args = [{
 		name: 'id',
-		description: 'Device profile UUID or number in the list',
+		description: 'device profile id',
 	}]
-
-	primaryKeyName = 'id'
-	sortKeyName = 'name'
-	listTableFieldDefinitions = ['name', 'status', 'id']
-
-	protected buildTableOutput: (data: DeviceProfile) => string = data => buildTableOutput(this.tableGenerator, data)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfilePublishCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(
-			args.id,
-			() => { return this.client.deviceProfiles.list() },
-			(id) => { return this.client.deviceProfiles.updateStatus(id, DeviceProfileStatus.PUBLISHED) },
-		)
+		const id = await chooseDeviceProfile(this, args.id)
+
+		const deviceProfile = await this.client.deviceProfiles.updateStatus(id, DeviceProfileStatus.PUBLISHED)
+		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, deviceProfile)
 	}
 }

@@ -18,7 +18,7 @@ export default class AppSettingsUpdateCommand extends SelectingInputOutputAPICom
 	primaryKeyName = 'appId'
 	sortKeyName = 'displayName'
 
-	protected buildTableOutput = buildTableOutput
+	protected buildTableOutput = (data: AppSettings): string => buildTableOutput(this.tableGenerator, data)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppSettingsUpdateCommand)

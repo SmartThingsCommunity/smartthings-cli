@@ -1,15 +1,17 @@
+import { DeviceProfile } from '@smartthings/core-sdk'
+
 import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
 
 import { generateDefaultConfig } from '../create'
 import { cleanupRequest } from '../update'
-import { buildTableOutput, DeviceDefinition, DeviceDefinitionRequest, prunePresentationValues, augmentPresentationValues } from '../view'
+import { augmentPresentationValues, buildTableOutput, DeviceDefinition, DeviceDefinitionRequest, prunePresentationValues } from '../view'
 
 
 export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<DeviceDefinitionRequest, DeviceDefinition, DeviceDefinition> {
-	static description = 'Update a device profile and configuration.\n' +
+	static description = 'update a device profile and configuration\n' +
 		'Updates a device profile and device configuration and sets the vid of the profile\n' +
 		'to the vid of the updated configuration. Unlike deviceprofiles:update this\n' +
-		'command accepts a consolidated object that can include a device configration\n' +
+		'command accepts a consolidated object that can include a device configuration\n' +
 		'in a property named "view".'
 
 	static examples = [
@@ -41,7 +43,7 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<D
 
 	static args = [{
 		name: 'id',
-		description: 'Device profile UUID or the number from list',
+		description: 'device profile UUID or the number from list',
 	}]
 
 	primaryKeyName = 'id'
@@ -49,14 +51,14 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<D
 
 	protected listTableFieldDefinitions = ['name', 'status', 'id']
 
-	protected buildTableOutput = buildTableOutput
+	protected buildTableOutput = (data: DeviceProfile): string => buildTableOutput(this.tableGenerator, data)
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilitiesUpdate)
 		await super.setup(args, argv, flags)
 
 		await this.processNormally(args.id,
-			() => { return this.client.deviceProfiles.list() },
+			() => this.client.deviceProfiles.list(),
 			async (id, data) => {
 				const profileData = data
 				let presentationData = data.view

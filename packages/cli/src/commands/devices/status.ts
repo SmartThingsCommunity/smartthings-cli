@@ -1,6 +1,8 @@
-import { Device, DeviceStatus } from '@smartthings/core-sdk'
+import { DeviceStatus } from '@smartthings/core-sdk'
 
-import {APICommand, SelectingOutputAPICommand} from '@smartthings/cli-lib'
+import { APICommand, formatAndWriteItem, TableGenerator } from '@smartthings/cli-lib'
+
+import { chooseDevice } from '../devices'
 
 
 export function prettyPrintAttribute(value: unknown): string {
@@ -11,12 +13,12 @@ export function prettyPrintAttribute(value: unknown): string {
 	return result
 }
 
-export function buildTableOutput(this: APICommand, data: DeviceStatus): string {
+export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceStatus): string {
 	let output = ''
 	if (data.components) {
 		const componentIds = Object.keys(data.components)
 		for (const componentId of componentIds) {
-			const table = this.tableGenerator.newOutputTable({head: ['Capability', 'Attribute','Value']})
+			const table = tableGenerator.newOutputTable({head: ['Capability', 'Attribute','Value']})
 			if (componentIds.length > 1) {
 				output += `\n${componentId} component\n`
 			}
@@ -39,31 +41,25 @@ export function buildTableOutput(this: APICommand, data: DeviceStatus): string {
 	return output
 }
 
-export default class DeviceStatusCommand extends SelectingOutputAPICommand<DeviceStatus, Device> {
+export default class DeviceStatusCommand extends APICommand {
 	static description = "get the current status of all of a device's component's attributes"
 
-	static flags = SelectingOutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...formatAndWriteItem.flags,
+	}
 
 	static args = [{
 		name: 'id',
 		description: 'the device id',
 	}]
 
-	protected buildTableOutput = buildTableOutput
-
-	primaryKeyName = 'deviceId'
-	sortKeyName = 'label'
-	listTableFieldDefinitions = ['label', 'name', 'type', 'deviceId']
-	acceptIndexId = true
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceStatusCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(
-			args.id,
-			() => this.client.devices.list(),
-			(id) => this.client.devices.getStatus(id),
-		)
+		const deviceId = await chooseDevice(this, args.id)
+		const presentation = await this.client.devices.getStatus(deviceId)
+		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, presentation)
 	}
 }

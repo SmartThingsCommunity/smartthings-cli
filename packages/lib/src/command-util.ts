@@ -17,8 +17,13 @@ export function pluralItemName(command: Naming): string {
 	return command.pluralItemName ?? (command.itemName ? `${command.itemName}s` : 'items')
 }
 
-export async function stringTranslateToId<L>(config: Sorting & Naming, idOrIndex: string,
-		listFunction: ListDataFunction<L>): Promise<string> {
+export async function stringTranslateToId<L>(config: Sorting & Naming, idOrIndex: string, listFunction: ListDataFunction<L>): Promise<string>
+export async function stringTranslateToId<L>(config: Sorting & Naming, idOrIndex: string | undefined, listFunction: ListDataFunction<L>): Promise<string | undefined>
+export async function stringTranslateToId<L>(config: Sorting & Naming, idOrIndex: string | undefined, listFunction: ListDataFunction<L>): Promise<string | undefined> {
+	if (!idOrIndex) {
+		return undefined
+	}
+
 	const primaryKeyName = config.primaryKeyName
 	if (!isIndexArgument(idOrIndex)) {
 		// idOrIndex isn't a valid index so has to be an id (or bad)

@@ -2,7 +2,8 @@ import { flags } from '@oclif/command'
 
 import { DeviceProfile, DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
-import { APICommand, ListingOutputConfig, outputListing, selectFromList, SelectingConfig, stringTranslateToId, TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, ListingOutputConfig, outputListing, TableGenerator } from '@smartthings/cli-lib'
+import { chooseDeviceProfile } from '../deviceprofiles'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfileTranslations): string {
@@ -100,36 +101,7 @@ export default class DeviceProfileTranslationsCommand extends APICommand {
 		const { args, argv, flags } = this.parse(DeviceProfileTranslationsCommand)
 		await super.setup(args, argv, flags)
 
-		const dpConfig: SelectingConfig<DeviceProfile> = {
-			primaryKeyName: 'id',
-			sortKeyName: 'name',
-			listTableFieldDefinitions: ['name', 'status', 'id'],
-		}
-		if (flags.verbose) {
-			dpConfig.listTableFieldDefinitions.splice(3, 0, 'locales')
-		}
-
-		const listDeviceProfiles = async (): Promise<DeviceProfile[]> => {
-			const deviceProfiles =  await this.client.deviceProfiles.list()
-			if (flags.verbose) {
-				const ops = deviceProfiles.map(async (it) => {
-					try {
-						return await this.client.deviceProfiles.listLocales(it.id)
-					} catch(e) {
-						return []
-					}
-				})
-
-				const locales = await Promise.all(ops)
-
-				return deviceProfiles.map((it, index) => {
-					return { ...it, locales: locales[index].map((it: LocaleReference) => it.tag).sort().join(', ') }
-				})
-			}
-			return deviceProfiles
-		}
-		const preselectedDPId = args.id ? await stringTranslateToId(dpConfig, args.id, listDeviceProfiles) : undefined
-		const deviceProfileId = await selectFromList(this, dpConfig, preselectedDPId, listDeviceProfiles, 'Select a Device Profile.')
+		const deviceProfileId = await chooseDeviceProfile(this, args.id, { verbose: flags.verbose, allowIndex: true })
 
 		const config: ListingOutputConfig<DeviceProfileTranslations, LocaleReference> = {
 			primaryKeyName: 'tag',

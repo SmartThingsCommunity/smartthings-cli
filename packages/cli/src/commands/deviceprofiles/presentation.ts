@@ -1,14 +1,15 @@
-import { DeviceProfile, PresentationDevicePresentation } from '@smartthings/core-sdk'
+import { CLIError } from '@oclif/errors'
 
-import {SelectingOutputAPICommand} from '@smartthings/cli-lib'
+import { APICommand, formatAndWriteItem } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../presentation'
+import { chooseDeviceProfile } from '../deviceprofiles'
 
 
-export default class DeviceProfilePresentationCommand extends SelectingOutputAPICommand<PresentationDevicePresentation, DeviceProfile> {
+export default class DeviceProfilePresentationCommand extends APICommand {
 	static description = 'get the presentation associated with a device profile'
 
-	static flags = SelectingOutputAPICommand.flags
+	static flags = APICommand.flags
 
 	static args = [{
 		name: 'id',
@@ -26,29 +27,18 @@ export default class DeviceProfilePresentationCommand extends SelectingOutputAPI
 		'flag then no language header is specified in the API request',
 	]
 
-	primaryKeyName = 'id'
-	sortKeyName = 'name'
-	listTableFieldDefinitions = ['name', 'status', 'id']
-	acceptIndexId = true
-
-	buildTableOutput: (data: PresentationDevicePresentation) => string = data => buildTableOutput(this.tableGenerator, data)
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfilePresentationCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(args.id,
-			() => this.client.deviceProfiles.list(),
-			async id => {
-				const profile = await this.client.deviceProfiles.get(id)
-				if (profile.metadata) {
-					return this.client.presentation.getPresentation(profile.metadata.vid, profile.metadata.mnmn)
-				} else {
-					this.logger.error('No presentation defined for device profile')
-					// eslint-disable-next-line no-process-exit
-					process.exit(1)
-				}
-			},
-		)
+		const id = await chooseDeviceProfile(this, args.id, { allowIndex: true })
+
+		const profile = await this.client.deviceProfiles.get(id)
+		if (!profile.metadata) {
+			throw new CLIError('No presentation defined for device profile')
+		}
+
+		const presentation = await this.client.presentation.getPresentation(profile.metadata.vid, profile.metadata.mnmn)
+		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, presentation)
 	}
 }

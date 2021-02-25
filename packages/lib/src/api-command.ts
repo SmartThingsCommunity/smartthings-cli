@@ -29,7 +29,7 @@ export abstract class APICommand extends SmartThingsCommand {
 	protected clientIdProvider = defaultClientIdProvider
 	private _client?: SmartThingsClient
 
-	protected get client(): SmartThingsClient {
+	get client(): SmartThingsClient {
 		if (!this._client) {
 			throw new Error('APICommand not properly initialized')
 		}

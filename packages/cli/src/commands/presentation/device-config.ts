@@ -93,9 +93,7 @@ export default class DeviceConfigPresentationCommand extends APICommand {
 		const { args, argv, flags } = this.parse(DeviceConfigPresentationCommand)
 		await super.setup(args, argv, flags)
 
-		const config = {
-			buildTableOutput: (data: PresentationDeviceConfig) => buildTableOutput(this.tableGenerator, data),
-		}
-		await outputItem(this, config, () => this.client.presentation.get(args.presentationId))
+		await outputItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
+			() => this.client.presentation.get(args.presentationId))
 	}
 }
