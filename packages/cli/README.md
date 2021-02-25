@@ -1027,7 +1027,7 @@ USAGE
   $ smartthings deviceprofiles:device-config [ID]
 
 ARGUMENTS
-  ID  device profile UUID or the number of the profile from list
+  ID  device profile id or the number in list
 
 OPTIONS
   -h, --help             show CLI help
@@ -1057,14 +1057,8 @@ ARGUMENTS
 
 OPTIONS
   -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
@@ -1089,7 +1083,7 @@ USAGE
   $ smartthings deviceprofiles:publish [ID]
 
 ARGUMENTS
-  ID  Device profile UUID or number in the list
+  ID  device profile id
 
 OPTIONS
   -h, --help             show CLI help
@@ -1318,14 +1312,14 @@ _See code: [dist/commands/deviceprofiles/update.ts](https://github.com/SmartThin
 
 ## `smartthings deviceprofiles:view [ID]`
 
-Show device profile and device configuration in a single, consolidated view
+show device profile and device configuration in a single, consolidated view
 
 ```
 USAGE
   $ smartthings deviceprofiles:view [ID]
 
 ARGUMENTS
-  ID  Device profile UUID or the number from list
+  ID  device profile UUID or the number from list
 
 OPTIONS
   -h, --help             show CLI help
@@ -1344,7 +1338,7 @@ _See code: [dist/commands/deviceprofiles/view.ts](https://github.com/SmartThings
 
 ## `smartthings deviceprofiles:view:create`
 
-Create a new device profile and device configuration.
+create a new device profile and device configuration
 
 ```
 USAGE
@@ -1366,7 +1360,7 @@ OPTIONS
 
 DESCRIPTION
   Creates a new device profile and device configuration. Unlike deviceprofiles:create,
-  this command accepts a consolidated object that can include a device configration 
+  this command accepts a consolidated object that can include a device configuration
   in a property named "view".
 
 EXAMPLES
@@ -1396,14 +1390,14 @@ _See code: [dist/commands/deviceprofiles/view/create.ts](https://github.com/Smar
 
 ## `smartthings deviceprofiles:view:update [ID]`
 
-Update a device profile and configuration.
+update a device profile and configuration
 
 ```
 USAGE
   $ smartthings deviceprofiles:view:update [ID]
 
 ARGUMENTS
-  ID  Device profile UUID or the number from list
+  ID  device profile UUID or the number from list
 
 OPTIONS
   -h, --help             show CLI help
@@ -1421,7 +1415,7 @@ OPTIONS
 DESCRIPTION
   Updates a device profile and device configuration and sets the vid of the profile
   to the vid of the updated configuration. Unlike deviceprofiles:update this
-  command accepts a consolidated object that can include a device configration
+  command accepts a consolidated object that can include a device configuration
   in a property named "view".
 
 EXAMPLES
@@ -1502,7 +1496,7 @@ _See code: [dist/commands/devices.ts](https://github.com/SmartThingsCommunity/sm
 
 ## `smartthings devices:capability-status [ID] [COMPONENT] [CAPABILITY]`
 
-get the current status of all of a device capabilities's attributes
+get the current status of all of a device capability's attributes
 
 ```
 USAGE

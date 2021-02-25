@@ -1,9 +1,6 @@
 import { DeviceProfile, DeviceProfileRequest, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
 
-import {
-	APICommand,
-	SelectingOutputAPICommand,
-} from '@smartthings/cli-lib'
+import { APICommand, ListingOutputConfig, outputListing, TableGenerator } from '@smartthings/cli-lib'
 
 
 export interface DeviceView {
@@ -30,8 +27,8 @@ function entryValues(entries: PresentationDeviceConfigEntry[]): string {
 	return entries.map(entry => entry.component ? `${entry.component}/${entry.capability}` : `${entry.capability}`).join('\n')
 }
 
-export function buildTableOutput(this: APICommand, data: DeviceDefinition): string {
-	const table = this.tableGenerator.newOutputTable()
+export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceDefinition): string {
+	const table = tableGenerator.newOutputTable()
 	table.push(['Name', data.name])
 	for (const comp of data.components) {
 		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
@@ -134,45 +131,46 @@ export function augmentPresentationValues(view: DeviceView): DeviceView {
 	return view
 }
 
-export default class DeviceViewCommand extends SelectingOutputAPICommand<DeviceDefinition, DeviceProfile> {
-	static description = 'Show device profile and device configuration in a single, consolidated view'
+export default class DeviceViewCommand extends APICommand {
+	static description = 'show device profile and device configuration in a single, consolidated view'
 
 	static flags = {
-		...SelectingOutputAPICommand.flags,
+		...APICommand.flags,
+		...outputListing.flags,
 	}
 
 	static args = [{
 		name: 'id',
-		description: 'Device profile UUID or the number from list',
+		description: 'device profile UUID or the number from list',
 	}]
-
-	primaryKeyName = 'id'
-	sortKeyName = 'name'
-	acceptIndexId = true
-
-	protected buildTableOutput = buildTableOutput
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceViewCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(
-			args.id,
-			() => { return this.client.deviceProfiles.list() },
-			async (id) => {
-				const profile = await this.client.deviceProfiles.get(id)
-				if (profile.metadata) {
-					try {
-						const view = await this.client.presentation.get(profile.metadata.vid, profile.metadata.mnmn)
-						prunePresentationValues(view)
-						return {...profile, view}
-					} catch (error) {
-						return profile
-					}
-				} else {
+		const config: ListingOutputConfig<DeviceDefinition, DeviceProfile> = {
+			primaryKeyName: 'id',
+			sortKeyName: 'name',
+			buildTableOutput: data => buildTableOutput(this.tableGenerator, data),
+		}
+
+		const getDeviceProfileAndConfig = async (id: string): Promise<DeviceDefinition> => {
+			const profile = await this.client.deviceProfiles.get(id)
+			if (profile.metadata) {
+				try {
+					const view = await this.client.presentation.get(profile.metadata.vid, profile.metadata.mnmn)
+					prunePresentationValues(view)
+					return { ...profile, view }
+				} catch (error) {
+					this.logger.warn(error)
 					return profile
 				}
-			},
-		)
+			} else {
+				return profile
+			}
+		}
+		await outputListing(this, config, args.id,
+			() => this.client.deviceProfiles.list(),
+			getDeviceProfileAndConfig)
 	}
 }

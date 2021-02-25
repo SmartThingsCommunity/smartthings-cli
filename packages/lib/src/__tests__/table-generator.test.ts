@@ -192,7 +192,7 @@ describe('tableGenerator', () => {
 		expect(output).toHaveLabel('Shorter Name')
 	})
 
-	it('buildTableFromItem to use calculated value', function() {
+	it('buildTableFromItem uses calculated value', function() {
 		const fieldDefinitions = [{
 			prop: 'reallyLongFieldName',
 			value: (item: SimpleData): string => `${item.reallyLongFieldName} ms`,
@@ -201,6 +201,16 @@ describe('tableGenerator', () => {
 
 		expect(output).not.toHaveValue('7.2')
 		expect(output).toHaveValue('7.2 ms')
+	})
+
+	it('buildTableFromItem uses empty string for undefined calculated value', function() {
+		const fieldDefinitions = [{
+			prop: 'reallyLongFieldName',
+			value: (): string | undefined => undefined,
+		}]
+		const output = tableGenerator.buildTableFromItem(basicData, fieldDefinitions)
+
+		expect(output).toHaveValue('')
 	})
 
 	it('buildTableFromItem skips rows when include returns false', function() {

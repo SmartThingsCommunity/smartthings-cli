@@ -8,6 +8,7 @@ import { TableFieldDefinition } from './table-generator'
 export type ListingOutputConfig<O, L> = Sorting & CommonOutputProducer<O> & {
 	listTableFieldDefinitions?: TableFieldDefinition<L>[]
 }
+// TODO: rename both of these to something like outputItemOrList
 export async function outputGenericListing<ID, O, L>(command: SmartThingsCommandInterface,
 		config: ListingOutputConfig<O, L>, idOrIndex: ID | string | undefined,
 		listFunction: ListDataFunction<L>, getFunction: LookupDataFunction<ID, O>,

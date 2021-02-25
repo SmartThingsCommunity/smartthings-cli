@@ -88,7 +88,7 @@ export type TableFieldDefinition<T> = string | {
 	 * to be displayed. If not, the property of the given name, simply coerced
 	 * to a string, will be used.
 	 */
-	value?: (i: T) => string
+	value?: (i: T) => string | undefined
 
 	/**
 	 * Use this function if you want to optionally include this field.
@@ -168,7 +168,7 @@ export class DefaultTableGenerator implements TableGenerator {
 	}
 	private getDisplayValueFor<T>(item: T, definition: TableFieldDefinition<T>): string {
 		if (!(typeof definition === 'string') && definition.value) {
-			return definition.value(item)
+			return definition.value(item) ?? ''
 		}
 
 		const propertyName = typeof definition === 'string' ? definition : definition.prop

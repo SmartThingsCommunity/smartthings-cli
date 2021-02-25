@@ -1,12 +1,13 @@
-import inquirer from 'inquirer'
+import { Component, ComponentStatus } from '@smartthings/core-sdk'
 
-import { Device, ComponentStatus } from '@smartthings/core-sdk'
-import {APICommand, SelectingOutputAPICommand, isIndexArgument} from '@smartthings/cli-lib'
-import {prettyPrintAttribute} from './status'
+import { APICommand, formatAndWriteItem, selectFromList, SelectingConfig, SmartThingsCommand, stringTranslateToId, TableGenerator } from '@smartthings/cli-lib'
+
+import { prettyPrintAttribute } from './status'
+import { chooseDevice } from '../devices'
 
 
-export function buildTableOutput(this: APICommand, component: ComponentStatus): string {
-	const table = this.tableGenerator.newOutputTable({head: ['Capability', 'Attribute','Value']})
+export function buildTableOutput(tableGenerator: TableGenerator, component: ComponentStatus): string {
+	const table = tableGenerator.newOutputTable({head: ['Capability', 'Attribute', 'Value']})
 	for (const capabilityName of Object.keys(component)) {
 		const capability = component[capabilityName]
 		for (const attributeName of Object.keys(capability)) {
@@ -21,45 +22,29 @@ export function buildTableOutput(this: APICommand, component: ComponentStatus): 
 	return table.toString()
 }
 
-export async function getComponentFromInput(this: APICommand, device: Device): Promise<string> {
-	let component = 'main'
-	if (device.components) {
-		if (device.components.length > 1) {
-			this.log('\nComponents:')
-			let index = 1
-			const table = this.tableGenerator.newOutputTable()
-			for (const comp of device.components) {
-				if (comp.id === 'main') {
-					table.push([index, `${comp.id} (default)`])
-				} else {
-					table.push([index, comp.id])
-				}
-				index++
-			}
-			this.log(table.toString())
-
-			const input = (await inquirer.prompt({
-				type: 'input',
-				name: 'component',
-				message: 'Enter component id',
-			})).component
-
-			if (isIndexArgument(input)) {
-				component = device.components[Number.parseInt(input) - 1].id || 'main'
-			} else if (input.length) {
-				component = input
-			}
-		} else {
-			component = device.components[0].id || 'main'
-		}
+export async function chooseComponent(command: SmartThingsCommand, componentFromArg?: string, components?: Component[]): Promise<string> {
+	if (!components || components.length === 0) {
+		return 'main'
 	}
-	return component
+
+	const config: SelectingConfig<Component> = {
+		itemName: 'component',
+		primaryKeyName: 'id',
+		sortKeyName: 'id',
+		listTableFieldDefinitions: [{ label: 'Id', value: component => component.id === 'main' ? 'main (default)' : component.id }],
+	}
+	const listComponents = async (): Promise<Component[]> => components
+	const preselectedComponentName = await stringTranslateToId(config, componentFromArg, listComponents)
+	return selectFromList(command, config, preselectedComponentName, listComponents, undefined, true)
 }
 
-export default class DeviceComponentStatusCommand extends SelectingOutputAPICommand<ComponentStatus, Device> {
+export default class DeviceComponentStatusCommand extends APICommand {
 	static description = "get the current status of a device component's attributes"
 
-	static flags = SelectingOutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...formatAndWriteItem.flags,
+	}
 
 	static args = [
 		{
@@ -72,30 +57,16 @@ export default class DeviceComponentStatusCommand extends SelectingOutputAPIComm
 		},
 	]
 
-	protected buildTableOutput = buildTableOutput
-
-	primaryKeyName = 'deviceId'
-	sortKeyName = 'label'
-	listTableFieldDefinitions = ['label', 'name', 'type', 'deviceId']
-	acceptIndexId = true
-
-	protected getComponentFromInput = getComponentFromInput
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceComponentStatusCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(
-			args.id,
-			() => this.client.devices.list(),
-			async (id) => {
-				let component = args.component
-				if (!component) {
-					const device = await this.client.devices.get(id)
-					component = await this.getComponentFromInput(device)
-				}
-				return this.client.devices.getComponentStatus(id, component)
-			},
-		)
+		const deviceId = await chooseDevice(this, args.id)
+
+		const device = await this.client.devices.get(deviceId)
+		const componentName = await chooseComponent(this, args.component, device.components)
+
+		const componentStatus = await this.client.devices.getComponentStatus(deviceId, componentName)
+		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, componentStatus)
 	}
 }

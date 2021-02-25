@@ -1,4 +1,6 @@
-import { APICommand, selectFromList } from '@smartthings/cli-lib'
+import { APICommand } from '@smartthings/cli-lib'
+
+import { chooseDeviceProfile } from '../deviceprofiles'
 
 
 export default class DeviceProfileDeleteCommand extends APICommand {
@@ -20,14 +22,7 @@ export default class DeviceProfileDeleteCommand extends APICommand {
 		const { args, argv, flags } = this.parse(DeviceProfileDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		const config = {
-			primaryKeyName: 'id',
-			sortKeyName: 'name',
-			listTableFieldDefinitions: ['name', 'status', 'id'],
-		}
-		const id = await selectFromList(this, config, args.id,
-			() => this.client.deviceProfiles.list(),
-			'Select a device profile to delete.')
+		const id = await chooseDeviceProfile(this, args.id)
 		await this.client.deviceProfiles.delete(id)
 		this.log(`Device profile ${id} deleted.`)
 	}

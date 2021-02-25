@@ -102,7 +102,7 @@ describe('basic-io', () => {
 
 			expect(result).toBe(list)
 			expect(formatAndWriteListSpy).toHaveBeenCalledTimes(1)
-			expect(formatAndWriteListSpy).toHaveBeenLastCalledWith(command, config, list, false)
+			expect(formatAndWriteListSpy).toHaveBeenLastCalledWith(command, config, list, false, false)
 		})
 
 		it('passes includeIndex value on to formatAndWriteList', async () => {
@@ -118,7 +118,23 @@ describe('basic-io', () => {
 
 			expect(result).toBe(list)
 			expect(formatAndWriteListSpy).toHaveBeenCalledTimes(1)
-			expect(formatAndWriteListSpy).toHaveBeenLastCalledWith(command, config, list, true)
+			expect(formatAndWriteListSpy).toHaveBeenLastCalledWith(command, config, list, true, false)
+		})
+
+		it('passes forceCommonOutput value on to formatAndWriteList', async () => {
+			const config = {
+				listTableFieldDefinitions: [],
+				primaryKeyName: 'num',
+				sortKeyName: 'str',
+			}
+
+			const getDataMock = jest.fn().mockResolvedValue(list)
+
+			const result = await outputList<SimpleType>(command, config, getDataMock, false, true)
+
+			expect(result).toBe(list)
+			expect(formatAndWriteListSpy).toHaveBeenCalledTimes(1)
+			expect(formatAndWriteListSpy).toHaveBeenLastCalledWith(command, config, list, false, true)
 		})
 	})
 

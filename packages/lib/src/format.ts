@@ -34,8 +34,8 @@ export async function formatAndWriteItem<O>(command: SmartThingsCommandInterface
 formatAndWriteItem.flags = buildOutputFormatter.flags
 
 export async function formatAndWriteList<L>(command: SmartThingsCommandInterface,
-		config: CommonListOutputProducer<L> & Naming,
-		list: L[], includeIndex = false): Promise<void> {
+		config: CommonListOutputProducer<L> & Naming, list: L[], includeIndex = false,
+		forceCommonOutput = false): Promise<void> {
 	let commonFormatter: OutputFormatter<L[]>
 	if (list.length === 0) {
 		const pluralName = config.pluralItemName ?? (config.itemName ? `${config.itemName}s` : 'items')
@@ -47,6 +47,6 @@ export async function formatAndWriteList<L>(command: SmartThingsCommandInterface
 	} else {
 		commonFormatter = listTableFormatter<L>(command.tableGenerator, [config.sortKeyName, config.primaryKeyName], includeIndex)
 	}
-	const outputFormatter = buildOutputFormatter(command, undefined, commonFormatter)
+	const outputFormatter = forceCommonOutput ? commonFormatter : buildOutputFormatter(command, undefined, commonFormatter)
 	await writeOutput(outputFormatter(list), command.flags.output)
 }

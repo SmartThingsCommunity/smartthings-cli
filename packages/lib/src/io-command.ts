@@ -252,12 +252,6 @@ interface Outputable {
 	readonly tableGenerator: TableGenerator
 }
 
-const outputFlags = {
-	...APICommand.flags,
-	...commonIOFlags,
-	...outputFlag,
-}
-
 const inputOutputFlags = {
 	...inputFlags,
 	...outputFlag,
@@ -635,79 +629,6 @@ applyMixins(SelectingInputOutputAPICommandBase, [Inputting, Outputable, Outputti
  * the common case of resources that use simple strings for identifiers.
  */
 export abstract class SelectingInputOutputAPICommand<I, O, L> extends SelectingInputOutputAPICommandBase<string, I, O, L> {
-	protected getIdFromUser = oldStringGetIdFromUser
-	protected translateToId = oldStringTranslateToId
-}
-
-/**
- * Use this class when you have complex output and are acting on a single
- * resource that can easily be listed. This isn't really common but does pop up
- * from time to time in our API.
- *
- * NOTE: this class takes an identifier type as a generic argument. In most
- * cases, you have a simple string for an identifier and can use
- * SelectingOutputAPICommand instead.
- */
-export abstract class SelectingOutputAPICommandBase<ID, O, L> extends APICommand {
-	protected abstract getIdFromUser(items: L[]): Promise<ID>
-
-	protected translateToId?(idOrIndex: ID | string, listFunction: ListCallback<L>): Promise<ID>
-
-	protected acceptIndexId = false
-
-	private _entityId?: ID
-	protected get entityId(): ID {
-		if (!this._entityId) {
-			throw new Error('Entity ID not set')
-		}
-		return this._entityId
-	}
-
-	protected async processNormally(idOrIndex: ID | string | undefined,
-			listCallback: ListCallback<L>,
-			actionCallback: LookupCallback<ID, O>): Promise<void> {
-		try {
-			if (idOrIndex) {
-				if (this.acceptIndexId) {
-					if (!this.translateToId) {
-						throw new Error('translateToId must be defined if acceptIndexId is true')
-					}
-					this._entityId = await this.translateToId(idOrIndex, listCallback)
-				} else if (typeof idOrIndex === 'string' && isIndexArgument(idOrIndex)) {
-					throw new Error('List index references not supported for this command. Specify'
-						+ ' id instead or omit argument and select from list')
-				} else {
-					// @ts-ignore
-					this._entityId = idOrIndex
-				}
-			} else {
-				const items = this.sort(await listCallback())
-				if (items.length === 0) {
-					this.log('no items found')
-					process.exit(0)
-				}
-				writeOutputPrivate(items, this.outputOptions, this.buildListTableOutput.bind(this), true)
-				this._entityId = await this.getIdFromUser(items)
-			}
-			const output = await actionCallback(this.entityId)
-			this.writeOutput(output)
-		} catch (err) {
-			this.logger.error(`caught error ${err}`)
-			process.exit(1)
-		}
-	}
-
-	static flags = outputFlags
-}
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export interface SelectingOutputAPICommandBase<ID, O, L> extends Outputting<O>, Listing<L> {}
-applyMixins(SelectingOutputAPICommandBase, [Outputable, Outputting, Listing], { mergeFunctions: true })
-
-/**
- * A slightly easier-to-use version of SelectingOutputAPICommandBase for the
- * common case of resources that use simple strings for identifiers.
- */
-export abstract class SelectingOutputAPICommand<O, L> extends SelectingOutputAPICommandBase<string, O, L> {
 	protected getIdFromUser = oldStringGetIdFromUser
 	protected translateToId = oldStringTranslateToId
 }

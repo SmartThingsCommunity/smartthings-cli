@@ -1,8 +1,8 @@
 import { flags } from '@oclif/command'
 
-import { DeviceProfile } from '@smartthings/core-sdk'
+import { DeviceProfile, LocaleReference } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, outputListing, selectFromList, stringTranslateToId, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile): string {
@@ -18,6 +18,57 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePro
 	table.push(['Presentation ID', data.metadata?.vid ?? ''])
 	table.push(['Status', data.status])
 	return table.toString()
+}
+
+export interface ChooseDeviceProfileOptions {
+	allowIndex: boolean
+	verbose: boolean
+}
+export async function chooseDeviceProfile(command: APICommand, deviceProfileFromArg?: string,
+		options?: Partial<ChooseDeviceProfileOptions>): Promise<string> {
+	const opts: ChooseDeviceProfileOptions = {
+		allowIndex: false,
+		verbose: false,
+		...options,
+	}
+	const config = {
+		itemName: 'device profile',
+		primaryKeyName: 'id',
+		sortKeyName: 'name',
+		listTableFieldDefinitions: ['name', 'status', 'id'],
+	}
+	if (opts.verbose) {
+		config.listTableFieldDefinitions.splice(3, 0, 'locales')
+	}
+
+	const listDeviceProfiles = async (): Promise<DeviceProfile[]> => {
+		const deviceProfiles = await command.client.deviceProfiles.list()
+		if (opts.verbose) {
+			const ops = deviceProfiles.map(async (it) => {
+				try {
+					return await command.client.deviceProfiles.listLocales(it.id)
+				} catch (error) {
+					if ('message' in error && error.message.includes('status code 404')) {
+						return []
+					} else {
+						throw error
+					}
+				}
+			})
+
+			const locales = await Promise.all(ops)
+
+			return deviceProfiles.map((deviceProfile, index) => {
+				return { ...deviceProfile, locales: locales[index].map((it: LocaleReference) => it.tag).sort().join(', ') }
+			})
+		}
+		return deviceProfiles
+	}
+
+	const preselectedId = opts.allowIndex
+		? await stringTranslateToId(config, deviceProfileFromArg, listDeviceProfiles)
+		: deviceProfileFromArg
+	return selectFromList(command, config, preselectedId, listDeviceProfiles)
 }
 
 export default class DeviceProfilesCommand extends APICommand {

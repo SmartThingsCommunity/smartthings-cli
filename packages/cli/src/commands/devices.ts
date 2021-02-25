@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { Device, DeviceListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing, TableGenerator, withLocationsAndRooms } from '@smartthings/cli-lib'
+import { APICommand, outputListing, selectFromList, stringTranslateToId, TableGenerator, withLocationsAndRooms } from '@smartthings/cli-lib'
 
 
 export type DeviceWithLocation = Device & { location?: string }
@@ -27,6 +27,17 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: Device & 
 	return table.toString()
 }
 
+export async function chooseDevice(command: APICommand, deviceFromArg?: string): Promise<string> {
+	const config = {
+		itemName: 'device',
+		primaryKeyName: 'deviceId',
+		sortKeyName: 'label',
+		listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
+	}
+	const listDevices = (): Promise<Device[]> => command.client.devices.list()
+	const preselectedDeviceId = await stringTranslateToId(config, deviceFromArg, listDevices)
+	return selectFromList(command, config, preselectedDeviceId, listDevices)
+}
 export default class DevicesCommand extends APICommand {
 	static description = 'list all devices available in a user account or retrieve a single device'
 

@@ -49,9 +49,9 @@ export async function outputItem<O>(command: SmartThingsCommandInterface, config
 outputItem.flags = buildOutputFormatter.flags
 
 export async function outputList<L>(command: SmartThingsCommandInterface, config: CommonListOutputProducer<L> & Sorting,
-		getData: GetDataFunction<L[]>, includeIndex = false): Promise<L[]> {
+		getData: GetDataFunction<L[]>, includeIndex = false, forceCommonOutput = false): Promise<L[]> {
 	const list = sort(await getData(), config.sortKeyName)
-	await formatAndWriteList(command, config, list, includeIndex)
+	await formatAndWriteList(command, config, list, includeIndex, forceCommonOutput)
 	return list
 }
 outputList.flags = buildOutputFormatter.flags

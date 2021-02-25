@@ -55,6 +55,15 @@ describe('command-util', () => {
 	describe('stringTranslateToId', () => {
 		const listFunction = jest.fn()
 
+		it('simply returns undefined given undefined idOrIndex', async () => {
+			const listFunction = jest.fn()
+
+			const computedId = await stringTranslateToId(command, undefined, listFunction)
+
+			expect(computedId).toBeUndefined()
+			expect(listFunction).toHaveBeenCalledTimes(0)
+		})
+
 		it('simply returns id when not matching index argument', async () => {
 			const listFunction = jest.fn()
 

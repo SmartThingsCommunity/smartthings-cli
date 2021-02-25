@@ -19,9 +19,9 @@ describe('sort', () => {
 
 	it('sorts in a case insensitive manner', () => {
 		const st = (str: string): SimpleType => ({ str, num: 1 })
-		const input: SimpleType[] = [ st('xyz'), st('abc'), st('ABC') ]
+		const input: SimpleType[] = [ st('xyz'), st('abc'), st('ABC'), st('this'), st('that') ]
 		const result = sort(input, 'str')
-		expect(result).toEqual([st('abc'), st('ABC'), st('xyz')])
+		expect(result).toEqual([st('abc'), st('ABC'), st('that'), st('this'), st('xyz')])
 	})
 })
 
