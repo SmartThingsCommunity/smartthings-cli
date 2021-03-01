@@ -243,5 +243,25 @@ describe('format', () => {
 			expect(writeOutputSpy).toHaveBeenCalledTimes(1)
 			expect(writeOutputSpy).toHaveBeenCalledWith('output', 'output.yaml')
 		})
+
+		it('writes common formatted output to stdout when forUserQuery specified', async () => {
+			const config = {
+				listTableFieldDefinitions: [],
+			}
+
+			const commonFormatter = jest.fn().mockReturnValue('common output')
+			listTableFormatterSpy.mockReturnValue(commonFormatter)
+
+			await formatAndWriteList(command, config, list, false, true)
+
+			expect(listTableFormatterSpy).toHaveBeenCalledTimes(1)
+			expect(listTableFormatterSpy).toHaveBeenCalledWith(command.tableGenerator, config.listTableFieldDefinitions, false)
+			expect(buildOutputFormatterSpy).toHaveBeenCalledTimes(0)
+			expect(outputFormatter).toHaveBeenCalledTimes(0)
+			expect(commonFormatter).toHaveBeenCalledTimes(1)
+			expect(commonFormatter).toHaveBeenCalledWith(list)
+			expect(writeOutputSpy).toHaveBeenCalledTimes(1)
+			expect(writeOutputSpy).toHaveBeenCalledWith('common output', undefined)
+		})
 	})
 })

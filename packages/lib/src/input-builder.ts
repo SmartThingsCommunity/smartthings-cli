@@ -26,6 +26,3 @@ buildInputProcessor.flags = {
 	...commonIOFlags,
 	...inputFlag,
 }
-
-
-// TODO: more convenience methods for making these processors more easily

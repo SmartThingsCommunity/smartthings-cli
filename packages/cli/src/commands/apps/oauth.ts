@@ -1,6 +1,6 @@
-import { App } from '@smartthings/core-sdk'
+import { APICommand, outputItem, outputListing } from '@smartthings/cli-lib'
 
-import { APICommand, outputItem, outputListing, selectFromList, stringTranslateToId } from '@smartthings/cli-lib'
+import { chooseApp } from '../apps'
 
 
 export const tableFieldDefinitions = ['clientName', 'scope', 'redirectUris']
@@ -22,14 +22,7 @@ export default class AppOauthCommand extends APICommand {
 		const { args, argv, flags } = this.parse(AppOauthCommand)
 		await super.setup(args, argv, flags)
 
-		const config = {
-			primaryKeyName: 'appId',
-			sortKeyName: 'displayName',
-		}
-		const listApps = (): Promise<App[]> => this.client.apps.list()
-
-		const preselectedId = await stringTranslateToId(config, args.id, listApps)
-		const id = await selectFromList(this, config, preselectedId, listApps, 'Select an app.')
+		const id = await chooseApp(this, args.id, { allowIndex: true })
 		await outputItem(this, { tableFieldDefinitions }, () => this.client.apps.getOauth(id))
 	}
 }

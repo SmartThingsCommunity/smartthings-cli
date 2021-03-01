@@ -1,31 +1,31 @@
-import { App, AppSettings } from '@smartthings/core-sdk'
+import { AppSettings } from '@smartthings/core-sdk'
 
-import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../settings'
+import { chooseApp } from '../../apps'
 
 
-export default class AppSettingsUpdateCommand extends SelectingInputOutputAPICommand<AppSettings, AppSettings, App> {
+export default class AppSettingsUpdateCommand extends APICommand {
 	static description = 'update the OAuth settings of the app'
 
-	static flags = SelectingInputOutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...inputAndOutputItem.flags,
+	}
 
 	static args = [{
 		name: 'id',
 		description: 'the app id',
 	}]
 
-	primaryKeyName = 'appId'
-	sortKeyName = 'displayName'
-
-	protected buildTableOutput = (data: AppSettings): string => buildTableOutput(this.tableGenerator, data)
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppSettingsUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(args.id,
-			() => { return this.client.apps.list() },
-			async (id, data) => { return this.client.apps.updateSettings(id, data) })
+		const appId = await chooseApp(this, args.id)
+		await inputAndOutputItem(this,
+			{ buildTableOutput: (data: AppSettings) => buildTableOutput(this.tableGenerator, data) },
+			(_, data: AppSettings) => this.client.apps.updateSettings(appId, data))
 	}
 }
