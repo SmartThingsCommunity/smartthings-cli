@@ -339,6 +339,7 @@ ARGUMENTS
   ID  the app id
 
 OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -366,6 +367,7 @@ ARGUMENTS
   ID  the app id
 
 OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -439,6 +441,7 @@ ARGUMENTS
   ID  the app id
 
 OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -466,6 +469,7 @@ ARGUMENTS
   ID  the app id
 
 OPTIONS
+  -d, --dry-run                produce JSON but don't actually submit
   -h, --help                   show CLI help
   -i, --input=input            specify input file
   -j, --json                   use JSON format of input and/or output

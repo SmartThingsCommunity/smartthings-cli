@@ -1,6 +1,8 @@
-import { App, AppSettings } from '@smartthings/core-sdk'
+import { AppSettings } from '@smartthings/core-sdk'
 
-import { APICommand, outputItem, outputListing, selectFromList, stringTranslateToId, TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, outputItem, outputListing, TableGenerator } from '@smartthings/cli-lib'
+
+import { chooseApp } from '../apps'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, appSettings: AppSettings): string {
@@ -34,14 +36,7 @@ export default class AppSettingsCommand extends APICommand {
 		const { args, argv, flags } = this.parse(AppSettingsCommand)
 		await super.setup(args, argv, flags)
 
-		const config = {
-			primaryKeyName: 'appId',
-			sortKeyName: 'displayName',
-		}
-		const listApps = (): Promise<App[]> => this.client.apps.list()
-
-		const preselectedId = await stringTranslateToId(config, args.id, listApps)
-		const id = await selectFromList(this, config, preselectedId, listApps, 'Select an app.')
+		const id = await chooseApp(this, args.id, { allowIndex: true })
 		await outputItem(this,
 			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
 			() => this.client.apps.getSettings(id))

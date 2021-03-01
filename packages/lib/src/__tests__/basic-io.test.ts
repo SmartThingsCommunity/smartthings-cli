@@ -121,7 +121,7 @@ describe('basic-io', () => {
 			expect(formatAndWriteListSpy).toHaveBeenLastCalledWith(command, config, list, true, false)
 		})
 
-		it('passes forceCommonOutput value on to formatAndWriteList', async () => {
+		it('passes forUserQuery value on to formatAndWriteList', async () => {
 			const config = {
 				listTableFieldDefinitions: [],
 				primaryKeyName: 'num',

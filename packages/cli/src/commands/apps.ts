@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { App, AppType, AppClassification, AppListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing, TableFieldDefinition } from '@smartthings/cli-lib'
+import { APICommand, outputListing, selectFromList, stringTranslateToId, TableFieldDefinition } from '@smartthings/cli-lib'
 
 
 const isWebhookSmartApp = (app: App): boolean => !!app.webhookSmartApp
@@ -34,6 +34,26 @@ export const tableFieldDefinitions: TableFieldDefinition<App>[] = [
 	{ prop: 'apiOnly.subscription.targetStatus', include: hasSubscription },
 	{ prop: 'installMetadata.certified', include: app => app.installMetadata?.certified !== undefined },
 ]
+
+export interface ChooseAppOptions {
+	allowIndex: boolean
+}
+export async function chooseApp(command: APICommand, appFromArg?: string, options?: Partial<ChooseAppOptions>): Promise<string> {
+	const opts: ChooseAppOptions = {
+		allowIndex: false,
+		...options,
+	}
+	const config = {
+		itemName: 'app',
+		primaryKeyName: 'appId',
+		sortKeyName: 'displayName',
+	}
+	const listApps = (): Promise<App[]> => command.client.apps.list()
+	const preselectedId = opts.allowIndex
+		? await stringTranslateToId(config, appFromArg, listApps)
+		: appFromArg
+	return selectFromList(command, config, preselectedId, listApps)
+}
 
 export default class AppsCommand extends APICommand {
 	static description = 'get a specific app or a list of apps'
