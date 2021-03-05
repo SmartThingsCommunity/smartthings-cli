@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import fs from 'fs'
-import inquirer from 'inquirer'
 import yaml from 'js-yaml'
 import { flags } from '@oclif/command'
 
@@ -33,12 +32,6 @@ export type LookupCallback<ID, O> = (id: ID) => Promise<O>
 export type UpdateCallback<ID, I, O> = (id: ID, data: I) => Promise<O>
 export type ActionCallback<ID> = (id: ID) => Promise<void>
 export type InputActionCallback<ID, I> = (id: ID, data: I) => Promise<void>
-
-export type NestedListCallback<ID, NL> = (id: ID) => Promise<NL[]>
-export type NestedGetCallback<ID, NID, O> = (id: ID, nestedId: NID) => Promise<O>
-export type NestedUpdateCallback<ID, NID, I, O> = (id: ID, nestedId: NID, data: I) => Promise<O>
-export type NestedActionCallback<ID, NID> = (id: ID, nestedId: NID) => Promise<void>
-export type NestedInputActionCallback<ID, NID, I> = (id: ID, nestedId: NID, data: I) => Promise<void>
 
 /**
  * Convert and write the data using the given output options.
@@ -427,133 +420,6 @@ export abstract class InputOutputAPICommand<I, O> extends APICommand {
 export interface InputOutputAPICommand<I, O> extends Inputting<I>, Outputting<O> {}
 applyMixins(InputOutputAPICommand, [Inputting, Outputable, Outputting], { mergeFunctions: true })
 
-async function oldStringTranslateToId<L>(this: APICommand & { readonly primaryKeyName: string; sort(list: L[]): L[] },
-		idOrIndex: string,
-		listFunction: ListCallback<L>): Promise<string> {
-
-	if (!isIndexArgument(idOrIndex)) {
-		// idOrIndex isn't a valid index so has to be an id (or bad)
-		return idOrIndex
-	}
-
-	const index = Number.parseInt(idOrIndex)
-
-	const items = this.sort(await listFunction())
-	const matchingItem: L = items[index - 1]
-	if (!(this.primaryKeyName in matchingItem)) {
-		throw Error(`did not find key ${this.primaryKeyName} in data`)
-	}
-	// @ts-ignore
-	const pk = matchingItem[this.primaryKeyName]
-	if (typeof pk === 'string') {
-		return pk
-	}
-
-	throw Error(`invalid type ${typeof pk} for primary key`  +
-		` ${this.primaryKeyName} in ${JSON.stringify(matchingItem)}`)
-}
-
-
-async function oldStringGetIdFromUser<L>(this: APICommand & { readonly primaryKeyName: string }, items: L[]): Promise<string> {
-	const convertToId = (itemIdOrIndex: string): string | false => {
-		if (itemIdOrIndex.length === 0) {
-			return false
-		}
-		const matchingItem = items.find((item) => {
-			// @ts-ignore
-			return (this.primaryKeyName in item) && itemIdOrIndex === item[this.primaryKeyName]
-		})
-		if (matchingItem) {
-			return itemIdOrIndex
-		}
-
-		if (!isIndexArgument(itemIdOrIndex)) {
-			return false
-		}
-
-		const index = Number.parseInt(itemIdOrIndex)
-
-		if (!Number.isNaN(index) && index > 0 && index <= items.length) {
-			// @ts-ignore
-			const pk = items[index - 1][this.primaryKeyName]
-			if (typeof pk === 'string') {
-				return pk
-			} else {
-				throw Error(`invalid type ${typeof pk} for primary key`  +
-					` ${this.primaryKeyName} in ${JSON.stringify(items[index - 1])}`)
-			}
-		} else {
-			return false
-		}
-	}
-
-	const itemIdOrIndex: string = (await inquirer.prompt({
-		type: 'input',
-		name: 'itemIdOrIndex',
-		message: 'Enter id or index',
-		validate: (input) => {
-			return convertToId(input)
-				? true
-				: `Invalid id or index ${itemIdOrIndex}. Please enter an index or valid id.`
-		},
-	})).itemIdOrIndex
-	const inputId = convertToId(itemIdOrIndex)
-	if (inputId === false) {
-		throw Error(`unable to convert ${itemIdOrIndex} to id`)
-	}
-	return inputId
-}
-
-export async function stringGetNestedIdFromUser<NL>(this: APICommand & { readonly nestedPrimaryKeyName: string }, items: NL[]): Promise<string> {
-	const convertToId = (itemIdOrIndex: string): string | false => {
-		if (itemIdOrIndex.length === 0) {
-			return false
-		}
-		const matchingItem = items.find((item) => {
-			// @ts-ignore
-			return (this.nestedPrimaryKeyName in item) && itemIdOrIndex === item[this.nestedPrimaryKeyName]
-		})
-		if (matchingItem) {
-			return itemIdOrIndex
-		}
-
-		if (!isIndexArgument(itemIdOrIndex)) {
-			return false
-		}
-
-		const index = Number.parseInt(itemIdOrIndex)
-
-		if (!Number.isNaN(index) && index > 0 && index <= items.length) {
-			// @ts-ignore
-			const pk = items[index - 1][this.nestedPrimaryKeyName]
-			if (typeof pk === 'string') {
-				return pk
-			} else {
-				throw Error(`invalid type ${typeof pk} for primary key`  +
-					` ${this.nestedPrimaryKeyName} in ${JSON.stringify(items[index - 1])}`)
-			}
-		} else {
-			return false
-		}
-	}
-
-	const itemIdOrIndex: string = (await inquirer.prompt({
-		type: 'input',
-		name: 'itemIdOrIndex',
-		message: 'Enter id or index',
-		validate: (input) => {
-			return convertToId(input)
-				? true
-				: `Invalid id or index ${itemIdOrIndex}. Please enter an index or valid id.`
-		},
-	})).itemIdOrIndex
-	const inputId = convertToId(itemIdOrIndex)
-	if (inputId === false) {
-		throw Error(`unable to convert ${itemIdOrIndex} to id`)
-	}
-	return inputId
-}
-
 export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends APICommand {
 	private _entityId?: ID
 	protected abstract getIdFromUser(items: L[]): Promise<ID>
@@ -623,15 +489,6 @@ export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends AP
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface SelectingInputOutputAPICommandBase<ID, I, O, L> extends Inputting<I>, Outputting<O>, Listing<L> {}
 applyMixins(SelectingInputOutputAPICommandBase, [Inputting, Outputable, Outputting, Listing], { mergeFunctions: true })
-
-/**
- * A slightly easier-to-use version of SelectingInputOutputAPICommandBase for
- * the common case of resources that use simple strings for identifiers.
- */
-export abstract class SelectingInputOutputAPICommand<I, O, L> extends SelectingInputOutputAPICommandBase<string, I, O, L> {
-	protected getIdFromUser = oldStringGetIdFromUser
-	protected translateToId = oldStringTranslateToId
-}
 
 /* eslint-enable no-process-exit */
 /* eslint-enable @typescript-eslint/ban-ts-comment */

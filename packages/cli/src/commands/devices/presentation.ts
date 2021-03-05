@@ -23,7 +23,7 @@ export default class DevicePresentationCommand extends APICommand {
 		const { args, argv, flags } = this.parse(DevicePresentationCommand)
 		await super.setup(args, argv, flags)
 
-		const deviceId = await chooseDevice(this, args.id)
+		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })
 		const presentation = await this.client.devices.getPresentation(deviceId)
 		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, presentation)
 	}

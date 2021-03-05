@@ -1238,6 +1238,7 @@ ARGUMENTS
   ID  UUID or the number of the profile from list
 
 OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -1299,6 +1300,7 @@ ARGUMENTS
   ID  device profile UUID or number in the list
 
 OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -1401,9 +1403,10 @@ USAGE
   $ smartthings deviceprofiles:view:update [ID]
 
 ARGUMENTS
-  ID  device profile UUID or the number from list
+  ID  device profile id
 
 OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -1715,6 +1718,7 @@ ARGUMENTS
   ID  the device id
 
 OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -2072,6 +2076,7 @@ ARGUMENTS
   ID  room UUID
 
 OPTIONS
+  -d, --dry-run                  produce JSON but don't actually submit
   -h, --help                     show CLI help
   -i, --input=input              specify input file
   -j, --json                     use JSON format of input and/or output
@@ -2103,6 +2108,7 @@ ARGUMENTS
   ID  the location id
 
 OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
   -h, --help             show CLI help
   -i, --input=input      specify input file
   -j, --json             use JSON format of input and/or output
@@ -2440,6 +2446,7 @@ ARGUMENTS
   ID  rule UUID
 
 OPTIONS
+  -d, --dry-run                  produce JSON but don't actually submit
   -h, --help                     show CLI help
   -i, --input=input              specify input file
   -j, --json                     use JSON format of input and/or output
@@ -2577,13 +2584,10 @@ OPTIONS
   -h, --help                   show CLI help
   -i, --input=input            specify input file
   -j, --json                   use JSON format of input and/or output
-  -o, --output=output          specify output file
   -p, --profile=profile        [default: default] configuration profile
   -t, --token=token            the auth token to use
   -y, --yaml                   use YAML format of input and/or output
   --authorize                  authorize Lambda functions to be called by SmartThings
-  --compact                    use compact table format with no lines between body rows
-  --expanded                   use expanded table format with a line between each body row
   --indent=indent              specify indentation for formatting JSON or YAML output
   --language=language          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
   --principal=principal        use this principal instead of the default when authorizing lambda functions

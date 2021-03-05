@@ -27,7 +27,15 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: Device & 
 	return table.toString()
 }
 
-export async function chooseDevice(command: APICommand, deviceFromArg?: string): Promise<string> {
+export interface ChooseDeviceOptions {
+	allowIndex: boolean
+}
+export async function chooseDevice(command: APICommand, deviceFromArg?: string,
+		options?: Partial<ChooseDeviceOptions>): Promise<string> {
+	const opts: ChooseDeviceOptions = {
+		allowIndex: true,
+		...options,
+	}
 	const config = {
 		itemName: 'device',
 		primaryKeyName: 'deviceId',
@@ -35,9 +43,12 @@ export async function chooseDevice(command: APICommand, deviceFromArg?: string):
 		listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
 	}
 	const listDevices = (): Promise<Device[]> => command.client.devices.list()
-	const preselectedDeviceId = await stringTranslateToId(config, deviceFromArg, listDevices)
+	const preselectedDeviceId = opts.allowIndex
+		? await stringTranslateToId(config, deviceFromArg, listDevices)
+		: deviceFromArg
 	return selectFromList(command, config, preselectedDeviceId, listDevices)
 }
+
 export default class DevicesCommand extends APICommand {
 	static description = 'list all devices available in a user account or retrieve a single device'
 

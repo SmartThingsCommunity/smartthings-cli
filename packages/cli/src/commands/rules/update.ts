@@ -2,16 +2,17 @@ import { flags } from '@oclif/command'
 
 import { Rule, RuleRequest } from '@smartthings/core-sdk'
 
-import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, inputAndOutputItem, selectFromList } from '@smartthings/cli-lib'
 
-import { tableFieldDefinitions, getRulesByLocation, RuleWithLocation, getRule } from '../rules'
+import { tableFieldDefinitions, getRulesByLocation, getRule } from '../rules'
 
 
-export default class RulesUpdateCommand extends SelectingInputOutputAPICommand<RuleRequest, Rule, RuleWithLocation> {
+export default class RulesUpdateCommand extends APICommand {
 	static description = 'update a rule'
 
 	static flags = {
-		...SelectingInputOutputAPICommand.flags,
+		...APICommand.flags,
+		...inputAndOutputItem.flags,
 		'location-id': flags.string({
 			char: 'l',
 			description: 'a specific location to query',
@@ -23,19 +24,20 @@ export default class RulesUpdateCommand extends SelectingInputOutputAPICommand<R
 		description: 'rule UUID',
 	}]
 
-	primaryKeyName = 'id'
-	sortKeyName = 'name'
-
-	protected listTableFieldDefinitions = ['name', 'id', 'locationId', 'locationName']
-	protected tableFieldDefinitions = tableFieldDefinitions
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(RulesUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally( args.id,
-			() => getRulesByLocation(this.client, flags['location-id']),
-			async (id, data) => {
+		const config = {
+			primaryKeyName: 'id',
+			sortKeyName: 'name',
+			listTableFieldDefinitions: ['name', 'id', 'locationId', 'locationName'],
+		}
+		const id = await selectFromList(this, config, args.id,
+			() => getRulesByLocation(this.client, flags['location-id']))
+
+		await inputAndOutputItem<RuleRequest, Rule>(this, { tableFieldDefinitions },
+			async (_, data) => {
 				const rule = await getRule(this.client, id, flags['location-id'])
 				return this.client.rules.update(id, data, rule.locationId)
 			})

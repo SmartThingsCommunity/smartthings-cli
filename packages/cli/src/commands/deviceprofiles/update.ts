@@ -1,11 +1,15 @@
+import { CLIError } from '@oclif/errors'
+
 import { DeviceProfile, DeviceProfileRequest } from '@smartthings/core-sdk'
 
-import {APICommand, SelectingInputOutputAPICommand} from '@smartthings/cli-lib'
-import {DeviceDefinitionRequest} from './view'
+import { ActionFunction, APICommand, inputAndOutputItem, TableGenerator } from '@smartthings/cli-lib'
+
+import { chooseDeviceProfile } from '../deviceprofiles'
+import { DeviceDefinitionRequest } from './view'
 
 
-export function buildTableOutput(this: APICommand, data: DeviceProfile): string {
-	const table = this.tableGenerator.newOutputTable()
+export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile): string {
+	const table = tableGenerator.newOutputTable()
 	table.push(['Name', data.name])
 	for (const comp of data.components) {
 		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
@@ -19,35 +23,32 @@ export function buildTableOutput(this: APICommand, data: DeviceProfile): string 
 	return table.toString()
 }
 
-export default class DeviceProfileUpdateCommand extends SelectingInputOutputAPICommand<DeviceDefinitionRequest, DeviceProfile, DeviceProfile> {
+export default class DeviceProfileUpdateCommand extends APICommand {
 	static description = 'update a device profile'
 
-	static flags = SelectingInputOutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...inputAndOutputItem.flags,
+	}
 
 	static args = [{
 		name: 'id',
 		description: 'device profile UUID or number in the list',
 	}]
 
-	primaryKeyName = 'id'
-	sortKeyName = 'name'
-	listTableFieldDefinitions = ['name', 'status', 'id']
-
-	protected buildTableOutput = buildTableOutput
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(args.id,
-			() => { return this.client.deviceProfiles.list() },
-			async (id, data) => {
-				if (data.view) {
-					throw new Error('Input contains "view" property. Use deviceprofiles:view:update instead.')
-				}
+		const id = await chooseDeviceProfile(this, args.id)
+		const executeUpdate: ActionFunction<void, DeviceDefinitionRequest, DeviceProfile> = async (_, data) => {
+			if (data.view) {
+				throw new CLIError('Input contains "view" property. Use deviceprofiles:view:update instead.')
+			}
 
-				return this.client.deviceProfiles.update(id, cleanupRequest(data))
-			})
+			return this.client.deviceProfiles.update(id, cleanupRequest(data))
+		}
+		await inputAndOutputItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, executeUpdate)
 	}
 }
 
