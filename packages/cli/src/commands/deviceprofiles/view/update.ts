@@ -1,13 +1,12 @@
-import { DeviceProfile } from '@smartthings/core-sdk'
-
-import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
+import { ActionFunction, APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { generateDefaultConfig } from '../create'
 import { cleanupRequest } from '../update'
 import { augmentPresentationValues, buildTableOutput, DeviceDefinition, DeviceDefinitionRequest, prunePresentationValues } from '../view'
+import { chooseDeviceProfile } from '../../deviceprofiles'
 
 
-export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<DeviceDefinitionRequest, DeviceDefinition, DeviceDefinition> {
+export default class DeviceProfilesViewUpdateCommand extends APICommand {
 	static description = 'update a device profile and configuration\n' +
 		'Updates a device profile and device configuration and sets the vid of the profile\n' +
 		'to the vid of the updated configuration. Unlike deviceprofiles:update this\n' +
@@ -39,46 +38,42 @@ export default class CapabilitiesUpdate extends SelectingInputOutputAPICommand<D
 		'      - capability: switch  ',
 	]
 
-	static flags = SelectingInputOutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...inputAndOutputItem.flags,
+	}
 
 	static args = [{
 		name: 'id',
-		description: 'device profile UUID or the number from list',
+		description: 'device profile id',
 	}]
 
-	primaryKeyName = 'id'
-	sortKeyName = 'name'
-
-	protected listTableFieldDefinitions = ['name', 'status', 'id']
-
-	protected buildTableOutput = (data: DeviceProfile): string => buildTableOutput(this.tableGenerator, data)
-
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(CapabilitiesUpdate)
+		const { args, argv, flags } = this.parse(DeviceProfilesViewUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(args.id,
-			() => this.client.deviceProfiles.list(),
-			async (id, data) => {
-				const profileData = data
-				let presentationData = data.view
-				delete profileData.view
+		const id = await chooseDeviceProfile(this, args.id)
+		const executeUpdate: ActionFunction<void, DeviceDefinitionRequest, DeviceDefinition> = async (_, data) => {
+			const profileData = { ...data }
+			let presentationData = data.view
+			delete profileData.view
 
-				if (presentationData) {
-					presentationData = augmentPresentationValues(presentationData)
-				} else {
-					presentationData = await generateDefaultConfig(this.client, id, profileData)
-				}
+			if (presentationData) {
+				presentationData = augmentPresentationValues(presentationData)
+			} else {
+				presentationData = await generateDefaultConfig(this.client, id, profileData)
+			}
 
-				const presentation = await this.client.presentation.create(presentationData)
-				if (!profileData.metadata) {
-					profileData.metadata = {}
-				}
-				profileData.metadata.vid = presentation.presentationId
-				profileData.metadata.mnmn = presentation.manufacturerName
-				const profile = await this.client.deviceProfiles.update(id, cleanupRequest(profileData))
+			const presentation = await this.client.presentation.create(presentationData)
+			if (!profileData.metadata) {
+				profileData.metadata = {}
+			}
+			profileData.metadata.vid = presentation.presentationId
+			profileData.metadata.mnmn = presentation.manufacturerName
+			const profile = await this.client.deviceProfiles.update(id, cleanupRequest(profileData))
 
-				return { ...profile, presentation: prunePresentationValues(presentation) }
-			})
+			return { ...profile, presentation: prunePresentationValues(presentation) }
+		}
+		await inputAndOutputItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, executeUpdate)
 	}
 }

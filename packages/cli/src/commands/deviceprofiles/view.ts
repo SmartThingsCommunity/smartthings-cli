@@ -131,7 +131,7 @@ export function augmentPresentationValues(view: DeviceView): DeviceView {
 	return view
 }
 
-export default class DeviceViewCommand extends APICommand {
+export default class DeviceProfilesViewCommand extends APICommand {
 	static description = 'show device profile and device configuration in a single, consolidated view'
 
 	static flags = {
@@ -145,7 +145,7 @@ export default class DeviceViewCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceViewCommand)
+		const { args, argv, flags } = this.parse(DeviceProfilesViewCommand)
 		await super.setup(args, argv, flags)
 
 		const config: ListingOutputConfig<DeviceDefinition, DeviceProfile> = {

@@ -1,12 +1,15 @@
 import { Device, DeviceUpdate } from '@smartthings/core-sdk'
-import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
-import { buildTableOutput } from '../devices'
+import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
+import { buildTableOutput, chooseDevice } from '../devices'
 
 
-export default class DeviceUpdateCommand extends SelectingInputOutputAPICommand<DeviceUpdate, Device, Device> {
+export default class DeviceUpdateCommand extends APICommand {
 	static description = "get the current status of all of a device's component's attributes"
 
-	static flags = SelectingInputOutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...inputAndOutputItem.flags,
+	}
 
 	static args = [
 		{
@@ -15,23 +18,13 @@ export default class DeviceUpdateCommand extends SelectingInputOutputAPICommand<
 		},
 	]
 
-	protected buildTableOutput: (data: Device) => string = data => buildTableOutput(this.tableGenerator, data)
-
-	primaryKeyName = 'deviceId'
-	sortKeyName = 'label'
-	listTableFieldDefinitions = ['label', 'name', 'type', 'deviceId']
-	acceptIndexId = true
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		await this.processNormally(
-			args.id,
-			() => this.client.devices.list(),
-			(id, data) => {
-				return this.client.devices.update(id, data)
-			},
-		)
+		const id = await chooseDevice(this, args.id)
+		await inputAndOutputItem<DeviceUpdate, Device>(this,
+			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
+			(_, data) => this.client.devices.update(id, data))
 	}
 }

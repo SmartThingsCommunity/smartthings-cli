@@ -1,13 +1,18 @@
-import {DeviceProfile, DeviceProfileTranslations} from '@smartthings/core-sdk'
-import {SelectingInputOutputAPICommand} from '@smartthings/cli-lib'
+import { DeviceProfileTranslations } from '@smartthings/core-sdk'
 
-import {buildTableOutput} from '../translations'
+import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
+
+import { buildTableOutput } from '../translations'
+import { chooseDeviceProfile } from '../../deviceprofiles'
 
 
-export default class DeviceProfileTranslationsUpsertCommand extends SelectingInputOutputAPICommand<DeviceProfileTranslations, DeviceProfileTranslations, DeviceProfile> {
+export default class DeviceProfileTranslationsUpsertCommand extends APICommand {
 	static description = 'create or update a device profile translation'
 
-	static flags = SelectingInputOutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...inputAndOutputItem.flags,
+	}
 
 	static args = [
 		{
@@ -51,24 +56,14 @@ export default class DeviceProfileTranslationsUpsertCommand extends SelectingInp
 		'    description: Switchable outlet 1 power',
 	]
 
-	primaryKeyName = 'id'
-	sortKeyName = 'name'
-
-	protected listTableFieldDefinitions = ['name', 'status', 'id']
-
-	protected buildTableOutput = (data: DeviceProfileTranslations): string => buildTableOutput(this.tableGenerator, data)
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileTranslationsUpsertCommand)
 		await super.setup(args, argv, flags)
 
-		const idOrIndex = args.version
-			? { id: args.id, version: args.version }
-			: args.id
-		await this.processNormally(idOrIndex,
-			() => this.client.deviceProfiles.list(),
-			async (id, translations) => {
-				return this.client.deviceProfiles.upsertTranslations(id, translations)
-			})
+		const id = await chooseDeviceProfile(this, args.id)
+
+		await inputAndOutputItem<DeviceProfileTranslations, DeviceProfileTranslations>(this,
+			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data)},
+			async (_, data) => this.client.deviceProfiles.upsertTranslations(id, data))
 	}
 }

@@ -49,7 +49,7 @@ export default class DeviceCapabilityStatusCommand extends APICommand {
 		const { args, argv, flags } = this.parse(DeviceCapabilityStatusCommand)
 		await super.setup(args, argv, flags)
 
-		const deviceId = await chooseDevice(this, args.id)
+		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })
 
 		const device = await this.client.devices.get(deviceId)
 		const componentName = await chooseComponent(this, args.component, device.components)

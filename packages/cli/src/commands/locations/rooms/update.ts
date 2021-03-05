@@ -1,15 +1,18 @@
 import { flags } from '@oclif/command'
+
 import { Room, RoomRequest } from '@smartthings/core-sdk'
 
-import { getRoomsByLocation, tableFieldDefinitions } from '../rooms'
-import { SelectingInputOutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
+
+import { chooseRoom, tableFieldDefinitions } from '../rooms'
 
 
-export default class RoomsUpdateCommand extends SelectingInputOutputAPICommand <RoomRequest, Room, Room> {
+export default class RoomsUpdateCommand extends APICommand {
 	static description = 'update a room'
 
 	static flags = {
-		...SelectingInputOutputAPICommand.flags,
+		...APICommand.flags,
+		...inputAndOutputItem.flags,
 		'location-id': flags.string({
 			char: 'l',
 			description: 'a specific location to query',
@@ -23,26 +26,12 @@ export default class RoomsUpdateCommand extends SelectingInputOutputAPICommand <
 
 	static aliases = ['rooms:update']
 
-	primaryKeyName = 'roomId'
-	sortKeyName = 'name'
-
-	protected tableFieldDefinitions = tableFieldDefinitions
-	protected listTableFieldDefinitions = tableFieldDefinitions
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(RoomsUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		const rooms = await getRoomsByLocation(this.client, flags['location-id'])
-		await this.processNormally(
-			args.id,
-			async () => rooms,
-			async (id, data) => {
-				const room = rooms.find(room => room.roomId === id)
-				if (!room) {
-					throw Error(`could not find room with id ${id}`)
-				}
-				return this.client.rooms.update(id, data, room.locationId)
-			})
+		const [roomId, locationId] = await chooseRoom(this, flags['location-id'], args.id)
+		await inputAndOutputItem<RoomRequest, Room>(this, { tableFieldDefinitions },
+			(_, data) => this.client.rooms.update(roomId, data, locationId))
 	}
 }

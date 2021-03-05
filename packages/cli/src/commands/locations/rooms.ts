@@ -3,7 +3,7 @@ import { CLIError } from '@oclif/errors'
 
 import { LocationItem, Room, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing } from '@smartthings/cli-lib'
+import { APICommand, outputListing, selectFromList } from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions = ['name', 'locationId', 'roomId']
@@ -31,6 +31,25 @@ export async function getRoomsByLocation(client: SmartThingsClient, locationId?:
 
 export type RoomWithLocation = Room & {
 	locationName?: string
+}
+
+export async function chooseRoom(command: APICommand, locationId?: string, deviceFromArg?: string): Promise<[string, string]> {
+	const rooms = await getRoomsByLocation(command.client, locationId)
+	const config = {
+		itemName: 'room',
+		primaryKeyName: 'roomId',
+		sortKeyName: 'name',
+		listTableFieldDefinitions: tableFieldDefinitions,
+	}
+	const roomId = await selectFromList(command, config, deviceFromArg, async () => rooms)
+	const room = rooms.find(room => room.roomId === roomId)
+	if (!room) {
+		throw new CLIError(`could not find room with id ${roomId}`)
+	}
+	if (!room.locationId) {
+		throw new CLIError(`could not determine location id for room ${roomId}`)
+	}
+	return [roomId, room.locationId]
 }
 
 export default class RoomsCommand extends APICommand {

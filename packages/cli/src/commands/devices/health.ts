@@ -20,7 +20,7 @@ export default class DeviceHealthCommand extends APICommand {
 		const { args, argv, flags } = this.parse(DeviceHealthCommand)
 		await super.setup(args, argv, flags)
 
-		const deviceId = await chooseDevice(this, args.id)
+		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })
 		const health = await this.client.devices.getHealth(deviceId)
 		await formatAndWriteItem(this, { tableFieldDefinitions: ['deviceId', 'state', 'lastUpdatedDate'] }, health)
 	}

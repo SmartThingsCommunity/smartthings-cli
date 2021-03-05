@@ -1,4 +1,6 @@
-import { APICommand, selectFromList } from '@smartthings/cli-lib'
+import { APICommand } from '@smartthings/cli-lib'
+
+import { chooseLocation } from '../locations'
 
 
 export default class LocationsDeleteCommand extends APICommand {
@@ -15,13 +17,7 @@ export default class LocationsDeleteCommand extends APICommand {
 		const { args, argv, flags } = this.parse(LocationsDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		const config = {
-			primaryKeyName: 'locationId',
-			sortKeyName: 'name',
-		}
-		const id = await selectFromList(this, config, args.id,
-			async () => await this.client.locations.list(),
-			'Select location to delete.')
+		const id = await chooseLocation(this, args.id)
 		await this.client.locations.delete(id)
 		this.log(`Location ${id} deleted.`)
 	}
