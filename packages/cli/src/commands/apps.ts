@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { App, AppType, AppClassification, AppListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing, selectFromList, stringTranslateToId, TableFieldDefinition } from '@smartthings/cli-lib'
+import { APICommand, ChooseOptions, chooseOptionsWithDefaults, outputListing, selectFromList, stringTranslateToId, TableFieldDefinition } from '@smartthings/cli-lib'
 
 
 const isWebhookSmartApp = (app: App): boolean => !!app.webhookSmartApp
@@ -35,14 +35,8 @@ export const tableFieldDefinitions: TableFieldDefinition<App>[] = [
 	{ prop: 'installMetadata.certified', include: app => app.installMetadata?.certified !== undefined },
 ]
 
-export interface ChooseAppOptions {
-	allowIndex: boolean
-}
-export async function chooseApp(command: APICommand, appFromArg?: string, options?: Partial<ChooseAppOptions>): Promise<string> {
-	const opts: ChooseAppOptions = {
-		allowIndex: false,
-		...options,
-	}
+export async function chooseApp(command: APICommand, appFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
+	const opts = chooseOptionsWithDefaults(options)
 	const config = {
 		itemName: 'app',
 		primaryKeyName: 'appId',

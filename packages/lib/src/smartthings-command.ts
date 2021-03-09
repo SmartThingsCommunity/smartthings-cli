@@ -12,7 +12,7 @@ export interface Loggable {
 }
 
 /**
- * Make an interface version of SmartThingsCommand to make its contract easier to mix with other
+ * An interface version of SmartThingsCommand to make its contract easier to mix with other
  * interfaces and to limit what we need to mock for tests.
  */
 export interface SmartThingsCommandInterface extends Loggable {

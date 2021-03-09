@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { Device, DeviceListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing, selectFromList, stringTranslateToId, TableGenerator, withLocationsAndRooms } from '@smartthings/cli-lib'
+import { APICommand, ChooseOptions, chooseOptionsWithDefaults, outputListing, selectFromList, stringTranslateToId, TableGenerator, withLocationsAndRooms } from '@smartthings/cli-lib'
 
 
 export type DeviceWithLocation = Device & { location?: string }
@@ -27,15 +27,9 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: Device & 
 	return table.toString()
 }
 
-export interface ChooseDeviceOptions {
-	allowIndex: boolean
-}
 export async function chooseDevice(command: APICommand, deviceFromArg?: string,
-		options?: Partial<ChooseDeviceOptions>): Promise<string> {
-	const opts: ChooseDeviceOptions = {
-		allowIndex: true,
-		...options,
-	}
+		options?: Partial<ChooseOptions>): Promise<string> {
+	const opts = chooseOptionsWithDefaults(options)
 	const config = {
 		itemName: 'device',
 		primaryKeyName: 'deviceId',

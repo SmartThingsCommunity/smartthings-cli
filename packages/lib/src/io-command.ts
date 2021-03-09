@@ -4,7 +4,6 @@ import yaml from 'js-yaml'
 import { flags } from '@oclif/command'
 
 import { APICommand } from './api-command'
-import { isIndexArgument } from './command-util'
 import { commonIOFlags, inputFlag } from './input'
 import { formatFromFilename, IOFormat } from './io-util'
 import { outputFlags as outputFlag } from './output-builder'
@@ -13,25 +12,18 @@ import { TableFieldDefinition, TableGenerator } from './table-generator'
 import { applyMixins } from './util'
 
 
-export interface InputOptions {
+interface InputOptions {
 	// no filename means stdin
 	filename?: string
 	format: IOFormat
 }
 
-export interface OutputOptions {
+interface OutputOptions {
 	// no filename means stdout
 	filename?: string
 	format: IOFormat
 	indentLevel: number
 }
-
-export type ListCallback<L> = () => Promise<L[]>
-export type GetCallback<O> = () => Promise<O>
-export type LookupCallback<ID, O> = (id: ID) => Promise<O>
-export type UpdateCallback<ID, I, O> = (id: ID, data: I) => Promise<O>
-export type ActionCallback<ID> = (id: ID) => Promise<void>
-export type InputActionCallback<ID, I> = (id: ID, data: I) => Promise<void>
 
 /**
  * Convert and write the data using the given output options.
@@ -290,88 +282,6 @@ export abstract class Outputting<O> extends Outputable {
 }
 
 /**
- * The "Listing" mixin is used to add the ability to present a list of resources
- * in an indexed table format to the user. The index can be used by the user
- * to specify later which one they want to act on (more about that below).
- *
- * Most basically, this is used for top level commands that list resources like
- * "locations" which lists all the locations. These commands also support
- * getting (potentially more detailed info) about a specific resource using the
- * index.
- *
- * Note that if you are going to take an action on the resource rather than just
- * displaying it, you should use one of the "Selecting" functions instead.
- * See io modules for more information.
- *
- * By default (not counting the index), the table output only includes the
- * fields defined by sortKeyName and primaryKeyName but more fields can
- * be included by defining listTableFieldDefinitions.
- *
- * NOTE: this mixin requires that Outputable also be mixed in.
- */
-export abstract class Listing<L> extends Outputable {
-	abstract readonly primaryKeyName: string
-	abstract readonly sortKeyName: string
-
-	protected listTableFieldDefinitions?: TableFieldDefinition<L>[]
-
-	protected buildListTableOutput(sortedList: L[]): string {
-		const definitions: TableFieldDefinition<L>[] = this.listTableFieldDefinitions ?? [
-			this.sortKeyName,
-			this.primaryKeyName,
-		]
-		let count = 0
-		definitions.unshift({
-			label: '#',
-			value: () => (++count).toString(),
-		})
-		return this.tableGenerator.buildTableFromList(sortedList, definitions)
-	}
-	protected writeListOutput(data: L[]): void {
-		writeOutputPrivate(data, this.outputOptions, this.buildListTableOutput.bind(this))
-	}
-
-	protected sort(list: L[]): L[] {
-		return list.sort((a, b) => {
-			// @ts-ignore
-			const av = a[this.sortKeyName].toLowerCase()
-			// @ts-ignore
-			const bv = b[this.sortKeyName].toLowerCase()
-			return av === bv ? 0 : av < bv ? -1 : 1
-		})
-	}
-}
-
-/**
- * Extend this class for your command if you need to accept input but the
- * API call you're making doesn't have complex output. There are currently
- * no examples of this in the CLI (as of August 2020).
- */
-export abstract class InputAPICommand<I> extends APICommand {
-	/**
-	 * This is just a convenience method that outputs a simple string message
-	 * on success and handles exceptions. This is mostly useful for simple
-	 * things like a DELETE call that don't have any complicated inputs or
-	 * outputs.
-	 *
-	 * @param executeCommand function that does the work
-	 */
-	protected processNormally(successMessage: string, executeCommand: (data: I) => Promise<void>): void {
-		this.readInput().then(input => {
-			return executeCommand(input)
-		}).then(() => {
-			process.stdout.write(`${successMessage}\n`)
-		}).catch(err => {
-			this.logger.error(`caught error ${err}`)
-			process.exit(1)
-		})
-	}
-}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface InputAPICommand<I> extends Inputting<I> {}
-applyMixins(InputAPICommand, [Inputting], { mergeFunctions: true })
-
-/**
  * An API command that has complex input and complex output. This
  * would normally be used for POST and PUT methods (though in the case of PUT
  * one of the "Selecting" classes that extend this is more often appropriate).
@@ -419,76 +329,6 @@ export abstract class InputOutputAPICommand<I, O> extends APICommand {
 
 export interface InputOutputAPICommand<I, O> extends Inputting<I>, Outputting<O> {}
 applyMixins(InputOutputAPICommand, [Inputting, Outputable, Outputting], { mergeFunctions: true })
-
-export abstract class SelectingInputOutputAPICommandBase<ID, I, O, L> extends APICommand {
-	private _entityId?: ID
-	protected abstract getIdFromUser(items: L[]): Promise<ID>
-
-	protected translateToId?(idOrIndex: ID | string, listFunction: ListCallback<L>): Promise<ID>
-
-	protected acceptIndexId = false
-
-	protected get entityId(): ID {
-		if (!this._entityId) {
-			throw new Error('Entity ID not set')
-		}
-		return this._entityId
-	}
-
-	protected async processNormally(idOrIndex: ID | string | undefined,
-			listCallback: ListCallback<L>,
-			updateCallback: UpdateCallback<ID, I, O>): Promise<void> {
-		try {
-			if (idOrIndex) {
-				if (this.acceptIndexId) {
-					if (!this.translateToId) {
-						throw new Error('translateToId must be defined if acceptIndexId is true')
-					}
-					this._entityId = await this.translateToId(idOrIndex, listCallback)
-				} else if (typeof idOrIndex === 'string' && isIndexArgument(idOrIndex)) {
-					throw new Error('List index references not supported for this command. Specify'
-						+ ' id instead or omit argument and select from list')
-				} else {
-					// @ts-ignore
-					this._entityId = idOrIndex
-				}
-			} else if (this.inputOptions.filename || process.stdin.isTTY) {
-				const items = this.sort(await listCallback())
-				if (items.length === 0) {
-					this.log('no items found')
-					process.exit(0)
-				}
-				writeOutputPrivate(items, this.outputOptions, this.buildListTableOutput.bind(this), true)
-				this._entityId = await this.getIdFromUser(items)
-			} else {
-				throw Error('When input data comes in via stdin, id is required on command line')
-			}
-			const input: I = await this.readInput()
-			const output = await updateCallback(this.entityId, input)
-			this.writeOutput(output)
-		} catch (err) {
-			this.logger.error(`caught error ${err}`)
-			process.exit(1)
-		}
-	}
-
-	static flags = inputOutputFlags
-}
-
-/**
- * Use this class when you have both complex input and output and are acting
- * on a single resource that can easily be listed. The most common use
- * case for this is an "update" command (which normally uses a PUT). Using
- * this class gives you all the abilities of "Selecting", "Input" and "Output"
- * classes.
- *
- * NOTE: this class takes an identifier type as a generic argument. In most
- * cases, you have a simple string for an identifier and can use
- * SelectingInputOutputAPICommand instead.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export interface SelectingInputOutputAPICommandBase<ID, I, O, L> extends Inputting<I>, Outputting<O>, Listing<L> {}
-applyMixins(SelectingInputOutputAPICommandBase, [Inputting, Outputable, Outputting, Listing], { mergeFunctions: true })
 
 /* eslint-enable no-process-exit */
 /* eslint-enable @typescript-eslint/ban-ts-comment */

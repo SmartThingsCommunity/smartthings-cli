@@ -3,7 +3,7 @@ import { flags } from '@oclif/command'
 
 import { Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, ListCallback, outputGenericListing, sort, Sorting, TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, ListDataFunction, outputGenericListing, selectGeneric, sort, Sorting, TableGenerator } from '@smartthings/cli-lib'
 
 
 export const capabilityIdInputArgs = [
@@ -215,7 +215,7 @@ export async function getIdFromUser(fieldInfo: Sorting, list: CapabilitySummaryW
 }
 
 export async function translateToId(sortKeyName: string, idOrIndex: string | CapabilityId,
-		listFunction: ListCallback<CapabilitySummaryWithNamespace>): Promise<CapabilityId> {
+		listFunction: ListDataFunction<CapabilitySummaryWithNamespace>): Promise<CapabilityId> {
 	if (typeof idOrIndex !== 'string') {
 		return idOrIndex
 	}
@@ -234,6 +234,17 @@ export async function translateToId(sortKeyName: string, idOrIndex: string | Cap
 	}
 	const matchingItem: CapabilitySummaryWithNamespace = items[index - 1]
 	return { id: matchingItem.id, version: matchingItem.version }
+}
+
+export async function chooseCapability(command: APICommand, idFromArgs?: string, versionFromArgs?: number): Promise<CapabilityId> {
+	const preselectedId: CapabilityId | undefined = idFromArgs ? { id: idFromArgs, version: versionFromArgs ?? 1 } : undefined
+	const config = {
+		itemName: 'capability',
+		primaryKeyName: 'id',
+		sortKeyName: 'id',
+		listTableFieldDefinitions: ['id', 'version', 'status'],
+	}
+	return selectGeneric(command, config, preselectedId, () => getCustomByNamespace(command.client), getIdFromUser)
 }
 
 export default class CapabilitiesCommand extends APICommand {

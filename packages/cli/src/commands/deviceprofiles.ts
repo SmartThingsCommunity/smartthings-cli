@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { DeviceProfile, LocaleReference } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing, selectFromList, stringTranslateToId, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, ChooseOptions, chooseOptionsWithDefaults, outputListing, selectFromList, stringTranslateToId, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile): string {
@@ -20,17 +20,8 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePro
 	return table.toString()
 }
 
-export interface ChooseDeviceProfileOptions {
-	allowIndex: boolean
-	verbose: boolean
-}
-export async function chooseDeviceProfile(command: APICommand, deviceProfileFromArg?: string,
-		options?: Partial<ChooseDeviceProfileOptions>): Promise<string> {
-	const opts: ChooseDeviceProfileOptions = {
-		allowIndex: false,
-		verbose: false,
-		...options,
-	}
+export async function chooseDeviceProfile(command: APICommand, deviceProfileFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
+	const opts = chooseOptionsWithDefaults(options)
 	const config = {
 		itemName: 'device profile',
 		primaryKeyName: 'id',

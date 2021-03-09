@@ -1,6 +1,6 @@
-import { APICommand, selectGeneric } from '@smartthings/cli-lib'
+import { APICommand } from '@smartthings/cli-lib'
 
-import { capabilityIdInputArgs, getCustomByNamespace, getIdFromUser } from '../capabilities'
+import { capabilityIdInputArgs, chooseCapability } from '../capabilities'
 
 
 export default class CapabilitiesDeleteCommand extends APICommand {
@@ -14,15 +14,8 @@ export default class CapabilitiesDeleteCommand extends APICommand {
 		const { args, argv, flags } = this.parse(CapabilitiesDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		const optionalId = args.id ? { id: args.id, version: args.version ?? 1 } : undefined
-		const config = {
-			primaryKeyName: 'id',
-			sortKeyName: 'id',
-			listTableFieldDefinitions: ['id', 'version'],
-		}
-		const capabilityId = await selectGeneric(this, config, optionalId,
-			() => getCustomByNamespace(this.client), getIdFromUser)
-		await this.client.capabilities.delete(capabilityId.id, capabilityId.version)
-		this.log(`capability ${capabilityId.id} (version ${capabilityId.version}) deleted`)
+		const id = await chooseCapability(this, args.id, args.version)
+		await this.client.capabilities.delete(id.id, id.version)
+		this.log(`capability ${id.id} (version ${id.version}) deleted`)
 	}
 }

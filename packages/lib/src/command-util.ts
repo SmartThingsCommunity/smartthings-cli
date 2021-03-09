@@ -103,3 +103,16 @@ export async function stringGetIdFromUser<L>(fieldInfo: Sorting, list: L[], prom
 	}
 	return inputId
 }
+
+export interface ChooseOptions {
+	allowIndex: boolean
+	verbose: boolean
+}
+
+export function chooseOptionsWithDefaults(options: Partial<ChooseOptions> | undefined): ChooseOptions {
+	return {
+		allowIndex: false,
+		verbose: false,
+		...options,
+	}
+}

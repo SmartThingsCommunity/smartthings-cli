@@ -1,18 +1,18 @@
-import {CapabilityLocalization} from '@smartthings/core-sdk'
-import {SelectingInputOutputAPICommandBase} from '@smartthings/cli-lib'
+import { CapabilityLocalization } from '@smartthings/core-sdk'
 
-import {
-	capabilityIdInputArgs, getCustomByNamespace, getIdFromUser,
-	CapabilityId, CapabilitySummaryWithNamespace,
-} from '../../capabilities'
+import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import {buildTableOutput} from '../translations'
+import { buildTableOutput } from '../translations'
+import { capabilityIdInputArgs, chooseCapability } from '../../capabilities'
 
 
-export default class CapabilityTranslationsUpsertCommand extends SelectingInputOutputAPICommandBase<CapabilityId, CapabilityLocalization, CapabilityLocalization, CapabilitySummaryWithNamespace> {
+export default class CapabilityTranslationsUpsertCommand extends APICommand {
 	static description = 'Create or update a capability translation'
 
-	static flags = SelectingInputOutputAPICommandBase.flags
+	static flags = {
+		...APICommand.flags,
+		...inputAndOutputItem.flags,
+	}
 
 	static args = capabilityIdInputArgs
 
@@ -65,24 +65,13 @@ export default class CapabilityTranslationsUpsertCommand extends SelectingInputO
 		'        label: Output Modulation',
 	]
 
-	primaryKeyName = 'id'
-	sortKeyName = 'id'
-
-	protected listTableFieldDefinitions = ['id', 'version']
-
-	protected buildTableOutput = (data: CapabilityLocalization): string => buildTableOutput(this.tableGenerator, data)
-	protected getIdFromUser: (items: CapabilitySummaryWithNamespace[]) => Promise<CapabilityId> = items => getIdFromUser(this, items)
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(CapabilityTranslationsUpsertCommand)
 		await super.setup(args, argv, flags)
 
-		const idOrIndex = args.version
-			? { id: args.id, version: args.version }
-			: args.id
-
-		await this.processNormally(idOrIndex,
-			async () => getCustomByNamespace(this.client),
-			async (id, translations) => this.client.capabilities.upsertTranslations(id.id, id.version, translations))
+		const id = await chooseCapability(this, args.id, args.version)
+		await inputAndOutputItem<CapabilityLocalization, CapabilityLocalization>(this,
+			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
+			(_, translations) => this.client.capabilities.upsertTranslations(id.id, id.version, translations))
 	}
 }
