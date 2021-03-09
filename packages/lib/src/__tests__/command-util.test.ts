@@ -1,5 +1,5 @@
 import inquirer from 'inquirer'
-import { convertToId, isIndexArgument, itemName, pluralItemName, stringGetIdFromUser, stringTranslateToId } from '../command-util'
+import { chooseOptionsWithDefaults, convertToId, isIndexArgument, itemName, pluralItemName, stringGetIdFromUser, stringTranslateToId } from '../command-util'
 import * as output from '../output'
 
 
@@ -201,6 +201,20 @@ describe('command-util', () => {
 			const validateFunction = (promptSpy.mock.calls[0][0] as { validate: (input: string) => true|string }).validate
 
 			expect(validateFunction('string-id-a')).toBe(true)
+		})
+	})
+
+	describe('chooseOptionsWithDefaults', () => {
+		it('defaults to false allowIndex and false verbose with undefined input', () => {
+			expect(chooseOptionsWithDefaults(undefined)).toEqual({ allowIndex: false, verbose: false })
+		})
+
+		it('defaults to false allowIndex and false verbose with empty input', () => {
+			expect(chooseOptionsWithDefaults({})).toEqual({ allowIndex: false, verbose: false })
+		})
+
+		it('input overrides default', () => {
+			expect(chooseOptionsWithDefaults({ allowIndex: true, verbose: true })).toEqual({ allowIndex: true, verbose: true })
 		})
 	})
 })
