@@ -54,10 +54,20 @@ describe('calculateOutputFormat', () => {
 		expect(calculateOutputFormat(command, ioUtil.IOFormat.YAML)).toBe(ioUtil.IOFormat.YAML)
 	})
 
-	it('falls back to common with no other default specified', () => {
+	it('falls back to common in console with no other default specified', () => {
 		const command = buildMockCommand()
+		const ttySpy = jest.spyOn(ioUtil, 'stdoutIsTTY').mockReturnValue(true)
 
 		expect(calculateOutputFormat(command)).toBe(ioUtil.IOFormat.COMMON)
+		expect(ttySpy).toHaveBeenCalledTimes(1)
+	})
+
+	it('falls back to JSON with no other default specified and not outputting to the console', () => {
+		const command = buildMockCommand()
+		const ttySpy = jest.spyOn(ioUtil, 'stdoutIsTTY').mockReturnValue(false)
+
+		expect(calculateOutputFormat(command)).toBe(ioUtil.IOFormat.JSON)
+		expect(ttySpy).toHaveBeenCalledTimes(1)
 	})
 })
 

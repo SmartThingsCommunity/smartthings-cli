@@ -56,9 +56,14 @@ default:
 ## Input and Output Considerations
 
 Many commands in the CLI handle complex input and/or output, mostly for use with
-the SmartThings REST API. Input can always be passed as JSON or YAML and in
-a couple cases a "question and answer" mode is provided. The output format
-will match the input format unless otherwise specified.
+the SmartThings REST API.
+
+Complex input can always be passed as JSON or YAML and in a couple cases a "question and answer"
+mode is provided.
+
+The output format will match the input format unless otherwise specified. When there is no input
+specified the default will be a user-friendly (often table) formatted style if the output is
+going to the console or JSON otherwise.
 
 | Name | Shortcut | Description |
 | -- | -- | -- |
