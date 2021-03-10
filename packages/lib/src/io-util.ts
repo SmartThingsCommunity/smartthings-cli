@@ -66,3 +66,11 @@ export function readDataFromStdin(): Promise<string> {
 export function stdinIsTTY(): boolean {
 	return process.stdin.isTTY
 }
+
+/**
+ * Simple function to test for TTY output. Use this instead of directly calling `process` if you want
+ * to mock in unit tests.
+ */
+export function stdoutIsTTY(): boolean {
+	return process.stdout.isTTY
+}
