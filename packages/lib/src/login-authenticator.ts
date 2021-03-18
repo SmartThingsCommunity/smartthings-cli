@@ -48,19 +48,16 @@ interface AuthenticationInfo {
 
 
 function credentialsFile(): string {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	if (!('_credentialsFile' in (global as any))) {
+	if (!('_credentialsFile' in (global as { _credentialsFile?: string }))) {
 		throw new Error('LoginAuthenticator credentials file not set.')
 	}
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	return (global as any)._credentialsFile
+	return (global as unknown as { _credentialsFile: string })._credentialsFile
 }
 
 export class LoginAuthenticator implements Authenticator {
 	private static credentialsFile?: string
 	public static init(credentialsFile: string): void {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(global as any)._credentialsFile = credentialsFile
+		(global as { _credentialsFile?: string })._credentialsFile = credentialsFile
 
 		const cliDir = path.dirname(credentialsFile)
 		fs.mkdirSync(cliDir, { recursive: true })
@@ -125,8 +122,7 @@ export class LoginAuthenticator implements Authenticator {
 		fs.writeFileSync(credentialsFile(), JSON.stringify(credentialsFileData, null, 4))
 		fs.chmod(credentialsFile(), 0o600, err => {
 			if (err) {
-				this.logger.error('failed to set permissions on credentials file')
-				throw err
+				this.logger.error('failed to set permissions on credentials file', err)
 			}
 		})
 		this.authenticationInfo = authenticationInfo
@@ -158,6 +154,8 @@ export class LoginAuthenticator implements Authenticator {
 				if ('error_description' in req.query) {
 					this.logger.error(`  ${req.query.error_description}`)
 				}
+				res.send('<html><body><h1>Failure trying to authenticate.</h1></body></html>')
+				return
 			}
 			const requestBody = {
 				'grant_type': 'authorization_code',
@@ -178,17 +176,18 @@ export class LoginAuthenticator implements Authenticator {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				.then((response: AxiosResponse<any>) => {
 					this.updateTokenFromResponse(response)
+					res.send('<html><body><h1>You can close the window.</h1></body></html>')
 				})
 				.catch(err => {
 					this.logger.trace(`got error ${err.name}/${err}}/${err.message} trying to get final token`)
 					this.logger.trace(`err = ${JSON.stringify(err, null, 4)}`)
+					res.send('<html><body><h1>Failure trying retrieve token.</h1></body></html>')
 				})
-			res.send('<html><body><h1>You can close the window.</h1></body></html>')
 		})
 
-		const server = app.listen(port, () => {
+		const server = app.listen(port, async () => {
 			this.logger.trace(`listening on port ${port}`)
-			void open(`http://localhost:${port}/start`)
+			await open(`http://localhost:${port}/start`)
 		})
 
 		const startTime = Date.now()
