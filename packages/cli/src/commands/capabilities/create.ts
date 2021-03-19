@@ -1,6 +1,7 @@
+import { flags } from '@oclif/command'
+import { CLIError } from '@oclif/errors'
 import inquirer from 'inquirer'
 
-import { InputOutputAPICommand } from '@smartthings/cli-lib'
 import {
 	CapabilityCreate,
 	CapabilityAttribute,
@@ -12,8 +13,9 @@ import {
 	HttpClientParams,
 } from '@smartthings/core-sdk'
 
+import { APICommand, inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
+
 import { buildTableOutput } from '../capabilities'
-import { flags } from '@oclif/command'
 
 
 const enum Type {
@@ -29,21 +31,20 @@ function commandOrAttributeNameValidator(input: string): boolean | string {
 		|| 'Invalid attribute name; only letters are allowed and must start with a lowercase letter, max length 36'
 }
 
-export default class CapabilitiesCreate extends InputOutputAPICommand<CapabilityCreate, Capability> {
+export default class CapabilitiesCreateCommand extends APICommand {
 	static description = 'create a capability for a user'
 
 	static flags = {
-		...InputOutputAPICommand.flags,
+		...APICommand.flags,
+		...inputAndOutputItem.flags,
 		namespace: flags.string({
 			char: 'n',
 			description: 'the namespace to create the capability under',
 		}),
 	}
 
-	protected buildTableOutput: (data: Capability) => string = data => buildTableOutput(this.tableGenerator, data)
-
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(CapabilitiesCreate)
+		const { args, argv, flags } = this.parse(CapabilitiesCreateCommand)
 		await super.setup(args, argv, flags)
 
 		const params: HttpClientParams = {}
@@ -51,17 +52,20 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 			params.namespace = flags.namespace
 		}
 
-		this.processNormally(async capability => {
+		const createCapability = async (_: void, capability: CapabilityCreate): Promise<Capability> => {
 			return this.client.capabilities.create(capability, params)
 				.catch(error => {
 					if (error.response?.status == 403 && flags.namespace) {
-						throw Error('Unable to create capability under specified namespace. ' +
+						throw new CLIError('Unable to create capability under specified namespace. ' +
 							'Either the namespace does not exist or you do not have permission.')
 					}
 
 					throw error
 				})
-		})
+		}
+		await inputAndOutputItem(this,
+			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
+			createCapability, userInputProcessor(this))
 	}
 
 	private addCommand(capability: CapabilityCreate, name: string, command: CapabilityCommand): void {
@@ -370,7 +374,7 @@ export default class CapabilitiesCreate extends InputOutputAPICommand<Capability
 	// TODO: throughout this Q&A session there seldom options to cancel input
 	// choices without starting completely over. We need to look at fixing this.
 	// TODO: also, this process needs more up-front validation
-	protected async getInputFromUser(): Promise<CapabilityCreate> {
+	async getInputFromUser(): Promise<CapabilityCreate> {
 		const name = (await inquirer.prompt({
 			type: 'input',
 			name: 'capabilityName',

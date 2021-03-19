@@ -42,7 +42,7 @@ export default class AppUpdateCommand extends APICommand {
 						await Promise.all(requests)
 					}
 				} else {
-					throw new Error('Authorization is not applicable to web-hook SmartApps')
+					throw new Error('Authorization is not applicable to WebHook SmartApps')
 				}
 			}
 			return this.client.apps.update(appId, data)

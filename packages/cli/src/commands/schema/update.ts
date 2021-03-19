@@ -53,7 +53,7 @@ export default class SchemaUpdateCommand extends APICommand {
 					await addSchemaPermission(request.lambdaArnEU, flags.principal, flags['statement-id'])
 				}
 			} else {
-				throw Error('Authorization is not applicable to webhook schema connectors')
+				throw Error('Authorization is not applicable to WebHook schema connectors')
 			}
 		}
 		const result = await this.client.schema.update(id, request)

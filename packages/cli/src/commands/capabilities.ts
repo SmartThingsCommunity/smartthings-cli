@@ -236,7 +236,7 @@ export async function translateToId(sortKeyName: string, idOrIndex: string | Cap
 	return { id: matchingItem.id, version: matchingItem.version }
 }
 
-export async function chooseCapability(command: APICommand, idFromArgs?: string, versionFromArgs?: number): Promise<CapabilityId> {
+export async function chooseCapability(command: APICommand, idFromArgs?: string, versionFromArgs?: number, prompt?: string): Promise<CapabilityId> {
 	const preselectedId: CapabilityId | undefined = idFromArgs ? { id: idFromArgs, version: versionFromArgs ?? 1 } : undefined
 	const config = {
 		itemName: 'capability',
@@ -244,7 +244,7 @@ export async function chooseCapability(command: APICommand, idFromArgs?: string,
 		sortKeyName: 'id',
 		listTableFieldDefinitions: ['id', 'version', 'status'],
 	}
-	return selectGeneric(command, config, preselectedId, () => getCustomByNamespace(command.client), getIdFromUser)
+	return selectGeneric(command, config, preselectedId, () => getCustomByNamespace(command.client), getIdFromUser, prompt)
 }
 
 export default class CapabilitiesCommand extends APICommand {

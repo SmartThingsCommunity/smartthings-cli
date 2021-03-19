@@ -1,34 +1,32 @@
 import { flags } from '@oclif/command'
 
-import { AppRequest, AppCreationResponse} from '@smartthings/core-sdk'
+import { AppRequest, AppCreationResponse } from '@smartthings/core-sdk'
 
-import { InputOutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { tableFieldDefinitions } from '../apps'
 import { addPermission } from '../../lib/aws-utils'
 import { lambdaAuthFlags } from '../../lib/common-flags'
+import { CLIError } from '@oclif/errors'
 
 
-export default class AppCreateCommand extends InputOutputAPICommand<AppRequest, AppCreationResponse> {
+export default class AppCreateCommand extends APICommand {
 	static description = 'update the OAuth settings of the app'
 
 	static flags = {
-		...InputOutputAPICommand.flags,
+		...APICommand.flags,
+		...inputAndOutputItem.flags,
 		authorize: flags.boolean({
 			description: 'authorize Lambda functions to be called by SmartThings',
 		}),
 		...lambdaAuthFlags,
 	}
 
-	protected buildTableOutput(data: AppCreationResponse): string {
-		return this.tableGenerator.buildTableFromItem(data.app, tableFieldDefinitions)
-	}
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(AppCreateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(async data => {
+		const createApp = async (_: void, data: AppRequest): Promise<AppCreationResponse> => {
 			if (flags.authorize) {
 				if (data.lambdaSmartApp) {
 					if (data.lambdaSmartApp.functions) {
@@ -38,12 +36,14 @@ export default class AppCreateCommand extends InputOutputAPICommand<AppRequest, 
 						await Promise.all(requests)
 					}
 				} else {
-					this.logger.error('Authorization is not applicable to web-hook SmartApps')
-					// eslint-disable-next-line no-process-exit
-					process.exit(1)
+					throw new CLIError('Authorization is not applicable to WebHook SmartApps')
 				}
 			}
 			return this.client.apps.create(data)
-		})
+		}
+
+		await inputAndOutputItem(this,
+			{ buildTableOutput: data => this.tableGenerator.buildTableFromItem(data.app, tableFieldDefinitions) },
+			createApp)
 	}
 }
