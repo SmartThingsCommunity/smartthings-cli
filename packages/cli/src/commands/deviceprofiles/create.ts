@@ -1,3 +1,6 @@
+import { CLIError } from '@oclif/errors'
+import inquirer from 'inquirer'
+
 import {
 	DeviceProfile,
 	DeviceProfileRequest, PresentationDeviceConfig,
@@ -5,15 +8,17 @@ import {
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { InputOutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
+
 import { buildTableOutput } from '../deviceprofiles'
 import { DeviceDefinitionRequest } from './view'
-import inquirer from 'inquirer'
+import { chooseCapability } from '../capabilities'
 
 
 const capabilitiesWithoutPresentations = ['healthCheck', 'execute']
 
-export async function generateDefaultConfig(client: SmartThingsClient, deviceProfileId: string,  deviceProfile: DeviceProfileRequest | DeviceDefinitionRequest): Promise<PresentationDeviceConfigCreate> {
+export async function generateDefaultConfig(client: SmartThingsClient, deviceProfileId: string,
+		deviceProfile: DeviceProfileRequest | DeviceDefinitionRequest): Promise<PresentationDeviceConfigCreate> {
 	// Generate the default config
 	const deviceConfig = await client.presentation.generate(deviceProfileId)
 
@@ -80,7 +85,6 @@ export interface  DeviceProfileAndConfig {
 }
 
 export async function createWithDefaultConfig(client: SmartThingsClient, data: DeviceDefinitionRequest): Promise<DeviceProfileAndConfig> {
-
 	// Create the profile
 	let deviceProfile = await client.deviceProfiles.create(cleanupRequest(data))
 
@@ -107,7 +111,7 @@ export async function createWithDefaultConfig(client: SmartThingsClient, data: D
 	deviceProfile = await client.deviceProfiles.update(profileId, deviceProfile)
 
 	// Return the composite object
-	return {deviceProfile, deviceConfig}
+	return { deviceProfile, deviceConfig }
 }
 
 // Cleanup is done so that the result of a device profile get can be modified and
@@ -126,13 +130,16 @@ export function cleanupRequest(deviceProfileRequest: Partial<DeviceProfile & { r
 	return deviceProfileRequest
 }
 
-export default class DeviceProfileCreateCommand extends InputOutputAPICommand<DeviceDefinitionRequest, DeviceProfile> {
+export default class DeviceProfileCreateCommand extends APICommand {
 	static description = 'Create a new device profile\n' +
 		'Creates a new device profile. If a vid field is not present in the meta\n' +
 		'then a default device presentation will be created for this profile and the\n' +
 		'vid set to reference it.'
 
-	static flags = InputOutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...inputAndOutputItem.flags,
+	}
 
 	static examples = [
 		'$ smartthings deviceprofiles:create -i myprofile.json    # create a device profile from the JSON file definition',
@@ -140,13 +147,11 @@ export default class DeviceProfileCreateCommand extends InputOutputAPICommand<De
 		'$ smartthings deviceprofiles:create                      # create a device profile with interactive dialog',
 	]
 
-	protected buildTableOutput: (data: DeviceProfile) => string = data => buildTableOutput(this.tableGenerator, data)
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileCreateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(async (data) => {
+		const createDeviceProfile = async (_: void, data: DeviceDefinitionRequest): Promise<DeviceProfile> => {
 			if (data.view) {
 				throw new Error('Input contains "view" property. Use deviceprofiles:view:create instead.')
 			}
@@ -157,25 +162,21 @@ export default class DeviceProfileCreateCommand extends InputOutputAPICommand<De
 			}
 
 			return await this.client.deviceProfiles.create(cleanupRequest(data))
-		})
+		}
+		await inputAndOutputItem(this,
+			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
+			createDeviceProfile, userInputProcessor(this))
 	}
 
-	protected async promptAndAddCapability(deviceProfile: DeviceProfileRequest, componentId: string, message = 'Capability ID'): Promise<void> {
-		const capabilityId: string = (await inquirer.prompt({
-			type: 'input',
-			name: 'capabilityId',
-			message: message + ': ',
-			validate: (input) => {
-				return input.length > 0 || 'Invalid capability name'
-			},
-		})).capabilityId
+	protected async promptAndAddCapability(deviceProfile: DeviceProfileRequest, componentId: string, prompt = 'Capability ID'): Promise<void> {
+		const capabilityId = await chooseCapability(this, undefined, undefined, `${prompt}: `)
 
 		if (capabilityId) {
 			const component = deviceProfile.components?.find(it => it.id === componentId)
 			if (component) {
-				component.capabilities?.push({id: capabilityId, version: 1})
+				component.capabilities?.push(capabilityId)
 			} else {
-				throw new Error(`Component ${componentId} not defined in profile`)
+				throw new CLIError(`Component ${componentId} not defined in profile`)
 			}
 		}
 	}
@@ -199,7 +200,7 @@ export default class DeviceProfileCreateCommand extends InputOutputAPICommand<De
 		return componentId
 	}
 
-	protected async getInputFromUser(): Promise<DeviceProfileRequest> {
+	async getInputFromUser(): Promise<DeviceProfileRequest> {
 		const name = (await inquirer.prompt({
 			type: 'input',
 			name: 'deviceProfileName',

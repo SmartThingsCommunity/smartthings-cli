@@ -1,16 +1,19 @@
-import { InputOutputAPICommand } from '@smartthings/cli-lib'
+import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { cleanupRequest, createWithDefaultConfig } from '../create'
 import { buildTableOutput, prunePresentationValues, augmentPresentationValues, DeviceDefinition, DeviceDefinitionRequest } from '../view'
 
 
-export default class DeviceDefCreateCommand extends InputOutputAPICommand<DeviceDefinitionRequest, DeviceDefinition> {
+export default class DeviceDefCreateCommand extends APICommand {
 	static description = 'create a new device profile and device configuration\n' +
 		'Creates a new device profile and device configuration. Unlike deviceprofiles:create,\n' +
 		'this command accepts a consolidated object that can include a device configuration\n' +
 		'in a property named "view".'
 
-	static flags = InputOutputAPICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...inputAndOutputItem.flags,
+	}
 
 	static examples = [
 		'$ smartthings deviceprofiles:view:create -i test.json',
@@ -35,8 +38,6 @@ export default class DeviceDefCreateCommand extends InputOutputAPICommand<Device
 		'      - capability: switch  ',
 	]
 
-	protected buildTableOutput = (data: DeviceDefinition): string => buildTableOutput(this.tableGenerator, data)
-
 	private async createWithCustomConfig(data: DeviceDefinitionRequest): Promise<DeviceDefinition> {
 		if (!data.view) {
 			throw Error('View property not defined')
@@ -60,17 +61,19 @@ export default class DeviceDefCreateCommand extends InputOutputAPICommand<Device
 		return { ...profile, view: prunePresentationValues(deviceConfig) }
 	}
 
-
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceDefCreateCommand)
 		await super.setup(args, argv, flags)
 
-		this.processNormally(async (data) => {
+		const createDeviceDefinition = async (_: void, data: DeviceDefinitionRequest): Promise<DeviceDefinition> => {
 			if (data.view) {
 				return this.createWithCustomConfig(data)
 			}
 			const profileAndConfig = await createWithDefaultConfig(this.client, data)
 			return { ...profileAndConfig.deviceProfile, view: prunePresentationValues(profileAndConfig.deviceConfig) }
-		})
+		}
+		await inputAndOutputItem(this,
+			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
+			createDeviceDefinition)
 	}
 }
