@@ -15,7 +15,7 @@ export const isWarnEnabledMock = jest.fn()
 export const isErrorEnabledMock = jest.fn()
 export const isFatalEnabledMock = jest.fn()
 
-export function buildMockLogger(level = 'debug'): Logger {
+export function buildMockLogger(level: string): Logger {
 	return {
 		level,
 
