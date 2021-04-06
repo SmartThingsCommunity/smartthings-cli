@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.19](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.18...v0.0.0-pre.19) (2021-04-06)
+
+
+### Features
+
+* output JSON by default when not outputting to the console ([a0d91ff](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a0d91ff73d40131392fb57407c90ce01806b0424))
+
+
+
+
+
 # [0.0.0-pre.18](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.17...v0.0.0-pre.18) (2021-02-01)
 
 
