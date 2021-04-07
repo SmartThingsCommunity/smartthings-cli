@@ -21,7 +21,17 @@ describe('DeviceConfigPresentationCommand', () => {
 	})
 
 	it('outputs item when required arg is provided', async () => {
+		const outputItemMock = outputItem as unknown as jest.Mock<typeof outputItem>
 		await expect(DeviceConfigPresentationCommand.run(['presentationId'])).resolves.not.toThrow()
-		expect(outputItem).toBeCalledTimes(1)
+		expect(outputItemMock).toBeCalledTimes(1)
+		expect(outputItemMock.mock.calls[0][0].argv[0]).toBe('presentationId')
+	})
+
+	it('outputs item when required and optional args are provided', async () => {
+		const outputItemMock = outputItem as unknown as jest.Mock<typeof outputItem>
+		await expect(DeviceConfigPresentationCommand.run(['presentationId', 'manufacturerName'])).resolves.not.toThrow()
+		expect(outputItemMock).toBeCalledTimes(1)
+		expect(outputItemMock.mock.calls[0][0].argv[0]).toBe('presentationId')
+		expect(outputItemMock.mock.calls[0][0].argv[1]).toBe('manufacturerName')
 	})
 })

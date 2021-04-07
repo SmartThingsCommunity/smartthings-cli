@@ -87,6 +87,11 @@ export default class DeviceConfigPresentationCommand extends APICommand {
 		name: 'presentationId',
 		description: 'system generated identifier that corresponds to a device presentation',
 		required: true,
+	},
+	{
+		name: 'manufacturerName',
+		description: 'manufacturer name. Defaults to SmartThingsCommunity',
+		required: false,
 	}]
 
 	async run(): Promise<void> {
@@ -94,6 +99,6 @@ export default class DeviceConfigPresentationCommand extends APICommand {
 		await super.setup(args, argv, flags)
 
 		await outputItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
-			() => this.client.presentation.get(args.presentationId))
+			() => this.client.presentation.get(args.presentationId, args.manufacturerName))
 	}
 }
