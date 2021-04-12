@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.20](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.19...v0.0.0-pre.20) (2021-04-12)
+
+
+### Features
+
+* Accept manufacturerName in device config command ([2a17dc4](https://github.com/SmartThingsCommunity/smartthings-cli/commit/2a17dc4c2b2c638a85062e372e35df7bb375ece3))
+
+
+
+
+
 # [0.0.0-pre.19](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.18...v0.0.0-pre.19) (2021-04-06)
 
 

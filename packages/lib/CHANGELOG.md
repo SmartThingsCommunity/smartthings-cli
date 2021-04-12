@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.20](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.19...v0.0.0-pre.20) (2021-04-12)
+
+
+### Features
+
+* **lib:** stream SSE with custom output format ([7f0444d](https://github.com/SmartThingsCommunity/smartthings-cli/commit/7f0444df6abb1dcddb40330a8311f5d5096b99ac))
+
+
+
+
+
 # [0.0.0-pre.19](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.18...v0.0.0-pre.19) (2021-04-06)
 
 
