@@ -2,6 +2,7 @@ import { Config } from '@oclif/config'
 import { v4 as uuidv4 } from 'uuid'
 import { SseCommand } from '../sse-command'
 import * as sseUtil from '../sse-util'
+import EventSource from 'eventsource'
 
 
 jest.mock('eventsource')
@@ -40,6 +41,25 @@ describe('SseCommand', () => {
 		await sseCommand.initSource('localhost')
 
 		expect(() => { sseCommand.source }).not.toThrow()
+	})
+
+	it('adds auth header with token to eventsource by default', async () => {
+		await sseCommand.setup({}, [], flags)
+		await sseCommand.initSource('localhost')
+
+		expect(EventSource).toBeCalledWith(
+			'localhost',
+			expect.objectContaining({ headers: expect.objectContaining({ Authorization: `Bearer ${flags.token}` }) }),
+		)
+	})
+
+	it('accepts source init dict and uses it instead of default', async () => {
+		await sseCommand.setup({}, [], flags)
+
+		const initDict = { headers: { 'Cookie': 'test=test' } }
+		await sseCommand.initSource('localhost', initDict)
+
+		expect(EventSource).toBeCalledWith('localhost', initDict)
 	})
 
 	it('registers signal handler on initialization', async () => {

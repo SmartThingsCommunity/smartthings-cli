@@ -16,9 +16,9 @@ export abstract class SseCommand extends APICommand {
 		throw new Error('SseCommand not initialized properly')
 	}
 
-	async initSource(url: string): Promise<void> {
-		const sourceInitDict = { headers: { 'Authorization': `Bearer ${this.token}` } }
-		this._source = new EventSource(url, sourceInitDict)
+	async initSource(url: string, sourceInitDict?: EventSource.EventSourceInitDict): Promise<void> {
+		const eventSourceInitDict = sourceInitDict ?? { headers: { 'Authorization': `Bearer ${this.token}` } }
+		this._source = new EventSource(url, eventSourceInitDict)
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this._source.onerror = (error: any) => {
