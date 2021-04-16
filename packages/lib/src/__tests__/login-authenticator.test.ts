@@ -70,6 +70,7 @@ describe('LoginAuthenticator', () => {
 			'deviceId': 'device id',
 		},
 	}
+	const codeVerifierRegex = /\bcode_verifier=[\w|-]+\b/
 	interface AuthTokenResponse {
 		access_token: string
 		refresh_token: string
@@ -163,7 +164,7 @@ describe('LoginAuthenticator', () => {
 			expect(mkdirMock).toHaveBeenCalledWith('/full/path/to/file', { recursive: true })
 		})
 
-		it('sets _credentialsFile properly', function() {
+		it('sets _credentialsFile properly', function () {
 			LoginAuthenticator.init(credentialsFilename)
 
 			expect((global as { _credentialsFile?: string })._credentialsFile).toBe(credentialsFilename)
@@ -171,12 +172,12 @@ describe('LoginAuthenticator', () => {
 	})
 
 	describe('constructor', () => {
-		it('throws exception when init not called', function() {
+		it('throws exception when init not called', function () {
 			expect(() => new LoginAuthenticator(profileName, clientIdProvider))
 				.toThrow('LoginAuthenticator credentials file not set.')
 		})
 
-		it('constructs without errors', function() {
+		it('constructs without errors', function () {
 			LoginAuthenticator.init(credentialsFilename)
 
 			const loginAuthenticator = new LoginAuthenticator(profileName, clientIdProvider)
@@ -229,7 +230,7 @@ describe('LoginAuthenticator', () => {
 			const postData = postMock.mock.calls[0][1]
 			expect(postData).toMatch(/\bgrant_type=authorization_code\b/)
 			expect(postData).toMatch(/\bclient_id=client-id\b/)
-			expect(postData).toMatch(/\bcode_verifier=\w+\b/)
+			expect(postData).toMatch(codeVerifierRegex)
 			expect(postData).toMatch(/\bcode=auth-code\b/)
 			expect(postData).toMatch(/\bredirect_uri=http%3A%2F%2Flocalhost%3A7777%2Ffinish\b/)
 			const postConfig = postMock.mock.calls[0][2]
@@ -334,7 +335,7 @@ describe('LoginAuthenticator', () => {
 			const postData = postMock.mock.calls[0][1]
 			expect(postData).toMatch(/\bgrant_type=authorization_code\b/)
 			expect(postData).toMatch(/\bclient_id=client-id\b/)
-			expect(postData).toMatch(/\bcode_verifier=\w+\b/)
+			expect(postData).toMatch(codeVerifierRegex)
 			expect(postData).toMatch(/\bcode=auth-code\b/)
 			expect(postData).toMatch(/\bredirect_uri=http%3A%2F%2Flocalhost%3A7777%2Ffinish\b/)
 			const postConfig = postMock.mock.calls[0][2]
@@ -411,7 +412,7 @@ describe('LoginAuthenticator', () => {
 			const postData2 = postMock.mock.calls[1][1]
 			expect(postData2).toMatch(/\bgrant_type=authorization_code\b/)
 			expect(postData2).toMatch(/\bclient_id=client-id\b/)
-			expect(postData2).toMatch(/\bcode_verifier=\w+\b/)
+			expect(postData2).toMatch(codeVerifierRegex)
 			expect(postData2).toMatch(/\bcode=auth-code\b/)
 			expect(postData2).toMatch(/\bredirect_uri=http%3A%2F%2Flocalhost%3A7777%2Ffinish\b/)
 			const postConfig2 = postMock.mock.calls[1][2]
@@ -457,7 +458,7 @@ describe('LoginAuthenticator', () => {
 			const postData = postMock.mock.calls[0][1]
 			expect(postData).toMatch(/\bgrant_type=authorization_code\b/)
 			expect(postData).toMatch(/\bclient_id=client-id\b/)
-			expect(postData).toMatch(/\bcode_verifier=\w+\b/)
+			expect(postData).toMatch(codeVerifierRegex)
 			expect(postData).toMatch(/\bcode=auth-code\b/)
 			expect(postData).toMatch(/\bredirect_uri=http%3A%2F%2Flocalhost%3A7777%2Ffinish\b/)
 			const postConfig = postMock.mock.calls[0][2]
