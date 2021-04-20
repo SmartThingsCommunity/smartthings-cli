@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.21](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.20...v0.0.0-pre.21) (2021-04-20)
+
+
+### Features
+
+* accept eventsource init dict ([45eb35f](https://github.com/SmartThingsCommunity/smartthings-cli/commit/45eb35f34a29c0763eebd286d9bde4e43b539ff2))
+
+
+
+
+
 # [0.0.0-pre.20](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.19...v0.0.0-pre.20) (2021-04-12)
 
 
