@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.22](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.21...v0.0.0-pre.22) (2021-04-21)
+
+
+### Bug Fixes
+
+* **deps:** include cli-ux as dependency ([c4348be](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c4348be9b99fbc6ec0819d58a0ae4b9c4bd65521))
+
+
+
+
+
 # [0.0.0-pre.21](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.20...v0.0.0-pre.21) (2021-04-20)
 
 
