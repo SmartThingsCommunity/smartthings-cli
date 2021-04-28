@@ -9,6 +9,7 @@
 		"bootstrap": "lerna bootstrap",
 		"clean": "lerna run clean",
 		"compile": "lerna run compile",
+		"build": "npm run clean && npm run compile",
 		"lint": "lerna run lint",
 		"test": "lerna run test",
 		"publish": "lerna publish"
