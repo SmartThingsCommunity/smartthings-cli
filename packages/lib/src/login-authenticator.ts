@@ -54,6 +54,11 @@ function credentialsFile(): string {
 	return (global as unknown as { _credentialsFile: string })._credentialsFile
 }
 
+interface CredentialsFileData {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	[profileName: string]: any
+}
+
 export class LoginAuthenticator implements Authenticator {
 	private static credentialsFile?: string
 	public static init(credentialsFile: string): void {
@@ -95,8 +100,7 @@ export class LoginAuthenticator implements Authenticator {
 		return new Promise(resolve => setTimeout(resolve, ms))
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private readCredentialsFile(): { [profileName: string]: any } {
+	private readCredentialsFile(): CredentialsFileData {
 		let fileData = '{}'
 		try {
 			fileData = fs.readFileSync(credentialsFile()).toString()
@@ -105,6 +109,15 @@ export class LoginAuthenticator implements Authenticator {
 		}
 
 		return JSON.parse(fileData)
+	}
+
+	private writeCredentialsFile(credentialsFileData: CredentialsFileData): void {
+		fs.writeFileSync(credentialsFile(), JSON.stringify(credentialsFileData, null, 4))
+		fs.chmod(credentialsFile(), 0o600, err => {
+			if (err) {
+				this.logger.error('failed to set permissions on credentials file', err)
+			}
+		})
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -119,12 +132,7 @@ export class LoginAuthenticator implements Authenticator {
 		}
 		const credentialsFileData = this.readCredentialsFile()
 		credentialsFileData[this.profileName] = authenticationInfo
-		fs.writeFileSync(credentialsFile(), JSON.stringify(credentialsFileData, null, 4))
-		fs.chmod(credentialsFile(), 0o600, err => {
-			if (err) {
-				this.logger.error('failed to set permissions on credentials file', err)
-			}
-		})
+		this.writeCredentialsFile(credentialsFileData)
 		this.authenticationInfo = authenticationInfo
 	}
 
@@ -211,6 +219,13 @@ export class LoginAuthenticator implements Authenticator {
 				}
 			})
 		})
+	}
+
+	async logout(): Promise<void> {
+		// temporary "logout" (which will ask the user to log in again on next run)
+		const credentialsFileData = this.readCredentialsFile()
+		delete credentialsFileData[this.profileName]
+		this.writeCredentialsFile(credentialsFileData)
 	}
 
 	private async refreshToken(): Promise<void> {

@@ -1,7 +1,7 @@
 import { flags } from '@oclif/command'
 import osLocale from 'os-locale'
 
-import { BearerTokenAuthenticator, SmartThingsClient } from '@smartthings/core-sdk'
+import { Authenticator, BearerTokenAuthenticator, SmartThingsClient } from '@smartthings/core-sdk'
 
 import { logManager } from './logger'
 import { defaultClientIdProvider, LoginAuthenticator } from './login-authenticator'
@@ -26,6 +26,15 @@ export abstract class APICommand extends SmartThingsCommand {
 	}
 
 	protected token?: string
+
+	private _authenticator?: Authenticator
+	get authenticator(): Authenticator {
+		if (!this._authenticator) {
+			throw new Error('APICommand not properly initialized')
+		}
+		return this._authenticator
+	}
+
 	protected clientIdProvider = defaultClientIdProvider
 	private _client?: SmartThingsClient
 
@@ -56,11 +65,11 @@ export abstract class APICommand extends SmartThingsCommand {
 			(flags.language === 'NONE' ? undefined : { 'Accept-Language': flags.language }) :
 			{ 'Accept-Language': await osLocale() }
 
-		const authenticator = this.token
+		this._authenticator = this.token
 			? new BearerTokenAuthenticator(this.token)
 			: new LoginAuthenticator(this.profileName, this.clientIdProvider)
 
-		this._client = new SmartThingsClient(authenticator,
+		this._client = new SmartThingsClient(this._authenticator,
 			{ urlProvider: this.clientIdProvider, logger, headers })
 	}
 }
