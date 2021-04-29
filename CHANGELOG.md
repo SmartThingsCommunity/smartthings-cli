@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.24](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.23...v0.0.0-pre.24) (2021-04-29)
+
+
+### Features
+
+* add logout command which just removes credential for now ([942d886](https://github.com/rossiam/smartthings-cli/commit/942d8863fee0ad5a5f2056f98468788ba5c937c4))
+
+
+
+
+
 # [0.0.0-pre.23](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.22...v0.0.0-pre.23) (2021-04-23)
 
 
