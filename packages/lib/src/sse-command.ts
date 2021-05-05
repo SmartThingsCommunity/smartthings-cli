@@ -1,6 +1,7 @@
 import { APICommand } from './api-command'
 import { handleSignals } from './sse-util'
 import EventSource from 'eventsource'
+import { handle } from '@oclif/errors'
 
 
 export abstract class SseCommand extends APICommand {
@@ -22,25 +23,28 @@ export abstract class SseCommand extends APICommand {
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this._source.onerror = (error: any) => {
-			let message
-			if (error) {
-				if (error.status) {
-					if (error.status === 401 || error.status === 403) {
-						message = `Event source not authorized. ${error.message}`
+			try {
+				let message
+				if (error) {
+					if (error.status) {
+						if (error.status === 401 || error.status === 403) {
+							message = `Event source not authorized. ${error.message}`
+						} else {
+							message = `Event source error ${error.status}. ${error.message}`
+						}
 					} else {
-						message = `Event source error ${error.status}. ${error.message}`
+						message = `Event source error. ${error.message}`
 					}
 				} else {
-					message = `Event source error. ${error.message}`
+					message = 'Unexpected event source error.'
 				}
-			} else {
-				message = 'Unexpected event source error.'
+
+				this.teardown()
+				this.error(message)
+			} catch (error) {
+				handle(error)
 			}
-
-			this.teardown()
-			throw new Error(message)
 		}
-
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

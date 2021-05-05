@@ -68,6 +68,13 @@ describe('SseCommand', () => {
 		expect(handleSignalsSpy).toBeCalled()
 	})
 
+	it('sets default error handler', async () => {
+		await sseCommand.setup({}, [], flags)
+		await sseCommand.initSource('localhost')
+
+		expect(sseCommand.source.onerror).toBeDefined()
+	})
+
 	it('calls teardown on error', async () => {
 		const teardownSpy = jest.spyOn(SseCommand.prototype, 'teardown')
 		const error = new Error('something went wrong')
