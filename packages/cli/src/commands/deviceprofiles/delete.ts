@@ -18,6 +18,8 @@ export default class DeviceProfileDeleteCommand extends APICommand {
 		'$ smartthings deviceprofiles:delete 5                                     # delete the 5th profile in the list',
 	]
 
+	static aliases = ['device-profiles:delete']
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileDeleteCommand)
 		await super.setup(args, argv, flags)

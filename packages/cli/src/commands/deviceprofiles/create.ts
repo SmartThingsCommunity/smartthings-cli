@@ -120,7 +120,6 @@ export async function createWithDefaultConfig(client: SmartThingsClient, data: D
 export function cleanupRequest(deviceProfileRequest: Partial<DeviceProfile & { restrictions: unknown }>): DeviceProfileRequest {
 	delete deviceProfileRequest.id
 	delete deviceProfileRequest.status
-	delete deviceProfileRequest.owner
 	delete deviceProfileRequest.restrictions
 	if (deviceProfileRequest.components) {
 		for (const component of deviceProfileRequest.components) {
@@ -146,6 +145,8 @@ export default class DeviceProfileCreateCommand extends APICommand {
 		'$ smartthings deviceprofiles:create -i myprofile.yaml    # create a device profile from the YAML file definition',
 		'$ smartthings deviceprofiles:create                      # create a device profile with interactive dialog',
 	]
+
+	static aliases = ['device-profiles:create']
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileCreateCommand)

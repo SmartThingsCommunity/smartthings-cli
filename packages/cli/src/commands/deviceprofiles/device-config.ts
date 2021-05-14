@@ -19,6 +19,8 @@ export default class ProfilePresentationCommand extends APICommand {
 		description: 'device profile id or the number in list',
 	}]
 
+	static aliases = ['device-profiles:device-config']
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(ProfilePresentationCommand	)
 		await super.setup(args, argv, flags)
