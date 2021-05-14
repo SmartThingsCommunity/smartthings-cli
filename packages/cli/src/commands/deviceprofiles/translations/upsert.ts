@@ -56,6 +56,8 @@ export default class DeviceProfileTranslationsUpsertCommand extends APICommand {
 		'    description: Switchable outlet 1 power',
 	]
 
+	static aliases = ['device-profiles:translations:upsert']
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileTranslationsUpsertCommand)
 		await super.setup(args, argv, flags)

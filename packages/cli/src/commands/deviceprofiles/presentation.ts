@@ -27,6 +27,8 @@ export default class DeviceProfilePresentationCommand extends APICommand {
 		'flag then no language header is specified in the API request',
 	]
 
+	static aliases = ['device-profiles:presentation']
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfilePresentationCommand)
 		await super.setup(args, argv, flags)

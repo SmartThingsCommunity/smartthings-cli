@@ -18,6 +18,8 @@ export default class DeviceProfilePublishCommand extends APICommand {
 		description: 'device profile id',
 	}]
 
+	static aliases = ['device-profiles:publish']
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfilePublishCommand)
 		await super.setup(args, argv, flags)

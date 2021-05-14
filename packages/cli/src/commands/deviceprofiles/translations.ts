@@ -97,6 +97,8 @@ export default class DeviceProfileTranslationsCommand extends APICommand {
 		'└───────────┴────────────┴───────────────────────────────┘',
 	]
 
+	static aliases = ['device-profiles:translations']
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileTranslationsCommand)
 		await super.setup(args, argv, flags)

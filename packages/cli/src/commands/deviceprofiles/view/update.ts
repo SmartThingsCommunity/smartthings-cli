@@ -48,6 +48,8 @@ export default class DeviceProfilesViewUpdateCommand extends APICommand {
 		description: 'device profile id',
 	}]
 
+	static aliases = ['device-profiles:view:update']
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfilesViewUpdateCommand)
 		await super.setup(args, argv, flags)

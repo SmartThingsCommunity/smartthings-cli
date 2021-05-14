@@ -72,7 +72,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, deviceConfig: P
 		`${detailView}\n\n` +
 		`${automationConditions}\n\n` +
 		`${automationActions}\n\n` +
-		'(Information is summarized, for full details use YAML or JSON flag.)'
+		'(Information is summarized, for full details use YAML, -y, or JSON flag, -j.)'
 }
 
 export default class DeviceConfigPresentationCommand extends APICommand {

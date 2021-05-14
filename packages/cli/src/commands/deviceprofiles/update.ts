@@ -36,6 +36,8 @@ export default class DeviceProfileUpdateCommand extends APICommand {
 		description: 'device profile UUID or number in the list',
 	}]
 
+	static aliases = ['device-profiles:update']
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfileUpdateCommand)
 		await super.setup(args, argv, flags)
@@ -58,7 +60,6 @@ export default class DeviceProfileUpdateCommand extends APICommand {
 export function cleanupRequest(deviceProfileRequest: Partial<DeviceProfile & { restrictions: unknown }>): DeviceProfileRequest {
 	delete deviceProfileRequest.id
 	delete deviceProfileRequest.status
-	delete deviceProfileRequest.owner
 	delete deviceProfileRequest.name
 	if (deviceProfileRequest.components) {
 		for (const component of deviceProfileRequest.components) {

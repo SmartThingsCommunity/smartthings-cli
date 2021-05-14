@@ -2,6 +2,8 @@ import { DeviceProfile, DeviceProfileRequest, PresentationDeviceConfigEntry } fr
 
 import { APICommand, ListingOutputConfig, outputListing, TableGenerator } from '@smartthings/cli-lib'
 
+import { buildTableOutput as deviceProfileBuildTableOutput } from '../deviceprofiles'
+
 
 export interface DeviceView {
 	dashboard?: {
@@ -28,39 +30,29 @@ function entryValues(entries: PresentationDeviceConfigEntry[]): string {
 }
 
 export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceDefinition): string {
-	const table = tableGenerator.newOutputTable()
-	table.push(['Name', data.name])
-	for (const comp of data.components) {
-		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
-	}
-	table.push(['Id', data.id])
-	table.push(['Device Type', data.metadata?.deviceType ?? ''])
-	table.push(['OCF Device Type', data.metadata?.ocfDeviceType ?? ''])
-	table.push(['Manufacturer Name', data.metadata?.mnmn ?? ''])
-	table.push(['Presentation ID', data.metadata?.vid ?? ''])
-	table.push(['Status', data.status])
-	if (data.view) {
-		if (data.view.dashboard) {
-			if (data.view.dashboard.states) {
-				table.push(['Dashboard states', entryValues(data.view.dashboard.states)])
+	return deviceProfileBuildTableOutput(tableGenerator, data, table => {
+		if (data.view) {
+			if (data.view.dashboard) {
+				if (data.view.dashboard.states) {
+					table.push(['Dashboard states', entryValues(data.view.dashboard.states)])
+				}
+				if (data.view.dashboard.actions) {
+					table.push(['Dashboard actions', entryValues(data.view.dashboard.actions)])
+				}
 			}
-			if (data.view.dashboard.actions) {
-				table.push(['Dashboard actions', entryValues(data.view.dashboard.actions)])
+			if (data.view.detailView) {
+				table.push(['Detail view', entryValues(data.view.detailView)])
 			}
-		}
-		if (data.view.detailView) {
-			table.push(['Detail view', entryValues(data.view.detailView)])
-		}
-		if (data.view.automation) {
-			if (data.view.automation.conditions) {
-				table.push(['Automation conditions', entryValues(data.view.automation.conditions)])
-			}
-			if (data.view.automation.actions) {
-				table.push(['Automation actions', entryValues(data.view.automation.actions)])
+			if (data.view.automation) {
+				if (data.view.automation.conditions) {
+					table.push(['Automation conditions', entryValues(data.view.automation.conditions)])
+				}
+				if (data.view.automation.actions) {
+					table.push(['Automation actions', entryValues(data.view.automation.actions)])
+				}
 			}
 		}
-	}
-	return table.toString()
+	})
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,6 +135,8 @@ export default class DeviceProfilesViewCommand extends APICommand {
 		name: 'id',
 		description: 'device profile UUID or the number from list',
 	}]
+
+	static aliases = ['device-profiles:view']
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(DeviceProfilesViewCommand)

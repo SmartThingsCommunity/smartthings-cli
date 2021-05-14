@@ -1,11 +1,13 @@
 import { flags } from '@oclif/command'
+import Table from 'cli-table'
 
 import { DeviceProfile, LocaleReference } from '@smartthings/core-sdk'
 
 import { APICommand, ChooseOptions, chooseOptionsWithDefaults, outputListing, selectFromList, stringTranslateToId, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
 
 
-export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile): string {
+export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile,
+		basicTableHook?: (table: Table) => void): string {
 	const table = tableGenerator.newOutputTable()
 	table.push(['Name', data.name])
 	for (const comp of data.components) {
@@ -17,7 +19,18 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePro
 	table.push(['Manufacturer Name', data.metadata?.mnmn ?? ''])
 	table.push(['Presentation ID', data.metadata?.vid ?? ''])
 	table.push(['Status', data.status])
-	return table.toString()
+	if (basicTableHook) {
+		basicTableHook(table)
+	}
+
+	let preferencesInfo = 'No preferences'
+	if (data.preferences?.length) {
+		preferencesInfo = 'Device Preferences\n' + tableGenerator.buildTableFromList(data.preferences,
+			['preferenceId', 'title', 'preferenceType', 'definition.default'])
+	}
+	return `Basic Information\n${table.toString()}\n\n` +
+		`${preferencesInfo}\n\n` +
+		'(Information is summarized, for full details use YAML, -y, or JSON flag, -j.)'
 }
 
 export async function chooseDeviceProfile(command: APICommand, deviceProfileFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
