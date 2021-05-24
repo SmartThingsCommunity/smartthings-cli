@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.25](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.24...v0.0.0-pre.25) (2021-05-24)
+
+
+### Bug Fixes
+
+* fixes to capability translations ([f8b7471](https://github.com/john-u/smartthings-cli/commit/f8b7471127445ca6c68eaf629449c522080cd423))
+
+
+### Features
+
+* **LoginAuthenticator:** provide generic auth method ([ae82b6a](https://github.com/john-u/smartthings-cli/commit/ae82b6a7dc71e10377a20d03ec915a8fe81cdb9c))
+* add device preferences output to device profiles ([fa53f10](https://github.com/john-u/smartthings-cli/commit/fa53f10eec476fc7a07f832e5e95c2f081081d80))
+* log errors from source handler ([dc3523b](https://github.com/john-u/smartthings-cli/commit/dc3523bd8f10181d2f06f456c68797239af94257))
+
+
+
+
+
 # [0.0.0-pre.24](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.23...v0.0.0-pre.24) (2021-04-29)
 
 
