@@ -70,6 +70,12 @@ describe('LoginAuthenticator', () => {
 			'deviceId': 'device id',
 		},
 	}
+	const refreshableCredentialsFileData = {
+		[profileName]: {
+			...credentialsFileData[profileName],
+			'expires': new Date().toISOString(),
+		},
+	}
 	const codeVerifierRegex = /\bcode_verifier=[\w|-]+\b/
 	interface AuthTokenResponse {
 		access_token: string
@@ -351,13 +357,23 @@ describe('LoginAuthenticator', () => {
 	})
 
 	describe('authenticate', () => {
+		it('calls generic authenticate', async () => {
+			readFileMock.mockReturnValueOnce(Buffer.from(JSON.stringify(credentialsFileData)))
+
+			const genericSpy = jest.spyOn(LoginAuthenticator.prototype, 'authenticateGeneric')
+
+			const loginAuthenticator = setupAuthenticator()
+			const requestConfig = {}
+
+			const response = await loginAuthenticator.authenticate(requestConfig)
+
+			expect(response.headers.Authorization).toEqual('Bearer access token')
+			expect(genericSpy).toBeCalledTimes(1)
+		})
+	})
+
+	describe('authenticateGeneric', () => {
 		it('refreshes token when necessary', async () => {
-			const refreshableCredentialsFileData = {
-				[profileName]: {
-					...credentialsFileData[profileName],
-					'expires': new Date().toISOString(),
-				},
-			}
 			readFileMock.mockReturnValueOnce(Buffer.from(JSON.stringify(refreshableCredentialsFileData)))
 
 			const loginAuthenticator = setupAuthenticator()
@@ -382,12 +398,6 @@ describe('LoginAuthenticator', () => {
 		})
 
 		it('logs in when refresh fails', async () => {
-			const refreshableCredentialsFileData = {
-				[profileName]: {
-					...credentialsFileData[profileName],
-					'expires': new Date().toISOString(),
-				},
-			}
 			readFileMock.mockReturnValueOnce(Buffer.from(JSON.stringify(refreshableCredentialsFileData)))
 			postMock.mockRejectedValueOnce(Error('forced failure'))
 			postMock.mockResolvedValueOnce(tokenResponse)

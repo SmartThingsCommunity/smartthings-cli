@@ -18,8 +18,13 @@ export abstract class SseCommand extends APICommand {
 	}
 
 	async initSource(url: string, sourceInitDict?: EventSource.EventSourceInitDict): Promise<void> {
-		const eventSourceInitDict = sourceInitDict ?? { headers: { 'Authorization': `Bearer ${this.token}` } }
-		this._source = new EventSource(url, eventSourceInitDict)
+		// assume auth is taken care of if passing an initDict
+		if (!sourceInitDict && this.authenticator.authenticateGeneric) {
+			const token = await this.authenticator.authenticateGeneric()
+			sourceInitDict = { headers: { 'Authorization': `Bearer ${token}` } }
+		}
+
+		this._source = new EventSource(url, sourceInitDict)
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this._source.onerror = (error: any) => {
