@@ -6,10 +6,7 @@ import getPort from 'get-port'
 import open from 'open'
 import path from 'path'
 import qs from 'qs'
-
-import { Authenticator } from '@smartthings/core-sdk'
-import { SmartThingsURLProvider, defaultSmartThingsURLProvider } from '@smartthings/core-sdk'
-
+import { SmartThingsURLProvider, defaultSmartThingsURLProvider, Authenticator } from '@smartthings/core-sdk'
 import { logManager } from './logger'
 
 
@@ -256,6 +253,18 @@ export class LoginAuthenticator implements Authenticator {
 	}
 
 	async authenticate(requestConfig: AxiosRequestConfig): Promise<AxiosRequestConfig> {
+		const token = await this.authenticateGeneric()
+
+		return {
+			...requestConfig,
+			headers: {
+				...requestConfig.headers,
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	}
+
+	async authenticateGeneric(): Promise<string> {
 		this.logger.trace('authentication - enter')
 		// refresh if we have less than an hour left on the auth token
 		if (this.authenticationInfo && this.authenticationInfo.expires.getTime() < Date.now() + 60 * 60 * 1000) {
@@ -265,15 +274,11 @@ export class LoginAuthenticator implements Authenticator {
 		if (!this.authenticationInfo || this.authenticationInfo.expires.getTime() < Date.now() + 59 * 60 * 1000) {
 			await this.login()
 		}
+
 		if (this.authenticationInfo) {
-			return {
-				...requestConfig,
-				headers: {
-					...requestConfig.headers,
-					Authorization: `Bearer ${this.authenticationInfo.accessToken}`,
-				},
-			}
+			return this.authenticationInfo.accessToken
 		}
+
 		throw new Error('unable to obtain user credentials')
 	}
 }
