@@ -31,6 +31,10 @@ function commandOrAttributeNameValidator(input: string): boolean | string {
 		|| 'Invalid attribute name; only letters are allowed and must start with a lowercase letter, max length 36'
 }
 
+function unitOfMeasureValidator(input: string): boolean | string {
+	return input.length < 25 ? true : 'The unit should be less than 25 characters'
+}
+
 export default class CapabilitiesCreateCommand extends APICommand {
 	static description = 'create a capability for a user'
 
@@ -214,6 +218,15 @@ export default class CapabilitiesCreateCommand extends APICommand {
 		})).attributeName
 	}
 
+	private async promptForUnitOfMeasure(): Promise<string> {
+		return (await inquirer.prompt({
+			type: 'input',
+			name: 'unitOfMeasure',
+			message: 'Unit of measure (default: none): ',
+			validate: unitOfMeasureValidator,
+		})).unitOfMeasure
+	}
+
 	private async promptAndAddAttribute(capability: CapabilityCreate): Promise<void> {
 		let name = await this.promptForAttributeName()
 
@@ -280,6 +293,17 @@ export default class CapabilitiesCreateCommand extends APICommand {
 			})).maxValue
 			if (maxValue) {
 				attribute.schema.properties.value.maximum = parseInt(maxValue)
+			}
+
+			const unit = await this.promptForUnitOfMeasure()
+			if (unit) {
+				// Note: we don't support multiple units here because we want to move toward using a single unit
+				// of measure in capabilities
+				attribute.schema.properties.unit = {
+					type: 'string',
+					enum: [unit],
+					default: unit,
+				}
 			}
 		} else if (type === Type.STRING) {
 			// TODO: min length also ???
