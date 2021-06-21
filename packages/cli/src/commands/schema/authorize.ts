@@ -35,7 +35,10 @@ export default class SchemaAppAuthorizeCommand extends SmartThingsCommand {
 		const { args, argv, flags } = this.parse(SchemaAppAuthorizeCommand)
 		await super.setup(args, argv, flags)
 
-		addPermission(args.arn, flags.principal, flags['statement-id']).then(async (message) => {
+		const principal = flags.principal || '148790070172'
+		const statementId = flags['statement-id']
+
+		addPermission(args.arn, principal, statementId).then(async (message) => {
 			this.log(message)
 		}).catch(err => {
 			this.log(`caught error ${err}`)
