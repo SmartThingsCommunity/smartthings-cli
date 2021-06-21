@@ -27,17 +27,20 @@ export default class SchemaAppCreateCommand extends APICommand {
 		const createApp = async (_: void, data: SchemaAppRequest): Promise<SchemaCreateResponse> => {
 			if (flags.authorize) {
 				if (data.hostingType === 'lambda') {
+					const principal = flags.principal || '148790070172'
+					const statementId = flags['statement-id']
+
 					if (data.lambdaArn) {
-						await addSchemaPermission(data.lambdaArn, flags.principal, flags['statement-id'])
+						await addSchemaPermission(data.lambdaArn, principal, statementId)
 					}
 					if (data.lambdaArnAP) {
-						await addSchemaPermission(data.lambdaArnAP, flags.principal, flags['statement-id'])
+						await addSchemaPermission(data.lambdaArnAP, principal, statementId)
 					}
 					if (data.lambdaArnCN) {
-						await addSchemaPermission(data.lambdaArnCN, flags.principal, flags['statement-id'])
+						await addSchemaPermission(data.lambdaArnCN, principal, statementId)
 					}
 					if (data.lambdaArnEU) {
-						await addSchemaPermission(data.lambdaArnEU, flags.principal, flags['statement-id'])
+						await addSchemaPermission(data.lambdaArnEU, principal, statementId)
 					}
 				} else {
 					this.logger.error('Authorization is not applicable to WebHook schema connectors')
