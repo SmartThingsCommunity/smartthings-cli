@@ -15,7 +15,7 @@ export type ListDataFunction<L> = () => Promise<L[]>
 export type LookupDataFunction<ID, O> = (id: ID) => Promise<O>
 export type ActionFunction<ID, I, O> = (id: ID, input: I) => Promise<O>
 export type IdTranslationFunction<ID, L> = (idOrIndex: ID | string, listFunction: ListDataFunction<L>) => Promise<ID>
-export type IdRetrievalFunction<ID, L> = (fieldInfo: Sorting, list: L[], promptMessage?: string) => Promise<ID>
+export type IdRetrievalFunction<ID, L> = (fieldInfo: Sorting, list: L[], promptMessage?: string, optional?: boolean) => Promise<ID>
 
 
 export interface Sorting {

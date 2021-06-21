@@ -14,7 +14,7 @@ function promptFromNaming(config: Naming): string | undefined {
 
 export async function selectGeneric<ID, L>(command: SmartThingsCommandInterface, config: SelectingConfig<L>,
 		preselectedId: ID | undefined, listItems: ListDataFunction<L>,
-		getIdFromUser: IdRetrievalFunction<ID, L>, promptMessage?: string, autoChoose = false): Promise<ID> {
+		getIdFromUser: IdRetrievalFunction<ID, L>, promptMessage?: string, autoChoose = false, optional = false): Promise<ID> {
 	if (preselectedId) {
 		return preselectedId
 	}
@@ -31,7 +31,7 @@ export async function selectGeneric<ID, L>(command: SmartThingsCommandInterface,
 		command.exit(0)
 	}
 
-	return await getIdFromUser(config, list, promptMessage ?? promptFromNaming(config))
+	return await getIdFromUser(config, list, promptMessage ?? promptFromNaming(config), optional)
 }
 
 /**
