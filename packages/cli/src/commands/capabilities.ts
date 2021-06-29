@@ -164,8 +164,17 @@ export async function getStandard(client: SmartThingsClient): Promise<Capability
 	return caps.map((capability: CapabilitySummary) => { return { ...capability, namespace: 'st' } })
 }
 
+export async function getAllFiltered(client: SmartThingsClient, filter: string): Promise<CapabilitySummaryWithNamespace[]> {
+	const list = (await Promise.all([getStandard(client), getCustomByNamespace(client)])).flat()
+	if (filter) {
+		filter = filter.toLowerCase()
+		return list.filter(it => it.id.toLowerCase().includes(filter) && it.status !== 'deprecated')
+	}
+	return list
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function getIdFromUser(fieldInfo: Sorting, list: CapabilitySummaryWithNamespace[], promptMessage?: string): Promise<CapabilityId> {
+export async function getIdFromUser(fieldInfo: Sorting, list: CapabilitySummaryWithNamespace[], promptMessage?: string, optional = false): Promise<CapabilityId> {
 	const convertToId = (itemIdOrIndex: string): string | false => {
 		if (itemIdOrIndex.length === 0) {
 			return false
@@ -194,13 +203,17 @@ export async function getIdFromUser(fieldInfo: Sorting, list: CapabilitySummaryW
 		name: 'idOrIndex',
 		message: promptMessage ?? 'Enter id or index',
 		validate: input => {
-			return convertToId(input)
+			return  convertToId(input) || (optional && input === '')
 				? true
 				: `Invalid id or index ${input}. Please enter an index or valid id.`
 		},
 	})).idOrIndex
+
 	const inputId = convertToId(idOrIndex)
 	if (inputId === false) {
+		if (optional) {
+			return { id: '', version: 0 }
+		}
 		throw Error(`unable to convert ${idOrIndex} to id`)
 	}
 
@@ -245,6 +258,16 @@ export async function chooseCapability(command: APICommand, idFromArgs?: string,
 		listTableFieldDefinitions: ['id', 'version', 'status'],
 	}
 	return selectGeneric(command, config, preselectedId, () => getCustomByNamespace(command.client), getIdFromUser, prompt)
+}
+
+export async function chooseCapabilityFiltered(command: APICommand, prompt: string, filter: string): Promise<CapabilityId> {
+	const config = {
+		itemName: 'capability',
+		primaryKeyName: 'id',
+		sortKeyName: 'id',
+		listTableFieldDefinitions: ['id', 'version', 'status'],
+	}
+	return selectGeneric(command, config, undefined, () => getAllFiltered(command.client, filter), getIdFromUser, prompt, false, true)
 }
 
 export default class CapabilitiesCommand extends APICommand {
