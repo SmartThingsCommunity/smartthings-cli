@@ -57,7 +57,6 @@ interface CredentialsFileData {
 }
 
 export class LoginAuthenticator implements Authenticator {
-	private static credentialsFile?: string
 	public static init(credentialsFile: string): void {
 		(global as { _credentialsFile?: string })._credentialsFile = credentialsFile
 

@@ -135,6 +135,9 @@ that maps to that hierarchy.
 * [`smartthings capabilities:translations:upsert [ID] [VERSION]`](#smartthings-capabilitiestranslationsupsert-id-version)
 * [`smartthings capabilities:update [ID] [VERSION]`](#smartthings-capabilitiesupdate-id-version)
 * [`smartthings config [NAME]`](#smartthings-config-name)
+* [`smartthings devicepreferences [IDORINDEX]`](#smartthings-devicepreferences-idorindex)
+* [`smartthings devicepreferences:create`](#smartthings-devicepreferencescreate)
+* [`smartthings devicepreferences:update [ID]`](#smartthings-devicepreferencesupdate-id)
 * [`smartthings deviceprofiles [ID]`](#smartthings-deviceprofiles-id)
 * [`smartthings deviceprofiles:create`](#smartthings-deviceprofilescreate)
 * [`smartthings deviceprofiles:delete [ID]`](#smartthings-deviceprofilesdelete-id)
@@ -1092,6 +1095,117 @@ OPTIONS
 ```
 
 _See code: [dist/commands/config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.25/dist/commands/config.ts)_
+
+## `smartthings devicepreferences [IDORINDEX]`
+
+list device preferences or get information for a specific device preference
+
+```
+USAGE
+  $ smartthings devicepreferences [IDORINDEX]
+
+ARGUMENTS
+  IDORINDEX  device preference id or index
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+ALIASES
+  $ smartthings device-preferences
+
+EXAMPLES
+  $ smartthings devicepreferences                       # list all device preferences, sorted by title
+  $ smartthings devicepreferences device-preference-id  # display details for preference with specified id
+  $ smartthings devicepreferences 2                     # display details for second preference when sorted by title
+  $ smartthings devicepreferences 3 -y                  # display details for third preference as YAML
+  $ smartthings devicepreferences 3 -o dp.json          # write details as JSON for third preference to dp.json
+```
+
+_See code: [dist/commands/devicepreferences.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.25/dist/commands/devicepreferences.ts)_
+
+## `smartthings devicepreferences:create`
+
+create a device preference
+
+```
+USAGE
+  $ smartthings devicepreferences:create
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+ALIASES
+  $ smartthings device-preferences:create
+
+EXAMPLES
+  $ smartthings devicepreferences:create                              # create a new device profile by answering 
+  questions
+  $ smartthings devicepreferences:create -d                           # generate a device profile by answering questions 
+  but do not actually create it
+  $ smartthings devicepreferences:create -i dp.json                   # create a new device profile defined by the file 
+  dp.json
+  $ smartthings devicepreferences:create -i dp.json -o dp-saved.json  # create a new device profile defined by the file 
+  dp.json and write the results to dp-saved.json
+```
+
+_See code: [dist/commands/devicepreferences/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.25/dist/commands/devicepreferences/create.ts)_
+
+## `smartthings devicepreferences:update [ID]`
+
+update a device preference
+
+```
+USAGE
+  $ smartthings devicepreferences:update [ID]
+
+ARGUMENTS
+  ID  the device preference id
+
+OPTIONS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             show CLI help
+  -i, --input=input      specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+ALIASES
+  $ smartthings device-preferences:update
+
+EXAMPLES
+  $ smartthings devicepreferences:update -i dp.json                   # update a device preference with data from 
+  dp.json, select which preference from a list
+  $ smartthings devicepreferences:update -i dp.yaml my-preference-id  # update device preference my-preference-id with 
+  data from dp.yaml
+```
+
+_See code: [dist/commands/devicepreferences/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.25/dist/commands/devicepreferences/update.ts)_
 
 ## `smartthings deviceprofiles [ID]`
 
@@ -2142,7 +2256,7 @@ _See code: [dist/commands/installedschema/delete.ts](https://github.com/SmartThi
 
 ## `smartthings locations [IDORINDEX]`
 
-get a specific Location
+list locations or get information for a specific Location
 
 ```
 USAGE
@@ -2207,13 +2321,17 @@ OPTIONS
   -p, --profile=profile  [default: default] configuration profile
   -t, --token=token      the auth token to use
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+EXAMPLES
+  $ smartthings locations:delete                 # choose the location to delete from a list
+  $ smartthings locations:delete my-location-id  # delete the location with the specified id
 ```
 
 _See code: [dist/commands/locations/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.25/dist/commands/locations/delete.ts)_
 
 ## `smartthings locations:rooms [IDORINDEX]`
 
-get a specific room
+list rooms or get information for a specific room
 
 ```
 USAGE

@@ -53,7 +53,7 @@ export async function chooseRoom(command: APICommand, locationId?: string, devic
 }
 
 export default class RoomsCommand extends APICommand {
-	static description = 'get a specific room'
+	static description = 'list rooms or get information for a specific room'
 
 	static flags = {
 		...APICommand.flags,

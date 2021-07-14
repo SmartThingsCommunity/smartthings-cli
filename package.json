@@ -12,6 +12,7 @@
 		"build": "npm run clean && npm run compile",
 		"lint": "lerna run lint",
 		"test": "lerna run test",
+		"test-coverage": "lerna run test-coverage",
 		"publish": "lerna publish"
 	}
 }

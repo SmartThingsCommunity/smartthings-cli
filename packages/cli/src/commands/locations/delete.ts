@@ -13,6 +13,11 @@ export default class LocationsDeleteCommand extends APICommand {
 		description: 'location id',
 	}]
 
+	static examples = [
+		'$ smartthings locations:delete                 # choose the location to delete from a list',
+		'$ smartthings locations:delete my-location-id  # delete the location with the specified id',
+	]
+
 	async run(): Promise<void> {
 		const { args, argv, flags } = this.parse(LocationsDeleteCommand)
 		await super.setup(args, argv, flags)
