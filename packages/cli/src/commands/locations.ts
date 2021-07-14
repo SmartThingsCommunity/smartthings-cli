@@ -18,7 +18,7 @@ export async function chooseLocation(command: APICommand, locationFromArg?: stri
 }
 
 export default class LocationsCommand extends APICommand {
-	static description = 'get a specific Location'
+	static description = 'list locations or get information for a specific Location'
 
 	static flags = {
 		...APICommand.flags,
