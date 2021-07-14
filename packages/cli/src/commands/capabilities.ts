@@ -164,6 +164,15 @@ export async function getStandard(client: SmartThingsClient): Promise<Capability
 	return caps.map((capability: CapabilitySummary) => { return { ...capability, namespace: 'st' } })
 }
 
+export async function getAllFiltered(client: SmartThingsClient, filter: string): Promise<CapabilitySummaryWithNamespace[]> {
+	const list = (await Promise.all([getStandard(client), getCustomByNamespace(client)])).flat()
+	if (filter) {
+		filter = filter.toLowerCase()
+		return list.filter(capability => capability.id.toLowerCase().includes(filter) && capability.status !== 'deprecated')
+	}
+	return list
+}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getIdFromUser(fieldInfo: Sorting, list: CapabilitySummaryWithNamespace[], promptMessage?: string): Promise<CapabilityId> {
 	const convertToId = (itemIdOrIndex: string): string | false => {
@@ -245,6 +254,16 @@ export async function chooseCapability(command: APICommand, idFromArgs?: string,
 		listTableFieldDefinitions: ['id', 'version', 'status'],
 	}
 	return selectGeneric(command, config, preselectedId, () => getCustomByNamespace(command.client), getIdFromUser, prompt)
+}
+
+export async function chooseCapabilityFiltered(command: APICommand, prompt: string, filter: string): Promise<CapabilityId> {
+	const config = {
+		itemName: 'capability',
+		primaryKeyName: 'id',
+		sortKeyName: 'id',
+		listTableFieldDefinitions: ['id', 'version', 'status'],
+	}
+	return selectGeneric(command, config, undefined, () => getAllFiltered(command.client, filter), getIdFromUser, prompt, false)
 }
 
 export default class CapabilitiesCommand extends APICommand {
