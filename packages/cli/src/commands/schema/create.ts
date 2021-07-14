@@ -6,6 +6,7 @@ import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { addSchemaPermission } from '../../lib/aws-utils'
 import { lambdaAuthFlags } from '../../lib/common-flags'
+import { SCHEMA_AWS_PRINCIPAL } from './authorize'
 
 
 export default class SchemaAppCreateCommand extends APICommand {
@@ -27,7 +28,7 @@ export default class SchemaAppCreateCommand extends APICommand {
 		const createApp = async (_: void, data: SchemaAppRequest): Promise<SchemaCreateResponse> => {
 			if (flags.authorize) {
 				if (data.hostingType === 'lambda') {
-					const principal = flags.principal || '148790070172'
+					const principal = flags.principal ?? SCHEMA_AWS_PRINCIPAL
 					const statementId = flags['statement-id']
 
 					if (data.lambdaArn) {

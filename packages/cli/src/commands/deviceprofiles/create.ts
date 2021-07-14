@@ -12,7 +12,7 @@ import { APICommand, inputAndOutputItem, userInputProcessor } from '@smartthings
 
 import { buildTableOutput } from '../deviceprofiles'
 import { DeviceDefinitionRequest } from './view'
-import { chooseCapability } from '../capabilities'
+import { CapabilityId, chooseCapabilityFiltered } from '../capabilities'
 
 
 const capabilitiesWithoutPresentations = ['healthCheck', 'execute']
@@ -169,10 +169,38 @@ export default class DeviceProfileCreateCommand extends APICommand {
 			createDeviceProfile, userInputProcessor(this))
 	}
 
-	protected async promptAndAddCapability(deviceProfile: DeviceProfileRequest, componentId: string, prompt = 'Capability ID'): Promise<void> {
-		const capabilityId = await chooseCapability(this, undefined, undefined, `${prompt}: `)
+	// TODO - update once capability versions are supported
+	protected async capabilityDefined(idStr:string): Promise<boolean> {
+		try {
+			const capability = await this.client.capabilities.get(idStr, 1)
+			return !!capability
+		} catch (e) {
+			return false
+		}
+	}
+	protected async promptAndAddCapability(deviceProfile: DeviceProfileRequest, componentId: string, prompt = 'Capability ID'): Promise<CapabilityId> {
+		let capabilityId: CapabilityId = { id: '', version: 0 }
+		const idStr = (await inquirer.prompt({
+			type: 'input',
+			name: 'id',
+			message: `${prompt} (type ? for a list):`,
+			validate: async (input) => {
+				return (input.endsWith('?') || input === '' || await this.capabilityDefined(input))
+					? true
+					: `Invalid ID "${input}". Please enter a valid capability ID or ? for a list of available capabilities.`
+			},
+		})).id
 
-		if (capabilityId) {
+		if (idStr) {
+			if (idStr.endsWith('?')) {
+				capabilityId = await chooseCapabilityFiltered(this, `${prompt}:`, idStr.slice(0, idStr.length - 1))
+			} else {
+				// TODO - update once capability versions are supported
+				capabilityId = {id: idStr, version: 1}
+			}
+		}
+
+		if (capabilityId && capabilityId.id) {
 			const component = deviceProfile.components?.find(it => it.id === componentId)
 			if (component) {
 				component.capabilities?.push(capabilityId)
@@ -180,6 +208,8 @@ export default class DeviceProfileCreateCommand extends APICommand {
 				throw new CLIError(`Component ${componentId} not defined in profile`)
 			}
 		}
+
+		return capabilityId
 	}
 
 	protected async promptAndAddComponent(deviceProfile: DeviceProfileRequest, previousComponentId: string): Promise<string> {
@@ -221,7 +251,10 @@ export default class DeviceProfileCreateCommand extends APICommand {
 			],
 		}
 
-		await this.promptAndAddCapability(deviceProfile, 'main', 'Primary capability ID')
+		let primaryCapabilityId: CapabilityId
+		do {
+			primaryCapabilityId = await this.promptAndAddCapability(deviceProfile, 'main', 'Primary capability ID')
+		} while (!primaryCapabilityId.id)
 
 		const enum Action {
 			ADD_CAPABILITY = 'Add another capability to this component',
