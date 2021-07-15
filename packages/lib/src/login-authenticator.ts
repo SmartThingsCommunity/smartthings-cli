@@ -143,6 +143,8 @@ export class LoginAuthenticator implements Authenticator {
 		const baseOAuthInURL = this.clientIdProvider.baseOAuthInURL
 		const codeChallenge = this.base64URLEncode(this.sha256(verifier))
 		const finishURL = `http://localhost:${port}/finish`
+		let loginFailed = false
+
 		app.get('/start', (req, res) => {
 			const redirectTo = `${baseOAuthInURL}/authorize?scope=${scopes.join('+')}&` +
 				`response_type=code&client_id=${this.clientId}&` +
@@ -159,6 +161,7 @@ export class LoginAuthenticator implements Authenticator {
 				if ('error_description' in req.query) {
 					this.logger.error(`  ${req.query.error_description}`)
 				}
+				loginFailed = true
 				res.send('<html><body><h1>Failure trying to authenticate.</h1></body></html>')
 				return
 			}
@@ -186,6 +189,7 @@ export class LoginAuthenticator implements Authenticator {
 				.catch(err => {
 					this.logger.trace(`got error ${err.name}/${err}}/${err.message} trying to get final token`)
 					this.logger.trace(`err = ${JSON.stringify(err, null, 4)}`)
+					loginFailed = true
 					res.send('<html><body><h1>Failure trying retrieve token.</h1></body></html>')
 				})
 		})
@@ -197,13 +201,14 @@ export class LoginAuthenticator implements Authenticator {
 
 		const startTime = Date.now()
 		const maxDelay = 10 * 60 * 1000 // wait up to ten minutes for login
+		this.authenticationInfo = undefined
 		// eslint-disable-next-line no-async-promise-executor
 		return new Promise(async (resolve, reject) => {
-			while (!this.authenticationInfo && Date.now() < startTime + maxDelay) {
+			while (!loginFailed && !this.authenticationInfo && Date.now() < startTime + maxDelay) {
 				process.stderr.write('.')
 				await this.delay(1000)
 			}
-			server.close((err) => {
+			server.close(err => {
 				if (err) {
 					this.logger.error(`error closing express server: ${err}`)
 				}
@@ -212,14 +217,13 @@ export class LoginAuthenticator implements Authenticator {
 					resolve()
 				} else {
 					this.logger.trace('unable to get authentication info')
-					reject()
+					reject('unable to get authentication info')
 				}
 			})
 		})
 	}
 
 	async logout(): Promise<void> {
-		// temporary "logout" (which will ask the user to log in again on next run)
 		const credentialsFileData = this.readCredentialsFile()
 		delete credentialsFileData[this.profileName]
 		this.writeCredentialsFile(credentialsFileData)

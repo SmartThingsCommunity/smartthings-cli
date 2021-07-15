@@ -70,6 +70,16 @@ describe('LoginAuthenticator', () => {
 			'deviceId': 'device id',
 		},
 	}
+	const otherCredentialsFileData = {
+		other: {
+			'accessToken': 'other access token',
+			'refreshToken': 'other refresh token',
+			'expires': '2021-07-15T22:33:44.123Z',
+			'scope': 'controller:stCli',
+			'installedAppId': 'installed app id',
+			'deviceId': 'device id',
+		},
+	}
 	const refreshableCredentialsFileData = {
 		[profileName]: {
 			...credentialsFileData[profileName],
@@ -288,7 +298,7 @@ describe('LoginAuthenticator', () => {
 				finishHandler(mockFinishRequest as unknown as Request, mockFinishResponse as unknown as Response)
 
 			await imitateBrowser(finishWithError)
-			await loginPromise
+			await expect(loginPromise).rejects.toBe('unable to get authentication info')
 
 			expect(mockApp.get).toHaveBeenCalledTimes(2)
 			expect(mockApp.get).toHaveBeenCalledWith('/start', expect.any(Function))
@@ -321,7 +331,7 @@ describe('LoginAuthenticator', () => {
 			const loginPromise = loginAuthenticator.login()
 
 			await imitateBrowser()
-			await loginPromise
+			await expect(loginPromise).rejects.toBe('unable to get authentication info')
 
 			expect(mockApp.get).toHaveBeenCalledTimes(2)
 			expect(mockApp.get).toHaveBeenCalledWith('/start', expect.any(Function))
@@ -353,6 +363,30 @@ describe('LoginAuthenticator', () => {
 			expect(readFileMock).toHaveBeenCalledTimes(1)
 			expect(writeFileMock).toHaveBeenCalledTimes(0)
 			expect(chmodMock).toHaveBeenCalledTimes(0)
+		})
+	})
+
+	describe('logout', () => {
+		it('works on the happy path', async () => {
+			readFileMock.mockReturnValue(Buffer.from(JSON.stringify(credentialsFileData)))
+			const loginAuthenticator = setupAuthenticator()
+
+			await expect(loginAuthenticator.logout()).resolves.toBe(undefined)
+
+			expect(readFileMock).toHaveBeenCalledTimes(2)
+			expect(writeFileMock).toHaveBeenCalledTimes(1)
+			expect(writeFileMock).toHaveBeenCalledWith(credentialsFilename, '{}')
+		})
+
+		it('is fine when there is no profile to delete', async () => {
+			readFileMock.mockReturnValue(Buffer.from(JSON.stringify(otherCredentialsFileData)))
+			const loginAuthenticator = setupAuthenticator()
+
+			await expect(loginAuthenticator.logout()).resolves.toBe(undefined)
+
+			expect(readFileMock).toHaveBeenCalledTimes(2)
+			expect(writeFileMock).toHaveBeenCalledTimes(1)
+			expect(writeFileMock).toHaveBeenCalledWith(credentialsFilename, JSON.stringify(otherCredentialsFileData, null, 4))
 		})
 	})
 
