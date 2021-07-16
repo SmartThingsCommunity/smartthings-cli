@@ -1,6 +1,6 @@
 ---
 name: Question Template
-about: Ask a question about SDK usage or design
+about: Ask a question about usage or design
 title: 'question: '
 labels: question
 
