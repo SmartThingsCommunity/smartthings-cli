@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.26](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.25...v0.0.0-pre.26) (2021-07-22)
+
+
+### Bug Fixes
+
+* reset authenticationInfo before login, handle error cases better ([ed6ab48](https://github.com/SmartThingsCommunity/smartthings-cli/commit/ed6ab4866fc4453215daa723f23069d296a97b18))
+
+
+### Features
+
+* add support for device preferences commands ([d4ad86d](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d4ad86d92a1d7b29f7641bc3b1ab3961a510edc8))
+* Added device preferences and capability units ([1d9b1c1](https://github.com/SmartThingsCommunity/smartthings-cli/commit/1d9b1c11054243c8e69c8a6dc4d4b817631f0b1b))
+
+
+
+
+
 # [0.0.0-pre.25](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.24...v0.0.0-pre.25) (2021-05-24)
 
 
