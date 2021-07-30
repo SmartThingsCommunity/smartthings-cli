@@ -13,15 +13,15 @@ export interface EventFormat {
 export type EventFormatter = (event: any) => EventFormat
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function parseEvent(event: Event): any {
+function parseEvent(event: MessageEvent): any {
 	try {
-		return JSON.parse((event as MessageEvent).data)
+		return JSON.parse(event.data)
 	} catch (error) {
 		cli.warn(`Unable to parse received event. ${error.message ?? error}`)
 	}
 }
 
-export function logEvent(event: Event, formatter: EventFormatter): void {
+export function logEvent(event: MessageEvent, formatter: EventFormatter): void {
 	const sse = parseEvent(event)
 	if (sse === undefined) {
 		return
