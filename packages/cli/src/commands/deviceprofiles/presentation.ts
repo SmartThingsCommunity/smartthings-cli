@@ -9,7 +9,10 @@ import { chooseDeviceProfile } from '../deviceprofiles'
 export default class DeviceProfilePresentationCommand extends APICommand {
 	static description = 'get the presentation associated with a device profile'
 
-	static flags = APICommand.flags
+	static flags = {
+		...APICommand.flags,
+		...formatAndWriteItem.flags,
+	}
 
 	static args = [{
 		name: 'id',
