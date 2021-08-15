@@ -35,6 +35,7 @@
 		"commands": "./dist/commands",
 		"bin": "smartthings",
 		"plugins": [
+			"@smartthings/plugin-cli-edge",
 			"@oclif/plugin-help",
 			"@oclif/plugin-autocomplete",
 			"@oclif/plugin-not-found",
@@ -64,6 +65,7 @@
 		"@oclif/plugin-plugins": "^1.9.4",
 		"@smartthings/cli-lib": "^0.0.0-pre.26",
 		"@smartthings/core-sdk": "^1.9.0",
+		"@smartthings/plugin-cli-edge": "^1.0.4",
 		"aws-sdk": "^2.690.0",
 		"generator-smartthings": "^1.5.0",
 		"inquirer": "^8.1.2",
