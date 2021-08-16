@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.27](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.26...v0.0.0-pre.27) (2021-08-16)
+
+
+### Bug Fixes
+
+* narrow type accepted by event logger ([f0882eb](https://github.com/SmartThingsCommunity/smartthings-cli/commit/f0882eb56909d81c2a6558171b1b75bd9ace8c57))
+
+
+
+
+
 # [0.0.0-pre.26](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.25...v0.0.0-pre.26) (2021-07-22)
 
 

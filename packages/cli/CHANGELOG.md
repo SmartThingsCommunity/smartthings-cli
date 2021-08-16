@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.27](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.26...v0.0.0-pre.27) (2021-08-16)
+
+
+### Bug Fixes
+
+* Added output format flags to deviceprofiles:presentation ([2b93b48](https://github.com/SmartThingsCommunity/smartthings-cli/commit/2b93b48fbe18fbaf06ca9d55a08e322c2bb65fe4))
+
+
+### Features
+
+* add edge commands plugin ([354ce95](https://github.com/SmartThingsCommunity/smartthings-cli/commit/354ce953dc524af7639a11069f53c91b0295db41))
+
+
+
+
+
 # [0.0.0-pre.26](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.25...v0.0.0-pre.26) (2021-07-22)
 
 
