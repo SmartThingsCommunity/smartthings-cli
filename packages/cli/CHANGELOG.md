@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.28](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.27...v0.0.0-pre.28) (2021-08-19)
+
+
+### Bug Fixes
+
+* bump edge plugin version to 1.0.5 ([e86e904](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e86e90411fc4e160281be0bf4a3f4e2581d846a8))
+
+
+
+
+
 # [0.0.0-pre.27](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.26...v0.0.0-pre.27) (2021-08-16)
 
 
