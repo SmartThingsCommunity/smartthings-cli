@@ -66,6 +66,8 @@ export abstract class SseCommand extends APICommand {
 	}
 
 	async init(): Promise<void> {
+		await super.init()
+
 		handleSignals(() => {
 			this.teardown()
 		})
