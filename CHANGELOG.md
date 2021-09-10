@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.29](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.28...v0.0.0-pre.29) (2021-09-10)
+
+
+### Bug Fixes
+
+* **SseCommand:** call base Command init ([91d6a99](https://github.com/rossiam/smartthings-cli/commit/91d6a9916680564f52fe301f7b14c82d706ce420))
+
+
+### Features
+
+* Added schema:regenerate to create new client IDs and secrets ([8cc9d9a](https://github.com/rossiam/smartthings-cli/commit/8cc9d9a3a8e6f7e7fae61985685e635a9dd8bdef))
+
+
+
+
+
 # [0.0.0-pre.28](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.27...v0.0.0-pre.28) (2021-08-19)
 
 

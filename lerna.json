@@ -1,5 +1,5 @@
 {
-	"version": "0.0.0-pre.28",
+	"version": "0.0.0-pre.29",
 	"command": {
 		"bootstrap": {
 			"hoist": true
