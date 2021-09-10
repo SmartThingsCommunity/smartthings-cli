@@ -2130,7 +2130,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels.ts)_
 
 ## `smartthings edge:channels:assign [DRIVERID] [VERSION]`
 
@@ -2155,7 +2155,7 @@ ALIASES
   $ smartthings edge:drivers:publish
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/assign.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/assign.ts)_
 
 ## `smartthings edge:channels:create`
 
@@ -2180,7 +2180,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/create.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/create.ts)_
 
 ## `smartthings edge:channels:delete [ID]`
 
@@ -2200,7 +2200,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/delete.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/delete.ts)_
 
 ## `smartthings edge:channels:drivers [IDORINDEX]`
 
@@ -2229,7 +2229,7 @@ ALIASES
   $ smartthings edge:channels:assignments
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/drivers.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/drivers.ts)_
 
 ## `smartthings edge:channels:enroll [HUBID]`
 
@@ -2250,7 +2250,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/enroll.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/enroll.ts)_
 
 ## `smartthings edge:channels:enrollments [IDORINDEX]`
 
@@ -2276,7 +2276,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/enrollments.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/enrollments.ts)_
 
 ## `smartthings edge:channels:invites [IDORINDEX]`
 
@@ -2313,7 +2313,7 @@ EXAMPLES
   smartthings edge:channels:invites <invite id>      # list details about the invite with id <invite id>
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/invites.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/invites.ts)_
 
 ## `smartthings edge:channels:invites:accept ID`
 
@@ -2336,7 +2336,7 @@ ALIASES
   $ smartthings edge:channels:invitations:accept
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/invites/accept.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/invites/accept.ts)_
 
 ## `smartthings edge:channels:invites:create`
 
@@ -2364,7 +2364,7 @@ ALIASES
   $ smartthings edge:channels:invitations:create
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/invites/create.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/invites/create.ts)_
 
 ## `smartthings edge:channels:invites:delete [ID]`
 
@@ -2390,7 +2390,7 @@ ALIASES
   $ smartthings edge:channels:invites:revoke
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/invites/delete.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/invites/delete.ts)_
 
 ## `smartthings edge:channels:unassign [DRIVERID]`
 
@@ -2414,7 +2414,7 @@ ALIASES
   $ smartthings edge:drivers:unpublish
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/unassign.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/unassign.ts)_
 
 ## `smartthings edge:channels:unenroll [HUBID]`
 
@@ -2435,7 +2435,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/unenroll.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/unenroll.ts)_
 
 ## `smartthings edge:channels:update [ID]`
 
@@ -2463,7 +2463,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/channels/update.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/channels/update.ts)_
 
 ## `smartthings edge:drivers [IDORINDEX]`
 
@@ -2489,7 +2489,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/drivers.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/drivers.ts)_
 
 ## `smartthings edge:drivers:delete [ID]`
 
@@ -2509,7 +2509,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/drivers/delete.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/drivers/delete.ts)_
 
 ## `smartthings edge:drivers:install [DRIVERID]`
 
@@ -2538,7 +2538,7 @@ EXAMPLES
   enrolled hub
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/drivers/install.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/drivers/install.ts)_
 
 ## `smartthings edge:drivers:installed [IDORINDEX]`
 
@@ -2565,7 +2565,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/drivers/installed.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/drivers/installed.ts)_
 
 ## `smartthings edge:drivers:logcat [DRIVERID]`
 
@@ -2587,7 +2587,7 @@ OPTIONS
   --language=language        ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/drivers/logcat.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/drivers/logcat.ts)_
 
 ## `smartthings edge:drivers:package [PROJECTDIRECTORY]`
 
@@ -2601,20 +2601,66 @@ ARGUMENTS
   PROJECTDIRECTORY  [default: .] directory containing project to upload
 
 OPTIONS
-  -d, --dry-run          save package to edge.zip file instead of uploading it
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -I, --install                prompt for hub to install to after assigning it to the channel, implies --assign if
+                               --assign or --channel not included
+
+  -a, --assign                 prompt for a channel to assign the driver to after upload
+
+  -b, --build-only=build-only  save package to specified zip file but skip upload
+
+  -h, --help                   show CLI help
+
+  -j, --json                   use JSON format of input and/or output
+
+  -o, --output=output          specify output file
+
+  -p, --profile=profile        [default: default] configuration profile
+
+  -t, --token=token            the auth token to use
+
+  -u, --upload=upload          upload zip file previously built with --build flag
+
+  -y, --yaml                   use YAML format of input and/or output
+
+  --channel=channel            automatically assign driver to specified channel after upload
+
+  --compact                    use compact table format with no lines between body rows
+
+  --expanded                   use expanded table format with a line between each body row
+
+  --hub=hub                    automatically install driver to specified hub, implies --assign if --assign or --channel
+                               not included
+
+  --indent=indent              specify indentation for formatting JSON or YAML output
+
+  --language=language          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+EXAMPLE
+  # build and upload driver found in current directory:
+  $ smartthings edge:drivers:package
+
+  # build and upload driver found in current directory:
+  $ smartthings edge:drivers:package
+
+  # build and upload driver found in current directory, assign it to a channel, and install it;
+  # user will be prompted for channel and hub
+  $ smartthings edge:drivers:package -I
+
+  # build and upload driver found in current directory then assign it to the specified channel
+  # and install it to the specified hub
+  $ smartthings edge:drivers:package --channel <channel-id> --hub <hubId>
+
+  # build and upload driver found in the my-driver directory
+  $ smartthings edge:drivers:package my-driver
+
+  # build the driver in the my-package directory and save it as driver.zip
+  $ smartthings edge:drivers:package -b driver.zip my-package
+
+  # upload the previously built driver found in driver.zip
+  $ smartthings edge:drivers:package -u driver.zip
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/drivers/package.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/drivers/package.ts)_
 
 ## `smartthings edge:drivers:uninstall [DRIVERID]`
 
@@ -2635,7 +2681,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.0.5/dist/commands/edge/drivers/uninstall.ts)_
+_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.3.0/dist/commands/edge/drivers/uninstall.ts)_
 
 ## `smartthings generate:java`
 
@@ -3515,7 +3561,7 @@ _See code: [dist/commands/schema/delete.ts](https://github.com/SmartThingsCommun
 
 ## `smartthings schema:regenerate [ID]`
 
-Re-generate the clientId and clientSecret of the ST Schema connector. The previous values will be invalidated, which may affect existing installations.
+Regenerate the clientId and clientSecret of the ST Schema connector. The previous values will be invalidated, which may affect existing installations.
 
 ```
 USAGE
