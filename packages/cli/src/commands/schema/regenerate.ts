@@ -1,4 +1,4 @@
-import {APICommand, selectFromList, outputItem} from '@smartthings/cli-lib'
+import { APICommand, selectFromList, outputItem } from '@smartthings/cli-lib'
 
 
 export default class SchemaAppRegenerateCommand extends APICommand {
@@ -24,7 +24,7 @@ export default class SchemaAppRegenerateCommand extends APICommand {
 		}
 		const id = await selectFromList(this, config, args.id,
 			async () => await this.client.schema.list(),
-			'Select a schema app to re-generate its clientId and clientSecret.')
+			'Select a schema app to regenerate its clientId and clientSecret.')
 
 		await outputItem(this, { tableFieldDefinitions: ['endpointAppId', 'stClientId', 'stClientSecret'] }, () =>
 			this.client.schema.regenerateOauth(id))
