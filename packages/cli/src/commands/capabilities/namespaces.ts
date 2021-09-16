@@ -1,11 +1,11 @@
-import { APICommand, outputList } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, outputList } from '@smartthings/cli-lib'
 
 
-export default class CapabilitiesListNamespacesCommand extends APICommand {
+export default class CapabilitiesListNamespacesCommand extends APIOrganizationCommand {
 	static description = 'list all capability namespaces currently available in a user account'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...outputList.flags,
 	}
 

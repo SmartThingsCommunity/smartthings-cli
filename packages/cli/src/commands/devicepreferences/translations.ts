@@ -1,14 +1,14 @@
-import { APICommand, outputItem } from '@smartthings/cli-lib'
+import {APIOrganizationCommand, outputItem} from '@smartthings/cli-lib'
 import { PreferenceLocalization } from '@smartthings/core-sdk'
 import { chooseDevicePreference } from '../../lib/commands/devicepreferences/devicepreferences-util'
 import { tableFieldDefinitions } from '../../lib/commands/devicepreferences/translations/translations-util'
 
 
-export default class DevicePreferencesTranslationsCommand extends APICommand {
+export default class DevicePreferencesTranslationsCommand extends APIOrganizationCommand {
 	static description = 'get translated device preference values in a desired locale'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...outputItem.flags,
 	}
 

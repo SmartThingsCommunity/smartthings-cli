@@ -1,7 +1,6 @@
-import { SmartThingsCommand } from '@smartthings/cli-lib'
+import { SmartThingsCommand, lambdaAuthFlags } from '@smartthings/cli-lib'
 
 import { addPermission } from '../../lib/aws-utils'
-import { lambdaAuthFlags } from '../../lib/common-flags'
 
 
 export const SCHEMA_AWS_PRINCIPAL = '148790070172'

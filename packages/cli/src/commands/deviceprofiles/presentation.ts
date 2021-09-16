@@ -1,16 +1,16 @@
 import { CLIError } from '@oclif/errors'
 
-import { APICommand, formatAndWriteItem } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, formatAndWriteItem } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../presentation'
 import { chooseDeviceProfile } from '../deviceprofiles'
 
 
-export default class DeviceProfilePresentationCommand extends APICommand {
+export default class DeviceProfilePresentationCommand extends APIOrganizationCommand {
 	static description = 'get the presentation associated with a device profile'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...formatAndWriteItem.flags,
 	}
 

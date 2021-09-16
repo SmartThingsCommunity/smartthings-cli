@@ -1,4 +1,4 @@
-import { ActionFunction, APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
+import { ActionFunction, APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { generateDefaultConfig } from '../create'
 import { cleanupRequest } from '../update'
@@ -6,7 +6,7 @@ import { augmentPresentationValues, buildTableOutput, DeviceDefinition, DeviceDe
 import { chooseDeviceProfile } from '../../deviceprofiles'
 
 
-export default class DeviceProfilesViewUpdateCommand extends APICommand {
+export default class DeviceProfilesViewUpdateCommand extends APIOrganizationCommand {
 	static description = 'update a device profile and configuration\n' +
 		'Updates a device profile and device configuration and sets the vid of the profile\n' +
 		'to the vid of the updated configuration. Unlike deviceprofiles:update this\n' +
@@ -39,7 +39,7 @@ export default class DeviceProfilesViewUpdateCommand extends APICommand {
 	]
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...inputAndOutputItem.flags,
 	}
 

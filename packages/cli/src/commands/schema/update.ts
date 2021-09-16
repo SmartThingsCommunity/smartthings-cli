@@ -3,10 +3,9 @@ import { CLIError } from '@oclif/errors'
 
 import { SchemaAppRequest } from '@smartthings/core-sdk'
 
-import { APICommand, inputItem, selectFromList } from '@smartthings/cli-lib'
+import { APICommand, inputItem, selectFromList, lambdaAuthFlags } from '@smartthings/cli-lib'
 
 import { addSchemaPermission } from '../../lib/aws-utils'
-import { lambdaAuthFlags } from '../../lib/common-flags'
 
 
 export default class SchemaUpdateCommand extends APICommand {

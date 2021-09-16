@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { SmartThingsClient } from '@smartthings/core-sdk'
+import { SmartThingsClient, OrganizationResponse, CapabilityNamespace } from '@smartthings/core-sdk'
 
 
 export interface WithLocation {
@@ -16,6 +16,10 @@ export interface WithRoom extends WithLocation {
 
 export interface WithNamedRoom extends WithNamedLocation, WithRoom {
 	room?: string
+}
+
+export interface WithOrganization {
+	organization?: string
 }
 
 async function buildLocationNamesById(client: SmartThingsClient): Promise<Map<string, string>> {
@@ -66,4 +70,27 @@ export async function withLocationsAndRooms<T extends WithRoom>(client: SmartThi
 		}
 		return { ...item, location, room }
 	})
+}
+
+export async function forAllOrganizations<T>(
+		client: SmartThingsClient,
+		query: (org: OrganizationResponse) => Promise<T[]>): Promise<(T & WithOrganization)[]> {
+	const organizations = await client.organizations.list()
+	const nestedItems = await Promise.all(organizations.map(async (org) => {
+		const items = await query(org)
+		return items.map(item => {
+			return {...item, organization: org.name}
+		})
+	}))
+	return nestedItems.flat()
+}
+
+export async function forAllNamespaces<T>(
+		client: SmartThingsClient,
+		query: (nanmspace: CapabilityNamespace) => Promise<T[]>): Promise<T[]> {
+	const namespaces = await client.capabilities.listNamespaces()
+	const nestedItems = await Promise.all(namespaces.map(async (namespace) => {
+		return query(namespace)
+	}))
+	return nestedItems.flat()
 }

@@ -9,3 +9,10 @@ export const lambdaAuthFlags = {
 		description: 'use this statement id instead of the default when authorizing lambda functions',
 	}),
 }
+
+export const allOrganizationsFlags = {
+	'all-organizations': flags.boolean({
+		char: 'A',
+		description: 'include entities from all organizations the user belongs to',
+	}),
+}

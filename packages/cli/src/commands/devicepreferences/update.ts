@@ -1,13 +1,13 @@
 import { DevicePreference } from '@smartthings/core-sdk'
-import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 import { chooseDevicePreference, tableFieldDefinitions } from '../../lib/commands/devicepreferences/devicepreferences-util'
 
 
-export default class DevicePreferencesUpdateCommand extends APICommand {
+export default class DevicePreferencesUpdateCommand extends APIOrganizationCommand {
 	static description = 'update a device preference'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...inputAndOutputItem.flags,
 	}
 

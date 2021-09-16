@@ -1,16 +1,16 @@
 import { CapabilityPresentation, CapabilityPresentationUpdate } from '@smartthings/core-sdk'
 
-import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../presentation'
 import { capabilityIdInputArgs, chooseCapability } from '../../capabilities'
 
 
-export default class CapabilitiesPresentationUpdate extends APICommand {
+export default class CapabilitiesPresentationUpdate extends APIOrganizationCommand {
 	static description = 'update presentation information of a capability'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...inputAndOutputItem.flags,
 	}
 

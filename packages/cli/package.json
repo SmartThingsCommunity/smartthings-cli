@@ -66,7 +66,7 @@
 		"@oclif/plugin-plugins": "^1.10.1",
 		"@smartthings/cli-lib": "^0.0.0-pre.32",
 		"@smartthings/core-sdk": "^1.12.1",
-		"@smartthings/plugin-cli-edge": "^1.4.3",
+		"@smartthings/plugin-cli-edge": "^1.5.0",
 		"aws-sdk": "^2.690.0",
 		"generator-smartthings": "^1.5.0",
 		"inquirer": "^8.1.2",
