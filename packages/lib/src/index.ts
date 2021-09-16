@@ -1,4 +1,5 @@
 export * from './api-command'
+export * from './api-organization-command'
 export * from './api-helpers'
 export * from './basic-io'
 export * from './cli-config'

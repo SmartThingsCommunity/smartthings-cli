@@ -2,7 +2,7 @@ import { CLIError } from '@oclif/errors'
 
 import { DeviceProfile, DeviceProfileRequest } from '@smartthings/core-sdk'
 
-import { ActionFunction, APICommand, inputAndOutputItem, TableGenerator } from '@smartthings/cli-lib'
+import { ActionFunction, APIOrganizationCommand, inputAndOutputItem, TableGenerator } from '@smartthings/cli-lib'
 
 import { chooseDeviceProfile } from '../deviceprofiles'
 import { DeviceDefinitionRequest } from './view'
@@ -23,11 +23,11 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePro
 	return table.toString()
 }
 
-export default class DeviceProfileUpdateCommand extends APICommand {
+export default class DeviceProfileUpdateCommand extends APIOrganizationCommand {
 	static description = 'update a device profile'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...inputAndOutputItem.flags,
 	}
 

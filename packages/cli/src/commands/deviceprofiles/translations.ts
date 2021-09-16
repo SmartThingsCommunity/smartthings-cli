@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { DeviceProfile, DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
-import { APICommand, ListingOutputConfig, outputListing, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, ListingOutputConfig, outputListing, TableGenerator } from '@smartthings/cli-lib'
 import { chooseDeviceProfile } from '../deviceprofiles'
 
 
@@ -21,11 +21,11 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePro
 
 export type DeviceProfileWithLocales = DeviceProfile & { locales?: string }
 
-export default class DeviceProfileTranslationsCommand extends APICommand {
+export default class DeviceProfileTranslationsCommand extends APIOrganizationCommand {
 	static description = 'Get list of locales supported by the device profiles'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...outputListing.flags,
 		verbose: flags.boolean({
 			description: 'include list of locales in table output',

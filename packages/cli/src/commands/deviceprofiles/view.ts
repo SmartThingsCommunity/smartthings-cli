@@ -1,6 +1,6 @@
 import { DeviceProfile, DeviceProfileRequest, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
 
-import { APICommand, ListingOutputConfig, outputListing, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, ListingOutputConfig, outputListing, TableGenerator } from '@smartthings/cli-lib'
 
 import { buildTableOutput as deviceProfileBuildTableOutput } from '../deviceprofiles'
 
@@ -123,11 +123,11 @@ export function augmentPresentationValues(view: DeviceView): DeviceView {
 	return view
 }
 
-export default class DeviceProfilesViewCommand extends APICommand {
+export default class DeviceProfilesViewCommand extends APIOrganizationCommand {
 	static description = 'show device profile and device configuration in a single, consolidated view'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...outputListing.flags,
 	}
 

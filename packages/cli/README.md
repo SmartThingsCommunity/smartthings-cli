@@ -200,6 +200,8 @@ that maps to that hierarchy.
 * [`smartthings locations:rooms:update [ID]`](#smartthings-locationsroomsupdate-id)
 * [`smartthings locations:update [ID]`](#smartthings-locationsupdate-id)
 * [`smartthings logout`](#smartthings-logout)
+* [`smartthings organizations [ID]`](#smartthings-organizations-id)
+* [`smartthings organizations:current`](#smartthings-organizationscurrent)
 * [`smartthings plugins`](#smartthings-plugins)
 * [`smartthings plugins:inspect PLUGIN...`](#smartthings-pluginsinspect-plugin)
 * [`smartthings plugins:install PLUGIN...`](#smartthings-pluginsinstall-plugin)
@@ -559,18 +561,19 @@ ARGUMENTS
   VERSION  the capability version
 
 OPTIONS
-  -h, --help                 show CLI help
-  -j, --json                 use JSON format of input and/or output
-  -n, --namespace=namespace  a specific namespace to query; will use all by default
-  -o, --output=output        specify output file
-  -p, --profile=profile      [default: default] configuration profile
-  -s, --standard             show standard SmartThings capabilities
-  -t, --token=token          the auth token to use
-  -y, --yaml                 use YAML format of input and/or output
-  --compact                  use compact table format with no lines between body rows
-  --expanded                 use expanded table format with a line between each body row
-  --indent=indent            specify indentation for formatting JSON or YAML output
-  --language=language        ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -n, --namespace=namespace        a specific namespace to query; will use all by default
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -s, --standard                   show standard SmartThings capabilities
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
 _See code: [src/commands/capabilities.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.31/packages/cli/src/commands/capabilities.ts)_
@@ -584,19 +587,20 @@ USAGE
   $ smartthings capabilities:create
 
 OPTIONS
-  -d, --dry-run              produce JSON but don't actually submit
-  -h, --help                 show CLI help
-  -i, --input=input          specify input file
-  -j, --json                 use JSON format of input and/or output
-  -n, --namespace=namespace  the namespace to create the capability under
-  -o, --output=output        specify output file
-  -p, --profile=profile      [default: default] configuration profile
-  -t, --token=token          the auth token to use
-  -y, --yaml                 use YAML format of input and/or output
-  --compact                  use compact table format with no lines between body rows
-  --expanded                 use expanded table format with a line between each body row
-  --indent=indent            specify indentation for formatting JSON or YAML output
-  --language=language        ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -n, --namespace=namespace        the namespace to create the capability under
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
 _See code: [src/commands/capabilities/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.31/packages/cli/src/commands/capabilities/create.ts)_
@@ -614,10 +618,11 @@ ARGUMENTS
   VERSION  the capability version
 
 OPTIONS
-  -h, --help             show CLI help
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
 _See code: [src/commands/capabilities/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.31/packages/cli/src/commands/capabilities/delete.ts)_
@@ -631,16 +636,17 @@ USAGE
   $ smartthings capabilities:namespaces
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
 _See code: [src/commands/capabilities/namespaces.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.31/packages/cli/src/commands/capabilities/namespaces.ts)_
@@ -658,17 +664,18 @@ ARGUMENTS
   VERSION  the capability version
 
 OPTIONS
-  -h, --help                 show CLI help
-  -j, --json                 use JSON format of input and/or output
-  -n, --namespace=namespace  a specific namespace to query; will use all by default
-  -o, --output=output        specify output file
-  -p, --profile=profile      [default: default] configuration profile
-  -t, --token=token          the auth token to use
-  -y, --yaml                 use YAML format of input and/or output
-  --compact                  use compact table format with no lines between body rows
-  --expanded                 use expanded table format with a line between each body row
-  --indent=indent            specify indentation for formatting JSON or YAML output
-  --language=language        ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -n, --namespace=namespace        a specific namespace to query; will use all by default
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
 _See code: [src/commands/capabilities/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.31/packages/cli/src/commands/capabilities/presentation.ts)_
@@ -686,18 +693,19 @@ ARGUMENTS
   VERSION  the capability version
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
 _See code: [src/commands/capabilities/presentation/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.31/packages/cli/src/commands/capabilities/presentation/create.ts)_
@@ -715,18 +723,19 @@ ARGUMENTS
   VERSION  the capability version
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
 _See code: [src/commands/capabilities/presentation/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.31/packages/cli/src/commands/capabilities/presentation/update.ts)_
@@ -745,18 +754,19 @@ ARGUMENTS
   TAG      the locale tag
 
 OPTIONS
-  -h, --help                 show CLI help
-  -j, --json                 use JSON format of input and/or output
-  -n, --namespace=namespace  a specific namespace to query; will use all by default
-  -o, --output=output        specify output file
-  -p, --profile=profile      [default: default] configuration profile
-  -t, --token=token          the auth token to use
-  -v, --verbose              include list of supported locales in table output
-  -y, --yaml                 use YAML format of input and/or output
-  --compact                  use compact table format with no lines between body rows
-  --expanded                 use expanded table format with a line between each body row
-  --indent=indent            specify indentation for formatting JSON or YAML output
-  --language=language        ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -n, --namespace=namespace        a specific namespace to query; will use all by default
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -v, --verbose                    include list of supported locales in table output
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
   $ smartthings capabilities:translations
@@ -846,18 +856,19 @@ ARGUMENTS
   VERSION  the capability version
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
   $ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml 
@@ -923,18 +934,19 @@ ARGUMENTS
   VERSION  the capability version
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
   $ smartthings capabilities:translations:update custom1.outputModulation 1 -i en.yaml 
@@ -1000,18 +1012,19 @@ ARGUMENTS
   VERSION  the capability version
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
   $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml 
@@ -1077,18 +1090,19 @@ ARGUMENTS
   VERSION  the capability version
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 ```
 
 _See code: [src/commands/capabilities/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.31/packages/cli/src/commands/capabilities/update.ts)_
@@ -1130,16 +1144,17 @@ ARGUMENTS
   IDORINDEX  device preference id or index
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-preferences
@@ -1163,18 +1178,19 @@ USAGE
   $ smartthings devicepreferences:create
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-preferences:create
@@ -1204,18 +1220,19 @@ ARGUMENTS
   ID  the device preference id
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-preferences:update
@@ -1241,17 +1258,18 @@ ARGUMENTS
   ID  device profile to retrieve; UUID or the number of the profile from list
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -v, --verbose          include presentationId and manufacturerName in list output
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -v, --verbose                    include presentationId and manufacturerName in list output
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-profiles
@@ -1276,18 +1294,19 @@ USAGE
   $ smartthings deviceprofiles:create
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   Creates a new device profile. If a vid field is not present in the meta
@@ -1317,10 +1336,11 @@ ARGUMENTS
   ID  Device profile UUID or number in the list
 
 OPTIONS
-  -h, --help             show CLI help
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-profiles:delete
@@ -1344,16 +1364,17 @@ ARGUMENTS
   ID  device profile id or the number in list
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-profiles:device-config
@@ -1373,16 +1394,17 @@ ARGUMENTS
   ID  device profile UUID or the number of the profile from list
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-profiles:presentation
@@ -1412,16 +1434,17 @@ ARGUMENTS
   ID  device profile id
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-profiles:publish
@@ -1442,17 +1465,18 @@ ARGUMENTS
   TAG  the locale tag or number of the tag from list
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -v, --verbose          include list of locales in table output
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -v, --verbose                    include list of locales in table output
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-profiles:translations
@@ -1525,10 +1549,11 @@ ARGUMENTS
   TAG  the locale tag
 
 OPTIONS
-  -h, --help             show CLI help
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-profiles:translations:delete
@@ -1569,18 +1594,19 @@ ARGUMENTS
   ID  UUID or the number of the profile from list
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-profiles:translations:upsert
@@ -1634,18 +1660,19 @@ ARGUMENTS
   ID  device profile UUID or number in the list
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-profiles:update
@@ -1665,16 +1692,17 @@ ARGUMENTS
   ID  device profile UUID or the number from list
 
 OPTIONS
-  -h, --help             show CLI help
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 ALIASES
   $ smartthings device-profiles:view
@@ -1691,18 +1719,19 @@ USAGE
   $ smartthings deviceprofiles:view:create
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   Creates a new device profile and device configuration. Unlike deviceprofiles:create,
@@ -1749,18 +1778,19 @@ ARGUMENTS
   ID  device profile id
 
 OPTIONS
-  -d, --dry-run          produce JSON but don't actually submit
-  -h, --help             show CLI help
-  -i, --input=input      specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=output    specify output file
-  -p, --profile=profile  [default: default] configuration profile
-  -t, --token=token      the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=indent        specify indentation for formatting JSON or YAML output
-  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   Updates a device profile and device configuration and sets the vid of the profile
@@ -3099,6 +3129,56 @@ OPTIONS
 ```
 
 _See code: [src/commands/logout.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.31/packages/cli/src/commands/logout.ts)_
+
+## `smartthings organizations [ID]`
+
+list all organizations the user belongs to
+
+```
+USAGE
+  $ smartthings organizations [ID]
+
+ARGUMENTS
+  ID  the organization name, id or index
+
+OPTIONS
+  -h, --help             show CLI help
+  -j, --json             use JSON format of input and/or output
+  -o, --output=output    specify output file
+  -p, --profile=profile  [default: default] configuration profile
+  -t, --token=token      the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --compact              use compact table format with no lines between body rows
+  --expanded             use expanded table format with a line between each body row
+  --indent=indent        specify indentation for formatting JSON or YAML output
+  --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+```
+
+_See code: [src/commands/organizations.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.31/packages/cli/src/commands/organizations.ts)_
+
+## `smartthings organizations:current`
+
+return the currently active organization
+
+```
+USAGE
+  $ smartthings organizations:current
+
+OPTIONS
+  -O, --organization=organization  The organization ID to use for this command
+  -h, --help                       show CLI help
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+```
+
+_See code: [src/commands/organizations/current.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.31/packages/cli/src/commands/organizations/current.ts)_
 
 ## `smartthings plugins`
 

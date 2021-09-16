@@ -1,12 +1,12 @@
-import { APICommand } from '@smartthings/cli-lib'
+import { APIOrganizationCommand } from '@smartthings/cli-lib'
 
 import { capabilityIdInputArgs, chooseCapability } from '../capabilities'
 
 
-export default class CapabilitiesDeleteCommand extends APICommand {
+export default class CapabilitiesDeleteCommand extends APIOrganizationCommand {
 	static description = 'delete a capability'
 
-	static flags = APICommand.flags
+	static flags = APIOrganizationCommand.flags
 
 	static args = capabilityIdInputArgs
 
