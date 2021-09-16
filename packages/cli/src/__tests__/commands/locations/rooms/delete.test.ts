@@ -1,5 +1,5 @@
 import { RoomsEndpoint } from '@smartthings/core-sdk'
-import RoomsDeleteCommand from '../../../../../src/commands/locations/rooms/delete'
+import RoomsDeleteCommand from '../../../../commands/locations/rooms/delete'
 import { v4 as uuid } from 'uuid'
 import { chooseRoom } from '../../../../lib/commands/locations/rooms/rooms-util'
 import { APICommand } from '@smartthings/cli-lib'

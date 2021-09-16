@@ -8,7 +8,7 @@ import {
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { APICommand, inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../deviceprofiles'
 import { DeviceDefinitionRequest } from './view'
@@ -23,31 +23,39 @@ export async function generateDefaultConfig(client: SmartThingsClient, devicePro
 	const deviceConfig = await client.presentation.generate(deviceProfileId)
 
 	// Edit the dashboard entries to include only the first capability in the profile
-	if (deviceProfile.components && deviceConfig.dashboard) {
-		const firstComponent = deviceProfile.components[0]
-		if (firstComponent.capabilities && firstComponent.capabilities.length > 0) {
-			const firstCapability = firstComponent.capabilities[0]
-			const capability = await client.capabilities.get(firstCapability.id, firstCapability.version || 1)
+	if (deviceProfile.components) {
+		if (deviceConfig.dashboard) {
+			const firstComponent = deviceProfile.components[0]
+			if (firstComponent.capabilities && firstComponent.capabilities.length > 0) {
+				const firstCapability = firstComponent.capabilities[0]
+				const capability = await client.capabilities.get(firstCapability.id, firstCapability.version || 1)
 
-			if (capability.attributes && Object.keys(capability.attributes).length > 0) {
-				deviceConfig.dashboard.states = deviceConfig.dashboard.states.filter(it =>
-					it.component === firstComponent.id && it.capability === firstCapability.id)
-			} else {
-				deviceConfig.dashboard.states = []
+				if (capability.attributes && Object.keys(capability.attributes).length > 0) {
+					deviceConfig.dashboard.states = deviceConfig.dashboard.states.filter(state =>
+						state.component === firstComponent.id && state.capability === firstCapability.id)
+				} else {
+					deviceConfig.dashboard.states = []
+				}
+
+				if (capability.commands && Object.keys(capability.commands).length > 0) {
+					deviceConfig.dashboard.actions = deviceConfig.dashboard.actions.filter(action =>
+						action.component === firstComponent.id && action.capability === firstCapability.id)
+				} else {
+					deviceConfig.dashboard.actions = []
+				}
 			}
-
-			if (capability.commands && Object.keys(capability.commands).length > 0) {
-				deviceConfig.dashboard.actions = deviceConfig.dashboard.actions.filter(it =>
-					it.component === firstComponent.id && it.capability === firstCapability.id)
-			} else {
-				deviceConfig.dashboard.actions = []
+		} else {
+			deviceConfig.dashboard = {
+				states: [],
+				actions: [],
 			}
 		}
 	}
 
 	// Filter capabilities with no UI
 	if (deviceConfig.detailView) {
-		deviceConfig.detailView = deviceConfig.detailView.filter(it => !(capabilitiesWithoutPresentations.includes(it.capability)))
+		deviceConfig.detailView = deviceConfig.detailView.filter(viewItem =>
+			!(capabilitiesWithoutPresentations.includes(viewItem.capability)))
 	}
 
 	// Filter automation entries
@@ -55,8 +63,8 @@ export async function generateDefaultConfig(client: SmartThingsClient, devicePro
 
 		// Filter out conditions for capabilities that don't have attributes
 		if (deviceConfig.automation.conditions) {
-			const capabilities = await Promise.all(deviceConfig.automation.conditions.map(it => {
-				return client.capabilities.get(it.capability, it.version || 1)
+			const capabilities = await Promise.all(deviceConfig.automation.conditions.map(condition => {
+				return client.capabilities.get(condition.capability, condition.version || 1)
 			}))
 			deviceConfig.automation.conditions = deviceConfig.automation.conditions.filter((_v, index) => {
 				const capability = capabilities[index]
@@ -66,8 +74,8 @@ export async function generateDefaultConfig(client: SmartThingsClient, devicePro
 
 		// Filter out automation actions for capabilities that don't have commands
 		if (deviceConfig.automation.actions) {
-			const capabilities = await Promise.all(deviceConfig.automation.actions.map(it => {
-				return client.capabilities.get(it.capability, it.version || 1)
+			const capabilities = await Promise.all(deviceConfig.automation.actions.map(action => {
+				return client.capabilities.get(action.capability, action.version || 1)
 			}))
 			deviceConfig.automation.actions = deviceConfig.automation.actions.filter((_v, index) => {
 				const capability = capabilities[index]
@@ -129,14 +137,14 @@ export function cleanupRequest(deviceProfileRequest: Partial<DeviceProfile & { r
 	return deviceProfileRequest
 }
 
-export default class DeviceProfileCreateCommand extends APICommand {
+export default class DeviceProfileCreateCommand extends APIOrganizationCommand {
 	static description = 'Create a new device profile\n' +
 		'Creates a new device profile. If a vid field is not present in the meta\n' +
 		'then a default device presentation will be created for this profile and the\n' +
 		'vid set to reference it.'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...inputAndOutputItem.flags,
 	}
 

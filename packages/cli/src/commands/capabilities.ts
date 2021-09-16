@@ -1,9 +1,11 @@
 import inquirer from 'inquirer'
 import { flags } from '@oclif/command'
 
-import { Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace, SmartThingsClient } from '@smartthings/core-sdk'
+import { Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace,
+	SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, ListDataFunction, outputGenericListing, selectGeneric, sort, Sorting, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, ListDataFunction, outputGenericListing, selectGeneric, sort, Sorting, TableGenerator,
+	allOrganizationsFlags, forAllOrganizations } from '@smartthings/cli-lib'
 
 
 export const capabilityIdInputArgs = [
@@ -129,7 +131,7 @@ export interface CapabilityId {
 
 export type CapabilitySummaryWithNamespace = CapabilitySummary & { namespace: string }
 
-export function buildListTableOutput(this: APICommand, capabilities: CapabilitySummaryWithNamespace[]): string {
+export function buildListTableOutput(this: APIOrganizationCommand, capabilities: CapabilitySummaryWithNamespace[]): string {
 	return this.tableGenerator.buildTableFromList(capabilities, ['id', 'version', 'status'])
 }
 
@@ -240,7 +242,7 @@ export async function translateToId(sortKeyName: string, idOrIndex: string | Cap
 	return { id: matchingItem.id, version: matchingItem.version }
 }
 
-export async function chooseCapability(command: APICommand, idFromArgs?: string, versionFromArgs?: number, prompt?: string): Promise<CapabilityId> {
+export async function chooseCapability(command: APIOrganizationCommand, idFromArgs?: string, versionFromArgs?: number, prompt?: string): Promise<CapabilityId> {
 	const preselectedId: CapabilityId | undefined = idFromArgs ? { id: idFromArgs, version: versionFromArgs ?? 1 } : undefined
 	const config = {
 		itemName: 'capability',
@@ -251,7 +253,7 @@ export async function chooseCapability(command: APICommand, idFromArgs?: string,
 	return selectGeneric(command, config, preselectedId, () => getCustomByNamespace(command.client), getIdFromUser, prompt)
 }
 
-export async function chooseCapabilityFiltered(command: APICommand, prompt: string, filter: string): Promise<CapabilityId> {
+export async function chooseCapabilityFiltered(command: APIOrganizationCommand, prompt: string, filter: string): Promise<CapabilityId> {
 	const config = {
 		itemName: 'capability',
 		primaryKeyName: 'id',
@@ -261,12 +263,13 @@ export async function chooseCapabilityFiltered(command: APICommand, prompt: stri
 	return selectGeneric(command, config, undefined, () => getAllFiltered(command.client, filter), getIdFromUser, prompt, false)
 }
 
-export default class CapabilitiesCommand extends APICommand {
+export default class CapabilitiesCommand extends APIOrganizationCommand {
 	static description = 'get a specific capability'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...outputGenericListing.flags,
+		...allOrganizationsFlags,
 		namespace: flags.string({
 			char: 'n',
 			description: 'a specific namespace to query; will use all by default',
@@ -291,7 +294,18 @@ export default class CapabilitiesCommand extends APICommand {
 			buildTableOutput: (data: Capability) => buildTableOutput(this.tableGenerator, data),
 		}
 		await outputGenericListing(this, config, idOrIndex,
-			() => flags.standard ? getStandard(this.client) : getCustomByNamespace(this.client, flags.namespace),
+			() => {
+				if (flags.standard) {
+					return getStandard(this.client)
+				} else if (flags['all-organizations']) {
+					config.listTableFieldDefinitions.push('organization')
+					return forAllOrganizations(this.client, (org) => {
+						const orgClient = this.client.clone({'X-ST-Organization': org.organizationId})
+						return getCustomByNamespace(orgClient, flags.namespace)
+					})
+				}
+				return getCustomByNamespace(this.client, flags.namespace)
+			},
 			(id: CapabilityId) => this.client.capabilities.get(id.id, id.version),
 			(idOrIndex, listFunction) => translateToId(config.sortKeyName, idOrIndex, listFunction))
 	}

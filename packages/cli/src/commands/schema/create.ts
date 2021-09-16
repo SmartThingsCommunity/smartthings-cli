@@ -2,10 +2,9 @@ import { flags } from '@oclif/command'
 
 import { SchemaAppRequest, SchemaCreateResponse } from '@smartthings/core-sdk'
 
-import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
+import { APICommand, inputAndOutputItem, lambdaAuthFlags } from '@smartthings/cli-lib'
 
 import { addSchemaPermission } from '../../lib/aws-utils'
-import { lambdaAuthFlags } from '../../lib/common-flags'
 import { SCHEMA_AWS_PRINCIPAL } from './authorize'
 
 

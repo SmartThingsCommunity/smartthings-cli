@@ -1,16 +1,16 @@
 import { CapabilityLocalization } from '@smartthings/core-sdk'
 
-import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../translations'
 import { capabilityIdInputArgs, chooseCapability } from '../../capabilities'
 
 
-export default class CapabilityTranslationsCreateCommand extends APICommand {
+export default class CapabilityTranslationsCreateCommand extends APIOrganizationCommand {
 	static description = 'create a capability translation'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...inputAndOutputItem.flags,
 	}
 

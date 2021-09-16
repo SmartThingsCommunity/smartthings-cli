@@ -1,8 +1,7 @@
 import { flags } from '@oclif/command'
 import { App, AppRequest } from '@smartthings/core-sdk'
-import { ActionFunction, APICommand, inputAndOutputItem, TableCommonOutputProducer } from '@smartthings/cli-lib'
+import { ActionFunction, APICommand, inputAndOutputItem, TableCommonOutputProducer, lambdaAuthFlags } from '@smartthings/cli-lib'
 import { addPermission } from '../../lib/aws-utils'
-import { lambdaAuthFlags } from '../../lib/common-flags'
 import { chooseApp, tableFieldDefinitions } from '../../lib/commands/apps/apps-util'
 
 
