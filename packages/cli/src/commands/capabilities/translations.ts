@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { CapabilityLocalization, DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
-import { APICommand, ListingOutputConfig, outputListing, selectGeneric, SelectingConfig, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, ListingOutputConfig, outputListing, selectGeneric, SelectingConfig, TableGenerator } from '@smartthings/cli-lib'
 
 import { CapabilityId, capabilityIdOrIndexInputArgs, CapabilitySummaryWithNamespace, getCustomByNamespace,
 	getIdFromUser, translateToId } from '../capabilities'
@@ -43,12 +43,12 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: Capabilit
 
 export type CapabilitySummaryWithLocales = CapabilitySummaryWithNamespace & { locales?: string }
 
-export default class CapabilityTranslationsCommand extends APICommand {
+export default class CapabilityTranslationsCommand extends APIOrganizationCommand {
 
 	static description = 'Get list of locales supported by the capability'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...outputListing.flags,
 		namespace: flags.string({
 			char: 'n',

@@ -8,6 +8,9 @@ import { defaultClientIdProvider, LoginAuthenticator } from './login-authenticat
 import { SmartThingsCommand } from './smartthings-command'
 
 
+const LANGUAGE_HEADER = 'Accept-Language'
+const ORGANIZATION_HEADER = 'X-ST-Organization'
+
 /**
  * Base class for commands that need to use Rest API commands via the
  * SmartThings Core SDK.
@@ -61,9 +64,22 @@ export abstract class APICommand extends SmartThingsCommand {
 
 		const logger = logManager.getLogger('rest-client')
 
-		const headers = flags.language ?
-			(flags.language === 'NONE' ? undefined : { 'Accept-Language': flags.language }) :
-			{ 'Accept-Language': await osLocale() }
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const headers: { [name: string]: any } = {}
+
+		if (flags.language) {
+			if (flags.language !== 'NONE') {
+				headers[LANGUAGE_HEADER] = flags.language
+			}
+		} else {
+			headers[LANGUAGE_HEADER] = await osLocale()
+		}
+
+		if (flags.organization) {
+			headers[ORGANIZATION_HEADER] = flags.organization
+		} else if ('organization' in this.profileConfig) {
+			headers[ORGANIZATION_HEADER] = this.profileConfig.organization
+		}
 
 		this._authenticator = this.token
 			? new BearerTokenAuthenticator(this.token)

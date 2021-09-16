@@ -1,12 +1,12 @@
-import { APICommand } from '@smartthings/cli-lib'
+import { APIOrganizationCommand } from '@smartthings/cli-lib'
 
 import { chooseDeviceProfile } from '../deviceprofiles'
 
 
-export default class DeviceProfileDeleteCommand extends APICommand {
+export default class DeviceProfileDeleteCommand extends APIOrganizationCommand {
 	static description = 'delete a device profile'
 
-	static flags = APICommand.flags
+	static flags = APIOrganizationCommand.flags
 
 	static args = [{
 		name: 'id',

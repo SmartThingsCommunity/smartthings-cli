@@ -1,15 +1,15 @@
 import { DeviceProfileStatus } from '@smartthings/core-sdk'
 
-import { APICommand, formatAndWriteItem } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, formatAndWriteItem } from '@smartthings/cli-lib'
 
 import { buildTableOutput, chooseDeviceProfile } from '../deviceprofiles'
 
 
-export default class DeviceProfilePublishCommand extends APICommand {
+export default class DeviceProfilePublishCommand extends APIOrganizationCommand {
 	static description = 'publish a device profile (published profiles cannot be modified)'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...formatAndWriteItem.flags,
 	}
 

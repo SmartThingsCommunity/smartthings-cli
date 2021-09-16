@@ -13,7 +13,7 @@ import {
 	HttpClientParams,
 } from '@smartthings/core-sdk'
 
-import { APICommand, inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../capabilities'
 
@@ -35,11 +35,11 @@ function unitOfMeasureValidator(input: string): boolean | string {
 	return input.length < 25 ? true : 'The unit should be less than 25 characters'
 }
 
-export default class CapabilitiesCreateCommand extends APICommand {
+export default class CapabilitiesCreateCommand extends APIOrganizationCommand {
 	static description = 'create a capability for a user'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...inputAndOutputItem.flags,
 		namespace: flags.string({
 			char: 'n',

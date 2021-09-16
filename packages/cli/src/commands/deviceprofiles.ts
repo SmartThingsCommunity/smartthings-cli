@@ -3,7 +3,7 @@ import Table from 'cli-table'
 
 import { DeviceProfile, LocaleReference } from '@smartthings/core-sdk'
 
-import { APICommand, ChooseOptions, chooseOptionsWithDefaults, outputListing, selectFromList, stringTranslateToId, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, ChooseOptions, chooseOptionsWithDefaults, outputListing, selectFromList, stringTranslateToId, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile,
@@ -33,7 +33,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePro
 		'(Information is summarized, for full details use YAML, -y, or JSON flag, -j.)'
 }
 
-export async function chooseDeviceProfile(command: APICommand, deviceProfileFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
+export async function chooseDeviceProfile(command: APIOrganizationCommand, deviceProfileFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
 	const opts = chooseOptionsWithDefaults(options)
 	const config = {
 		itemName: 'device profile',
@@ -75,11 +75,11 @@ export async function chooseDeviceProfile(command: APICommand, deviceProfileFrom
 	return selectFromList(command, config, preselectedId, listDeviceProfiles)
 }
 
-export default class DeviceProfilesCommand extends APICommand {
+export default class DeviceProfilesCommand extends APIOrganizationCommand {
 	static description = 'list all device profiles available in a user account or retrieve a single profile'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...outputListing.flags,
 		verbose: flags.boolean({
 			description: 'include presentationId and manufacturerName in list output',

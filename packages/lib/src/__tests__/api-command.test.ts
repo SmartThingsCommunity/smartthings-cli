@@ -80,7 +80,7 @@ describe('api-command', () => {
 
 			const configUsed = stClientSpy.mock.calls[0][1]
 			expect(configUsed).toBeDefined()
-			expect(configUsed?.headers).toBeUndefined()
+			expect(configUsed?.headers).toEqual({})
 		})
 
 		it('should uses os language header when not specified', async () => {

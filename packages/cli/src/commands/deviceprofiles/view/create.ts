@@ -1,17 +1,17 @@
-import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { cleanupRequest, createWithDefaultConfig } from '../create'
 import { buildTableOutput, prunePresentationValues, augmentPresentationValues, DeviceDefinition, DeviceDefinitionRequest } from '../view'
 
 
-export default class DeviceDefCreateCommand extends APICommand {
+export default class DeviceDefCreateCommand extends APIOrganizationCommand {
 	static description = 'create a new device profile and device configuration\n' +
 		'Creates a new device profile and device configuration. Unlike deviceprofiles:create,\n' +
 		'this command accepts a consolidated object that can include a device configuration\n' +
 		'in a property named "view".'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...inputAndOutputItem.flags,
 	}
 

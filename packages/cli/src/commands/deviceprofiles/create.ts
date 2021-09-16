@@ -8,7 +8,7 @@ import {
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { APICommand, inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../deviceprofiles'
 import { DeviceDefinitionRequest } from './view'
@@ -129,14 +129,14 @@ export function cleanupRequest(deviceProfileRequest: Partial<DeviceProfile & { r
 	return deviceProfileRequest
 }
 
-export default class DeviceProfileCreateCommand extends APICommand {
+export default class DeviceProfileCreateCommand extends APIOrganizationCommand {
 	static description = 'Create a new device profile\n' +
 		'Creates a new device profile. If a vid field is not present in the meta\n' +
 		'then a default device presentation will be created for this profile and the\n' +
 		'vid set to reference it.'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...inputAndOutputItem.flags,
 	}
 

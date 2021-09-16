@@ -3,7 +3,7 @@ import { flags } from '@oclif/command'
 
 import { Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, ListDataFunction, outputGenericListing, selectGeneric, sort, Sorting, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, ListDataFunction, outputGenericListing, selectGeneric, sort, Sorting, TableGenerator } from '@smartthings/cli-lib'
 
 
 export const capabilityIdInputArgs = [
@@ -129,7 +129,7 @@ export interface CapabilityId {
 
 export type CapabilitySummaryWithNamespace = CapabilitySummary & { namespace: string }
 
-export function buildListTableOutput(this: APICommand, capabilities: CapabilitySummaryWithNamespace[]): string {
+export function buildListTableOutput(this: APIOrganizationCommand, capabilities: CapabilitySummaryWithNamespace[]): string {
 	return this.tableGenerator.buildTableFromList(capabilities, ['id', 'version', 'status'])
 }
 
@@ -240,7 +240,7 @@ export async function translateToId(sortKeyName: string, idOrIndex: string | Cap
 	return { id: matchingItem.id, version: matchingItem.version }
 }
 
-export async function chooseCapability(command: APICommand, idFromArgs?: string, versionFromArgs?: number, prompt?: string): Promise<CapabilityId> {
+export async function chooseCapability(command: APIOrganizationCommand, idFromArgs?: string, versionFromArgs?: number, prompt?: string): Promise<CapabilityId> {
 	const preselectedId: CapabilityId | undefined = idFromArgs ? { id: idFromArgs, version: versionFromArgs ?? 1 } : undefined
 	const config = {
 		itemName: 'capability',
@@ -251,7 +251,7 @@ export async function chooseCapability(command: APICommand, idFromArgs?: string,
 	return selectGeneric(command, config, preselectedId, () => getCustomByNamespace(command.client), getIdFromUser, prompt)
 }
 
-export async function chooseCapabilityFiltered(command: APICommand, prompt: string, filter: string): Promise<CapabilityId> {
+export async function chooseCapabilityFiltered(command: APIOrganizationCommand, prompt: string, filter: string): Promise<CapabilityId> {
 	const config = {
 		itemName: 'capability',
 		primaryKeyName: 'id',
@@ -261,11 +261,11 @@ export async function chooseCapabilityFiltered(command: APICommand, prompt: stri
 	return selectGeneric(command, config, undefined, () => getAllFiltered(command.client, filter), getIdFromUser, prompt, false)
 }
 
-export default class CapabilitiesCommand extends APICommand {
+export default class CapabilitiesCommand extends APIOrganizationCommand {
 	static description = 'get a specific capability'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...outputGenericListing.flags,
 		namespace: flags.string({
 			char: 'n',

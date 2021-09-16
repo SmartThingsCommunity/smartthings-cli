@@ -1,16 +1,16 @@
 import { DeviceProfileTranslations } from '@smartthings/core-sdk'
 
-import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../translations'
 import { chooseDeviceProfile } from '../../deviceprofiles'
 
 
-export default class DeviceProfileTranslationsUpsertCommand extends APICommand {
+export default class DeviceProfileTranslationsUpsertCommand extends APIOrganizationCommand {
 	static description = 'create or update a device profile translation'
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...inputAndOutputItem.flags,
 	}
 
