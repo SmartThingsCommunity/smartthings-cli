@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk'
-import {AddPermissionRequest} from 'aws-sdk/clients/lambda'
+import { AddPermissionRequest } from 'aws-sdk/clients/lambda'
 
 
 export async function addPermission(arn: string, principal = '906037444270', statementId = 'smartthings'): Promise<string> {
@@ -10,7 +10,7 @@ export async function addPermission(arn: string, principal = '906037444270', sta
 
 	try {
 		const region = segs[3]
-		AWS.config.update({region})
+		AWS.config.update({ region })
 		const lambda = new AWS.Lambda()
 
 		const params: AddPermissionRequest = {

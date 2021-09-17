@@ -5,7 +5,7 @@ import { SchemaAppRequest } from '@smartthings/core-sdk'
 
 import { APICommand, inputItem, selectFromList } from '@smartthings/cli-lib'
 
-import { addSchemaPermission} from '../../lib/aws-utils'
+import { addSchemaPermission } from '../../lib/aws-utils'
 import { lambdaAuthFlags } from '../../lib/common-flags'
 
 

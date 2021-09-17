@@ -1,11 +1,8 @@
 import { flags } from '@oclif/command'
-
 import { Room, RoomRequest } from '@smartthings/core-sdk'
-
-import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
-
+import { APICommand, CommonOutputProducer, inputAndOutputItem } from '@smartthings/cli-lib'
 import { chooseLocation } from '../../locations'
-import { tableFieldDefinitions } from '../rooms'
+import { tableFieldDefinitions } from '../../../lib/commands/locations/rooms/rooms-util'
 
 
 export default class RoomsCreateCommand extends APICommand {
@@ -27,8 +24,8 @@ export default class RoomsCreateCommand extends APICommand {
 		await super.setup(args, argv, flags)
 
 		const locationId = await chooseLocation(this, flags['location-id'])
-
-		await inputAndOutputItem<RoomRequest, Room>(this, { tableFieldDefinitions },
-			(_, location) => this.client.rooms.create(location, locationId))
+		const config: CommonOutputProducer<Room> = { tableFieldDefinitions }
+		await inputAndOutputItem<RoomRequest, Room>(this, config,
+			(_, room) => this.client.rooms.create(room, locationId))
 	}
 }
