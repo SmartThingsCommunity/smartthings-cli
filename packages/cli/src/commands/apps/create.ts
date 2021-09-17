@@ -5,7 +5,7 @@ import { AppRequest, AppCreationResponse } from '@smartthings/core-sdk'
 import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { tableFieldDefinitions } from '../apps'
-import { addPermission } from '../../lib/aws-utils'
+import { addPermission } from '../../lib/util/aws-utils'
 import { lambdaAuthFlags } from '../../lib/common-flags'
 import { CLIError } from '@oclif/errors'
 
