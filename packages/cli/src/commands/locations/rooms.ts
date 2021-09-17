@@ -1,56 +1,8 @@
 import { flags } from '@oclif/command'
-import { CLIError } from '@oclif/errors'
+import { APICommand, ListingOutputConfig, outputListing } from '@smartthings/cli-lib'
+import { Room } from '@smartthings/core-sdk'
+import { getRoomsByLocation, RoomWithLocation, tableFieldDefinitions } from '../../lib/commands/locations/rooms/rooms-util'
 
-import { LocationItem, Room, SmartThingsClient } from '@smartthings/core-sdk'
-
-import { APICommand, outputListing, selectFromList } from '@smartthings/cli-lib'
-
-
-export const tableFieldDefinitions = ['name', 'locationId', 'roomId']
-
-export async function getRoomsByLocation(client: SmartThingsClient, locationId?: string): Promise<RoomWithLocation[]> {
-	let locations: LocationItem[] = []
-	if (locationId) {
-		locations = [await client.locations.get(locationId)]
-	} else {
-		locations = await client.locations.list()
-	}
-
-	if (!locations || locations.length == 0) {
-		throw new CLIError('could not find any locations for your account. Perhaps ' +
-			"you haven't created any locations yet.")
-	}
-
-	let rooms: RoomWithLocation[] = []
-	for (const location of locations) {
-		const locationRooms = await client.rooms.list(location.locationId)
-		rooms = rooms.concat(locationRooms.map(room => { return { ...room, locationName: location.name } }))
-	}
-	return rooms
-}
-
-export type RoomWithLocation = Room & {
-	locationName?: string
-}
-
-export async function chooseRoom(command: APICommand, locationId?: string, deviceFromArg?: string): Promise<[string, string]> {
-	const rooms = await getRoomsByLocation(command.client, locationId)
-	const config = {
-		itemName: 'room',
-		primaryKeyName: 'roomId',
-		sortKeyName: 'name',
-		listTableFieldDefinitions: tableFieldDefinitions,
-	}
-	const roomId = await selectFromList(command, config, deviceFromArg, async () => rooms)
-	const room = rooms.find(room => room.roomId === roomId)
-	if (!room) {
-		throw new CLIError(`could not find room with id ${roomId}`)
-	}
-	if (!room.locationId) {
-		throw new CLIError(`could not determine location id for room ${roomId}`)
-	}
-	return [roomId, room.locationId]
-}
 
 export default class RoomsCommand extends APICommand {
 	static description = 'list rooms or get information for a specific room'
@@ -75,7 +27,7 @@ export default class RoomsCommand extends APICommand {
 		const { args, argv, flags } = this.parse(RoomsCommand)
 		await super.setup(args, argv, flags)
 
-		const config = {
+		const config: ListingOutputConfig<Room, RoomWithLocation> = {
 			primaryKeyName: 'roomId',
 			sortKeyName: 'name',
 			listTableFieldDefinitions: tableFieldDefinitions,
