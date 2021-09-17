@@ -5,7 +5,7 @@ import { App, AppRequest } from '@smartthings/core-sdk'
 import { ActionFunction, APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { chooseApp, tableFieldDefinitions } from '../apps'
-import { addPermission } from '../../lib/aws-utils'
+import { addPermission } from '../../lib/util/aws-utils'
 import { lambdaAuthFlags } from '../../lib/common-flags'
 
 

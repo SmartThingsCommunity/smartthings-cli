@@ -1,5 +1,5 @@
 import { SmartThingsCommand } from '@smartthings/cli-lib'
-import { addPermission } from '../../lib/aws-utils'
+import { addPermission } from '../../lib/util/aws-utils'
 import { lambdaAuthFlags } from '../../lib/common-flags'
 
 
