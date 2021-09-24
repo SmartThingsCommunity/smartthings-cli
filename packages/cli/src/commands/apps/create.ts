@@ -8,7 +8,7 @@ import { tableFieldDefinitions } from '../../lib/commands/apps/apps-util'
 
 
 export default class AppCreateCommand extends APICommand {
-	static description = 'update the OAuth settings of the app'
+	static description = 'create an app'
 
 	static flags = {
 		...APICommand.flags,
@@ -24,7 +24,7 @@ export default class AppCreateCommand extends APICommand {
 		await super.setup(args, argv, flags)
 
 		const createApp = async (_: void, data: AppRequest): Promise<AppCreationResponse> => {
-			// TODO extract this authorization block out to util function and use in update.ts as well
+			// TODO extract this authorization block out to util function and use in ./update.ts as well
 			if (flags.authorize) {
 				if (data.lambdaSmartApp) {
 					if (data.lambdaSmartApp.functions) {

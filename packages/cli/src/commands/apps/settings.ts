@@ -3,7 +3,7 @@ import { buildTableOutput, chooseApp } from '../../lib/commands/apps/apps-util'
 
 
 export default class AppSettingsCommand extends APICommand {
-	static description = 'get OAuth settings of the app'
+	static description = 'get the settings of the app'
 
 	static flags = {
 		...APICommand.flags,

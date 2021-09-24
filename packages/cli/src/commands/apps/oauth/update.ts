@@ -1,7 +1,6 @@
 import { AppOAuth } from '@smartthings/core-sdk'
 import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
-import { tableFieldDefinitions } from '../oauth'
-import { chooseApp } from '../../../lib/commands/apps/apps-util'
+import { chooseApp, oauthTableFieldDefinitions } from '../../../lib/commands/apps/apps-util'
 
 
 export default class AppOauthUpdateCommand extends APICommand {
@@ -22,7 +21,7 @@ export default class AppOauthUpdateCommand extends APICommand {
 		await super.setup(args, argv, flags)
 
 		const appId = await chooseApp(this, args.id)
-		await inputAndOutputItem(this, { tableFieldDefinitions },
+		await inputAndOutputItem(this, { tableFieldDefinitions: oauthTableFieldDefinitions },
 			(_, data: AppOAuth) => this.client.apps.updateOauth(appId, data))
 	}
 }

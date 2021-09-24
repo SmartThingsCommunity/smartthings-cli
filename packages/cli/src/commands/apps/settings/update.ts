@@ -4,7 +4,7 @@ import { buildTableOutput, chooseApp } from '../../../lib/commands/apps/apps-uti
 
 
 export default class AppSettingsUpdateCommand extends APICommand {
-	static description = 'update the OAuth settings of the app'
+	static description = 'update the settings of the app'
 
 	static flags = {
 		...APICommand.flags,
