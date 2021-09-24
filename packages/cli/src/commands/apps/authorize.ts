@@ -1,5 +1,5 @@
 import { SmartThingsCommand } from '@smartthings/cli-lib'
-import { addPermission } from '../../lib/util/aws-utils'
+import { addPermission } from '../../lib/aws-utils'
 import { lambdaAuthFlags } from '../../lib/common-flags'
 
 
@@ -35,10 +35,7 @@ export default class AppsAuthorizeCommand extends SmartThingsCommand {
 		const { args, argv, flags } = this.parse(AppsAuthorizeCommand)
 		await super.setup(args, argv, flags)
 
-		addPermission(args.arn, flags.principal, flags['statement-id']).then(async (message) => {
-			this.log(message)
-		}).catch(err => {
-			this.log(`caught error ${err}`)
-		})
+		const message = await addPermission(args.arn, flags.principal, flags['statement-id'])
+		this.log(message)
 	}
 }

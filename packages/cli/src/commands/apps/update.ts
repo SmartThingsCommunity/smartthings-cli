@@ -1,12 +1,9 @@
 import { flags } from '@oclif/command'
-
 import { App, AppRequest } from '@smartthings/core-sdk'
-
-import { ActionFunction, APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
-
-import { chooseApp, tableFieldDefinitions } from '../apps'
-import { addPermission } from '../../lib/util/aws-utils'
+import { ActionFunction, APICommand, inputAndOutputItem, TableCommonOutputProducer } from '@smartthings/cli-lib'
+import { addPermission } from '../../lib/aws-utils'
 import { lambdaAuthFlags } from '../../lib/common-flags'
+import { chooseApp, tableFieldDefinitions } from '../../lib/commands/apps/apps-util'
 
 
 export default class AppUpdateCommand extends APICommand {
@@ -47,6 +44,8 @@ export default class AppUpdateCommand extends APICommand {
 			}
 			return this.client.apps.update(appId, data)
 		}
-		await inputAndOutputItem(this, { tableFieldDefinitions }, executeUpdate)
+
+		const config: TableCommonOutputProducer<App> = { tableFieldDefinitions }
+		await inputAndOutputItem(this, config, executeUpdate)
 	}
 }

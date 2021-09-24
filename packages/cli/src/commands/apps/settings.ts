@@ -1,23 +1,6 @@
-import { AppSettings } from '@smartthings/core-sdk'
+import { APICommand, outputItem, outputListing } from '@smartthings/cli-lib'
+import { buildTableOutput, chooseApp } from '../../lib/commands/apps/apps-util'
 
-import { APICommand, outputItem, outputListing, TableGenerator } from '@smartthings/cli-lib'
-
-import { chooseApp } from '../apps'
-
-
-export function buildTableOutput(tableGenerator: TableGenerator, appSettings: AppSettings): string {
-	if (!appSettings.settings || Object.keys(appSettings.settings).length === 0) {
-		return 'No application settings.'
-	}
-
-	const table = tableGenerator.newOutputTable({ head: ['Key', 'Value'] })
-	if (appSettings.settings) {
-		for (const key of Object.keys(appSettings.settings)) {
-			table.push([key, appSettings.settings[key]])
-		}
-	}
-	return table.toString()
-}
 
 export default class AppSettingsCommand extends APICommand {
 	static description = 'get OAuth settings of the app'

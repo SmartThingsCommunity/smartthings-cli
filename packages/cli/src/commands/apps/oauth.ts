@@ -1,6 +1,5 @@
 import { APICommand, outputItem, outputListing } from '@smartthings/cli-lib'
-
-import { chooseApp } from '../apps'
+import { chooseApp } from '../../lib/commands/apps/apps-util'
 
 
 export const tableFieldDefinitions = ['clientName', 'scope', 'redirectUris']

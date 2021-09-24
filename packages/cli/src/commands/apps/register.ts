@@ -1,8 +1,6 @@
 import _ from 'lodash'
-
-import { AppType } from '@smartthings/core-sdk'
-
-import { APICommand, selectFromList } from '@smartthings/cli-lib'
+import { App, AppType } from '@smartthings/core-sdk'
+import { APICommand, selectFromList, SelectingConfig } from '@smartthings/cli-lib'
 
 
 export default class AppRegisterCommand extends APICommand {
@@ -19,12 +17,12 @@ export default class AppRegisterCommand extends APICommand {
 		const { args, argv, flags } = this.parse(AppRegisterCommand)
 		await super.setup(args, argv, flags)
 
-		const config = {
+		const config: SelectingConfig<App> = {
 			primaryKeyName: 'appId',
 			sortKeyName: 'displayName',
 			listTableFieldDefinitions: ['displayName', 'appType', 'appId'],
 		}
-		const id = await selectFromList(this, config, args.id,
+		const id = await selectFromList<App>(this, config, args.id,
 			async () => _.flatten(await Promise.all([
 				this.client.apps.list({ appType: AppType.WEBHOOK_SMART_APP }),
 				this.client.apps.list({ appType: AppType.API_ONLY }),
