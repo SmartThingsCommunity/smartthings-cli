@@ -1,53 +1,8 @@
 import { flags } from '@oclif/command'
-
 import { App, AppType, AppClassification, AppListOptions } from '@smartthings/core-sdk'
+import { APICommand, outputListing } from '@smartthings/cli-lib'
+import { tableFieldDefinitions } from '../lib/commands/apps/apps-util'
 
-import { APICommand, ChooseOptions, chooseOptionsWithDefaults, outputListing, selectFromList, stringTranslateToId, TableFieldDefinition } from '@smartthings/cli-lib'
-
-
-const isWebhookSmartApp = (app: App): boolean => !!app.webhookSmartApp
-const hasSubscription = (app: App): boolean => !!app.apiOnly?.subscription
-export const tableFieldDefinitions: TableFieldDefinition<App>[] = [
-	'displayName',
-	'appId',
-	'appName',
-	'description',
-	'singleInstance',
-	{ prop: 'classifications', include: app => !!app.classifications },
-	{ prop: 'installMetadata.certified', include: app => !!app.installMetadata?.certified },
-	{ prop: 'installMetadata.maxInstalls', include: app => !!app.installMetadata?.maxInstalls },
-	'appType',
-	{ prop: 'webhookSmartApp.signatureType', include: isWebhookSmartApp },
-	{ prop: 'webhookSmartApp.targetUrl', include: isWebhookSmartApp },
-	{ prop: 'webhookSmartApp.targetStatus', include: isWebhookSmartApp },
-	{
-		prop: 'webhookSmartApp.publicKey',
-		include: app => !!app.webhookSmartApp?.publicKey,
-		value: app => app.webhookSmartApp?.publicKey?.replace(/\r\n/g, '\n') ?? '',
-	},
-	{
-		include: app => !!app.lambdaSmartApp?.functions,
-		label: 'Lambda Function',
-		value: app => app.lambdaSmartApp?.functions?.join('\n') ?? '',
-	},
-	{ prop: 'apiOnly.subscription.targetUrl', include: hasSubscription },
-	{ prop: 'apiOnly.subscription.targetStatus', include: hasSubscription },
-	{ prop: 'installMetadata.certified', include: app => app.installMetadata?.certified !== undefined },
-]
-
-export async function chooseApp(command: APICommand, appFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
-	const opts = chooseOptionsWithDefaults(options)
-	const config = {
-		itemName: 'app',
-		primaryKeyName: 'appId',
-		sortKeyName: 'displayName',
-	}
-	const listApps = (): Promise<App[]> => command.client.apps.list()
-	const preselectedId = opts.allowIndex
-		? await stringTranslateToId(config, appFromArg, listApps)
-		: appFromArg
-	return selectFromList(command, config, preselectedId, listApps)
-}
 
 export default class AppsCommand extends APICommand {
 	static description = 'get a specific app or a list of apps'
@@ -112,19 +67,20 @@ export default class AppsCommand extends APICommand {
 			// }
 			if (flags.verbose) {
 				return this.client.apps.list(appListOptions).then(list => {
-					const objects = list.map(it => {
+					const apps = list.map(app => {
+						// TODO remove assertion when https://github.com/SmartThingsCommunity/smartthings-core-sdk/issues/89 is resolved
 						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-						return this.client.apps.get((it.appId)!) // TODO appId should not be optional
+						return this.client.apps.get((app.appId)!)
 					})
-					return Promise.all(objects).then((list: (App & { 'ARN/URL'?: string })[]) => {
-						for (const item of list) {
-							const uri = (item.webhookSmartApp ?
-								item.webhookSmartApp.targetUrl :
-								(item.lambdaSmartApp ? (item.lambdaSmartApp?.functions?.length ? item.lambdaSmartApp?.functions[0] : '') :
-									(item.apiOnly?.subscription?.targetUrl ?? ''))) ?? ''
+					return Promise.all(apps).then((list: (App & { 'ARN/URL'?: string })[]) => {
+						for (const app of list) {
+							const uri = (app.webhookSmartApp ?
+								app.webhookSmartApp.targetUrl :
+								(app.lambdaSmartApp ? (app.lambdaSmartApp?.functions?.length ? app.lambdaSmartApp?.functions[0] : '') :
+									(app.apiOnly?.subscription?.targetUrl ?? ''))) ?? ''
 
 							const arnURL = uri.length < 96 ? uri : uri.slice(0,95) + '...'
-							item['ARN/URL'] = arnURL
+							app['ARN/URL'] = arnURL
 						}
 						return list
 					})

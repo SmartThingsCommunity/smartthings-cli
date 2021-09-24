@@ -1,13 +1,10 @@
 import { flags } from '@oclif/command'
-
 import { AppRequest, AppCreationResponse } from '@smartthings/core-sdk'
-
 import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
-
-import { tableFieldDefinitions } from '../apps'
-import { addPermission } from '../../lib/util/aws-utils'
+import { addPermission } from '../../lib/aws-utils'
 import { lambdaAuthFlags } from '../../lib/common-flags'
 import { CLIError } from '@oclif/errors'
+import { tableFieldDefinitions } from '../../lib/commands/apps/apps-util'
 
 
 export default class AppCreateCommand extends APICommand {
@@ -27,11 +24,12 @@ export default class AppCreateCommand extends APICommand {
 		await super.setup(args, argv, flags)
 
 		const createApp = async (_: void, data: AppRequest): Promise<AppCreationResponse> => {
+			// TODO extract this authorization block out to util function and use in update.ts as well
 			if (flags.authorize) {
 				if (data.lambdaSmartApp) {
 					if (data.lambdaSmartApp.functions) {
-						const requests = data.lambdaSmartApp.functions.map((it) => {
-							return addPermission(it, flags.principal, flags['statement-id'])
+						const requests = data.lambdaSmartApp.functions.map((functionArn) => {
+							return addPermission(functionArn, flags.principal, flags['statement-id'])
 						})
 						await Promise.all(requests)
 					}

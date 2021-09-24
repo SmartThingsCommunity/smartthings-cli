@@ -1,9 +1,6 @@
 import { AppSettings } from '@smartthings/core-sdk'
-
 import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
-
-import { buildTableOutput } from '../settings'
-import { chooseApp } from '../../apps'
+import { buildTableOutput, chooseApp } from '../../../lib/commands/apps/apps-util'
 
 
 export default class AppSettingsUpdateCommand extends APICommand {
