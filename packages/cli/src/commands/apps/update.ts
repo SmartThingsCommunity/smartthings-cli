@@ -7,7 +7,7 @@ import { chooseApp, tableFieldDefinitions } from '../../lib/commands/apps/apps-u
 
 
 export default class AppUpdateCommand extends APICommand {
-	static description = 'update the OAuth settings of the app'
+	static description = 'update the settings of the app'
 
 	static flags = {
 		...APICommand.flags,

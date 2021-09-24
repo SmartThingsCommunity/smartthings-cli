@@ -1,8 +1,8 @@
 import AWS from 'aws-sdk'
-import { AddPermissionRequest } from 'aws-sdk/clients/lambda'
+import { AddPermissionRequest, FunctionName, Principal, StatementId } from 'aws-sdk/clients/lambda'
 
 
-export async function addPermission(arn: string, principal = '906037444270', statementId = 'smartthings'): Promise<string> {
+export async function addPermission(arn: FunctionName, principal: Principal = '906037444270', statementId: StatementId = 'smartthings'): Promise<string> {
 	const segs = arn.split(':')
 	if (segs.length < 7) {
 		return 'Invalid Lambda ARN'
@@ -30,6 +30,6 @@ export async function addPermission(arn: string, principal = '906037444270', sta
 	}
 }
 
-export function addSchemaPermission(arn: string, principal = '148790070172', statementId = 'smartthings'): Promise<string> {
+export function addSchemaPermission(arn: FunctionName, principal: Principal = '148790070172', statementId: StatementId = 'smartthings'): Promise<string> {
 	return addPermission(arn, principal, statementId)
 }
