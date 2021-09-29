@@ -146,11 +146,6 @@ export async function getCustomByNamespace(client: SmartThingsClient, namespace?
 		namespaces = (await client.capabilities.listNamespaces()).map((ns: CapabilityNamespace) => ns.name)
 	}
 
-	if (!namespaces || namespaces.length == 0) {
-		throw Error('could not find any namespaces for your account. Perhaps ' +
-			"you haven't created any capabilities yet.")
-	}
-
 	let capabilities: CapabilitySummaryWithNamespace[] = []
 	for (const namespace of namespaces) {
 		const caps = await client.capabilities.list(namespace)
