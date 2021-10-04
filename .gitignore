@@ -14,3 +14,6 @@ scratch_pad.txt
 packages/*/smartthings-cli-*.tgz
 coverage
 smartthings-*.zip
+
+# the Typescript outDir that oclif prefers
+packages/cli/lib

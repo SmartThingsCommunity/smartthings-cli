@@ -9,13 +9,13 @@
 	"bugs": "https://github.com/SmartThingsCommunity/smartthings-cli/issues",
 	"homepage": "https://github.com/SmartThingsCommunity/smartthings-cli",
 	"license": "Apache-2.0",
-	"main": "dist/index.js",
+	"main": "lib/index.js",
 	"engines": {
 		"node": ">=12.13.1"
 	},
 	"files": [
 		"/bin",
-		"/dist",
+		"/lib",
 		"README.md",
 		"/npm-shrinkwrap.json",
 		"/oclif.manifest.json",
@@ -32,7 +32,7 @@
 		"oclif"
 	],
 	"oclif": {
-		"commands": "./dist/commands",
+		"commands": "./lib/commands",
 		"bin": "smartthings",
 		"plugins": [
 			"@smartthings/plugin-cli-edge",
@@ -42,12 +42,12 @@
 			"@oclif/plugin-plugins"
 		],
 		"hooks": {
-			"init": "./dist/hooks/init/init-config"
+			"init": "./lib/hooks/init/init-config"
 		}
 	},
 	"pkg": {
 		"scripts": [
-			"dist/**/*.js"
+			"lib/**/*.js"
 		],
 		"assets": [
 			"../../node_modules/generator-smartthings",
@@ -65,7 +65,7 @@
 		"@oclif/plugin-plugins": "^1.9.4",
 		"@smartthings/cli-lib": "^0.0.0-pre.29",
 		"@smartthings/core-sdk": "^1.10.0",
-		"@smartthings/plugin-cli-edge": "^1.4.0",
+		"@smartthings/plugin-cli-edge": "^1.4.2",
 		"aws-sdk": "^2.690.0",
 		"generator-smartthings": "^1.5.0",
 		"inquirer": "^8.1.2",
@@ -101,14 +101,14 @@
 	"scripts": {
 		"lint": "eslint --ext ts src",
 		"format": "eslint --ext ts src --fix",
-		"clean": "rm -rf dist && rm -f tsconfig.tsbuildinfo",
+		"clean": "rm -rf lib && rm -f tsconfig.tsbuildinfo",
 		"compile": "tsc -b",
 		"readme": "oclif-dev readme",
 		"watch": "tsc -b -w",
 		"build": "npm run clean && npm run compile && npm run readme",
 		"test": "jest",
 		"postpack": "rm -f oclif.manifest.json",
-		"prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
+		"prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
 		"version": "oclif-dev readme && git add README.md",
 		"package": "pkg package.json --out-path=dist_bin --targets=node12-linux-x64,node12-macos-x64,node12-win-x64",
 		"test-coverage": "jest --coverage=true"
