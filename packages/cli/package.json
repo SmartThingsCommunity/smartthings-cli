@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli",
-	"version": "0.0.0-pre.30",
+	"version": "0.0.0-pre.31",
 	"description": "SmartThings unified CLI",
 	"author": "SmartThings, Inc.",
 	"bin": {

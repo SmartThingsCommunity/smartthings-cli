@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.31](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.30...v0.0.0-pre.31) (2021-10-07)
+
+
+### Bug Fixes
+
+* **README:** fix code links ([738357d](https://github.com/rossiam/smartthings-cli/commit/738357dfeba84ef1174790f76783f13449c381dc)), closes [#200](https://github.com/rossiam/smartthings-cli/issues/200)
+* Don't consider lack of custom capabilities an error in list command ([514f14a](https://github.com/rossiam/smartthings-cli/commit/514f14ad5ba23657df71f4bc6741c3b6c6aa5f95))
+
+
+
+
+
 # [0.0.0-pre.30](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.29...v0.0.0-pre.30) (2021-09-21)
 
 
