@@ -1,6 +1,6 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
-import { configure, Configuration as LoggingConfig, Logger, Level } from 'log4js'
+import { configure, Configuration as LoggingConfig, Logger, Level, FileAppender, StandardErrorAppender, LogLevelFilterAppender } from 'log4js'
 
 import { Logger as APILogger } from '@smartthings/core-sdk'
 
@@ -93,11 +93,27 @@ export class LogManager {
 }
 
 export function defaultLoggingConfig(logFilename: string): LoggingConfig {
+	const fileAppender: FileAppender = {
+		type: 'file',
+		filename: logFilename,
+		maxLogSize: DEFAULT_LOG_FILE_SIZE,
+		backups: 1,
+		keepFileExt: true,
+	}
+
+	const stderrAppender: StandardErrorAppender = { type: 'stderr' }
+
+	const LogLevelFilterAppender: LogLevelFilterAppender = {
+		type: 'logLevelFilter',
+		appender: 'stderr',
+		level: 'error',
+	}
+
 	return {
 		appenders: {
-			smartthings: { type: 'file', filename: logFilename, maxLogSize: DEFAULT_LOG_FILE_SIZE },
-			stderr: { type: 'stderr' },
-			errors: { type: 'logLevelFilter', appender: 'stderr', level: 'error' },
+			smartthings: fileAppender,
+			stderr: stderrAppender,
+			errors: LogLevelFilterAppender,
 		},
 		categories: {
 			default: { appenders: ['smartthings', 'errors'], level: 'warn' },

@@ -60,10 +60,12 @@ describe('LoginAuthenticator', () => {
 			'login-authenticator': { appenders: ['main'], level: 'TRACE' },
 		},
 	}
+	const accessToken = 'db3d92f1-0000-0000-0000-000000000000'
+	const refreshToken = '3f3fb859-0000-0000-0000-000000000000'
 	const credentialsFileData = {
 		[profileName]: {
-			'accessToken': 'an access token',
-			'refreshToken': 'a refresh token',
+			'accessToken': accessToken,
+			'refreshToken': refreshToken,
 			'expires': '2020-10-15T13:26:39.966Z',
 			'scope': 'controller:stCli',
 			'installedAppId': 'installed app id',
@@ -212,7 +214,20 @@ describe('LoginAuthenticator', () => {
 			const logs = recording.replay()
 			expect(logs.length).toBe(2)
 			expect(logs[0].data[0]).toBe('constructing a LoginAuthenticator')
-			expect(logs[1].data[0]).toEqual(`authentication info from file = ${JSON.stringify(credentialsFileData[profileName], null, 4)}`)
+			expect(readFileMock).toBeCalledWith(credentialsFilename)
+			expect(logs[1].data[0]).toEqual(expect.stringContaining('authentication info from file'))
+		})
+
+		it('partially redacts token values in logs', async () => {
+			readFileMock.mockReturnValueOnce(Buffer.from(JSON.stringify(credentialsFileData)))
+			LoginAuthenticator.init(credentialsFilename)
+
+			new LoginAuthenticator(profileName, clientIdProvider)
+
+			const logs = recording.replay()
+			const authInfoLog = logs[1].data[0]
+			expect(authInfoLog).not.toIncludeMultiple([accessToken, refreshToken])
+			expect(authInfoLog).toIncludeMultiple(['db3d92f1', '3f3fb859'])
 		})
 	})
 
@@ -421,7 +436,7 @@ describe('LoginAuthenticator', () => {
 			const postData = postMock.mock.calls[0][1]
 			expect(postData).toMatch(/\bgrant_type=refresh_token\b/)
 			expect(postData).toMatch(/\bclient_id=client-id\b/)
-			expect(postData).toMatch(/\brefresh_token=a%20refresh%20token\b/)
+			expect(postData).toEqual(expect.stringContaining(`refresh_token=${refreshToken}`))
 			const postConfig = postMock.mock.calls[0][2]
 			expect(postConfig?.headers['Content-Type']).toBe('application/x-www-form-urlencoded')
 
@@ -449,7 +464,7 @@ describe('LoginAuthenticator', () => {
 			const postData = postMock.mock.calls[0][1]
 			expect(postData).toMatch(/\bgrant_type=refresh_token\b/)
 			expect(postData).toMatch(/\bclient_id=client-id\b/)
-			expect(postData).toMatch(/\brefresh_token=a%20refresh%20token\b/)
+			expect(postData).toEqual(expect.stringContaining(`refresh_token=${refreshToken}`))
 			const postConfig = postMock.mock.calls[0][2]
 			expect(postConfig?.headers['Content-Type']).toBe('application/x-www-form-urlencoded')
 			expect(postMock).toHaveBeenCalledWith('https://example.com/oauth-in-url/token', expect.anything(), expect.anything())
