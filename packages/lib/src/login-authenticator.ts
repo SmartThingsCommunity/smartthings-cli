@@ -56,6 +56,16 @@ interface CredentialsFileData {
 	[profileName: string]: any
 }
 
+/**
+ * Convert to string and scrub sensitive values
+ * Meant to be used before logging
+ */
+function scrubAuthInfo(authInfo?: AuthenticationInfo): string {
+	const message = JSON.stringify(authInfo)
+	const tokenRegex = /"([\w]*token":"[0-9a-f]{8}).+?"/ig
+	return message.replace(tokenRegex, '"$1-xxxx-xxxx-xxxx-xxxxxxxxxxxx"')
+}
+
 export class LoginAuthenticator implements Authenticator {
 	public static init(credentialsFile: string): void {
 		(global as { _credentialsFile?: string })._credentialsFile = credentialsFile
@@ -79,7 +89,7 @@ export class LoginAuthenticator implements Authenticator {
 				...authInfo,
 				expires: new Date(authInfo.expires),
 			}
-			this.logger.trace(`authentication info from file = ${JSON.stringify(this.authenticationInfo, null, 4)}`)
+			this.logger.trace(`authentication info from file = ${scrubAuthInfo(this.authenticationInfo)}`)
 		}
 	}
 
@@ -212,7 +222,7 @@ export class LoginAuthenticator implements Authenticator {
 					this.logger.error(`error closing express server: ${err}`)
 				}
 				if (this.authenticationInfo) {
-					this.logger.trace(`got authentication info: ${JSON.stringify(this.authenticationInfo)}`)
+					this.logger.trace(`got authentication info: ${scrubAuthInfo(this.authenticationInfo)}`)
 					resolve()
 				} else {
 					this.logger.trace('unable to get authentication info')
