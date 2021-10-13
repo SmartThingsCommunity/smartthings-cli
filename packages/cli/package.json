@@ -43,7 +43,8 @@
 		],
 		"hooks": {
 			"init": "./lib/hooks/init/init-config"
-		}
+		},
+		"repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/cli/<%- commandPath %>"
 	},
 	"pkg": {
 		"scripts": [
