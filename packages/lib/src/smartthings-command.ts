@@ -66,6 +66,16 @@ export abstract class SmartThingsCommand extends Command implements SmartThingsC
 		return this._profileConfig
 	}
 
+	stringConfigValue(keyName: string): string | undefined {
+		if (keyName in this.profileConfig) {
+			if (typeof this.profileConfig[keyName] === 'string') {
+				return this.profileConfig[keyName]
+			}
+			this.logger.warn(`expected string value for config key ${keyName} but got ${typeof this.profileConfig[keyName]}`)
+		}
+		this.logger.trace(`key ${keyName} not found in ${this.profileName} config`)
+	}
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	get args(): { [name: string]: any } {
 		if (!this._args) {
