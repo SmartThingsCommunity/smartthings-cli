@@ -1,5 +1,6 @@
 import inquirer from 'inquirer'
-import { chooseOptionsWithDefaults, convertToId, isIndexArgument, itemName, pluralItemName, stringGetIdFromUser, stringTranslateToId } from '../command-util'
+import { ChooseOptions, chooseOptionsWithDefaults, convertToId, isIndexArgument, itemName,
+	pluralItemName, stringGetIdFromUser, stringTranslateToId } from '../command-util'
 import * as output from '../output'
 
 
@@ -145,7 +146,8 @@ describe('command-util', () => {
 		})
 
 		it('throws an error for invalid type for primary key', async () => {
-			expect(() => convertToId('1', 'str', [{str: 3, num: 5}])).toThrow('invalid type number for primary key str in {"str":3,"num":5}')
+			expect(() => convertToId('1', 'str', [{str: 3, num: 5}]))
+				.toThrow('invalid type number for primary key str in {"str":3,"num":5}')
 		})
 	})
 
@@ -214,7 +216,13 @@ describe('command-util', () => {
 		})
 
 		it('input overrides default', () => {
-			expect(chooseOptionsWithDefaults({ allowIndex: true, verbose: true })).toEqual({ allowIndex: true, verbose: true })
+			expect(chooseOptionsWithDefaults({ allowIndex: true, verbose: true }))
+				.toEqual({ allowIndex: true, verbose: true })
+		})
+
+		it('passes on other values unchanged', () => {
+			expect(chooseOptionsWithDefaults({ someOtherKey: 'some other value' } as Partial<ChooseOptions>))
+				.toEqual(expect.objectContaining({ someOtherKey: 'some other value' }))
 		})
 	})
 })
