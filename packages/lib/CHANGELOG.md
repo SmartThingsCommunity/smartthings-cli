@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.32](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.31...v0.0.0-pre.32) (2021-10-25)
+
+
+### Bug Fixes
+
+* scrub sensitive info from logging ([6b374f8](https://github.com/SmartThingsCommunity/smartthings-cli/commit/6b374f880f78f724f2dfb139f89c39c9188de7cf))
+
+
+### Features
+
+* **lib:** add easy access to string config values ([17c013d](https://github.com/SmartThingsCommunity/smartthings-cli/commit/17c013d190a5f6923072f0a992cdef77bbeae9e9))
+
+
+
+
+
 # [0.0.0-pre.29](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.28...v0.0.0-pre.29) (2021-09-10)
 
 

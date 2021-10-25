@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.32](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.31...v0.0.0-pre.32) (2021-10-25)
+
+
+### Bug Fixes
+
+* **edge:** bump edge version to 1.4.3 ([f34ff2b](https://github.com/SmartThingsCommunity/smartthings-cli/commit/f34ff2b6538fd359076d6316e1d929da5add4d43))
+* scrub sensitive info from logging ([6b374f8](https://github.com/SmartThingsCommunity/smartthings-cli/commit/6b374f880f78f724f2dfb139f89c39c9188de7cf))
+
+
+
+
+
 # [0.0.0-pre.31](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.30...v0.0.0-pre.31) (2021-10-07)
 
 
