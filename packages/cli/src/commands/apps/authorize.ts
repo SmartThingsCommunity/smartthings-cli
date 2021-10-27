@@ -1,6 +1,5 @@
-import { SmartThingsCommand } from '@smartthings/cli-lib'
+import { SmartThingsCommand, lambdaAuthFlags } from '@smartthings/cli-lib'
 import { addPermission } from '../../lib/aws-utils'
-import { lambdaAuthFlags } from '../../lib/common-flags'
 
 
 export default class AppsAuthorizeCommand extends SmartThingsCommand {

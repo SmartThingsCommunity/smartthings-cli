@@ -3,7 +3,8 @@ import Table from 'cli-table'
 
 import { DeviceProfile, LocaleReference } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, ChooseOptions, chooseOptionsWithDefaults, outputListing, selectFromList, stringTranslateToId, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, ChooseOptions, WithOrganization, allOrganizationsFlags, chooseOptionsWithDefaults,
+	outputListing, forAllOrganizations, selectFromList, stringTranslateToId, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile,
@@ -81,6 +82,7 @@ export default class DeviceProfilesCommand extends APIOrganizationCommand {
 	static flags = {
 		...APIOrganizationCommand.flags,
 		...outputListing.flags,
+		...allOrganizationsFlags,
 		verbose: flags.boolean({
 			description: 'include presentationId and manufacturerName in list output',
 			char: 'v',
@@ -110,16 +112,29 @@ export default class DeviceProfilesCommand extends APIOrganizationCommand {
 		const config = {
 			primaryKeyName: 'id',
 			sortKeyName: 'name',
-			listTableFieldDefinitions: ['name', 'status', 'id'] as TableFieldDefinition<DeviceProfile>[],
+			listTableFieldDefinitions: ['name', 'status', 'id'] as TableFieldDefinition<DeviceProfile & WithOrganization>[],
 			buildTableOutput: (data: DeviceProfile) => buildTableOutput(this.tableGenerator, data),
 		}
+
+		if (this.flags['all-organizations']) {
+			config.listTableFieldDefinitions = ['name', 'status', 'id', 'organization']
+		}
+
 		if (this.flags.verbose) {
 			config.listTableFieldDefinitions.push({ label: 'Presentation ID', value: item => item.metadata?.vid ?? '' })
 			config.listTableFieldDefinitions.push({ label: 'Manufacturer Name', value: item => item.metadata?.mnmn ?? '' })
 		}
 
 		await outputListing(this, config, args.id,
-			() => this.client.deviceProfiles.list(),
+			() => {
+				if (flags['all-organizations']) {
+					return forAllOrganizations(this.client, (org) => {
+						const orgClient = this.client.clone({'X-ST-Organization': org.organizationId})
+						return orgClient.deviceProfiles.list()
+					})
+				}
+				return this.client.deviceProfiles.list()
+			},
 			id => this.client.deviceProfiles.get(id),
 		)
 	}

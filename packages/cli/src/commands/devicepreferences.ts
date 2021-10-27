@@ -1,6 +1,9 @@
+import { flags } from '@oclif/command'
+
 import { DevicePreference } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, outputListing, selectFromList, TableFieldDefinition } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, outputListing, allOrganizationsFlags, forAllOrganizations,
+	selectFromList, TableFieldDefinition } from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions: TableFieldDefinition<DevicePreference>[] = [
@@ -33,12 +36,43 @@ export async function chooseDevicePreference(command: APIOrganizationCommand, pr
 	return selectFromList(command, config, preferenceFromArg, () => command.client.devicePreferences.list())
 }
 
+export async function standardPreferences(command: APIOrganizationCommand): Promise<DevicePreference[]> {
+	return (await command.client.devicePreferences.list())
+		.filter(preference => preference.preferenceId.split('.').length === 1)
+}
+
+export async function customPreferences(command: APIOrganizationCommand): Promise<DevicePreference[]> {
+	return (await command.client.devicePreferences.list())
+		.filter(preference => preference.preferenceId.split('.').length > 1)
+}
+
+export async function preferencesForAllOrganizations(command: APIOrganizationCommand): Promise<DevicePreference[]> {
+	return forAllOrganizations(command.client, (org) => {
+		const orgClient = command.client.clone({'X-ST-Organization': org.organizationId})
+		// TODO - Once it is possible to create device preferences in namespaces other than the
+		// organization's default one, we should restore this logic
+		// return forAllNamespaces(orgClient, (namespace) => {
+		// 	return orgClient.devicePreferences.list(namespace.name)
+		// })
+		return orgClient.devicePreferences.list(org.name)
+	})
+}
+
 export default class DevicePreferencesCommand extends APIOrganizationCommand {
 	static description = 'list device preferences or get information for a specific device preference'
 
 	static flags = {
 		...APIOrganizationCommand.flags,
 		...outputListing.flags,
+		...allOrganizationsFlags,
+		namespace: flags.string({
+			char: 'n',
+			description: 'a specific namespace to query; will use all by default',
+		}),
+		standard: flags.boolean({
+			char: 's',
+			description: 'show standard SmartThings capabilities',
+		}),
 	}
 
 	static args = [
@@ -69,7 +103,18 @@ export default class DevicePreferencesCommand extends APIOrganizationCommand {
 		}
 
 		await outputListing(this, config, args.idOrIndex,
-			() => this.client.devicePreferences.list(),
+			async () => {
+				if (flags.standard) {
+					return standardPreferences(this)
+				} else if (this.flags.namespace) {
+					return this.client.devicePreferences.list(this.flags.namespace)
+				}
+				else if (flags['all-organizations']) {
+					config.listTableFieldDefinitions.push('organization')
+					return preferencesForAllOrganizations(this)
+				}
+				return customPreferences(this)
+			},
 			id => this.client.devicePreferences.get(id))
 	}
 }
