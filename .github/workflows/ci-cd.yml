@@ -4,14 +4,12 @@ on: [push, pull_request]
 
 jobs:
   build:
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
-
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         # add/remove versions as we move support forward
-        node-version: [12, 14]
+        node-version: [12.18.1, 14, 16]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
