@@ -43,7 +43,7 @@ progress.
 
 NOTE: Some users are experiencing issues with the default login flow. If you are experiencing
 this issue, you can work around it by creating a
-[personal access token](https://smartthings.developer.samsung.com/docs/auth-and-permissions.html)
+[personal access token](https://developer-preview.smartthings.com/docs/advanced/authorization-and-permissions)
 and including it in your [configuration file](https://github.com/SmartThingsCommunity/smartthings-cli/blob/master/packages/cli/doc/configuration.md) like this:
 
 ```yaml
@@ -813,7 +813,7 @@ EXAMPLES
               │
   ├────────────────────────┼───────────────────┼────────────────────────────────┼───────────────────────────────────────
   ─────────────┤
-  │ outputModulation       │ Output Modulation │ Power supply output modulation │ The {{attribute}} of {{device.label}} 
+  │ outputModulation       │ Output Modulation │ Power supply output modulation │ The {{attribute}} of {{device.label}}
   is {{value}} │
   │ outputModulation.50hz  │ 50 Hz             │                                │                                        
               │
@@ -860,7 +860,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
-  $ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml 
+  $ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml
   tag: en
   label: Output Modulation
   attributes:
@@ -937,7 +937,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
-  $ smartthings capabilities:translations:update custom1.outputModulation 1 -i en.yaml 
+  $ smartthings capabilities:translations:update custom1.outputModulation 1 -i en.yaml
   tag: en
   label: Output Modulation
   attributes:
@@ -1014,7 +1014,7 @@ OPTIONS
   --language=language    ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
-  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml 
+  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml
   tag: en
   label: Output Modulation
   attributes:
@@ -1180,13 +1180,13 @@ ALIASES
   $ smartthings device-preferences:create
 
 EXAMPLES
-  $ smartthings devicepreferences:create                              # create a new device profile by answering 
+  $ smartthings devicepreferences:create                              # create a new device profile by answering
   questions
-  $ smartthings devicepreferences:create -d                           # generate a device profile by answering questions 
+  $ smartthings devicepreferences:create -d                           # generate a device profile by answering questions
   but do not actually create it
-  $ smartthings devicepreferences:create -i dp.json                   # create a new device profile defined by the file 
+  $ smartthings devicepreferences:create -i dp.json                   # create a new device profile defined by the file
   dp.json
-  $ smartthings devicepreferences:create -i dp.json -o dp-saved.json  # create a new device profile defined by the file 
+  $ smartthings devicepreferences:create -i dp.json -o dp-saved.json  # create a new device profile defined by the file
   dp.json and write the results to dp-saved.json
 ```
 
@@ -1221,9 +1221,9 @@ ALIASES
   $ smartthings device-preferences:update
 
 EXAMPLES
-  $ smartthings devicepreferences:update -i dp.json                   # update a device preference with data from 
+  $ smartthings devicepreferences:update -i dp.json                   # update a device preference with data from
   dp.json, select which preference from a list
-  $ smartthings devicepreferences:update -i dp.yaml my-preference-id  # update device preference my-preference-id with 
+  $ smartthings devicepreferences:update -i dp.yaml my-preference-id  # update device preference my-preference-id with
   data from dp.yaml
 ```
 
@@ -2318,7 +2318,7 @@ ALIASES
 
 EXAMPLES
   smartthings edge:channels:invites                  # list all invites on all channels you own
-  smartthings edge:channels:invites 2                # list details about the second invite show when listed as in the 
+  smartthings edge:channels:invites 2                # list details about the second invite show when listed as in the
   example above
   smartthings edge:channels:invites -C <channel id>  # list all invites on channel with id <channel id>
   smartthings edge:channels:invites <invite id>      # list details about the invite with id <invite id>
@@ -2543,9 +2543,9 @@ OPTIONS
 
 EXAMPLES
   smartthings edge:drivers:install                                         # use Q&A format to enter required values
-  smartthings edge:drivers:install -H <hub-id>                             # specify the hub on the command line, other 
+  smartthings edge:drivers:install -H <hub-id>                             # specify the hub on the command line, other
   fields will be asked for
-  smartthings edge:drivers:install -H <hub-id> -C <channel-id> <driver-id> # install a driver from a channel on an 
+  smartthings edge:drivers:install -H <hub-id> -C <channel-id> <driver-id> # install a driver from a channel on an
   enrolled hub
 ```
 
@@ -3159,15 +3159,15 @@ DESCRIPTION
 
   Installation of a user-installed plugin will override a core plugin.
 
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command 
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in 
+  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
+  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
   the CLI without the need to patch and update the whole CLI.
 
 ALIASES
   $ smartthings plugins:add
 
 EXAMPLES
-  $ smartthings plugins:install myplugin 
+  $ smartthings plugins:install myplugin
   $ smartthings plugins:install https://github.com/someuser/someplugin
   $ smartthings plugins:install someuser/someplugin
 ```
@@ -3192,7 +3192,7 @@ OPTIONS
 DESCRIPTION
   Installation of a linked plugin will override a user-installed or core plugin.
 
-  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello' 
+  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
   command will override the user-installed or core plugin implementation. This is useful for development work.
 
 EXAMPLE
