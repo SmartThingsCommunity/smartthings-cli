@@ -6,8 +6,8 @@ import { buildTableOutput } from '../presentation/device-config'
 import { chooseDeviceProfile } from '../deviceprofiles'
 
 
-export default class ProfilePresentationCommand extends APICommand {
-	static description = 'get the presentation associated with a device profile'
+export default class DeviceProfileDeviceConfigCommand extends APICommand {
+	static description = 'get the device configuration associated with a device profile'
 
 	static flags = {
 		...APICommand.flags,
@@ -22,7 +22,7 @@ export default class ProfilePresentationCommand extends APICommand {
 	static aliases = ['device-profiles:device-config']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(ProfilePresentationCommand	)
+		const { args, argv, flags } = this.parse(DeviceProfileDeviceConfigCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseDeviceProfile(this, args.id, { allowIndex: true })
@@ -31,7 +31,7 @@ export default class ProfilePresentationCommand extends APICommand {
 		if (!profile.metadata) {
 			throw new CLIError('No presentation defined for device profile')
 		}
-		const presentationConfig = await this.client.presentation.get(profile.metadata.vid, profile.metadata.mnmn)
-		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, presentationConfig)
+		const deviceConfig = await this.client.presentation.get(profile.metadata.vid, profile.metadata.mnmn)
+		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, deviceConfig)
 	}
 }
