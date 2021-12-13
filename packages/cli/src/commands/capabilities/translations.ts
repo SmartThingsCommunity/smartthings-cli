@@ -45,7 +45,7 @@ export type CapabilitySummaryWithLocales = CapabilitySummaryWithNamespace & { lo
 
 export default class CapabilityTranslationsCommand extends APICommand {
 
-	static description = 'Get list of locales supported by the capability'
+	static description = 'get list of locales supported by the capability'
 
 	static flags = {
 		...APICommand.flags,

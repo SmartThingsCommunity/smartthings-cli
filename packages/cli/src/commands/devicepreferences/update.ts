@@ -1,8 +1,6 @@
 import { DevicePreference } from '@smartthings/core-sdk'
-
 import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
-
-import { chooseDevicePreference, tableFieldDefinitions } from '../devicepreferences'
+import { chooseDevicePreference, tableFieldDefinitions } from '../../lib/commands/devicepreferences/devicepreferences-util'
 
 
 export default class DevicePreferencesUpdateCommand extends APICommand {
