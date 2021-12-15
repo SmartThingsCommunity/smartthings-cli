@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.33](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.32...v0.0.0-pre.33) (2021-12-15)
+
+
+### Features
+
+* Added support for Organizations ([5513e21](https://github.com/john-u/smartthings-cli/commit/5513e21fabf1af6a0dc72ce4d7e24896af78d4ee))
+* **devicepreferences:** initial suppport for i18n ([3319994](https://github.com/john-u/smartthings-cli/commit/3319994ff3e8d4974d568327950ebfe69e61b453))
+
+
+
+
+
 # [0.0.0-pre.32](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.31...v0.0.0-pre.32) (2021-10-25)
 
 
