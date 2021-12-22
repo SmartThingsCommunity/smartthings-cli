@@ -61,14 +61,16 @@ export abstract class SseCommand extends APICommand {
 		try {
 			this._source?.close()
 		} catch (error) {
-			this.logger.warn(`Error during SseCommand cleanup. ${error.message ?? error}`)
+			this.logger.warn(`Error during SseCommand teardown. ${error.message ?? error}`)
 		}
 	}
 
 	async init(): Promise<void> {
 		await super.init()
 
-		handleSignals(() => {
+		handleSignals(signal => {
+			this.logger.debug(`handling ${signal} and tearing down SseCommand`)
+
 			this.teardown()
 		})
 	}
