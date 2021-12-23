@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli-testlib",
-	"version": "0.0.0-pre.33",
+	"version": "0.0.0-pre.34",
 	"description": "SmartThings unified CLI testing utility methods library",
 	"author": "SmartThings, Inc.",
 	"bugs": "https://github.com/SmartThingsCommunity/smartthings-cli/issues",
@@ -22,7 +22,7 @@
 		"directory": "packages/testlib"
 	},
 	"dependencies": {
-		"@smartthings/cli-lib": "^0.0.0-pre.33"
+		"@smartthings/cli-lib": "^0.0.0-pre.34"
 	},
 	"devDependencies": {
 		"@oclif/dev-cli": "^1.26.9",

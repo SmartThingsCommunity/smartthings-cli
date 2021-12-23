@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.34](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.33...v0.0.0-pre.34) (2021-12-23)
+
+
+### Features
+
+* **edge:** debug logging in logcat ([dd8df46](https://github.com/john-u/smartthings-cli/commit/dd8df46f396f96944852c3b5480422d828a1545c))
+
+
+
+
+
 # [0.0.0-pre.33](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.32...v0.0.0-pre.33) (2021-12-15)
 
 
