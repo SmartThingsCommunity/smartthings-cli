@@ -47,7 +47,7 @@ Look at the existing issues for areas of contribution. Searching for issues labe
 ## More About SmartThings
 
 If you are not familiar with SmartThings, we have
-[extensive on-line documentation](https://smartthings.developer.samsung.com/develop/index.html).
+[extensive online documentation](https://developer-preview.smartthings.com/).
 
 To create and manage your services and devices on SmartThings, create an account in the
 [developer workspace](https://smartthings.developer.samsung.com/workspace/).

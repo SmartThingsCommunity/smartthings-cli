@@ -20,4 +20,4 @@ A clear and concise description of what you expected to happen.
 A clear and concise description of what actually happens.
 
 **Additional context**
-Add any other context about the problem here.
+Add any other context about the problem here. Please include output of `smartthings --version`. Screenshots can be helpful too.
