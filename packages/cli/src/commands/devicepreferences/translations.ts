@@ -31,7 +31,7 @@ $ smartthings devicepreferences:translations motionSensitivity ko`,
 	async init(): Promise<void> {
 		await super.init()
 
-		const { args, argv, flags } = this.parse(DevicePreferencesTranslationsCommand)
+		const { args, argv, flags } = await this.parse(DevicePreferencesTranslationsCommand)
 		await super.setup(args, argv, flags)
 	}
 

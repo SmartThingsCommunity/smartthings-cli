@@ -51,7 +51,7 @@ export default class DeviceProfilesViewUpdateCommand extends APIOrganizationComm
 	static aliases = ['device-profiles:view:update']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceProfilesViewUpdateCommand)
+		const { args, argv, flags } = await this.parse(DeviceProfilesViewUpdateCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseDeviceProfile(this, args.id)

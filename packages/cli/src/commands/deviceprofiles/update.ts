@@ -1,4 +1,4 @@
-import { CLIError } from '@oclif/errors'
+import { Errors } from '@oclif/core'
 
 import { DeviceProfile, DeviceProfileRequest } from '@smartthings/core-sdk'
 
@@ -39,13 +39,13 @@ export default class DeviceProfileUpdateCommand extends APIOrganizationCommand {
 	static aliases = ['device-profiles:update']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceProfileUpdateCommand)
+		const { args, argv, flags } = await this.parse(DeviceProfileUpdateCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseDeviceProfile(this, args.id)
 		const executeUpdate: ActionFunction<void, DeviceDefinitionRequest, DeviceProfile> = async (_, data) => {
 			if (data.view) {
-				throw new CLIError('Input contains "view" property. Use deviceprofiles:view:update instead.')
+				throw new Errors.CLIError('Input contains "view" property. Use deviceprofiles:view:update instead.')
 			}
 
 			return this.client.deviceProfiles.update(id, cleanupRequest(data))

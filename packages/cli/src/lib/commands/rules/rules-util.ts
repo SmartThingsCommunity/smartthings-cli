@@ -1,4 +1,4 @@
-import { CLIError } from '@oclif/errors'
+import { Errors } from '@oclif/core'
 
 import { ActionExecutionResult, ExecuteResponse, LocationItem, Rule, SmartThingsClient } from '@smartthings/core-sdk'
 
@@ -48,7 +48,7 @@ export const getRuleWithLocation = async (client: SmartThingsClient, id: string,
 	const allRules = await getRulesByLocation(client, locationId)
 	const rule = allRules.find(rule => rule.id === id)
 	if (!rule) {
-		throw new CLIError(`could not find rule with id ${id} in any location`)
+		throw new Errors.CLIError(`could not find rule with id ${id} in any location`)
 	}
 	return rule
 }

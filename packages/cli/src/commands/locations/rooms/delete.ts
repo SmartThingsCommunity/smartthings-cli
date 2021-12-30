@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 import { APICommand } from '@smartthings/cli-lib'
 import { chooseRoom } from '../../../lib/commands/locations/rooms/rooms-util'
 
@@ -8,7 +8,7 @@ export default class RoomsDeleteCommand extends APICommand {
 
 	static flags = {
 		...APICommand.flags,
-		'location-id': flags.string({
+		'location-id': Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -22,7 +22,7 @@ export default class RoomsDeleteCommand extends APICommand {
 	static aliases = ['rooms:delete']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(RoomsDeleteCommand)
+		const { args, argv, flags } = await this.parse(RoomsDeleteCommand)
 		await super.setup(args, argv, flags)
 
 		const [roomId, locationId] = await chooseRoom(this, flags['location-id'], args.id)

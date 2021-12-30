@@ -1,4 +1,4 @@
-import { CLIError } from '@oclif/errors'
+import { Errors } from '@oclif/core'
 import { APICommand, selectFromList } from '@smartthings/cli-lib'
 import { LocationItem, Room, SmartThingsClient } from '@smartthings/core-sdk'
 import * as roomsUtil from './rooms-util'
@@ -15,7 +15,7 @@ export async function getRoomsByLocation(client: SmartThingsClient, locationId?:
 	}
 
 	if (!locations || locations.length == 0) {
-		throw new CLIError('could not find any locations for your account. Perhaps ' +
+		throw new Errors.CLIError('could not find any locations for your account. Perhaps ' +
 			"you haven't created any locations yet.")
 	}
 
@@ -42,10 +42,10 @@ export async function chooseRoom(command: APICommand, locationId?: string, roomA
 	const roomId = await selectFromList(command, config, roomArg, async () => rooms)
 	const room = rooms.find(room => room.roomId === roomId)
 	if (!room) {
-		throw new CLIError(`could not find room with id ${roomId}`)
+		throw new Errors.CLIError(`could not find room with id ${roomId}`)
 	}
 	if (!room.locationId) {
-		throw new CLIError(`could not determine location id for room ${roomId}`)
+		throw new Errors.CLIError(`could not determine location id for room ${roomId}`)
 	}
 	return [roomId, room.locationId]
 }

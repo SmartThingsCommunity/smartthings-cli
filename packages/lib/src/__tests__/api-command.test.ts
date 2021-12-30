@@ -1,4 +1,4 @@
-import { Config } from '@oclif/config'
+import { Config } from '@oclif/core'
 import { v4 as uuidv4 } from 'uuid'
 import * as osLocale from 'os-locale'
 

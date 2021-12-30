@@ -1,4 +1,4 @@
-import { Config } from '@oclif/config'
+import { Config } from '@oclif/core'
 import { APICommand, ChooseOptions, chooseOptionsWithDefaults, ListDataFunction, Naming, selectFromList, SelectingConfig, SmartThingsCommandInterface, Sorting, stringTranslateToId } from '@smartthings/cli-lib'
 import { App, AppsEndpoint, NoOpAuthenticator, SmartThingsClient } from '@smartthings/core-sdk'
 import { chooseApp } from '../../../../lib/commands/apps/apps-util'

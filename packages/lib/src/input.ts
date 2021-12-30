@@ -1,25 +1,25 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, readFile, stdinIsTTY } from './io-util'
 
 
 // Flags common to both input and output.
 export const commonIOFlags = {
-	indent: flags.integer({
+	indent: Flags.integer({
 		description: 'specify indentation for formatting JSON or YAML output',
 	}),
-	json: flags.boolean({
+	json: Flags.boolean({
 		description: 'use JSON format of input and/or output',
 		char: 'j',
 	}),
-	yaml: flags.boolean({
+	yaml: Flags.boolean({
 		char: 'y',
 		description: 'use YAML format of input and/or output',
 	}),
 }
 
 export const inputFlag = {
-	input: flags.string({
+	input: Flags.string({
 		char: 'i',
 		description: 'specify input file',
 	}),

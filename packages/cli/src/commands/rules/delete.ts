@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { APICommand } from '@smartthings/cli-lib'
 
@@ -10,7 +10,7 @@ export default class RulesDeleteCommand extends APICommand {
 
 	static flags = {
 		...APICommand.flags,
-		'location-id': flags.string({
+		'location-id': Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -22,7 +22,7 @@ export default class RulesDeleteCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(RulesDeleteCommand)
+		const { args, argv, flags } = await this.parse(RulesDeleteCommand)
 		await super.setup(args, argv, flags)
 
 		const ruleId = await chooseRule(this, 'Select a rule to delete.', flags['location-id'], args.id)

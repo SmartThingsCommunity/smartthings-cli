@@ -2,7 +2,7 @@ import { Location, LocationsEndpoint, NoOpAuthenticator, Room, RoomsEndpoint, Sm
 import { getRoomsByLocation, chooseRoom } from '../../../../../lib/commands/locations/rooms/rooms-util'
 import * as roomsUtil from '../../../../../lib/commands/locations/rooms/rooms-util'
 import { v4 as uuid } from 'uuid'
-import { Config } from '@oclif/config'
+import { Config } from '@oclif/core'
 import { APICommand, selectFromList } from '@smartthings/cli-lib'
 
 

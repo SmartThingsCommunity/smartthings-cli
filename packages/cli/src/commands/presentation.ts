@@ -117,7 +117,7 @@ export default class PresentationCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(PresentationCommand)
+		const { args, argv, flags } = await this.parse(PresentationCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

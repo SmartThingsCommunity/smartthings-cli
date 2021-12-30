@@ -1,5 +1,5 @@
 import inquirer from 'inquirer'
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace,
 	SmartThingsClient } from '@smartthings/core-sdk'
@@ -270,11 +270,11 @@ export default class CapabilitiesCommand extends APIOrganizationCommand {
 		...APIOrganizationCommand.flags,
 		...outputGenericListing.flags,
 		...allOrganizationsFlags,
-		namespace: flags.string({
+		namespace: Flags.string({
 			char: 'n',
 			description: 'a specific namespace to query; will use all by default',
 		}),
-		standard: flags.boolean({
+		standard: Flags.boolean({
 			char: 's',
 			description: 'show standard SmartThings capabilities',
 		}),
@@ -283,7 +283,7 @@ export default class CapabilitiesCommand extends APIOrganizationCommand {
 	static args = capabilityIdOrIndexInputArgs
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(CapabilitiesCommand)
+		const { args, argv, flags } = await this.parse(CapabilitiesCommand)
 		await super.setup(args, argv, flags)
 
 		const idOrIndex = args.version ? { id: args.id, version: args.version } : args.id

@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 import osLocale from 'os-locale'
 
 import { Authenticator, BearerTokenAuthenticator, SmartThingsClient } from '@smartthings/core-sdk'
@@ -18,12 +18,12 @@ const ORGANIZATION_HEADER = 'X-ST-Organization'
 export abstract class APICommand extends SmartThingsCommand {
 	static flags = {
 		...SmartThingsCommand.flags,
-		token: flags.string({
+		token: Flags.string({
 			char: 't',
 			description: 'the auth token to use',
 			env: 'SMARTTHINGS_TOKEN',
 		}),
-		language: flags.string({
+		language: Flags.string({
 			description: 'ISO language code or "NONE" to not specify a language. Defaults to the OS locale',
 		}),
 	}

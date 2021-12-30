@@ -1,4 +1,4 @@
-import Command, { flags } from '@oclif/command'
+import { Command, Flags } from '@oclif/core'
 
 import { Logger } from '@smartthings/core-sdk'
 
@@ -22,7 +22,7 @@ export interface SmartThingsCommandInterface extends Loggable {
 	readonly profileConfig: { [name: string]: any }
 	readonly tableGenerator: TableGenerator
 
-	exit(code?: number): never
+	exit(code?: number): void
 }
 
 /**
@@ -30,8 +30,8 @@ export interface SmartThingsCommandInterface extends Loggable {
  */
 export abstract class SmartThingsCommand extends Command implements SmartThingsCommandInterface {
 	static flags = {
-		help: flags.help({ char: 'h' }),
-		profile: flags.string({
+		help: Flags.help({ char: 'h' }),
+		profile: Flags.string({
 			char: 'p',
 			description: 'configuration profile',
 			default: 'default',

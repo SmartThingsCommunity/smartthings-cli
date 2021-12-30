@@ -1,4 +1,4 @@
-import { Hook } from '@oclif/config'
+import type { Hook } from '@oclif/core'
 
 import { LoginAuthenticator, cliConfig, logManager, defaultLoggingConfig, loadLoggingConfig } from '@smartthings/cli-lib'
 

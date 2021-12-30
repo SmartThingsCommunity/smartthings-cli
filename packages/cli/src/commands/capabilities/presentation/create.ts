@@ -17,7 +17,7 @@ export default class CapabilitiesPresentationCreate extends APIOrganizationComma
 	static args = capabilityIdInputArgs
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(CapabilitiesPresentationCreate)
+		const { args, argv, flags } = await this.parse(CapabilitiesPresentationCreate)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseCapability(this, args.id, args.version)

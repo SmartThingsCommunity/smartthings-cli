@@ -31,7 +31,7 @@ export default class LocationsCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(LocationsCommand)
+		const { args, argv, flags } = await this.parse(LocationsCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

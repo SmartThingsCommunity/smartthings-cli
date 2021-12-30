@@ -1,4 +1,4 @@
-import { CLIError } from '@oclif/errors'
+import { Errors } from '@oclif/core'
 
 import { CapabilityReference, CapabilityStatus } from '@smartthings/core-sdk'
 
@@ -46,7 +46,7 @@ export default class DeviceCapabilityStatusCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceCapabilityStatusCommand)
+		const { args, argv, flags } = await this.parse(DeviceCapabilityStatusCommand)
 		await super.setup(args, argv, flags)
 
 		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })
@@ -57,7 +57,7 @@ export default class DeviceCapabilityStatusCommand extends APICommand {
 		const component = device.components?.find(it => it.id === componentName)
 		const capabilities = component?.capabilities
 		if (!capabilities) {
-			throw new CLIError(`no capabilities found for component ${componentName} of device ${deviceId}`)
+			throw new Errors.CLIError(`no capabilities found for component ${componentName} of device ${deviceId}`)
 		}
 
 		const config = {

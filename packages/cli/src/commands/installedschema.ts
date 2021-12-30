@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { InstalledSchemaApp, SmartThingsClient } from '@smartthings/core-sdk'
 
@@ -40,12 +40,12 @@ export default class InstalledSchemaAppsCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...outputListing.flags,
-		'location-id': flags.string({
+		'location-id': Flags.string({
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
 		}),
-		verbose: flags.boolean({
+		verbose: Flags.boolean({
 			description: 'include location name in output',
 			char: 'v',
 		}),
@@ -57,7 +57,7 @@ export default class InstalledSchemaAppsCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(InstalledSchemaAppsCommand)
+		const { args, argv, flags } = await this.parse(InstalledSchemaAppsCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

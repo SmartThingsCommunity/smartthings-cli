@@ -1,5 +1,5 @@
 import yaml from 'js-yaml'
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { buildOutputFormatter, calculateOutputFormat, cliConfig, IOFormat, outputItem, outputList, outputListing,
 	SmartThingsCommand, stringTranslateToId, TableFieldDefinition, writeOutput } from '@smartthings/cli-lib'
@@ -36,7 +36,7 @@ export default class ConfigCommand extends SmartThingsCommand {
 	static flags = {
 		...SmartThingsCommand.flags,
 		...outputListing.flags,
-		verbose: flags.boolean({
+		verbose: Flags.boolean({
 			description: 'Include additional data in table output',
 			char: 'v',
 		}),
@@ -48,7 +48,7 @@ export default class ConfigCommand extends SmartThingsCommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(ConfigCommand)
+		const { args, argv, flags } = await this.parse(ConfigCommand)
 		await super.setup(args, argv, flags)
 
 		const listTableFieldDefinitions: TableFieldDefinition<ConfigItem>[] = [

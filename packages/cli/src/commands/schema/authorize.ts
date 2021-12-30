@@ -33,7 +33,7 @@ export default class SchemaAppAuthorizeCommand extends SmartThingsCommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(SchemaAppAuthorizeCommand)
+		const { args, argv, flags } = await this.parse(SchemaAppAuthorizeCommand)
 		await super.setup(args, argv, flags)
 
 		const principal = flags.principal ?? SCHEMA_AWS_PRINCIPAL

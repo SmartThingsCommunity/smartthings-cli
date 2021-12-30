@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { APICommand, outputListing } from '@smartthings/cli-lib'
 
@@ -9,7 +9,7 @@ export default class SchemaCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...outputListing.flags,
-		verbose: flags.boolean({
+		verbose: Flags.boolean({
 			description: 'include ARN in output',
 			char: 'v',
 		}),
@@ -21,7 +21,7 @@ export default class SchemaCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(SchemaCommand)
+		const { args, argv, flags } = await this.parse(SchemaCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

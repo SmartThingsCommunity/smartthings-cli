@@ -1,4 +1,4 @@
-import { CLIError } from '@oclif/errors'
+import { Errors } from '@oclif/core'
 import inquirer from 'inquirer'
 
 import {
@@ -157,7 +157,7 @@ export default class DeviceProfileCreateCommand extends APIOrganizationCommand {
 	static aliases = ['device-profiles:create']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceProfileCreateCommand)
+		const { args, argv, flags } = await this.parse(DeviceProfileCreateCommand)
 		await super.setup(args, argv, flags)
 
 		const createDeviceProfile = async (_: void, data: DeviceDefinitionRequest): Promise<DeviceProfile> => {
@@ -213,7 +213,7 @@ export default class DeviceProfileCreateCommand extends APIOrganizationCommand {
 			if (component) {
 				component.capabilities?.push(capabilityId)
 			} else {
-				throw new CLIError(`Component ${componentId} not defined in profile`)
+				throw new Errors.CLIError(`Component ${componentId} not defined in profile`)
 			}
 		}
 

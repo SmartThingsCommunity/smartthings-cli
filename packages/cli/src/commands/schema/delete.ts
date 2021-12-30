@@ -12,7 +12,7 @@ export default class SchemaAppDeleteCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(SchemaAppDeleteCommand)
+		const { args, argv, flags } = await this.parse(SchemaAppDeleteCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

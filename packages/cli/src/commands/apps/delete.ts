@@ -13,7 +13,7 @@ export default class AppDeleteCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(AppDeleteCommand)
+		const { args, argv, flags } = await this.parse(AppDeleteCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseApp(this, args.id)

@@ -7,7 +7,7 @@ export default class GenerateNode extends GenerateCommand {
 	static flags = GenerateCommand.flags
 
 	async run(): Promise<void> {
-		this.parse(GenerateNode)
+		await this.parse(GenerateNode)
 		await this.generate('smartthings:node')
 	}
 }

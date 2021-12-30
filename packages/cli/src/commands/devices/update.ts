@@ -21,7 +21,7 @@ export default class DeviceUpdateCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceUpdateCommand)
+		const { args, argv, flags } = await this.parse(DeviceUpdateCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseDevice(this, args.id)

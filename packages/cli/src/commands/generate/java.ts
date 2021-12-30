@@ -7,7 +7,7 @@ export default class GenerateJava extends GenerateCommand {
 	static flags = GenerateCommand.flags
 
 	async run(): Promise<void> {
-		this.parse(GenerateJava)
+		await this.parse(GenerateJava)
 		await this.generate('smartthings:java')
 	}
 }

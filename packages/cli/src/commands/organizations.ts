@@ -32,7 +32,7 @@ export default class OrganizationsCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(OrganizationsCommand)
+		const { args, argv, flags } = await this.parse(OrganizationsCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

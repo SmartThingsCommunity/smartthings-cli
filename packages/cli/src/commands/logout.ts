@@ -5,7 +5,7 @@ export default class LogoutCommand extends APICommand {
 	static flags = APICommand.flags
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(LogoutCommand)
+		const { args, argv, flags } = await this.parse(LogoutCommand)
 		await super.setup(args, argv, flags)
 
 		if (this.token) {

@@ -1,4 +1,4 @@
-import cli from 'cli-ux'
+import { CliUx } from '@oclif/core'
 
 
 const formatTimePrefix = '%s '
@@ -17,7 +17,7 @@ function parseEvent(event: MessageEvent): any {
 	try {
 		return JSON.parse(event.data)
 	} catch (error) {
-		cli.warn(`Unable to parse received event. ${error.message ?? error}`)
+		CliUx.ux.warn(`Unable to parse received event. ${error.message ?? error}`)
 	}
 }
 
@@ -31,5 +31,5 @@ export function logEvent(event: MessageEvent, formatter: EventFormatter): void {
 	const outputString = formatTimePrefix.concat(eventFormat.formatString)
 	const outputArgs = eventFormat.formatArgs ? [eventFormat.time].concat(eventFormat.formatArgs) : [eventFormat.time]
 
-	cli.log(outputString, ...outputArgs)
+	CliUx.ux.log(outputString, ...outputArgs)
 }

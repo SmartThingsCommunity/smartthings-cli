@@ -6,10 +6,10 @@ import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, stdin
 import { LogManager } from '../logger'
 import { validData, validYAML, SimpleType } from './test-lib/simple-type'
 import { existsSync, PathLike } from 'fs'
-import { cli } from 'cli-ux'
+import { CliUx } from '@oclif/core'
 
 
-jest.mock('cli-ux')
+jest.mock('@oclif/core')
 
 jest.mock('fs', () => {
 	// if this isn't done, something breaks with sub-dependency 'fs-extra'
@@ -126,6 +126,6 @@ describe('yamlExists', () => {
 			.mockReturnValueOnce(true)
 
 		expect(yamlExists(path)).toBe(false)
-		expect(cli.warn).toBeCalledWith(expect.stringContaining('Please use ".yaml" extension instead'))
+		expect(CliUx.ux.warn).toBeCalledWith(expect.stringContaining('Please use ".yaml" extension instead'))
 	})
 })

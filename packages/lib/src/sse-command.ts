@@ -1,7 +1,7 @@
 import { APICommand } from './api-command'
 import { handleSignals } from './sse-util'
 import EventSource from 'eventsource'
-import { handle } from '@oclif/errors'
+import { Errors } from '@oclif/core'
 
 
 export abstract class SseCommand extends APICommand {
@@ -47,7 +47,7 @@ export abstract class SseCommand extends APICommand {
 				this.teardown()
 				this.error(message)
 			} catch (error) {
-				handle(error)
+				Errors.handle(error)
 			}
 		}
 	}

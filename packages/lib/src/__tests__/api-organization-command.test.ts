@@ -1,4 +1,4 @@
-import { Config } from '@oclif/config'
+import { Config } from '@oclif/core'
 import * as coreSDK from '@smartthings/core-sdk'
 import { APIOrganizationCommand } from '../api-organization-command'
 import { ClientIdProvider } from '../login-authenticator'

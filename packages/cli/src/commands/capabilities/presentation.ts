@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { CapabilityPresentation } from '@smartthings/core-sdk'
 
@@ -73,7 +73,7 @@ export default class PresentationsCommand extends APIOrganizationCommand {
 	static flags = {
 		...APIOrganizationCommand.flags,
 		...outputGenericListing.flags,
-		namespace: flags.string({
+		namespace: Flags.string({
 			char: 'n',
 			description: 'a specific namespace to query; will use all by default',
 		}),
@@ -82,7 +82,7 @@ export default class PresentationsCommand extends APIOrganizationCommand {
 	static args = capabilityIdOrIndexInputArgs
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(PresentationsCommand)
+		const { args, argv, flags } = await this.parse(PresentationsCommand)
 		await super.setup(args, argv, flags)
 
 		const idOrIndex = args.version

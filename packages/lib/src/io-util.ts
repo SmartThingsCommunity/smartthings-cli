@@ -3,7 +3,7 @@ import path from 'path'
 import yaml from 'js-yaml'
 
 import { logManager } from './logger'
-import { cli } from 'cli-ux'
+import { CliUx } from '@oclif/core'
 
 
 export const readFile = fs.promises.readFile
@@ -94,7 +94,7 @@ export function yamlExists(filepath: string): boolean {
 		})
 
 		if (fs.existsSync(ymlPath)) {
-			cli.warn(`Ignoring ${ymlPath} and using default. Please use ".yaml" extension instead.`)
+			CliUx.ux.warn(`Ignoring ${ymlPath} and using default. Please use ".yaml" extension instead.`)
 		}
 
 		return false

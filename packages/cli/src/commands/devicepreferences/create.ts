@@ -23,7 +23,7 @@ export default class DevicePreferencesCreateCommand extends APIOrganizationComma
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DevicePreferencesCreateCommand)
+		const { args, argv, flags } = await this.parse(DevicePreferencesCreateCommand)
 		await super.setup(args, argv, flags)
 
 		await inputAndOutputItem(this, { tableFieldDefinitions },

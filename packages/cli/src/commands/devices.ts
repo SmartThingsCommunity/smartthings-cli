@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { Device, DeviceListOptions } from '@smartthings/core-sdk'
 
@@ -13,32 +13,32 @@ export default class DevicesCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...outputListing.flags,
-		'location-id': flags.string({
+		'location-id': Flags.string({
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
 		}),
-		capability: flags.string({
+		capability: Flags.string({
 			char: 'c',
 			description: 'filter results by capability',
 			multiple: true,
 		}),
-		'capabilities-mode': flags.string({
+		'capabilities-mode': Flags.string({
 			char: 'C',
 			description: 'Treat capability filter query params as a logical "or" or "and" with a default of "and".',
 			dependsOn: ['capability'],
 			options: ['and', 'or'],
 		}),
-		'device-id': flags.string({
+		'device-id': Flags.string({
 			char: 'd',
 			description: 'filter results by device',
 			multiple: true,
 		}),
-		'installed-app-id': flags.string({
+		'installed-app-id': Flags.string({
 			char: 'a',
 			description: 'filter results by installed app that created the device',
 		}),
-		verbose: flags.boolean({
+		verbose: Flags.boolean({
 			description: 'include location name in output',
 			char: 'v',
 		}),
@@ -50,7 +50,7 @@ export default class DevicesCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DevicesCommand)
+		const { args, argv, flags } = await this.parse(DevicesCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

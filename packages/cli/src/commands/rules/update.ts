@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { Rule, RuleRequest } from '@smartthings/core-sdk'
 
@@ -13,7 +13,7 @@ export default class RulesUpdateCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...inputAndOutputItem.flags,
-		'location-id': flags.string({
+		'location-id': Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -25,7 +25,7 @@ export default class RulesUpdateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(RulesUpdateCommand)
+		const { args, argv, flags } = await this.parse(RulesUpdateCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseRule(this, 'Select a rule to update.', flags['location-id'], args.id)

@@ -15,7 +15,7 @@ export default class SchemaAppRegenerateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(SchemaAppRegenerateCommand)
+		const { args, argv, flags } = await this.parse(SchemaAppRegenerateCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

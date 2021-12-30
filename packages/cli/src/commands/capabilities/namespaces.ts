@@ -10,7 +10,7 @@ export default class CapabilitiesListNamespacesCommand extends APIOrganizationCo
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(CapabilitiesListNamespacesCommand)
+		const { args, argv, flags } = await this.parse(CapabilitiesListNamespacesCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

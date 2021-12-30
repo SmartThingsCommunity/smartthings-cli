@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 import { App, AppRequest } from '@smartthings/core-sdk'
 import { ActionFunction, APICommand, inputAndOutputItem, TableCommonOutputProducer, lambdaAuthFlags } from '@smartthings/cli-lib'
 import { addPermission } from '../../lib/aws-utils'
@@ -11,7 +11,7 @@ export default class AppUpdateCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...inputAndOutputItem.flags,
-		authorize: flags.boolean({
+		authorize: Flags.boolean({
 			description: 'authorize Lambda functions to be called by SmartThings',
 		}),
 		...lambdaAuthFlags,
@@ -23,7 +23,7 @@ export default class AppUpdateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(AppUpdateCommand)
+		const { args, argv, flags } = await this.parse(AppUpdateCommand)
 		await super.setup(args, argv, flags)
 
 		const appId = await chooseApp(this, args.id)

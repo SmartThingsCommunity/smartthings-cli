@@ -43,7 +43,7 @@ export default class DeviceProfileTranslationsDeleteCommand extends APIOrganizat
 	static aliases = ['device-profiles:translations:delete']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceProfileTranslationsDeleteCommand)
+		const { args, argv, flags } = await this.parse(DeviceProfileTranslationsDeleteCommand)
 		await super.setup(args, argv, flags)
 
 		const deviceProfileId = await chooseDeviceProfile(this, args.id)

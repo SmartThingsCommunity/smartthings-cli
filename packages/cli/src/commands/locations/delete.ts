@@ -19,7 +19,7 @@ export default class LocationsDeleteCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(LocationsDeleteCommand)
+		const { args, argv, flags } = await this.parse(LocationsDeleteCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseLocation(this, args.id)

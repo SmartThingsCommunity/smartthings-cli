@@ -24,7 +24,7 @@ export default class DevicePreferencesUpdateCommand extends APIOrganizationComma
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DevicePreferencesUpdateCommand)
+		const { args, argv, flags } = await this.parse(DevicePreferencesUpdateCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseDevicePreference(this, args.id)

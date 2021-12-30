@@ -14,7 +14,7 @@ export default class LocationsCreateCommand extends APICommand {
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(LocationsCreateCommand)
+		const { args, argv, flags } = await this.parse(LocationsCreateCommand)
 		await super.setup(args, argv, flags)
 
 		await inputAndOutputItem(this, { tableFieldDefinitions },

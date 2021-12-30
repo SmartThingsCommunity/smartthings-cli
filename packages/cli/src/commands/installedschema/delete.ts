@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { InstalledSchemaApp } from '@smartthings/core-sdk'
 
@@ -12,12 +12,12 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand {
 
 	static flags = {
 		...APICommand.flags,
-		'location-id': flags.string({
+		'location-id': Flags.string({
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
 		}),
-		verbose: flags.boolean({
+		verbose: Flags.boolean({
 			description: 'include location name in output',
 			char: 'v',
 		}),
@@ -28,7 +28,7 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(InstalledSchemaAppDeleteCommand)
+		const { args, argv, flags } = await this.parse(InstalledSchemaAppDeleteCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {
