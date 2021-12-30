@@ -5,4 +5,11 @@ module.exports = {
 		'**/__tests__/**/*.test.ts',
 	],
 	setupFilesAfterEnv: ['jest-extended'],
+	collectCoverageFrom: ['src/**/*.ts'],
+	coveragePathIgnorePatterns: [
+		'/node_modules/',
+		'/__tests__/',
+		'/src/typings/',
+		'/src/index.ts',
+	],
 }
