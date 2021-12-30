@@ -1,4 +1,4 @@
-import { CLIError } from '@oclif/errors'
+import { Errors } from '@oclif/core'
 
 import { APIOrganizationCommand, formatAndWriteItem } from '@smartthings/cli-lib'
 
@@ -33,14 +33,14 @@ export default class DeviceProfilePresentationCommand extends APIOrganizationCom
 	static aliases = ['device-profiles:presentation']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceProfilePresentationCommand)
+		const { args, argv, flags } = await this.parse(DeviceProfilePresentationCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseDeviceProfile(this, args.id, { allowIndex: true })
 
 		const profile = await this.client.deviceProfiles.get(id)
 		if (!profile.metadata) {
-			throw new CLIError('No presentation defined for device profile')
+			throw new Errors.CLIError('No presentation defined for device profile')
 		}
 
 		const presentation = await this.client.presentation.getPresentation(profile.metadata.vid, profile.metadata.mnmn)

@@ -24,7 +24,7 @@ export default class DevicePreferencesTranslationsCreateCommand extends APIOrgan
 	async init(): Promise<void> {
 		await super.init()
 
-		const { args, argv, flags } = this.parse(DevicePreferencesTranslationsCreateCommand)
+		const { args, argv, flags } = await this.parse(DevicePreferencesTranslationsCreateCommand)
 		await super.setup(args, argv, flags)
 	}
 

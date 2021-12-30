@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { PresentationDeviceConfig, HttpClientParams } from '@smartthings/core-sdk'
 
@@ -13,10 +13,10 @@ export default class GeneratePresentationCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...outputItem.flags,
-		dth: flags.boolean({
+		dth: Flags.boolean({
 			description: 'generate from legacy DTH id instead of a profile id',
 		}),
-		'type-shard-id': flags.string({
+		'type-shard-id': Flags.string({
 			description: 'data management shard Id where the device type resides, ' +
 				'only useful for legacy DTH type integrations',
 		}),
@@ -29,7 +29,7 @@ export default class GeneratePresentationCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(GeneratePresentationCommand)
+		const { args, argv, flags } = await this.parse(GeneratePresentationCommand)
 		await super.setup(args, argv, flags)
 
 		const extraParams: HttpClientParams = {}

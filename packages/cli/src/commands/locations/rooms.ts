@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 import { APICommand, ListingOutputConfig, outputListing } from '@smartthings/cli-lib'
 import { Room } from '@smartthings/core-sdk'
 import { getRoomsByLocation, RoomWithLocation, tableFieldDefinitions } from '../../lib/commands/locations/rooms/rooms-util'
@@ -9,7 +9,7 @@ export default class RoomsCommand extends APICommand {
 
 	static flags = {
 		...APICommand.flags,
-		'location-id': flags.string({
+		'location-id': Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -24,7 +24,7 @@ export default class RoomsCommand extends APICommand {
 	static aliases = ['rooms']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(RoomsCommand)
+		const { args, argv, flags } = await this.parse(RoomsCommand)
 		await super.setup(args, argv, flags)
 
 		const config: ListingOutputConfig<Room, RoomWithLocation> = {

@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
 
@@ -24,12 +24,12 @@ export default class InstalledAppsCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...outputListing.flags,
-		'location-id': flags.string({
+		'location-id': Flags.string({
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
 		}),
-		verbose: flags.boolean({
+		verbose: Flags.boolean({
 			description: 'include location name in output',
 			char: 'v',
 		}),
@@ -41,7 +41,7 @@ export default class InstalledAppsCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(InstalledAppsCommand)
+		const { args, argv, flags } = await this.parse(InstalledAppsCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

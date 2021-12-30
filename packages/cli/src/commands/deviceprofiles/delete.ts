@@ -21,7 +21,7 @@ export default class DeviceProfileDeleteCommand extends APIOrganizationCommand {
 	static aliases = ['device-profiles:delete']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceProfileDeleteCommand)
+		const { args, argv, flags } = await this.parse(DeviceProfileDeleteCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseDeviceProfile(this, args.id)

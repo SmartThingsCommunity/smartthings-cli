@@ -58,7 +58,7 @@ export default class DeviceComponentStatusCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceComponentStatusCommand)
+		const { args, argv, flags } = await this.parse(DeviceComponentStatusCommand)
 		await super.setup(args, argv, flags)
 
 		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })

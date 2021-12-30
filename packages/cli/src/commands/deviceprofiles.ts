@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 import Table from 'cli-table'
 
 import { DeviceProfile, LocaleReference } from '@smartthings/core-sdk'
@@ -84,7 +84,7 @@ export default class DeviceProfilesCommand extends APIOrganizationCommand {
 		...APIOrganizationCommand.flags,
 		...outputListing.flags,
 		...allOrganizationsFlags,
-		verbose: flags.boolean({
+		verbose: Flags.boolean({
 			description: 'include presentationId and manufacturerName in list output',
 			char: 'v',
 		}),
@@ -107,7 +107,7 @@ export default class DeviceProfilesCommand extends APIOrganizationCommand {
 	static aliases = ['device-profiles']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceProfilesCommand)
+		const { args, argv, flags } = await this.parse(DeviceProfilesCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

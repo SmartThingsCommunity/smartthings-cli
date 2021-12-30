@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { commonIOFlags } from './input'
 import { IOFormat } from './io-util'
@@ -21,14 +21,14 @@ export function buildOutputFormatter<T>(command: SmartThingsCommandInterface,
 }
 
 export const outputFlags = {
-	output: flags.string({
+	output: Flags.string({
 		char: 'o',
 		description: 'specify output file',
 	}),
-	compact: flags.boolean({
+	compact: Flags.boolean({
 		description: 'use compact table format with no lines between body rows',
 	}),
-	expanded: flags.boolean({
+	expanded: Flags.boolean({
 		description: 'use expanded table format with a line between each body row',
 	}),
 

@@ -17,7 +17,7 @@ export default class AppSettingsUpdateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(AppSettingsUpdateCommand)
+		const { args, argv, flags } = await this.parse(AppSettingsUpdateCommand)
 		await super.setup(args, argv, flags)
 
 		const appId = await chooseApp(this, args.id)

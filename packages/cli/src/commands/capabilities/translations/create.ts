@@ -66,7 +66,7 @@ export default class CapabilityTranslationsCreateCommand extends APIOrganization
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(CapabilityTranslationsCreateCommand)
+		const { args, argv, flags } = await this.parse(CapabilityTranslationsCreateCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseCapability(this, args.id, args.version)

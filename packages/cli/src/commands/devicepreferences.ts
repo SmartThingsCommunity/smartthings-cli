@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 import { DevicePreference } from '@smartthings/core-sdk'
 import { APIOrganizationCommand, outputListing, allOrganizationsFlags, forAllOrganizations } from '@smartthings/cli-lib'
 import { tableFieldDefinitions } from '../lib/commands/devicepreferences/devicepreferences-util'
@@ -33,11 +33,11 @@ export default class DevicePreferencesCommand extends APIOrganizationCommand {
 		...APIOrganizationCommand.flags,
 		...outputListing.flags,
 		...allOrganizationsFlags,
-		namespace: flags.string({
+		namespace: Flags.string({
 			char: 'n',
 			description: 'a specific namespace to query; will use all by default',
 		}),
-		standard: flags.boolean({
+		standard: Flags.boolean({
 			char: 's',
 			description: 'show standard SmartThings device preferences',
 		}),
@@ -58,7 +58,7 @@ export default class DevicePreferencesCommand extends APIOrganizationCommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DevicePreferencesCommand)
+		const { args, argv, flags } = await this.parse(DevicePreferencesCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

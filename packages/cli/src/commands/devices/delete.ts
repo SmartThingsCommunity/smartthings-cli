@@ -12,7 +12,7 @@ export default class DeviceDeleteCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceDeleteCommand)
+		const { args, argv, flags } = await this.parse(DeviceDeleteCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

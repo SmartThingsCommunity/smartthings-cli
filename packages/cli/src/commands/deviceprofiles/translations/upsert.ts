@@ -59,7 +59,7 @@ export default class DeviceProfileTranslationsUpsertCommand extends APIOrganizat
 	static aliases = ['device-profiles:translations:upsert']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceProfileTranslationsUpsertCommand)
+		const { args, argv, flags } = await this.parse(DeviceProfileTranslationsUpsertCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseDeviceProfile(this, args.id)

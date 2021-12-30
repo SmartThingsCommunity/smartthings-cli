@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { APICommand, outputListing } from '@smartthings/cli-lib'
 
@@ -11,7 +11,7 @@ export default class RulesCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...outputListing.flags,
-		'location-id': flags.string({
+		'location-id': Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -23,7 +23,7 @@ export default class RulesCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(RulesCommand)
+		const { args, argv, flags } = await this.parse(RulesCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {

@@ -66,7 +66,7 @@ export default class CapabilityTranslationsUpsertCommand extends APIOrganization
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(CapabilityTranslationsUpsertCommand)
+		const { args, argv, flags } = await this.parse(CapabilityTranslationsUpsertCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseCapability(this, args.id, args.version)

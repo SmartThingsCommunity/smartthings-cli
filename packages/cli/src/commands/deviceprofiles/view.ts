@@ -139,7 +139,7 @@ export default class DeviceProfilesViewCommand extends APIOrganizationCommand {
 	static aliases = ['device-profiles:view']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceProfilesViewCommand)
+		const { args, argv, flags } = await this.parse(DeviceProfilesViewCommand)
 		await super.setup(args, argv, flags)
 
 		const config: ListingOutputConfig<DeviceDefinition, DeviceProfile> = {

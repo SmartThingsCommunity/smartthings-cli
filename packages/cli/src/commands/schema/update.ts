@@ -1,5 +1,4 @@
-import { flags } from '@oclif/command'
-import { CLIError } from '@oclif/errors'
+import { Flags, Errors } from '@oclif/core'
 
 import { SchemaAppRequest } from '@smartthings/core-sdk'
 
@@ -14,7 +13,7 @@ export default class SchemaUpdateCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...inputItem.flags,
-		authorize: flags.boolean({
+		authorize: Flags.boolean({
 			description: 'authorize Lambda functions to be called by SmartThings',
 		}),
 		...lambdaAuthFlags,
@@ -26,7 +25,7 @@ export default class SchemaUpdateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(SchemaUpdateCommand)
+		const { args, argv, flags } = await this.parse(SchemaUpdateCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {
@@ -57,7 +56,7 @@ export default class SchemaUpdateCommand extends APICommand {
 		}
 		const result = await this.client.schema.update(id, request)
 		if (result.status !== 'success') {
-			throw new CLIError(`error ${result.status} updating ${id}`)
+			throw new Errors.CLIError(`error ${result.status} updating ${id}`)
 		}
 		this.log(`Schema ${id} updated.`)
 	}

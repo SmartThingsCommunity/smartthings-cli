@@ -11,7 +11,7 @@ export default class CapabilitiesDeleteCommand extends APIOrganizationCommand {
 	static args = capabilityIdInputArgs
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(CapabilitiesDeleteCommand)
+		const { args, argv, flags } = await this.parse(CapabilitiesDeleteCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseCapability(this, args.id, args.version)

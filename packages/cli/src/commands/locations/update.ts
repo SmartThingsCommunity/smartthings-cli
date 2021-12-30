@@ -19,7 +19,7 @@ export default class LocationsUpdateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(LocationsUpdateCommand)
+		const { args, argv, flags } = await this.parse(LocationsUpdateCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseLocation(this, args.id)

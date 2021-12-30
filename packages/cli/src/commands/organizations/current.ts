@@ -13,7 +13,7 @@ export default class OrganizationCurrentCommand extends APIOrganizationCommand {
 	static args = []
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(OrganizationCurrentCommand)
+		const { args, argv, flags } = await this.parse(OrganizationCurrentCommand)
 		await super.setup(args, argv, flags)
 
 		let currentOrganization

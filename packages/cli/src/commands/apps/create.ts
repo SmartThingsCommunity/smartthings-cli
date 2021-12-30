@@ -1,8 +1,7 @@
-import { flags } from '@oclif/command'
+import { Flags, Errors } from '@oclif/core'
 import { AppRequest, AppCreationResponse } from '@smartthings/core-sdk'
 import { APICommand, inputAndOutputItem, lambdaAuthFlags } from '@smartthings/cli-lib'
 import { addPermission } from '../../lib/aws-utils'
-import { CLIError } from '@oclif/errors'
 import { tableFieldDefinitions } from '../../lib/commands/apps/apps-util'
 
 
@@ -12,14 +11,14 @@ export default class AppCreateCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...inputAndOutputItem.flags,
-		authorize: flags.boolean({
+		authorize: Flags.boolean({
 			description: 'authorize Lambda functions to be called by SmartThings',
 		}),
 		...lambdaAuthFlags,
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(AppCreateCommand)
+		const { args, argv, flags } = await this.parse(AppCreateCommand)
 		await super.setup(args, argv, flags)
 
 		const createApp = async (_: void, data: AppRequest): Promise<AppCreationResponse> => {
@@ -33,7 +32,7 @@ export default class AppCreateCommand extends APICommand {
 						await Promise.all(requests)
 					}
 				} else {
-					throw new CLIError('Authorization is not applicable to WebHook SmartApps')
+					throw new Errors.CLIError('Authorization is not applicable to WebHook SmartApps')
 				}
 			}
 			return this.client.apps.create(data)

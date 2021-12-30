@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid'
 import { outputListing, selectFromList } from '@smartthings/cli-lib'
 import LocationsCommand, { chooseLocation } from '../../commands/locations'
 import { LocationsEndpoint } from '@smartthings/core-sdk'
-import { Config } from '@oclif/config'
+import { Config } from '@oclif/core'
 
 
 jest.mock('@smartthings/cli-lib', () => {

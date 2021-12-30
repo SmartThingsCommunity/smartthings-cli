@@ -64,7 +64,7 @@ export default class DeviceDefCreateCommand extends APIOrganizationCommand {
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceDefCreateCommand)
+		const { args, argv, flags } = await this.parse(DeviceDefCreateCommand)
 		await super.setup(args, argv, flags)
 
 		const createDeviceDefinition = async (_: void, data: DeviceDefinitionRequest): Promise<DeviceDefinition> => {

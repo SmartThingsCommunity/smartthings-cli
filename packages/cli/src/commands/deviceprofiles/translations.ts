@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { DeviceProfile, DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
@@ -27,7 +27,7 @@ export default class DeviceProfileTranslationsCommand extends APIOrganizationCom
 	static flags = {
 		...APIOrganizationCommand.flags,
 		...outputListing.flags,
-		verbose: flags.boolean({
+		verbose: Flags.boolean({
 			description: 'include list of locales in table output',
 			char: 'v',
 		}),
@@ -100,7 +100,7 @@ export default class DeviceProfileTranslationsCommand extends APIOrganizationCom
 	static aliases = ['device-profiles:translations']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceProfileTranslationsCommand)
+		const { args, argv, flags } = await this.parse(DeviceProfileTranslationsCommand)
 		await super.setup(args, argv, flags)
 
 		const deviceProfileId = await chooseDeviceProfile(this, args.id, { verbose: flags.verbose, allowIndex: true })

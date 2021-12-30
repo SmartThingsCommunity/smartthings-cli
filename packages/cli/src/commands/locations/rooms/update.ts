@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 import { Room, RoomRequest } from '@smartthings/core-sdk'
 import { APICommand, CommonOutputProducer, inputAndOutputItem } from '@smartthings/cli-lib'
 import { chooseRoom, tableFieldDefinitions } from '../../../lib/commands/locations/rooms/rooms-util'
@@ -10,7 +10,7 @@ export default class RoomsUpdateCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...inputAndOutputItem.flags,
-		'location-id': flags.string({
+		'location-id': Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -24,7 +24,7 @@ export default class RoomsUpdateCommand extends APICommand {
 	static aliases = ['rooms:update']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(RoomsUpdateCommand)
+		const { args, argv, flags } = await this.parse(RoomsUpdateCommand)
 		await super.setup(args, argv, flags)
 
 		const [roomId, locationId] = await chooseRoom(this, flags['location-id'], args.id)

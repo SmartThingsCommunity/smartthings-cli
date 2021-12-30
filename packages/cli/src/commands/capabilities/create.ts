@@ -1,5 +1,4 @@
-import { flags } from '@oclif/command'
-import { CLIError } from '@oclif/errors'
+import { Flags, Errors } from '@oclif/core'
 import inquirer from 'inquirer'
 
 import {
@@ -41,14 +40,14 @@ export default class CapabilitiesCreateCommand extends APIOrganizationCommand {
 	static flags = {
 		...APIOrganizationCommand.flags,
 		...inputAndOutputItem.flags,
-		namespace: flags.string({
+		namespace: Flags.string({
 			char: 'n',
 			description: 'the namespace to create the capability under',
 		}),
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(CapabilitiesCreateCommand)
+		const { args, argv, flags } = await this.parse(CapabilitiesCreateCommand)
 		await super.setup(args, argv, flags)
 
 		const params: HttpClientParams = {}
@@ -60,7 +59,7 @@ export default class CapabilitiesCreateCommand extends APIOrganizationCommand {
 			return this.client.capabilities.create(capability, params)
 				.catch(error => {
 					if (error.response?.status == 403 && flags.namespace) {
-						throw new CLIError('Unable to create capability under specified namespace. ' +
+						throw new Errors.CLIError('Unable to create capability under specified namespace. ' +
 							'Either the namespace does not exist or you do not have permission.')
 					}
 

@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 import { App, AppType, AppClassification, AppListOptions } from '@smartthings/core-sdk'
 import { APICommand, outputListing } from '@smartthings/cli-lib'
 import { tableFieldDefinitions } from '../lib/commands/apps/apps-util'
@@ -10,20 +10,20 @@ export default class AppsCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...outputListing.flags,
-		type: flags.string({
+		type: Flags.string({
 			description: 'filter results by appType, WEBHOOK_SMART_APP, LAMBDA_SMART_APP, API_ONLY',
 			multiple: false,
 		}),
-		classification: flags.string({
+		classification: Flags.string({
 			description: 'filter results by one or more classifications, AUTOMATION, SERVICE, DEVICE, CONNECTED_SERVICE',
 			multiple: true,
 		}),
 		// TODO -- uncomment when implemented
-		// tag: flags.string({
+		// tag: Flags.string({
 		// 	description: 'filter results by one or more tags, e.g. --tag=industry:energy',
 		// 	multiple: true,
 		// }),
-		verbose: flags.boolean({
+		verbose: Flags.boolean({
 			description: 'include URLs and ARNs in table output',
 			char: 'v',
 		}),
@@ -35,7 +35,7 @@ export default class AppsCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(AppsCommand)
+		const { args, argv, flags } = await this.parse(AppsCommand)
 		await super.setup(args, argv, flags)
 
 		const config = {
@@ -79,7 +79,7 @@ export default class AppsCommand extends APICommand {
 								(app.lambdaSmartApp ? (app.lambdaSmartApp?.functions?.length ? app.lambdaSmartApp?.functions[0] : '') :
 									(app.apiOnly?.subscription?.targetUrl ?? ''))) ?? ''
 
-							const arnURL = uri.length < 96 ? uri : uri.slice(0,95) + '...'
+							const arnURL = uri.length < 96 ? uri : uri.slice(0, 95) + '...'
 							app['ARN/URL'] = arnURL
 						}
 						return list

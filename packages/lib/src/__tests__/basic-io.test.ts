@@ -1,4 +1,4 @@
-import { CLIError } from '@oclif/errors'
+import { Errors } from '@oclif/core'
 
 import { inputAndOutputItem, inputItem, outputItem, outputList } from '../basic-io'
 import * as format from '../format'
@@ -68,7 +68,7 @@ describe('basic-io', () => {
 			buildInputProcessorSpy.mockReturnValue(inputProcessor)
 
 			await expect(inputItem(command)).rejects.toThrow(
-				new CLIError('input is required either via file specified with --input option or from stdin'))
+				new Errors.CLIError('input is required either via file specified with --input option or from stdin'))
 		})
 	})
 
@@ -231,7 +231,7 @@ describe('basic-io', () => {
 			buildInputProcessorSpy.mockReturnValue(inputProcessor)
 
 			await expect(inputAndOutputItem(command, config, executeCommandMock)).rejects.toThrow(
-				new CLIError('input is required either via file specified with --input option or from stdin'))
+				new Errors.CLIError('input is required either via file specified with --input option or from stdin'))
 
 			expect(executeCommandMock).toHaveBeenCalledTimes(0)
 			expect(formatAndWriteItemSpy).toHaveBeenCalledTimes(0)

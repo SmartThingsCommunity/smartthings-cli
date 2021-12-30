@@ -17,7 +17,7 @@ export default class AppOauthGenerateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(AppOauthGenerateCommand)
+		const { args, argv, flags } = await this.parse(AppOauthGenerateCommand)
 		await super.setup(args, argv, flags)
 
 		const appId = await chooseApp(this, args.id)

@@ -95,7 +95,7 @@ export default class DeviceConfigPresentationCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceConfigPresentationCommand)
+		const { args, argv, flags } = await this.parse(DeviceConfigPresentationCommand)
 		await super.setup(args, argv, flags)
 
 		await outputItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },

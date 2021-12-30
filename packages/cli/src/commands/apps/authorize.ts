@@ -31,7 +31,7 @@ export default class AppsAuthorizeCommand extends SmartThingsCommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(AppsAuthorizeCommand)
+		const { args, argv, flags } = await this.parse(AppsAuthorizeCommand)
 		await super.setup(args, argv, flags)
 
 		const message = await addPermission(args.arn, flags.principal, flags['statement-id'])

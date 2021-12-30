@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { SchemaAppRequest, SchemaCreateResponse } from '@smartthings/core-sdk'
 
@@ -14,14 +14,14 @@ export default class SchemaAppCreateCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
 		...inputAndOutputItem.flags,
-		authorize: flags.boolean({
+		authorize: Flags.boolean({
 			description: 'authorize connector\'s Lambda functions to be called by SmartThings',
 		}),
 		...lambdaAuthFlags,
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(SchemaAppCreateCommand)
+		const { args, argv, flags } = await this.parse(SchemaAppCreateCommand)
 		await super.setup(args, argv, flags)
 
 		const createApp = async (_: void, data: SchemaAppRequest): Promise<SchemaCreateResponse> => {

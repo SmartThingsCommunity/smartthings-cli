@@ -39,7 +39,7 @@ export default class DevicePreferencesCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DevicePreferencesCommand)
+		const { args, argv, flags } = await this.parse(DevicePreferencesCommand)
 		await super.setup(args, argv, flags)
 
 		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })

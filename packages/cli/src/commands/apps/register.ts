@@ -14,7 +14,7 @@ export default class AppRegisterCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(AppRegisterCommand)
+		const { args, argv, flags } = await this.parse(AppRegisterCommand)
 		await super.setup(args, argv, flags)
 
 		const config: SelectingConfig<App> = {

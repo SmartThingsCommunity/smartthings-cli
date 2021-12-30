@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 
 import { CapabilityLocalization, DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
@@ -50,11 +50,11 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 	static flags = {
 		...APIOrganizationCommand.flags,
 		...outputListing.flags,
-		namespace: flags.string({
+		namespace: Flags.string({
 			char: 'n',
 			description: 'a specific namespace to query; will use all by default',
 		}),
-		verbose: flags.boolean({
+		verbose: Flags.boolean({
 			description: 'include list of supported locales in table output',
 			char: 'v',
 		}),
@@ -132,7 +132,7 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(CapabilityTranslationsCommand)
+		const { args, argv, flags } = await this.parse(CapabilityTranslationsCommand)
 		await super.setup(args, argv, flags)
 
 		const capConfig: SelectingConfig<CapabilitySummaryWithNamespace> = {

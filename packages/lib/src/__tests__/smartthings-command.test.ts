@@ -1,5 +1,4 @@
-import { Command } from '@oclif/command'
-import { Config } from '@oclif/config'
+import { Command, Config } from '@oclif/core'
 import { NoLogLogger } from '@smartthings/core-sdk'
 import { CLIConfig } from '../cli-config'
 import { LogManager } from '../logger'

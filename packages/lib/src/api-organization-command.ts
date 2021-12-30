@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { Flags } from '@oclif/core'
 import { APICommand } from './api-command'
 
 
@@ -9,7 +9,7 @@ import { APICommand } from './api-command'
 export abstract class APIOrganizationCommand extends APICommand {
 	static flags = {
 		...APICommand.flags,
-		organization: flags.string({
+		organization: Flags.string({
 			char: 'O',
 			description: 'The organization ID to use for this command',
 		}),

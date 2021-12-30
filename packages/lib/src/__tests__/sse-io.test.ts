@@ -3,10 +3,10 @@
  */
 
 import { logEvent } from '../sse-io'
-import cli from 'cli-ux'
+import { CliUx } from '@oclif/core'
 
 
-jest.mock('cli-ux')
+jest.mock('@oclif/core')
 
 describe('sse-io', () => {
 	describe('logEvent', () => {
@@ -21,7 +21,7 @@ describe('sse-io', () => {
 			return format
 		})
 
-		const logSpy = jest.spyOn(cli, 'log')
+		const logSpy = jest.spyOn(CliUx.ux, 'log')
 
 		afterEach(() => {
 			jest.clearAllMocks()

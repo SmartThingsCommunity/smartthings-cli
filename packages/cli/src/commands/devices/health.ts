@@ -17,7 +17,7 @@ export default class DeviceHealthCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceHealthCommand)
+		const { args, argv, flags } = await this.parse(DeviceHealthCommand)
 		await super.setup(args, argv, flags)
 
 		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })

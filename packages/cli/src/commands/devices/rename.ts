@@ -25,7 +25,7 @@ export default class DeviceRenameCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = this.parse(DeviceRenameCommand)
+		const { args, argv, flags } = await this.parse(DeviceRenameCommand)
 		await super.setup(args, argv, flags)
 
 		const id = await chooseDevice(this, args.id)
