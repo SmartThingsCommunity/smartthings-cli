@@ -17,7 +17,7 @@ describe('devices', () => {
 		jest.clearAllMocks()
 	})
 
-	describe('DevicesCommand', () => {
+	describe('DevicesProfilesCommand', () => {
 		const outputListingMock = outputListing as unknown as jest.Mock<typeof outputListing>
 
 		it('uses simple fields by default', async () => {

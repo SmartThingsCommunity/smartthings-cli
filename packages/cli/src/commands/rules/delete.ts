@@ -1,8 +1,8 @@
 import { flags } from '@oclif/command'
 
-import { APICommand, selectFromList } from '@smartthings/cli-lib'
+import { APICommand } from '@smartthings/cli-lib'
 
-import { getRule, getRulesByLocation } from '../rules'
+import { chooseRule, getRuleWithLocation } from '../../lib/commands/rules/rules-util'
 
 
 export default class RulesDeleteCommand extends APICommand {
@@ -25,20 +25,12 @@ export default class RulesDeleteCommand extends APICommand {
 		const { args, argv, flags } = this.parse(RulesDeleteCommand)
 		await super.setup(args, argv, flags)
 
-		const config = {
-			primaryKeyName: 'id',
-			sortKeyName: 'name',
-			listTableFieldDefinitions: ['name', 'id', 'locationId', 'locationName'],
-		}
-		const id = await selectFromList(this, config, args.id,
-			() => getRulesByLocation(this.client, flags['location-id']),
-			'Select a rule to delete.')
-		const locationIdForRule = async (): Promise<string | undefined> => {
-			const rule = await getRule(this.client, id, flags['location-id'])
-			return rule.locationId
-		}
-		const locationId = flags['location-id'] ?? await locationIdForRule()
-		await this.client.rules.delete(id, locationId)
-		this.log(`Rule ${id} deleted.`)
+		const ruleId = await chooseRule(this, 'Select a rule to delete.', flags['location-id'], args.id)
+
+		const locationId = flags['location-id']
+			?? (await getRuleWithLocation(this.client, ruleId, flags['location-id'])).locationId
+
+		await this.client.rules.delete(ruleId, locationId)
+		this.log(`Rule ${ruleId} deleted.`)
 	}
 }

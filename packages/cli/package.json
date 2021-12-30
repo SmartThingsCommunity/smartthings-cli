@@ -65,7 +65,7 @@
 		"@oclif/plugin-not-found": "^1.2.6",
 		"@oclif/plugin-plugins": "^1.10.11",
 		"@smartthings/cli-lib": "^0.0.0-pre.35",
-		"@smartthings/core-sdk": "^2.1.1",
+		"@smartthings/core-sdk": "^3.0.0",
 		"@smartthings/plugin-cli-edge": "^1.7.0",
 		"aws-sdk": "^2.690.0",
 		"cli-table": "^0.3.11",

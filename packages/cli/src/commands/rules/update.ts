@@ -2,9 +2,9 @@ import { flags } from '@oclif/command'
 
 import { Rule, RuleRequest } from '@smartthings/core-sdk'
 
-import { APICommand, inputAndOutputItem, selectFromList } from '@smartthings/cli-lib'
+import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { tableFieldDefinitions, getRulesByLocation, getRule } from '../rules'
+import { chooseRule, getRuleWithLocation, tableFieldDefinitions } from '../../lib/commands/rules/rules-util'
 
 
 export default class RulesUpdateCommand extends APICommand {
@@ -28,17 +28,11 @@ export default class RulesUpdateCommand extends APICommand {
 		const { args, argv, flags } = this.parse(RulesUpdateCommand)
 		await super.setup(args, argv, flags)
 
-		const config = {
-			primaryKeyName: 'id',
-			sortKeyName: 'name',
-			listTableFieldDefinitions: ['name', 'id', 'locationId', 'locationName'],
-		}
-		const id = await selectFromList(this, config, args.id,
-			() => getRulesByLocation(this.client, flags['location-id']))
+		const id = await chooseRule(this, 'Select a rule to update.', flags['location-id'], args.id)
 
 		await inputAndOutputItem<RuleRequest, Rule>(this, { tableFieldDefinitions },
 			async (_, data) => {
-				const rule = await getRule(this.client, id, flags['location-id'])
+				const rule = await getRuleWithLocation(this.client, id, flags['location-id'])
 				return this.client.rules.update(id, data, rule.locationId)
 			})
 	}

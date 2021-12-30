@@ -4,8 +4,12 @@ module.exports = {
 	testMatch: [
 		'**/__tests__/**/*.test.ts',
 	],
-	modulePathIgnorePatterns: [
-		'<rootDir>/dist',
-	],
 	setupFilesAfterEnv: ['jest-extended'],
+	collectCoverageFrom: ['src/**/*.ts'],
+	coveragePathIgnorePatterns: [
+		'/node_modules/',
+		'/__tests__/',
+		'/src/typings/',
+		'/src/index.ts',
+	],
 }
