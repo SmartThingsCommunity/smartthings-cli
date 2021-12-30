@@ -43,7 +43,7 @@ describe('RoomsCreateCommand', () => {
 		const room: Room = { name: 'test' }
 		const createSpy = jest.spyOn(RoomsEndpoint.prototype, 'create').mockResolvedValueOnce(room)
 
-		await expect(RoomsCreateCommand.run()).resolves.not.toThrow()
+		await expect(RoomsCreateCommand.run([])).resolves.not.toThrow()
 
 		expect(mockChooseLocation).toBeCalledWith(expect.any(RoomsCreateCommand), undefined)
 		expect(mockInputOutput).toBeCalledWith(

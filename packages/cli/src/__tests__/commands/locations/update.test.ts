@@ -30,7 +30,7 @@ describe('LocationsUpdateCommand', () => {
 	})
 
 	it('prompts user to choose location', async () => {
-		await expect(LocationsUpdateCommand.run()).resolves.not.toThrow()
+		await expect(LocationsUpdateCommand.run([])).resolves.not.toThrow()
 
 		expect(chooseLocation).toBeCalledWith(expect.any(LocationsUpdateCommand), undefined)
 	})

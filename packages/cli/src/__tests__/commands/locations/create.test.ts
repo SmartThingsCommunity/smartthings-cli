@@ -26,7 +26,7 @@ describe('LocationsCreateCommand', () => {
 
 		const createSpy = jest.spyOn(LocationsEndpoint.prototype, 'create').mockImplementation()
 
-		await expect(LocationsCreateCommand.run()).resolves.not.toThrow()
+		await expect(LocationsCreateCommand.run([])).resolves.not.toThrow()
 
 		expect(mockInputOutput).toBeCalledWith(
 			expect.any(LocationsCreateCommand),

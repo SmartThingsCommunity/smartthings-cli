@@ -30,7 +30,7 @@ describe('AppOauthUpdateCommand', () => {
 	})
 
 	it('prompts user to choose app', async () => {
-		await expect(AppOauthUpdateCommand.run()).resolves.not.toThrow()
+		await expect(AppOauthUpdateCommand.run([])).resolves.not.toThrow()
 
 		expect(mockChooseApp).toBeCalledWith(expect.any(AppOauthUpdateCommand), undefined)
 	})

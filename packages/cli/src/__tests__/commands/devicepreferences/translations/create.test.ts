@@ -38,7 +38,7 @@ describe('DevicePreferencesTranslationsCreateCommand', () => {
 	})
 
 	it('prompts user to choose device preference', async () => {
-		await expect(DevicePreferencesTranslationsCreateCommand.run()).resolves.not.toThrow()
+		await expect(DevicePreferencesTranslationsCreateCommand.run([])).resolves.not.toThrow()
 
 		expect(chooseDevicePreference).toBeCalledWith(
 			expect.any(DevicePreferencesTranslationsCreateCommand),
@@ -47,7 +47,7 @@ describe('DevicePreferencesTranslationsCreateCommand', () => {
 	})
 
 	it('calls inputOutput with correct config', async () => {
-		await expect(DevicePreferencesTranslationsCreateCommand.run()).resolves.not.toThrow()
+		await expect(DevicePreferencesTranslationsCreateCommand.run([])).resolves.not.toThrow()
 
 		expect(mockInputOutput).toBeCalledWith(
 			expect.any(DevicePreferencesTranslationsCreateCommand),
@@ -63,7 +63,7 @@ describe('DevicePreferencesTranslationsCreateCommand', () => {
 			return actionFunction(undefined, MOCK_PREFERENCE_L10N)
 		})
 
-		await expect(DevicePreferencesTranslationsCreateCommand.run()).resolves.not.toThrow()
+		await expect(DevicePreferencesTranslationsCreateCommand.run([])).resolves.not.toThrow()
 
 		expect(createTranslationsSpy).toBeCalledWith(preferenceId, MOCK_PREFERENCE_L10N)
 	})

@@ -21,7 +21,7 @@ describe('LocationsDeleteCommand', () => {
 	})
 
 	it('prompts user to choose location', async () => {
-		await expect(LocationsDeleteCommand.run()).resolves.not.toThrow()
+		await expect(LocationsDeleteCommand.run([])).resolves.not.toThrow()
 
 		expect(chooseLocation).toBeCalledWith(expect.any(LocationsDeleteCommand), undefined)
 	})

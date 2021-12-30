@@ -57,7 +57,7 @@ describe('LocationsCommand', () => {
 	})
 
 	it('calls outputListing when no id is provided', async () => {
-		await expect(LocationsCommand.run()).resolves.not.toThrow()
+		await expect(LocationsCommand.run([])).resolves.not.toThrow()
 
 		expect(mockListing).toBeCalledTimes(1)
 		expect(mockListing.mock.calls[0][2]).toBeUndefined()
@@ -79,7 +79,7 @@ describe('LocationsCommand', () => {
 
 		const getSpy = jest.spyOn(LocationsEndpoint.prototype, 'get').mockImplementation()
 
-		await expect(LocationsCommand.run()).resolves.not.toThrow()
+		await expect(LocationsCommand.run([])).resolves.not.toThrow()
 
 		expect(mockListing).toBeCalledWith(
 			expect.any(LocationsCommand),

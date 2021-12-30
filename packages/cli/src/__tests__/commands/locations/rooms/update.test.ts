@@ -32,7 +32,7 @@ describe('RoomsUpdateCommand', () => {
 	it('prompts user to choose room', async () => {
 		mockChooseRoom.mockResolvedValueOnce([uuid(), uuid()])
 
-		await expect(RoomsUpdateCommand.run()).resolves.not.toThrow()
+		await expect(RoomsUpdateCommand.run([])).resolves.not.toThrow()
 
 		expect(mockChooseRoom).toBeCalledWith(expect.any(RoomsUpdateCommand), undefined, undefined)
 	})
@@ -59,7 +59,7 @@ describe('RoomsUpdateCommand', () => {
 
 		const updateSpy = jest.spyOn(RoomsEndpoint.prototype, 'update').mockImplementation()
 
-		await expect(RoomsUpdateCommand.run()).resolves.not.toThrow()
+		await expect(RoomsUpdateCommand.run([])).resolves.not.toThrow()
 
 		expect(mockChooseRoom).toBeCalledWith(expect.any(RoomsUpdateCommand), undefined, undefined)
 		expect(mockInputOutput).toBeCalledWith(

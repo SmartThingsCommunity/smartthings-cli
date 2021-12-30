@@ -30,13 +30,13 @@ describe('AppOauthGenerateCommand', () => {
 	})
 
 	it('prompts user to choose app', async () => {
-		await expect(AppOauthGenerateCommand.run()).resolves.not.toThrow()
+		await expect(AppOauthGenerateCommand.run([])).resolves.not.toThrow()
 
 		expect(mockChooseApp).toBeCalledWith(expect.any(AppOauthGenerateCommand), undefined)
 	})
 
 	it('calls inputOutput with correct config', async () => {
-		await expect(AppOauthGenerateCommand.run()).resolves.not.toThrow()
+		await expect(AppOauthGenerateCommand.run([])).resolves.not.toThrow()
 
 		expect(mockInputOutput).toBeCalledWith(
 			expect.any(AppOauthGenerateCommand),

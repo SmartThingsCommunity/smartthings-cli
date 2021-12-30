@@ -17,7 +17,7 @@ describe('DeviceConfigPresentationCommand', () => {
 	})
 
 	it('throws error when required arg missing', async () => {
-		await expect(DeviceConfigPresentationCommand.run()).rejects.toThrow()
+		await expect(DeviceConfigPresentationCommand.run([])).rejects.toThrow()
 	})
 
 	it('outputs item when required arg is provided', async () => {

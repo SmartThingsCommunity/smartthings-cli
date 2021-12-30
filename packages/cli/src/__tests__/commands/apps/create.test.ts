@@ -37,7 +37,7 @@ describe('AppCreateCommand', () => {
 		})
 		const buildTableSpy = jest.spyOn(DefaultTableGenerator.prototype, 'buildTableFromItem')
 
-		await expect(AppCreateCommand.run()).resolves.not.toThrow()
+		await expect(AppCreateCommand.run([])).resolves.not.toThrow()
 
 		expect(mockInputOutput).toBeCalledWith(
 			expect.any(AppCreateCommand),
@@ -55,7 +55,7 @@ describe('AppCreateCommand', () => {
 			await actionFunction(undefined, appRequest)
 		})
 
-		await expect(AppCreateCommand.run()).resolves.not.toThrow()
+		await expect(AppCreateCommand.run([])).resolves.not.toThrow()
 
 		expect(createSpy).toBeCalledWith(appRequest)
 	})

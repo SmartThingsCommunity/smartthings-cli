@@ -21,7 +21,7 @@ describe('devices', () => {
 		const outputListingMock = outputListing as unknown as jest.Mock<typeof outputListing>
 
 		it('passes undefined for location id when not specified', async () => {
-			await expect(DevicesCommand.run()).resolves.not.toThrow()
+			await expect(DevicesCommand.run([])).resolves.not.toThrow()
 
 			expect(outputListingMock).toHaveBeenCalledTimes(1)
 			expect(outputListingMock.mock.calls[0][2]).toBeUndefined()

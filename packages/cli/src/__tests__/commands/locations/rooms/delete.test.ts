@@ -20,7 +20,7 @@ describe('RoomsDeleteCommand', () => {
 	it('prompts user to choose room', async () => {
 		mockChooseRoom.mockResolvedValueOnce([uuid(), uuid()])
 
-		await expect(RoomsDeleteCommand.run()).resolves.not.toThrow()
+		await expect(RoomsDeleteCommand.run([])).resolves.not.toThrow()
 
 		expect(chooseRoom).toBeCalledWith(expect.any(RoomsDeleteCommand), undefined, undefined)
 	})
@@ -40,7 +40,7 @@ describe('RoomsDeleteCommand', () => {
 		const locationId = uuid()
 		mockChooseRoom.mockResolvedValueOnce([roomId, locationId])
 
-		await expect(RoomsDeleteCommand.run()).resolves.not.toThrow()
+		await expect(RoomsDeleteCommand.run([])).resolves.not.toThrow()
 
 		expect(chooseRoom).toBeCalledWith(expect.any(RoomsDeleteCommand), undefined, undefined)
 		expect(deleteSpy).toBeCalledWith(roomId, locationId)
