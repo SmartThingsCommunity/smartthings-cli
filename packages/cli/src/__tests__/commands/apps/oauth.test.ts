@@ -32,7 +32,7 @@ describe('AppOauthCommand', () => {
 	})
 
 	it('prompts user to choose app allowing index', async () => {
-		await expect(AppOauthCommand.run()).resolves.not.toThrow()
+		await expect(AppOauthCommand.run([])).resolves.not.toThrow()
 
 		expect(mockChooseApp).toBeCalledWith(
 			expect.any(AppOauthCommand),
@@ -42,7 +42,7 @@ describe('AppOauthCommand', () => {
 	})
 
 	it('calls outputItem with correct config', async () => {
-		await expect(AppOauthCommand.run()).resolves.not.toThrow()
+		await expect(AppOauthCommand.run([])).resolves.not.toThrow()
 
 		expect(mockOutput).toBeCalledWith(
 			expect.any(AppOauthCommand),

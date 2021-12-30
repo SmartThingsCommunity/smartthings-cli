@@ -46,7 +46,7 @@ describe('AppUpdateCommand', () => {
 	})
 
 	it('prompts user to choose app', async () => {
-		await expect(AppUpdateCommand.run()).resolves.not.toThrow()
+		await expect(AppUpdateCommand.run([])).resolves.not.toThrow()
 
 		expect(chooseApp).toBeCalledWith(
 			expect.any(AppUpdateCommand),
@@ -55,7 +55,7 @@ describe('AppUpdateCommand', () => {
 	})
 
 	it('calls inputOutput with correct config', async () => {
-		await expect(AppUpdateCommand.run()).resolves.not.toThrow()
+		await expect(AppUpdateCommand.run([])).resolves.not.toThrow()
 
 		expect(mockInputOutput).toBeCalledWith(
 			expect.any(AppUpdateCommand),

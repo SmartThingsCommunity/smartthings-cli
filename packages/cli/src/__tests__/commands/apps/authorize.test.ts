@@ -19,7 +19,7 @@ describe('AppsAuthorizeCommand', () => {
 	})
 
 	it('requires ARN arg', async () => {
-		await expect(AppsAuthorizeCommand.run()).rejects.toThrow('Missing 1 required arg:\narn')
+		await expect(AppsAuthorizeCommand.run([])).rejects.toThrow('Missing 1 required arg:\narn')
 	})
 
 	it('calls addPermission with required ARN', async () => {

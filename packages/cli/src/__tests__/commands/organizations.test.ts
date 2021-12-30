@@ -24,7 +24,7 @@ describe('OrganizationsCommand', () => {
 	})
 
 	it('calls outputListing when no id is provided', async () => {
-		await expect(OrganizationsCommand.run()).resolves.not.toThrow()
+		await expect(OrganizationsCommand.run([])).resolves.not.toThrow()
 
 		expect(mockListing).toBeCalledTimes(1)
 		expect(mockListing.mock.calls[0][2]).toBeUndefined()
@@ -46,7 +46,7 @@ describe('OrganizationsCommand', () => {
 
 		const getSpy = jest.spyOn(OrganizationsEndpoint.prototype, 'get').mockImplementation()
 
-		await expect(OrganizationsCommand.run()).resolves.not.toThrow()
+		await expect(OrganizationsCommand.run([])).resolves.not.toThrow()
 
 		expect(mockListing).toBeCalledWith(
 			expect.any(OrganizationsCommand),

@@ -38,7 +38,7 @@ describe('AppSettingsCommand', () => {
 	})
 
 	it('prompts user to choose app allowing index', async () => {
-		await expect(AppSettingsCommand.run()).resolves.not.toThrow()
+		await expect(AppSettingsCommand.run([])).resolves.not.toThrow()
 
 		expect(chooseApp).toBeCalledWith(
 			expect.any(AppSettingsCommand),
@@ -53,7 +53,7 @@ describe('AppSettingsCommand', () => {
 			return appSettings
 		})
 
-		await expect(AppSettingsCommand.run()).resolves.not.toThrow()
+		await expect(AppSettingsCommand.run([])).resolves.not.toThrow()
 
 		expect(outputItem).toBeCalledWith(
 			expect.any(AppSettingsCommand),
@@ -76,7 +76,7 @@ describe('AppSettingsCommand', () => {
 		})
 		mockChooseApp.mockResolvedValueOnce(appId)
 
-		await expect(AppSettingsCommand.run()).resolves.not.toThrow()
+		await expect(AppSettingsCommand.run([])).resolves.not.toThrow()
 
 		expect(settingsSpy).toBeCalledWith(appId)
 	})

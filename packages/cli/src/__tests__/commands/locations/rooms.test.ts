@@ -39,7 +39,7 @@ describe('RoomsCommand', () => {
 	})
 
 	it('calls outputListing correctly', async () => {
-		await expect(RoomsCommand.run()).resolves.not.toThrow()
+		await expect(RoomsCommand.run([])).resolves.not.toThrow()
 
 		expect(mockListing).toBeCalledWith(
 			expect.any(RoomsCommand),
@@ -64,7 +64,7 @@ describe('RoomsCommand', () => {
 		]
 		mockGetRoomsByLocation.mockResolvedValueOnce(roomList)
 
-		await expect(RoomsCommand.run()).resolves.not.toThrow()
+		await expect(RoomsCommand.run([])).resolves.not.toThrow()
 
 		expect(mockGetRoomsByLocation).toBeCalled()
 

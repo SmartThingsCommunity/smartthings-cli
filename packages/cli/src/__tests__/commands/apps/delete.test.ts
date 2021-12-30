@@ -16,7 +16,7 @@ describe('AppDeleteCommand', () => {
 	})
 
 	it('prompts user to choose app', async () => {
-		await expect(AppDeleteCommand.run()).resolves.not.toThrow()
+		await expect(AppDeleteCommand.run([])).resolves.not.toThrow()
 
 		expect(chooseApp).toBeCalledWith(expect.any(AppDeleteCommand), undefined)
 	})

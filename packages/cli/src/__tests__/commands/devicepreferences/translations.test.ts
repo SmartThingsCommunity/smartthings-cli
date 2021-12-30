@@ -41,7 +41,7 @@ describe('DevicePreferencesTranslationsCommand', () => {
 	})
 
 	it('prompts user to choose device preference', async () => {
-		await expect(DevicePreferencesTranslationsCommand.run()).resolves.not.toThrow()
+		await expect(DevicePreferencesTranslationsCommand.run([])).resolves.not.toThrow()
 
 		expect(chooseDevicePreference).toBeCalledWith(
 			expect.any(DevicePreferencesTranslationsCommand),

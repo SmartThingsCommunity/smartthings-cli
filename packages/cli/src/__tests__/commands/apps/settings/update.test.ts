@@ -30,7 +30,7 @@ describe('AppSettingsUpdateCommand', () => {
 	})
 
 	it('prompts user to choose app', async () => {
-		await expect(AppSettingsUpdateCommand.run()).resolves.not.toThrow()
+		await expect(AppSettingsUpdateCommand.run([])).resolves.not.toThrow()
 
 		expect(mockChooseApp).toBeCalledWith(expect.any(AppSettingsUpdateCommand), undefined)
 	})

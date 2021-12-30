@@ -37,7 +37,7 @@ describe('AppRegisterCommand', () => {
 	})
 
 	it('calls selectFromList with correct config', async () => {
-		await expect(AppRegisterCommand.run()).resolves.not.toThrow()
+		await expect(AppRegisterCommand.run([])).resolves.not.toThrow()
 
 		expect(mockSelectFromList).toBeCalledWith(
 			expect.any(AppRegisterCommand),
@@ -76,7 +76,7 @@ describe('AppRegisterCommand', () => {
 			return apps
 		})
 
-		await expect(AppRegisterCommand.run()).resolves.not.toThrow()
+		await expect(AppRegisterCommand.run([])).resolves.not.toThrow()
 
 		const listFunction = mockSelectFromList.mock.calls[0][3]
 		await expect(listFunction()).resolves.toEqual(webhookApps.concat(apiOnlyApps))

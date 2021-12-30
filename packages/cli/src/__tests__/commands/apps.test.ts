@@ -29,7 +29,7 @@ describe('AppsCommand', () => {
 	})
 
 	it('calls outputListing with correct config', async () => {
-		await expect(AppsCommand.run()).resolves.not.toThrow()
+		await expect(AppsCommand.run([])).resolves.not.toThrow()
 
 		expect(outputListing).toBeCalledWith(
 			expect.any(AppsCommand),
@@ -61,7 +61,7 @@ describe('AppsCommand', () => {
 	})
 
 	it('calls correct list endpoint', async () => {
-		await expect(AppsCommand.run()).resolves.not.toThrow()
+		await expect(AppsCommand.run([])).resolves.not.toThrow()
 		expect(listSpy).toBeCalled()
 	})
 
