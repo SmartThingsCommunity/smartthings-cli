@@ -3,8 +3,9 @@ import Table from 'cli-table'
 
 import { DeviceProfile, LocaleReference } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, ChooseOptions, WithOrganization, allOrganizationsFlags, chooseOptionsWithDefaults,
-	outputListing, forAllOrganizations, selectFromList, stringTranslateToId, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, ChooseOptions, WithOrganization, allOrganizationsFlags,
+	chooseOptionsWithDefaults, outputListing, forAllOrganizations, selectFromList,
+	stringTranslateToId, summarizedText, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile,
@@ -31,7 +32,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePro
 	}
 	return `Basic Information\n${table.toString()}\n\n` +
 		`${preferencesInfo}\n\n` +
-		'(Information is summarized, for full details use YAML, -y, or JSON flag, -j.)'
+		summarizedText
 }
 
 export async function chooseDeviceProfile(command: APIOrganizationCommand, deviceProfileFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {

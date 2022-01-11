@@ -2,7 +2,7 @@ import { flags } from '@oclif/command'
 
 import { CapabilityPresentation } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, outputGenericListing, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, outputGenericListing, summarizedText, TableGenerator } from '@smartthings/cli-lib'
 
 import { CapabilityId, capabilityIdOrIndexInputArgs, getCustomByNamespace, translateToId } from '../capabilities'
 
@@ -64,7 +64,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, presentation: C
 		`${detailView}\n\n` +
 		`${automationConditions}\n\n` +
 		`${automationActions}\n\n` +
-		'(Information is summarized, for full details use YAML, -y, or JSON flag, -j.)'
+		summarizedText
 }
 
 export default class PresentationsCommand extends APIOrganizationCommand {

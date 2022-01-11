@@ -2,46 +2,10 @@ import { flags } from '@oclif/command'
 
 import { Device, DeviceListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, ChooseOptions, chooseOptionsWithDefaults, outputListing, selectFromList, stringTranslateToId, TableGenerator, withLocationsAndRooms } from '@smartthings/cli-lib'
+import { APICommand, outputListing, withLocationsAndRooms } from '@smartthings/cli-lib'
 
+import { buildTableOutput } from '../lib/commands/devices/devices-util'
 
-export type DeviceWithLocation = Device & { location?: string }
-
-export function buildTableOutput(tableGenerator: TableGenerator, data: Device & { profileId?: string }): string {
-	const table = tableGenerator.newOutputTable()
-	table.push(['Name', data.name])
-	table.push(['Id', data.deviceId])
-	table.push(['Label', data.label])
-	table.push(['Manufacturer Code', data.deviceManufacturerCode ?? ''])
-	table.push(['Location Id', data.locationId ?? ''])
-	table.push(['Room Id', data.roomId ?? ''])
-	table.push(['Device Type Id', data.deviceTypeId ?? ''])
-	for (const comp of data.components ?? []) {
-		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
-	}
-	table.push(['Child Devices',  data.childDevices ? data.childDevices.map(it => it.deviceId).join('\n') : ''  ])
-	table.push(['Profile Id', data.profileId ?? (data.profile?.id ?? '')])
-	table.push(['Installed App Id', data.app?.installedAppId ?? ''])
-	table.push(['External App Id', data.app?.externalId ?? ''])
-	table.push(['App Profile Id', data.app?.profileId ?? ''])
-	return table.toString()
-}
-
-export async function chooseDevice(command: APICommand, deviceFromArg?: string,
-		options?: Partial<ChooseOptions>): Promise<string> {
-	const opts = chooseOptionsWithDefaults(options)
-	const config = {
-		itemName: 'device',
-		primaryKeyName: 'deviceId',
-		sortKeyName: 'label',
-		listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
-	}
-	const listDevices = (): Promise<Device[]> => command.client.devices.list()
-	const preselectedDeviceId = opts.allowIndex
-		? await stringTranslateToId(config, deviceFromArg, listDevices)
-		: deviceFromArg
-	return selectFromList(command, config, preselectedDeviceId, listDevices)
-}
 
 export default class DevicesCommand extends APICommand {
 	static description = 'list all devices available in a user account or retrieve a single device'

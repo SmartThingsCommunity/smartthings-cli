@@ -65,9 +65,10 @@
 		"@oclif/plugin-not-found": "^1.2.6",
 		"@oclif/plugin-plugins": "^1.10.1",
 		"@smartthings/cli-lib": "^0.0.0-pre.34",
-		"@smartthings/core-sdk": "^1.12.1",
+		"@smartthings/core-sdk": "^2.1.0",
 		"@smartthings/plugin-cli-edge": "^1.7.0",
 		"aws-sdk": "^2.690.0",
+		"cli-table": "^0.3.11",
 		"generator-smartthings": "^1.5.0",
 		"inquirer": "^8.1.2",
 		"lodash": "^4.17.19",
@@ -96,7 +97,7 @@
 		"pkg": "4.4.9",
 		"ts-jest": "^26.4.1",
 		"ts-node": "^9.0.0",
-		"typescript": "^4.0.3",
+		"typescript": "^4.5.4",
 		"uuid": "^8.3.2"
 	},
 	"scripts": {

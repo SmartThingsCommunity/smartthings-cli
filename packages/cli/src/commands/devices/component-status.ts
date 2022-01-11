@@ -2,8 +2,8 @@ import { Component, ComponentStatus } from '@smartthings/core-sdk'
 
 import { APICommand, formatAndWriteItem, selectFromList, SelectingConfig, SmartThingsCommand, stringTranslateToId, TableGenerator } from '@smartthings/cli-lib'
 
+import { chooseDevice } from '../../lib/commands/devices/devices-util'
 import { prettyPrintAttribute } from './status'
-import { chooseDevice } from '../devices'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, component: ComponentStatus): string {
