@@ -6,6 +6,8 @@ import { Logger } from '@smartthings/core-sdk'
 import { logManager } from './logger'
 
 
+export const summarizedText = '(Information is summarized, for full details use YAML, -y, or JSON flag, -j.)'
+
 /**
  * This code is copied from the DefinitelyTyped source code because it is not
  * exported there.

@@ -1,6 +1,6 @@
 import { PresentationDeviceConfig, PresentationDPInfo, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
 
-import { APICommand, outputItem, TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, outputItem, summarizedText, TableGenerator } from '@smartthings/cli-lib'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, deviceConfig: PresentationDeviceConfig): string {
@@ -72,7 +72,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, deviceConfig: P
 		`${detailView}\n\n` +
 		`${automationConditions}\n\n` +
 		`${automationActions}\n\n` +
-		'(Information is summarized, for full details use YAML, -y, or JSON flag, -j.)'
+		summarizedText
 }
 
 export default class DeviceConfigPresentationCommand extends APICommand {

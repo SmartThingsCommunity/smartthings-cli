@@ -1,6 +1,6 @@
 import { APICommand, formatAndWriteItem } from '@smartthings/cli-lib'
 
-import { chooseDevice } from '../devices'
+import { chooseDevice } from '../../lib/commands/devices/devices-util'
 
 
 export default class DeviceHealthCommand extends APICommand {

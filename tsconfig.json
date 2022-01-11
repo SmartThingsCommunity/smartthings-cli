@@ -4,10 +4,12 @@
 		"declaration": true,
 		"importHelpers": true,
 		"module": "commonjs",
+		"lib": ["es2020"],
 		"strict": true,
 		"target": "es2019",
 		"esModuleInterop": true,
 		"noErrorTruncation": true,
+		"useUnknownInCatchVariables": false,
 	},
 	"references": [
 		{
