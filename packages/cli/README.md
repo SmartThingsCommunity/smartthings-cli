@@ -137,6 +137,7 @@ that map to the API spec.
 * [`smartthings devicepreferences:create`](#smartthings-devicepreferencescreate)
 * [`smartthings devicepreferences:translations [PREFERENCEID] [TAG]`](#smartthings-devicepreferencestranslations-preferenceid-tag)
 * [`smartthings devicepreferences:translations:create [PREFERENCEID]`](#smartthings-devicepreferencestranslationscreate-preferenceid)
+* [`smartthings devicepreferences:translations:update [PREFERENCEID]`](#smartthings-devicepreferencestranslationsupdate-preferenceid)
 * [`smartthings devicepreferences:update [ID]`](#smartthings-devicepreferencesupdate-id)
 * [`smartthings deviceprofiles [ID]`](#smartthings-deviceprofiles-id)
 * [`smartthings deviceprofiles:create`](#smartthings-deviceprofilescreate)
@@ -820,15 +821,15 @@ EXAMPLES
   Attributes:
   ┌────────────────────────┬───────────────────┬────────────────────────────────┬───────────────────────────────────────
   ─────────────┐
-  │ Name                   │ Label             │ Description                    │ Template
+  │ Name                   │ Label             │ Description                    │ Template                              
                │
   ├────────────────────────┼───────────────────┼────────────────────────────────┼───────────────────────────────────────
   ─────────────┤
-  │ outputModulation       │ Output Modulation │ Power supply output modulation │ The {{attribute}} of {{device.label}}
+  │ outputModulation       │ Output Modulation │ Power supply output modulation │ The {{attribute}} of {{device.label}} 
   is {{value}} │
-  │ outputModulation.50hz  │ 50 Hz             │                                │
+  │ outputModulation.50hz  │ 50 Hz             │                                │                                       
                │
-  │ outputModulation.60hz  │ 60 Hz             │                                │
+  │ outputModulation.60hz  │ 60 Hz             │                                │                                       
                │
   └────────────────────────┴───────────────────┴────────────────────────────────┴───────────────────────────────────────
   ─────────────┘
@@ -872,7 +873,7 @@ OPTIONS
   --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
-  $ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml
+  $ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml 
   tag: en
   label: Output Modulation
   attributes:
@@ -950,7 +951,7 @@ OPTIONS
   --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
-  $ smartthings capabilities:translations:update custom1.outputModulation 1 -i en.yaml
+  $ smartthings capabilities:translations:update custom1.outputModulation 1 -i en.yaml 
   tag: en
   label: Output Modulation
   attributes:
@@ -1028,7 +1029,7 @@ OPTIONS
   --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
-  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml
+  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml 
   tag: en
   label: Output Modulation
   attributes:
@@ -1200,13 +1201,13 @@ ALIASES
   $ smartthings device-preferences:create
 
 EXAMPLES
-  $ smartthings devicepreferences:create                              # create a new device profile by answering
+  $ smartthings devicepreferences:create                              # create a new device profile by answering 
   questions
   $ smartthings devicepreferences:create -d                           # generate a device profile by answering questions
    but do not actually create it
-  $ smartthings devicepreferences:create -i dp.json                   # create a new device profile defined by the file
+  $ smartthings devicepreferences:create -i dp.json                   # create a new device profile defined by the file 
   dp.json
-  $ smartthings devicepreferences:create -i dp.json -o dp-saved.json  # create a new device profile defined by the file
+  $ smartthings devicepreferences:create -i dp.json -o dp-saved.json  # create a new device profile defined by the file 
   dp.json and write the results to dp-saved.json
 ```
 
@@ -1222,7 +1223,7 @@ USAGE
 
 ARGUMENTS
   PREFERENCEID  device preference id or index
-  TAG           [default: en] the locale tag
+  TAG           the locale tag
 
 OPTIONS
   -O, --organization=organization  The organization ID to use for this command
@@ -1238,14 +1239,13 @@ OPTIONS
   --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 EXAMPLES
-
-  # let command prompt to choose device preference
+  # let command prompt to choose device preference and list locales
   $ smartthings devicepreferences:translations
 
-  # specify device preference ID and use default locale tag (en)
+  # specify device preference ID and list locales
   $ smartthings devicepreferences:translations motionSensitivity
 
-  # specify device preference ID and locale
+  # specify device preference ID and locale to get translated device preference values
   $ smartthings devicepreferences:translations motionSensitivity ko
 ```
 
@@ -1283,6 +1283,38 @@ EXAMPLE
 
 _See code: [src/commands/devicepreferences/translations/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.34/packages/cli/src/commands/devicepreferences/translations/create.ts)_
 
+## `smartthings devicepreferences:translations:update [PREFERENCEID]`
+
+update a device preference translation
+
+```
+USAGE
+  $ smartthings devicepreferences:translations:update [PREFERENCEID]
+
+ARGUMENTS
+  PREFERENCEID  device preference id or index
+
+OPTIONS
+  -O, --organization=organization  The organization ID to use for this command
+  -d, --dry-run                    produce JSON but don't actually submit
+  -h, --help                       show CLI help
+  -i, --input=input                specify input file
+  -j, --json                       use JSON format of input and/or output
+  -o, --output=output              specify output file
+  -p, --profile=profile            [default: default] configuration profile
+  -t, --token=token                the auth token to use
+  -y, --yaml                       use YAML format of input and/or output
+  --compact                        use compact table format with no lines between body rows
+  --expanded                       use expanded table format with a line between each body row
+  --indent=indent                  specify indentation for formatting JSON or YAML output
+  --language=language              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+EXAMPLE
+  $ smartthings devicepreferences:translations:update -i preferenceTranslation.json
+```
+
+_See code: [src/commands/devicepreferences/translations/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.34/packages/cli/src/commands/devicepreferences/translations/update.ts)_
+
 ## `smartthings devicepreferences:update [ID]`
 
 update a device preference
@@ -1313,9 +1345,9 @@ ALIASES
   $ smartthings device-preferences:update
 
 EXAMPLES
-  $ smartthings devicepreferences:update -i dp.json                   # update a device preference with data from
+  $ smartthings devicepreferences:update -i dp.json                   # update a device preference with data from 
   dp.json, select which preference from a list
-  $ smartthings devicepreferences:update -i dp.yaml my-preference-id  # update device preference my-preference-id with
+  $ smartthings devicepreferences:update -i dp.yaml my-preference-id  # update device preference my-preference-id with 
   data from dp.yaml
 ```
 
@@ -2433,7 +2465,7 @@ ALIASES
 
 EXAMPLES
   smartthings edge:channels:invites                  # list all invites on all channels you own
-  smartthings edge:channels:invites 2                # list details about the second invite show when listed as in the
+  smartthings edge:channels:invites 2                # list details about the second invite show when listed as in the 
   example above
   smartthings edge:channels:invites -C <channel id>  # list all invites on channel with id <channel id>
   smartthings edge:channels:invites <invite id>      # list details about the invite with id <invite id>
@@ -2669,9 +2701,9 @@ OPTIONS
 
 EXAMPLES
   smartthings edge:drivers:install                                         # use Q&A format to enter required values
-  smartthings edge:drivers:install -H <hub-id>                             # specify the hub on the command line, other
+  smartthings edge:drivers:install -H <hub-id>                             # specify the hub on the command line, other 
   fields will be asked for
-  smartthings edge:drivers:install -H <hub-id> -C <channel-id> <driver-id> # install a driver from a channel on an
+  smartthings edge:drivers:install -H <hub-id> -C <channel-id> <driver-id> # install a driver from a channel on an 
   enrolled hub
 ```
 
@@ -2866,7 +2898,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.17/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.3.1/src/commands/help.ts)_
 
 ## `smartthings installedapps [ID]`
 
@@ -3295,7 +3327,7 @@ EXAMPLE
   $ smartthings plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/index.ts)_
 
 ## `smartthings plugins:inspect PLUGIN...`
 
@@ -3316,7 +3348,7 @@ EXAMPLE
   $ smartthings plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/inspect.ts)_
 
 ## `smartthings plugins:install PLUGIN...`
 
@@ -3339,20 +3371,20 @@ DESCRIPTION
 
   Installation of a user-installed plugin will override a core plugin.
 
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
+  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command 
+  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in 
   the CLI without the need to patch and update the whole CLI.
 
 ALIASES
   $ smartthings plugins:add
 
 EXAMPLES
-  $ smartthings plugins:install myplugin
+  $ smartthings plugins:install myplugin 
   $ smartthings plugins:install https://github.com/someuser/someplugin
   $ smartthings plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/install.ts)_
 
 ## `smartthings plugins:link PLUGIN`
 
@@ -3379,7 +3411,7 @@ EXAMPLE
   $ smartthings plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/link.ts)_
 
 ## `smartthings plugins:uninstall PLUGIN...`
 
@@ -3401,7 +3433,7 @@ ALIASES
   $ smartthings plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/uninstall.ts)_
 
 ## `smartthings plugins:update`
 
@@ -3416,7 +3448,7 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/update.ts)_
 
 ## `smartthings presentation PRESENTATIONID [MANUFACTURERNAME]`
 
