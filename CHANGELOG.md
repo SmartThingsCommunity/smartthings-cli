@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.35](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.34...v0.0.0-pre.35) (2022-01-19)
+
+
+### Bug Fixes
+
+* revert most of package-lock.json which had been completely remade with last commit ([5228eb4](https://github.com/rossiam/smartthings-cli/commit/5228eb4126275389bc544dd4812b0296aeb65d4a))
+* update versions for oclif dependencies ([e943245](https://github.com/rossiam/smartthings-cli/commit/e94324526e45bba40706d0b77767f17781a42dec))
+
+
+### Features
+
+* **devicepreferences:** expanded i18n support ([109bd38](https://github.com/rossiam/smartthings-cli/commit/109bd384ccfe806e159cf8d474188075ede1b0e7))
+* update standard device details output ([0867f77](https://github.com/rossiam/smartthings-cli/commit/0867f775ab58fe5cbd1979bb1365e4004ff9f4b7))
+
+
+
+
+
 # [0.0.0-pre.34](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.33...v0.0.0-pre.34) (2021-12-23)
 
 
