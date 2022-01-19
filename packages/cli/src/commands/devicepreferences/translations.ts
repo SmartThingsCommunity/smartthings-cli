@@ -1,5 +1,5 @@
-import {APIOrganizationCommand, outputItem} from '@smartthings/cli-lib'
-import { PreferenceLocalization } from '@smartthings/core-sdk'
+import { APIOrganizationCommand, ListingOutputConfig, outputListing } from '@smartthings/cli-lib'
+import { LocaleReference, PreferenceLocalization } from '@smartthings/core-sdk'
 import { chooseDevicePreference } from '../../lib/commands/devicepreferences/devicepreferences-util'
 import { tableFieldDefinitions } from '../../lib/commands/devicepreferences/translations/translations-util'
 
@@ -9,23 +9,24 @@ export default class DevicePreferencesTranslationsCommand extends APIOrganizatio
 
 	static flags = {
 		...APIOrganizationCommand.flags,
-		...outputItem.flags,
+		...outputListing.flags,
 	}
 
 	static args = [
 		{ name: 'preferenceId', description: 'device preference id or index' },
-		{ name: 'tag', description: 'the locale tag', default: 'en' },
+		{ name: 'tag', description: 'the locale tag' },
 	]
 
-	static examples = [`
-# let command prompt to choose device preference
+	static examples = [
+		`# let command prompt to choose device preference and list locales
 $ smartthings devicepreferences:translations
 `,
-	`# specify device preference ID and use default locale tag (en)
+		`# specify device preference ID and list locales
 $ smartthings devicepreferences:translations motionSensitivity
 `,
-	`# specify device preference ID and locale
-$ smartthings devicepreferences:translations motionSensitivity ko`]
+		`# specify device preference ID and locale to get translated device preference values
+$ smartthings devicepreferences:translations motionSensitivity ko`,
+	]
 
 	async init(): Promise<void> {
 		await super.init()
@@ -37,7 +38,15 @@ $ smartthings devicepreferences:translations motionSensitivity ko`]
 	async run(): Promise<void> {
 		const preferenceId = await chooseDevicePreference(this, this.args.preferenceId)
 
-		await outputItem<PreferenceLocalization>(this, { tableFieldDefinitions },
-			() => this.client.devicePreferences.getTranslations(preferenceId, this.args.tag))
+		const config: ListingOutputConfig<PreferenceLocalization, LocaleReference> = {
+			primaryKeyName: 'tag',
+			sortKeyName: 'tag',
+			listTableFieldDefinitions: ['tag'],
+			tableFieldDefinitions,
+		}
+
+		await outputListing<PreferenceLocalization, LocaleReference>(this, config, this.args.tag,
+			() => this.client.devicePreferences.listTranslations(preferenceId),
+			tag => this.client.devicePreferences.getTranslations(preferenceId, tag))
 	}
 }
