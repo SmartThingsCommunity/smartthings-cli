@@ -3,6 +3,7 @@ import yaml from 'js-yaml'
 import { configure, Configuration as LoggingConfig, Logger, Level, FileAppender, StandardErrorAppender, LogLevelFilterAppender } from 'log4js'
 
 import { Logger as APILogger } from '@smartthings/core-sdk'
+import { yamlExists } from './io-util'
 
 
 const DEFAULT_LOG_FILE_SIZE = 1_000_000 // bytes
@@ -124,7 +125,7 @@ export function defaultLoggingConfig(logFilename: string): LoggingConfig {
 }
 
 export function loadLoggingConfig(configFilename: string, defaultConfig: LoggingConfig): LoggingConfig {
-	if (!fs.existsSync(configFilename)) {
+	if (!yamlExists(configFilename)) {
 		return defaultConfig
 	}
 

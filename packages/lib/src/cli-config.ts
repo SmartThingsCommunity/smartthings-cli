@@ -1,5 +1,6 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
+import { yamlExists } from './io-util'
 
 
 export class CLIConfig {
@@ -20,7 +21,7 @@ export class CLIConfig {
 			throw new Error('config not yet initialized')
 		}
 
-		if (!fs.existsSync(this._configFile)) {
+		if (!yamlExists(this._configFile)) {
 			this._config = {}
 		}
 

@@ -2,10 +2,24 @@ import { stdin as mockStdin } from 'mock-stdin'
 
 import { NoLogLogger } from '@smartthings/core-sdk'
 
-import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, stdinIsTTY } from '../io-util'
+import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, stdinIsTTY, yamlExists } from '../io-util'
 import { LogManager } from '../logger'
 import { validData, validYAML, SimpleType } from './test-lib/simple-type'
+import { existsSync, PathLike } from 'fs'
+import { cli } from 'cli-ux'
 
+
+jest.mock('cli-ux')
+
+jest.mock('fs', () => {
+	// if this isn't done, something breaks with sub-dependency 'fs-extra'
+	const originalLib = jest.requireActual('fs')
+
+	return {
+		...originalLib,
+		existsSync: jest.fn(),
+	}
+})
 
 afterEach(() => {
 	jest.clearAllMocks()
@@ -71,5 +85,47 @@ describe('stdinIsTTY', () => {
 	it('returns true inside a test', function() {
 		Object.defineProperty(process.stdin, 'isTTY', { value: true })
 		expect(stdinIsTTY()).toBe(true)
+	})
+})
+
+describe('yamlExists', () => {
+	const mockExistsSync = existsSync as jest.Mock<boolean, [PathLike]>
+
+	afterEach(() => {
+		jest.clearAllMocks()
+	})
+
+	it.each([
+		'config.ini',
+		'config',
+		'',
+		'/Users/user/.config/@smartthings/cli',
+		'c:\\users\\user\\AppData\\Local',
+	])('throws error when %s is checked', (path) => {
+		expect(() => yamlExists(path)).toThrow('Invalid file extension')
+		expect(mockExistsSync).not.toBeCalled()
+	})
+
+	it.each([
+		'config.yaml',
+		'/Users/user/.config/@smartthings/cli/config.yaml',
+		'c:\\users\\user\\AppData\\Local\\config.yaml',
+	])('returns true when %s is checked and exists', (path) => {
+		mockExistsSync.mockReturnValueOnce(true)
+
+		expect(yamlExists(path)).toBe(true)
+	})
+
+	it.each([
+		'config.yaml',
+		'/Users/user/.config/@smartthings/cli/config.yaml',
+		'c:\\users\\user\\AppData\\Local\\config.yaml',
+	])('warns and returns false when %s is checked but .yml exists', (path) => {
+		mockExistsSync
+			.mockReturnValueOnce(false)
+			.mockReturnValueOnce(true)
+
+		expect(yamlExists(path)).toBe(false)
+		expect(cli.warn).toBeCalledWith(expect.stringContaining('Please use ".yaml" extension instead'))
 	})
 })
