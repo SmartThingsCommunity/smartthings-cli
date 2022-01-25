@@ -1,13 +1,13 @@
 import fs from 'fs'
 import path from 'path'
-import util from 'util'
 import yaml from 'js-yaml'
 
 import { logManager } from './logger'
+import { cli } from 'cli-ux'
 
 
-export const readFile = util.promisify(fs.readFile)
-export const writeFile = util.promisify(fs.writeFile)
+export const readFile = fs.promises.readFile
+export const writeFile = fs.promises.writeFile
 
 export enum IOFormat {
 	YAML = 'yaml',
@@ -73,4 +73,32 @@ export function stdinIsTTY(): boolean {
  */
 export function stdoutIsTTY(): boolean {
 	return process.stdout.isTTY
+}
+
+/**
+ * Check for existence of YAML file.
+ * Enforces official file extension and warns user if incorrect file detected.
+ */
+export function yamlExists(filepath: string): boolean {
+	const parsedPath = path.parse(filepath)
+
+	if (parsedPath.ext !== '.yaml') {
+		throw Error(`Invalid file extension: ${parsedPath.ext}`)
+	}
+
+	if (!fs.existsSync(filepath)) {
+		const ymlPath = path.format({
+			dir: parsedPath.dir,
+			name: parsedPath.name,
+			ext: '.yml',
+		})
+
+		if (fs.existsSync(ymlPath)) {
+			cli.warn(`Ignoring ${ymlPath} and using default. Please use ".yaml" extension instead.`)
+		}
+
+		return false
+	}
+
+	return true
 }

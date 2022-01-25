@@ -26,6 +26,7 @@ describe('RulesDeleteCommand', () => {
 		.mockResolvedValue(ruleWithLocation)
 
 	const deleteSpy = jest.spyOn(RulesEndpoint.prototype, 'delete').mockImplementation()
+	const logSpy = jest.spyOn(RulesDeleteCommand.prototype, 'log').mockImplementation()
 
 	afterEach(() => {
 		jest.clearAllMocks()
@@ -35,7 +36,7 @@ describe('RulesDeleteCommand', () => {
 		chooseRuleMock.mockResolvedValueOnce('chosen-rule-id')
 		getRuleWithLocationMock.mockResolvedValue(ruleWithLocation)
 
-		await expect(RulesDeleteCommand.run()).resolves.not.toThrow()
+		await expect(RulesDeleteCommand.run([])).resolves.not.toThrow()
 
 		expect(chooseRuleMock).toHaveBeenCalledTimes(1)
 		expect(chooseRuleMock).toHaveBeenCalledWith(expect.any(RulesDeleteCommand),
@@ -45,6 +46,7 @@ describe('RulesDeleteCommand', () => {
 			'chosen-rule-id', undefined)
 		expect(deleteSpy).toHaveBeenCalledTimes(1)
 		expect(deleteSpy).toHaveBeenCalledWith('chosen-rule-id', 'location-id')
+		expect(logSpy).toHaveBeenCalledWith('Rule chosen-rule-id deleted.')
 	})
 
 	it('use rule id from command line', async () => {
@@ -61,6 +63,7 @@ describe('RulesDeleteCommand', () => {
 			'chosen-rule-id', undefined)
 		expect(deleteSpy).toHaveBeenCalledTimes(1)
 		expect(deleteSpy).toHaveBeenCalledWith('chosen-rule-id', 'location-id')
+		expect(logSpy).toHaveBeenCalledWith('Rule chosen-rule-id deleted.')
 	})
 
 	it('uses location from command line', async () => {
@@ -75,5 +78,6 @@ describe('RulesDeleteCommand', () => {
 		expect(getRuleWithLocationMock).toHaveBeenCalledTimes(0)
 		expect(deleteSpy).toHaveBeenCalledTimes(1)
 		expect(deleteSpy).toHaveBeenCalledWith('chosen-rule-id', 'cmd-line-location-id')
+		expect(logSpy).toHaveBeenCalledWith('Rule chosen-rule-id deleted.')
 	})
 })

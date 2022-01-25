@@ -33,7 +33,7 @@ describe('RulesCreateCommand', () => {
 	it('allows user to choose location', async () => {
 		chooseLocationMock.mockResolvedValue('chosen-location-id')
 
-		await expect(RulesCreateCommand.run()).resolves.not.toThrow()
+		await expect(RulesCreateCommand.run([])).resolves.not.toThrow()
 
 		expect(chooseLocationMock).toHaveBeenCalledTimes(1)
 		expect(chooseLocationMock).toHaveBeenCalledWith(expect.any(RulesCreateCommand), undefined)

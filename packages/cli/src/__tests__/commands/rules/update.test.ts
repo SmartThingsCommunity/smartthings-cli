@@ -44,7 +44,7 @@ describe('RulesUpdateCommand', () => {
 	it('allows user to select rule', async () => {
 		chooseRuleMock.mockResolvedValueOnce('chosen-rule-id')
 
-		await expect(RulesUpdateCommand.run()).resolves.not.toThrow()
+		await expect(RulesUpdateCommand.run([])).resolves.not.toThrow()
 
 		expect(chooseRuleMock).toHaveBeenCalledTimes(1)
 		expect(chooseRuleMock).toHaveBeenCalledWith(expect.any(RulesUpdateCommand),
