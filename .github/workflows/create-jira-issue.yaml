@@ -1,0 +1,17 @@
+on:
+  issues:
+    types: [labeled]
+
+name: Create Jira Issue
+
+jobs:
+  create-jira-issue:
+    uses: SmartThingsCommunity/github-actions/.github/workflows/create-jira-issue.yaml@main
+    with:
+      trigger-label: reviewed
+      project: PI
+      fields: '{"labels": ["pi-github"],"components": [{"id": "19894"}]}'
+    secrets:
+      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+      JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
