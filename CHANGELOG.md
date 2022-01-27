@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.36](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.35...v0.0.0-pre.36) (2022-01-27)
+
+
+### Features
+
+* add rules:execute command ([e84b27f](https://github.com/john-u/smartthings-cli/commit/e84b27f113d52df5da59f803938637600345291b))
+* warn when config extensions are .yml ([e21b4c9](https://github.com/john-u/smartthings-cli/commit/e21b4c9c2accb6b08d9b58e346f18922e7ddab83))
+
+
+
+
+
 # [0.0.0-pre.35](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.34...v0.0.0-pre.35) (2022-01-19)
 
 
