@@ -30,6 +30,7 @@ The following per-profile config options are supported:
 | -- | -- | -- |
 | indent | 2 | Indent level for JSON or YAML output. |
 | compactTableOutput | true | Compact table output without lines between rows. |
+| organization | none | UUID of the organization to use in applicable CLI commands. |
 | token | none | Use a bearer token (such as a PAT) for authentication instead of the default login flow. |
 
 ## Example
