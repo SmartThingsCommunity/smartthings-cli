@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core'
 import osLocale from 'os-locale'
 
-import { Authenticator, BearerTokenAuthenticator, SmartThingsClient } from '@smartthings/core-sdk'
+import { Authenticator, BearerTokenAuthenticator, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
 
 import { logManager } from './logger'
 import { defaultClientIdProvider, LoginAuthenticator } from './login-authenticator'
@@ -85,7 +85,14 @@ export abstract class APICommand extends SmartThingsCommand {
 			? new BearerTokenAuthenticator(this.token)
 			: new LoginAuthenticator(this.profileName, this.clientIdProvider)
 
+		const warningLogger = (warnings: WarningFromHeader[] | string): void => {
+			const message = 'Warnings from API:\n' + (typeof(warnings) === 'string'
+				? warnings
+				: this.tableGenerator.buildTableFromList(warnings, ['code', 'agent', 'text', 'date']))
+			this.logger.warn(message)
+			this.warn(message)
+		}
 		this._client = new SmartThingsClient(this._authenticator,
-			{ urlProvider: this.clientIdProvider, logger, headers })
+			{ urlProvider: this.clientIdProvider, logger, headers, warningLogger })
 	}
 }

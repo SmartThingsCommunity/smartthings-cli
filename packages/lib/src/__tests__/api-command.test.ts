@@ -2,12 +2,13 @@ import { Config } from '@oclif/core'
 import { v4 as uuidv4 } from 'uuid'
 import * as osLocale from 'os-locale'
 
-import { SmartThingsClient } from '@smartthings/core-sdk'
+import { SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
 import * as coreSDK from '@smartthings/core-sdk'
 
 import { APICommand } from '../api-command'
 import { CLIConfig } from '../cli-config'
 import { ClientIdProvider } from '../login-authenticator'
+import { TableGenerator } from '..'
 
 
 jest.mock('os-locale')
@@ -23,6 +24,10 @@ describe('api-command', () => {
 	})
 
 	describe('APICommand', () => {
+		const buildTableFromListMock = jest.fn()
+		const mockedTableGenerator = {
+			buildTableFromList: buildTableFromListMock,
+		} as unknown as TableGenerator
 		class testCommand extends APICommand {
 			getToken(): string | undefined {
 				return this.token
@@ -35,6 +40,10 @@ describe('api-command', () => {
 			async run(): Promise<void> {
 				this.client
 			}
+
+			get tableGenerator(): TableGenerator {
+				return mockedTableGenerator
+			}
 		}
 
 		let apiCommand: testCommand
@@ -42,10 +51,19 @@ describe('api-command', () => {
 
 		beforeEach(() => {
 			apiCommand = new testCommand([], testConfig)
+			apiCommand.warn = jest.fn()
 		})
 
 		it('should throw Error when not properly setup', async () => {
 			await expect(apiCommand.run()).rejects.toEqual(new Error('APICommand not properly initialized'))
+		})
+
+		it('accessing authenticator throws Error when not properly setup', async () => {
+			expect(() => apiCommand.authenticator).toThrow('APICommand not properly initialized')
+		})
+
+		it('accessing client throws Error when not properly setup', async () => {
+			expect(() => apiCommand.client).toThrow('APICommand not properly initialized')
 		})
 
 		it('should not throw Error when properly setup', async () => {
@@ -70,6 +88,88 @@ describe('api-command', () => {
 
 			const configUsed = stClientSpy.mock.calls[0][1]
 			expect(configUsed?.headers).toEqual({ 'Accept-Language': 'es-US' })
+		})
+
+		it('passes organization flag on to client', async () => {
+			await apiCommand.setup({}, [], { organization: 'organization-id-from-flag' })
+			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
+
+			expect(stClientSpy).toHaveBeenCalledTimes(1)
+
+			const configUsed = stClientSpy.mock.calls[0][1]
+			expect(configUsed?.headers).toEqual({ 'X-ST-Organization': 'organization-id-from-flag' })
+		})
+
+		it('passes organization config on to client', async () => {
+			jest.spyOn(CLIConfig.prototype, 'getProfile')
+				.mockImplementationOnce(() => ({ organization: 'organization-id-from-config' }))
+
+			await apiCommand.setup({}, [], {})
+
+			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
+
+			expect(stClientSpy).toHaveBeenCalledTimes(1)
+
+			const configUsed = stClientSpy.mock.calls[0][1]
+			expect(configUsed?.headers).toEqual({ 'X-ST-Organization': 'organization-id-from-config' })
+		})
+
+		it('prefers organization flag over config', async () => {
+			jest.spyOn(CLIConfig.prototype, 'getProfile')
+				.mockImplementationOnce(() => ({ organization: 'organization-id-from-config' }))
+
+			await apiCommand.setup({}, [], { organization: 'organization-id-from-flag' })
+
+			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
+
+			expect(stClientSpy).toHaveBeenCalledTimes(1)
+
+			const configUsed = stClientSpy.mock.calls[0][1]
+			expect(configUsed?.headers).toEqual({ 'X-ST-Organization': 'organization-id-from-flag' })
+		})
+
+		describe('warningLogger', () => {
+			it('uses string as-is', async () => {
+				await apiCommand.setup({}, [], { language: 'es-US' })
+				const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
+
+				expect(stClientSpy).toHaveBeenCalledTimes(1)
+
+				const configUsed = stClientSpy.mock.calls[0][1]
+				const warningLogger = configUsed?.warningLogger as (warnings: WarningFromHeader[] | string) => void
+				expect(warningLogger).toBeDefined()
+
+				void warningLogger('warning')
+
+				expect(apiCommand.logger.warn).toHaveBeenCalledTimes(1)
+				const expected = 'Warnings from API:\nwarning'
+				expect(apiCommand.logger.warn).toHaveBeenCalledWith(expected)
+				expect(apiCommand.warn).toHaveBeenCalledWith(expected)
+			})
+
+			it('uses builds table out of list of warnings', async () => {
+				await apiCommand.setup({}, [], { language: 'es-US' })
+				const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
+
+				expect(stClientSpy).toHaveBeenCalledTimes(1)
+
+				const configUsed = stClientSpy.mock.calls[0][1]
+				const warningLogger = configUsed?.warningLogger as (warnings: WarningFromHeader[] | string) => void
+				expect(warningLogger).toBeDefined()
+
+				const warnings = [{ text: 'mock warning' } as WarningFromHeader]
+				buildTableFromListMock.mockReturnValueOnce('table of warnings')
+
+				void warningLogger(warnings)
+
+				expect(apiCommand.logger.warn).toHaveBeenCalledTimes(1)
+				const expected = 'Warnings from API:\ntable of warnings'
+				expect(apiCommand.logger.warn).toHaveBeenCalledWith(expected)
+				expect(apiCommand.warn).toHaveBeenCalledWith(expected)
+				expect(buildTableFromListMock).toHaveBeenCalledTimes(1)
+				expect(buildTableFromListMock).toHaveBeenCalledWith(warnings,
+					['code', 'agent', 'text', 'date'])
+			})
 		})
 
 		it('should skip language header when "NONE" specified', async () => {
