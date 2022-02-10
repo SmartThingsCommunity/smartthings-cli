@@ -27,11 +27,12 @@ export const outputFlags = {
 	}),
 	compact: Flags.boolean({
 		description: 'use compact table format with no lines between body rows',
+		hidden: true,
 	}),
 	expanded: Flags.boolean({
 		description: 'use expanded table format with a line between each body row',
+		hidden: true,
 	}),
-
 }
 
 buildOutputFormatter.flags = {

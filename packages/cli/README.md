@@ -232,8 +232,8 @@ get a specific app or a list of apps
 
 ```
 USAGE
-  $ smartthings apps [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded] [--type <value>] [--classification <value>] [-v]
+  $ smartthings apps [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
+    [--type <value>] [--classification <value>] [-v]
 
 ARGUMENTS
   ID  the app id or number from list
@@ -248,9 +248,6 @@ FLAGS
   -y, --yaml                   use YAML format of input and/or output
   --classification=<value>...  filter results by one or more classifications, AUTOMATION, SERVICE, DEVICE,
                                CONNECTED_SERVICE
-  --compact                    use compact table format with no lines between body rows
-  --expanded                   use expanded table format with a line between each body row
-  --indent=<value>             specify indentation for formatting JSON or YAML output
   --language=<value>           ISO language code or "NONE" to not specify a language. Defaults to the OS locale
   --type=<value>               filter results by appType, WEBHOOK_SMART_APP, LAMBDA_SMART_APP, API_ONLY
 
@@ -308,8 +305,8 @@ create an app
 
 ```
 USAGE
-  $ smartthings apps:create [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [--compact] [--expanded] [-d] [--authorize] [--principal <value>] [--statement-id <value>]
+  $ smartthings apps:create [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d] [--authorize] [--principal <value>] [--statement-id <value>]
 
 FLAGS
   -d, --dry-run           produce JSON but don't actually submit
@@ -321,9 +318,6 @@ FLAGS
   -t, --token=<value>     the auth token to use
   -y, --yaml              use YAML format of input and/or output
   --authorize             authorize Lambda functions to be called by SmartThings
-  --compact               use compact table format with no lines between body rows
-  --expanded              use expanded table format with a line between each body row
-  --indent=<value>        specify indentation for formatting JSON or YAML output
   --language=<value>      ISO language code or "NONE" to not specify a language. Defaults to the OS locale
   --principal=<value>     use this principal instead of the default when authorizing lambda functions
   --statement-id=<value>  use this statement id instead of the default when authorizing lambda functions
@@ -363,8 +357,7 @@ get OAuth information for the app
 
 ```
 USAGE
-  $ smartthings apps:oauth [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded]
+  $ smartthings apps:oauth [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
 
 ARGUMENTS
   ID  the app id or number in the list
@@ -376,9 +369,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -393,8 +383,8 @@ regenerate the OAuth clientId and clientSecret of an app
 
 ```
 USAGE
-  $ smartthings apps:oauth:generate [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings apps:oauth:generate [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d]
 
 ARGUMENTS
   ID  the app id
@@ -408,9 +398,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -425,8 +412,8 @@ update the OAuth settings of the app
 
 ```
 USAGE
-  $ smartthings apps:oauth:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings apps:oauth:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d]
 
 ARGUMENTS
   ID  the app id
@@ -440,9 +427,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -480,8 +464,7 @@ get the settings of the app
 
 ```
 USAGE
-  $ smartthings apps:settings [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded]
+  $ smartthings apps:settings [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
 
 ARGUMENTS
   ID  the app id
@@ -493,9 +476,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -510,8 +490,8 @@ update the settings of the app
 
 ```
 USAGE
-  $ smartthings apps:settings:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings apps:settings:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d]
 
 ARGUMENTS
   ID  the app id
@@ -525,9 +505,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -542,8 +519,8 @@ update the settings of the app
 
 ```
 USAGE
-  $ smartthings apps:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-i <value>] [-o <value>] [--compact] [--expanded] [-d] [--authorize] [--principal <value>] [--statement-id <value>]
+  $ smartthings apps:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d] [--authorize] [--principal <value>] [--statement-id <value>]
 
 ARGUMENTS
   ID  the app id
@@ -558,9 +535,6 @@ FLAGS
   -t, --token=<value>     the auth token to use
   -y, --yaml              use YAML format of input and/or output
   --authorize             authorize Lambda functions to be called by SmartThings
-  --compact               use compact table format with no lines between body rows
-  --expanded              use expanded table format with a line between each body row
-  --indent=<value>        specify indentation for formatting JSON or YAML output
   --language=<value>      ISO language code or "NONE" to not specify a language. Defaults to the OS locale
   --principal=<value>     use this principal instead of the default when authorizing lambda functions
   --statement-id=<value>  use this statement id instead of the default when authorizing lambda functions
@@ -606,8 +580,8 @@ get a specific capability
 
 ```
 USAGE
-  $ smartthings capabilities [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-o <value>] [--compact] [--expanded] [-A] [-n <value>] [-s]
+  $ smartthings capabilities [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-o <value>] [-A] [-n <value>] [-s]
 
 ARGUMENTS
   ID       the capability id or number in list
@@ -624,9 +598,6 @@ FLAGS
   -s, --standard              show standard SmartThings capabilities
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -641,8 +612,8 @@ create a capability for a user
 
 ```
 USAGE
-  $ smartthings capabilities:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent <value>]
-    [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d] [-n <value>]
+  $ smartthings capabilities:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
+    <value>] [-o <value>] [-d] [-n <value>]
 
 FLAGS
   -O, --organization=<value>  The organization ID to use for this command
@@ -655,9 +626,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -697,8 +665,8 @@ list all capability namespaces currently available in a user account
 
 ```
 USAGE
-  $ smartthings capabilities:namespaces [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent <value>]
-    [-j] [-y] [-o <value>] [--compact] [--expanded]
+  $ smartthings capabilities:namespaces [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
+    <value>]
 
 FLAGS
   -O, --organization=<value>  The organization ID to use for this command
@@ -708,9 +676,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -725,8 +690,8 @@ get presentation information for a specific capability
 
 ```
 USAGE
-  $ smartthings capabilities:presentation [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-o <value>] [--compact] [--expanded] [-n <value>]
+  $ smartthings capabilities:presentation [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-o <value>] [-n <value>]
 
 ARGUMENTS
   ID       the capability id or number in list
@@ -741,9 +706,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -758,8 +720,8 @@ create presentation model for a capability
 
 ```
 USAGE
-  $ smartthings capabilities:presentation:create [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings capabilities:presentation:create [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-i <value>] [-o <value>] [-d]
 
 ARGUMENTS
   ID       the capability id
@@ -775,9 +737,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -792,8 +751,8 @@ update presentation information of a capability
 
 ```
 USAGE
-  $ smartthings capabilities:presentation:update [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings capabilities:presentation:update [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-i <value>] [-o <value>] [-d]
 
 ARGUMENTS
   ID       the capability id
@@ -809,9 +768,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -827,7 +783,7 @@ get list of locales supported by the capability
 ```
 USAGE
   $ smartthings capabilities:translations [ID] [VERSION] [TAG] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-o <value>] [--compact] [--expanded] [-n <value>] [-v]
+    [-j] [-y] [-o <value>] [-n <value>] [-v]
 
 ARGUMENTS
   ID       the capability id or number in list
@@ -844,9 +800,6 @@ FLAGS
   -t, --token=<value>         the auth token to use
   -v, --verbose               include list of supported locales in table output
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -988,8 +941,8 @@ create a capability translation
 
 ```
 USAGE
-  $ smartthings capabilities:translations:create [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings capabilities:translations:create [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-i <value>] [-o <value>] [-d]
 
 ARGUMENTS
   ID       the capability id
@@ -1005,9 +958,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1115,8 +1065,8 @@ update a capability translation
 
 ```
 USAGE
-  $ smartthings capabilities:translations:update [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings capabilities:translations:update [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-i <value>] [-o <value>] [-d]
 
 ARGUMENTS
   ID       the capability id
@@ -1132,9 +1082,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1242,8 +1189,8 @@ create or update a capability translation
 
 ```
 USAGE
-  $ smartthings capabilities:translations:upsert [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings capabilities:translations:upsert [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-i <value>] [-o <value>] [-d]
 
 ARGUMENTS
   ID       the capability id
@@ -1259,9 +1206,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1369,8 +1313,8 @@ update a capability
 
 ```
 USAGE
-  $ smartthings capabilities:update [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings capabilities:update [ID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-i <value>] [-o <value>] [-d]
 
 ARGUMENTS
   ID       the capability id
@@ -1386,9 +1330,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1403,8 +1344,7 @@ list config file entries
 
 ```
 USAGE
-  $ smartthings config [NAME] [-h] [-p <value>] [--indent <value>] [-j] [-y] [-o <value>] [--compact]
-    [--expanded] [-v]
+  $ smartthings config [NAME] [-h] [-p <value>] [-j] [-y] [-o <value>] [-v]
 
 ARGUMENTS
   NAME  the config name
@@ -1416,9 +1356,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -v, --verbose          Include additional data in table output
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
 
 DESCRIPTION
   list config file entries
@@ -1432,8 +1369,8 @@ list device preferences or get information for a specific device preference
 
 ```
 USAGE
-  $ smartthings devicepreferences [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-o <value>] [--compact] [--expanded] [-A] [-n <value>] [-s]
+  $ smartthings devicepreferences [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-o <value>] [-A] [-n <value>] [-s]
 
 ARGUMENTS
   IDORINDEX  device preference id or index
@@ -1449,9 +1386,6 @@ FLAGS
   -s, --standard              show standard SmartThings device preferences
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1480,8 +1414,8 @@ create a device preference
 
 ```
 USAGE
-  $ smartthings devicepreferences:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent <value>]
-    [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings devicepreferences:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
+    <value>] [-o <value>] [-d]
 
 FLAGS
   -O, --organization=<value>  The organization ID to use for this command
@@ -1493,9 +1427,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1523,7 +1454,7 @@ get translated device preference values in a desired locale
 ```
 USAGE
   $ smartthings devicepreferences:translations [PREFERENCEID] [TAG] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-o <value>] [--compact] [--expanded]
+    [-j] [-y] [-o <value>]
 
 ARGUMENTS
   PREFERENCEID  device preference id or index
@@ -1537,9 +1468,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1567,8 +1495,8 @@ create a device preference translation
 
 ```
 USAGE
-  $ smartthings devicepreferences:translations:create [PREFERENCEID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings devicepreferences:translations:create [PREFERENCEID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-i <value>] [-o <value>] [-d]
 
 ARGUMENTS
   PREFERENCEID  device preference id or index
@@ -1583,9 +1511,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1603,8 +1528,8 @@ update a device preference translation
 
 ```
 USAGE
-  $ smartthings devicepreferences:translations:update [PREFERENCEID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [--indent <value>] [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings devicepreferences:translations:update [PREFERENCEID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-i <value>] [-o <value>] [-d]
 
 ARGUMENTS
   PREFERENCEID  device preference id or index
@@ -1619,9 +1544,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1639,8 +1561,8 @@ update a device preference
 
 ```
 USAGE
-  $ smartthings devicepreferences:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent
-    <value>] [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings devicepreferences:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
+    <value>] [-o <value>] [-d]
 
 ARGUMENTS
   ID  the device preference id
@@ -1655,9 +1577,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1680,8 +1599,8 @@ list all device profiles available in a user account or retrieve a single profil
 
 ```
 USAGE
-  $ smartthings deviceprofiles [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent
-    <value>] [-j] [-y] [-o <value>] [--compact] [--expanded] [-A] [-v]
+  $ smartthings deviceprofiles [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
+    <value>] [-A] [-v]
 
 ARGUMENTS
   ID  device profile to retrieve; UUID or the number of the profile from list
@@ -1696,9 +1615,6 @@ FLAGS
   -t, --token=<value>         the auth token to use
   -v, --verbose               include presentationId and manufacturerName in list output
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1729,8 +1645,8 @@ Create a new device profile
 
 ```
 USAGE
-  $ smartthings deviceprofiles:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent <value>]
-    [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings deviceprofiles:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
+    <value>] [-o <value>] [-d]
 
 FLAGS
   -O, --organization=<value>  The organization ID to use for this command
@@ -1742,9 +1658,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1807,8 +1720,8 @@ get the device configuration associated with a device profile
 
 ```
 USAGE
-  $ smartthings deviceprofiles:device-config [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent
-    <value>] [-j] [-y] [-o <value>] [--compact] [--expanded]
+  $ smartthings deviceprofiles:device-config [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
+    <value>]
 
 ARGUMENTS
   ID  device profile id or the number in list
@@ -1821,9 +1734,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1841,8 +1751,8 @@ get the presentation associated with a device profile
 
 ```
 USAGE
-  $ smartthings deviceprofiles:presentation [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent
-    <value>] [-j] [-y] [-o <value>] [--compact] [--expanded]
+  $ smartthings deviceprofiles:presentation [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
+    <value>]
 
 ARGUMENTS
   ID  device profile UUID or the number of the profile from list
@@ -1855,9 +1765,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1892,8 +1799,8 @@ publish a device profile (published profiles cannot be modified)
 
 ```
 USAGE
-  $ smartthings deviceprofiles:publish [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent
-    <value>] [-j] [-y] [-o <value>] [--compact] [--expanded]
+  $ smartthings deviceprofiles:publish [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
+    <value>]
 
 ARGUMENTS
   ID  device profile id
@@ -1906,9 +1813,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -1926,8 +1830,8 @@ Get list of locales supported by the device profiles
 
 ```
 USAGE
-  $ smartthings deviceprofiles:translations [ID] [TAG] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent
-    <value>] [-j] [-y] [-o <value>] [--compact] [--expanded] [-v]
+  $ smartthings deviceprofiles:translations [ID] [TAG] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y]
+    [-o <value>] [-v]
 
 ARGUMENTS
   ID   UUID or the number of the profile from list
@@ -1942,9 +1846,6 @@ FLAGS
   -t, --token=<value>         the auth token to use
   -v, --verbose               include list of locales in table output
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2131,8 +2032,8 @@ create or update a device profile translation
 
 ```
 USAGE
-  $ smartthings deviceprofiles:translations:upsert [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent
-    <value>] [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings deviceprofiles:translations:upsert [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
+    <value>] [-o <value>] [-d]
 
 ARGUMENTS
   ID  UUID or the number of the profile from list
@@ -2147,9 +2048,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2232,8 +2130,8 @@ update a device profile
 
 ```
 USAGE
-  $ smartthings deviceprofiles:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent
-    <value>] [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings deviceprofiles:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
+    <value>] [-o <value>] [-d]
 
 ARGUMENTS
   ID  device profile UUID or number in the list
@@ -2248,9 +2146,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2268,8 +2163,8 @@ show device profile and device configuration in a single, consolidated view
 
 ```
 USAGE
-  $ smartthings deviceprofiles:view [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent
-    <value>] [-j] [-y] [-o <value>] [--compact] [--expanded]
+  $ smartthings deviceprofiles:view [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
+    <value>]
 
 ARGUMENTS
   ID  device profile UUID or the number from list
@@ -2282,9 +2177,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2302,8 +2194,8 @@ create a new device profile and device configuration
 
 ```
 USAGE
-  $ smartthings deviceprofiles:view:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent <value>]
-    [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings deviceprofiles:view:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
+    <value>] [-o <value>] [-d]
 
 FLAGS
   -O, --organization=<value>  The organization ID to use for this command
@@ -2315,9 +2207,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2382,8 +2271,8 @@ update a device profile and configuration
 
 ```
 USAGE
-  $ smartthings deviceprofiles:view:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent
-    <value>] [-j] [-y] [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings deviceprofiles:view:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
+    <value>] [-o <value>] [-d]
 
 ARGUMENTS
   ID  device profile id
@@ -2398,9 +2287,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2471,8 +2357,8 @@ list all devices available in a user account or retrieve a single device
 
 ```
 USAGE
-  $ smartthings devices [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded] [-l <value>] [-C and|or -c <value>] [-d <value>] [-a <value>] [-v]
+  $ smartthings devices [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>] [-l
+    <value>] [-C and|or -c <value>] [-d <value>] [-a <value>] [-v]
 
 ARGUMENTS
   ID  device to retrieve; UUID or the number of the device from list
@@ -2492,9 +2378,6 @@ FLAGS
   -t, --token=<value>               the auth token to use
   -v, --verbose                     include location name in output
   -y, --yaml                        use YAML format of input and/or output
-  --compact                         use compact table format with no lines between body rows
-  --expanded                        use expanded table format with a line between each body row
-  --indent=<value>                  specify indentation for formatting JSON or YAML output
   --language=<value>                ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2510,7 +2393,7 @@ get the current status of all of a device capability's attributes
 ```
 USAGE
   $ smartthings devices:capability-status [ID] [COMPONENT] [CAPABILITY] [-h] [-p <value>] [-t <value>] [--language <value>]
-    [--indent <value>] [-j] [-y] [-o <value>] [--compact] [--expanded]
+    [-j] [-y] [-o <value>]
 
 ARGUMENTS
   ID          the device id
@@ -2524,9 +2407,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2541,8 +2421,8 @@ execute a device command
 
 ```
 USAGE
-  $ smartthings devices:commands [ID] [COMMAND] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>]
-    [-j] [-y] [-i <value>]
+  $ smartthings devices:commands [ID] [COMMAND] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i
+    <value>]
 
 ARGUMENTS
   ID       the device id
@@ -2555,7 +2435,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2570,8 +2449,8 @@ get the current status of a device component's attributes
 
 ```
 USAGE
-  $ smartthings devices:component-status [ID] [COMPONENT] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent
-    <value>] [-j] [-y] [-o <value>] [--compact] [--expanded]
+  $ smartthings devices:component-status [ID] [COMPONENT] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o
+    <value>]
 
 ARGUMENTS
   ID         the device id
@@ -2584,9 +2463,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2624,8 +2500,7 @@ get the current health status of a device
 
 ```
 USAGE
-  $ smartthings devices:health [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded]
+  $ smartthings devices:health [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
 
 ARGUMENTS
   ID  the device id
@@ -2637,9 +2512,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2654,8 +2526,7 @@ get the current preferences of a device
 
 ```
 USAGE
-  $ smartthings devices:preferences [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded]
+  $ smartthings devices:preferences [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
 
 ARGUMENTS
   ID  the device id
@@ -2667,9 +2538,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2684,8 +2552,7 @@ get a device presentation
 
 ```
 USAGE
-  $ smartthings devices:presentation [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded]
+  $ smartthings devices:presentation [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
 
 ARGUMENTS
   ID  the device id or number in the list
@@ -2697,9 +2564,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2714,8 +2578,8 @@ rename a device
 
 ```
 USAGE
-  $ smartthings devices:rename [ID] [LABEL] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>]
-    [-j] [-y] [-o <value>] [--compact] [--expanded]
+  $ smartthings devices:rename [ID] [LABEL] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o
+    <value>]
 
 ARGUMENTS
   ID     the device id
@@ -2728,9 +2592,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2745,8 +2606,7 @@ get the current status of all of a device's component's attributes
 
 ```
 USAGE
-  $ smartthings devices:status [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded]
+  $ smartthings devices:status [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
 
 ARGUMENTS
   ID  the device id
@@ -2758,9 +2618,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -2775,8 +2632,8 @@ get the current status of all of a device's component's attributes
 
 ```
 USAGE
-  $ smartthings devices:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings devices:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d]
 
 ARGUMENTS
   ID  the device id
@@ -2790,9 +2647,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -3513,8 +3367,8 @@ get a specific app or a list of apps
 
 ```
 USAGE
-  $ smartthings installedapps [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded] [-l <value>] [-v]
+  $ smartthings installedapps [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>] [-l
+    <value>] [-v]
 
 ARGUMENTS
   ID  the app id
@@ -3528,9 +3382,6 @@ FLAGS
   -t, --token=<value>           the auth token to use
   -v, --verbose                 include location name in output
   -y, --yaml                    use YAML format of input and/or output
-  --compact                     use compact table format with no lines between body rows
-  --expanded                    use expanded table format with a line between each body row
-  --indent=<value>              specify indentation for formatting JSON or YAML output
   --language=<value>            ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -3570,8 +3421,8 @@ renamed an installed app instance
 
 ```
 USAGE
-  $ smartthings installedapps:rename [ID] [NAME] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>]
-    [-j] [-y] [-o <value>] [--compact] [--expanded] [-l <value>] [-v]
+  $ smartthings installedapps:rename [ID] [NAME] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o
+    <value>] [-l <value>] [-v]
 
 ARGUMENTS
   ID    the installed app id
@@ -3586,9 +3437,6 @@ FLAGS
   -t, --token=<value>           the auth token to use
   -v, --verbose                 include location name in output
   -y, --yaml                    use YAML format of input and/or output
-  --compact                     use compact table format with no lines between body rows
-  --expanded                    use expanded table format with a line between each body row
-  --indent=<value>              specify indentation for formatting JSON or YAML output
   --language=<value>            ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -3603,8 +3451,8 @@ get a specific schema connector instance or a list of instances
 
 ```
 USAGE
-  $ smartthings installedschema [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded] [-l <value>] [-v]
+  $ smartthings installedschema [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>] [-l
+    <value>] [-v]
 
 ARGUMENTS
   ID  the isa id
@@ -3618,9 +3466,6 @@ FLAGS
   -t, --token=<value>           the auth token to use
   -v, --verbose                 include location name in output
   -y, --yaml                    use YAML format of input and/or output
-  --compact                     use compact table format with no lines between body rows
-  --expanded                    use expanded table format with a line between each body row
-  --indent=<value>              specify indentation for formatting JSON or YAML output
   --language=<value>            ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -3660,8 +3505,7 @@ list locations or get information for a specific Location
 
 ```
 USAGE
-  $ smartthings locations [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>]
-    [-j] [-y] [-o <value>] [--compact] [--expanded]
+  $ smartthings locations [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
 
 ARGUMENTS
   IDORINDEX  the location id or number in list
@@ -3673,9 +3517,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -3690,8 +3531,8 @@ create a Location for a user
 
 ```
 USAGE
-  $ smartthings locations:create [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings locations:create [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d]
 
 FLAGS
   -d, --dry-run          produce JSON but don't actually submit
@@ -3702,9 +3543,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -3747,8 +3585,8 @@ list rooms or get information for a specific room
 
 ```
 USAGE
-  $ smartthings locations:rooms [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>]
-    [--indent <value>] [-j] [-y] [-o <value>] [--compact] [--expanded]
+  $ smartthings locations:rooms [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>] [-j]
+    [-y] [-o <value>]
 
 ARGUMENTS
   IDORINDEX  room UUID or index
@@ -3761,9 +3599,6 @@ FLAGS
   -p, --profile=<value>      [default: default] configuration profile
   -t, --token=<value>        the auth token to use
   -y, --yaml                 use YAML format of input and/or output
-  --compact                  use compact table format with no lines between body rows
-  --expanded                 use expanded table format with a line between each body row
-  --indent=<value>           specify indentation for formatting JSON or YAML output
   --language=<value>         ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -3781,8 +3616,8 @@ create a room
 
 ```
 USAGE
-  $ smartthings locations:rooms:create [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [--compact] [--expanded] [-d] [-l <value>]
+  $ smartthings locations:rooms:create [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d] [-l <value>]
 
 FLAGS
   -d, --dry-run              produce JSON but don't actually submit
@@ -3794,9 +3629,6 @@ FLAGS
   -p, --profile=<value>      [default: default] configuration profile
   -t, --token=<value>        the auth token to use
   -y, --yaml                 use YAML format of input and/or output
-  --compact                  use compact table format with no lines between body rows
-  --expanded                 use expanded table format with a line between each body row
-  --indent=<value>           specify indentation for formatting JSON or YAML output
   --language=<value>         ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -3841,8 +3673,8 @@ update a room
 
 ```
 USAGE
-  $ smartthings locations:rooms:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-i <value>] [-o <value>] [--compact] [--expanded] [-d] [-l <value>]
+  $ smartthings locations:rooms:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d] [-l <value>]
 
 ARGUMENTS
   ID  room UUID
@@ -3857,9 +3689,6 @@ FLAGS
   -p, --profile=<value>      [default: default] configuration profile
   -t, --token=<value>        the auth token to use
   -y, --yaml                 use YAML format of input and/or output
-  --compact                  use compact table format with no lines between body rows
-  --expanded                 use expanded table format with a line between each body row
-  --indent=<value>           specify indentation for formatting JSON or YAML output
   --language=<value>         ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -3877,8 +3706,8 @@ update a location
 
 ```
 USAGE
-  $ smartthings locations:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-i <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings locations:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d]
 
 ARGUMENTS
   ID  the location id
@@ -3892,9 +3721,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -3924,8 +3750,7 @@ list all organizations the user belongs to
 
 ```
 USAGE
-  $ smartthings organizations [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded]
+  $ smartthings organizations [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
 
 ARGUMENTS
   ID  the organization name, id or index
@@ -3937,9 +3762,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -3954,8 +3776,8 @@ return the currently active organization
 
 ```
 USAGE
-  $ smartthings organizations:current [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [--indent <value>]
-    [-j] [-y] [-o <value>] [--compact] [--expanded]
+  $ smartthings organizations:current [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
+    <value>]
 
 FLAGS
   -O, --organization=<value>  The organization ID to use for this command
@@ -3965,9 +3787,6 @@ FLAGS
   -p, --profile=<value>       [default: default] configuration profile
   -t, --token=<value>         the auth token to use
   -y, --yaml                  use YAML format of input and/or output
-  --compact                   use compact table format with no lines between body rows
-  --expanded                  use expanded table format with a line between each body row
-  --indent=<value>            specify indentation for formatting JSON or YAML output
   --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -4139,7 +3958,7 @@ query device presentation by vid
 ```
 USAGE
   $ smartthings presentation [PRESENTATIONID] [MANUFACTURERNAME] [-h] [-p <value>] [-t <value>] [--language
-    <value>] [--indent <value>] [-j] [-y] [-o <value>] [--compact] [--expanded]
+    <value>] [-j] [-y] [-o <value>]
 
 ARGUMENTS
   PRESENTATIONID    system generated identifier that corresponds to a device presentation
@@ -4152,9 +3971,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -4189,7 +4005,7 @@ query device config by presentationId
 ```
 USAGE
   $ smartthings presentation:device-config [PRESENTATIONID] [MANUFACTURERNAME] [-h] [-p <value>] [-t <value>] [--language
-    <value>] [--indent <value>] [-j] [-y] [-o <value>] [--compact] [--expanded]
+    <value>] [-j] [-y] [-o <value>]
 
 ARGUMENTS
   PRESENTATIONID    system generated identifier that corresponds to a device presentation
@@ -4202,9 +4018,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -4219,8 +4032,8 @@ create a device config
 
 ```
 USAGE
-  $ smartthings presentation:device-config:create [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [--compact] [--expanded] [-d]
+  $ smartthings presentation:device-config:create [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d]
 
 FLAGS
   -d, --dry-run          produce JSON but don't actually submit
@@ -4231,9 +4044,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -4248,8 +4058,8 @@ generate the default device configuration
 
 ```
 USAGE
-  $ smartthings presentation:device-config:generate [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded] [--dth] [--type-shard-id <value>]
+  $ smartthings presentation:device-config:generate [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
+    [--dth] [--type-shard-id <value>]
 
 ARGUMENTS
   ID  the profile id (or legacy DTH id))
@@ -4261,10 +4071,7 @@ FLAGS
   -p, --profile=<value>    [default: default] configuration profile
   -t, --token=<value>      the auth token to use
   -y, --yaml               use YAML format of input and/or output
-  --compact                use compact table format with no lines between body rows
   --dth                    generate from legacy DTH id instead of a profile id
-  --expanded               use expanded table format with a line between each body row
-  --indent=<value>         specify indentation for formatting JSON or YAML output
   --language=<value>       ISO language code or "NONE" to not specify a language. Defaults to the OS locale
   --type-shard-id=<value>  data management shard Id where the device type resides, only useful for legacy DTH type
                            integrations
@@ -4281,8 +4088,8 @@ get a specific rule
 
 ```
 USAGE
-  $ smartthings rules [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>]
-    [-j] [-y] [-o <value>] [--compact] [--expanded] [-l <value>]
+  $ smartthings rules [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o
+    <value>] [-l <value>]
 
 ARGUMENTS
   IDORINDEX  rule UUID or index
@@ -4295,9 +4102,6 @@ FLAGS
   -p, --profile=<value>      [default: default] configuration profile
   -t, --token=<value>        the auth token to use
   -y, --yaml                 use YAML format of input and/or output
-  --compact                  use compact table format with no lines between body rows
-  --expanded                 use expanded table format with a line between each body row
-  --indent=<value>           specify indentation for formatting JSON or YAML output
   --language=<value>         ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -4312,8 +4116,8 @@ create a rule
 
 ```
 USAGE
-  $ smartthings rules:create [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [--compact] [--expanded] [-d] [-l <value>]
+  $ smartthings rules:create [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d] [-l <value>]
 
 FLAGS
   -d, --dry-run              produce JSON but don't actually submit
@@ -4325,9 +4129,6 @@ FLAGS
   -p, --profile=<value>      [default: default] configuration profile
   -t, --token=<value>        the auth token to use
   -y, --yaml                 use YAML format of input and/or output
-  --compact                  use compact table format with no lines between body rows
-  --expanded                 use expanded table format with a line between each body row
-  --indent=<value>           specify indentation for formatting JSON or YAML output
   --language=<value>         ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -4366,8 +4167,8 @@ execute a rule
 
 ```
 USAGE
-  $ smartthings rules:execute [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded] [-l <value>]
+  $ smartthings rules:execute [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>] [-l
+    <value>]
 
 ARGUMENTS
   ID  rule UUID
@@ -4380,9 +4181,6 @@ FLAGS
   -p, --profile=<value>      [default: default] configuration profile
   -t, --token=<value>        the auth token to use
   -y, --yaml                 use YAML format of input and/or output
-  --compact                  use compact table format with no lines between body rows
-  --expanded                 use expanded table format with a line between each body row
-  --indent=<value>           specify indentation for formatting JSON or YAML output
   --language=<value>         ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -4408,8 +4206,8 @@ update a rule
 
 ```
 USAGE
-  $ smartthings rules:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-i <value>] [-o <value>] [--compact] [--expanded] [-d] [-l <value>]
+  $ smartthings rules:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d] [-l <value>]
 
 ARGUMENTS
   ID  rule UUID
@@ -4424,9 +4222,6 @@ FLAGS
   -p, --profile=<value>      [default: default] configuration profile
   -t, --token=<value>        the auth token to use
   -y, --yaml                 use YAML format of input and/or output
-  --compact                  use compact table format with no lines between body rows
-  --expanded                 use expanded table format with a line between each body row
-  --indent=<value>           specify indentation for formatting JSON or YAML output
   --language=<value>         ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -4441,8 +4236,7 @@ list all ST Schema Apps currently available in a user account
 
 ```
 USAGE
-  $ smartthings schema [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded] [-v]
+  $ smartthings schema [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>] [-v]
 
 ARGUMENTS
   ID  the schema connector id
@@ -4455,9 +4249,6 @@ FLAGS
   -t, --token=<value>    the auth token to use
   -v, --verbose          include ARN in output
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -4514,8 +4305,8 @@ create an ST Schema connector
 
 ```
 USAGE
-  $ smartthings schema:create [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [--compact] [--expanded] [-d] [--authorize] [--principal <value>] [--statement-id <value>]
+  $ smartthings schema:create [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d] [--authorize] [--principal <value>] [--statement-id <value>]
 
 FLAGS
   -d, --dry-run           produce JSON but don't actually submit
@@ -4527,9 +4318,6 @@ FLAGS
   -t, --token=<value>     the auth token to use
   -y, --yaml              use YAML format of input and/or output
   --authorize             authorize connector's Lambda functions to be called by SmartThings
-  --compact               use compact table format with no lines between body rows
-  --expanded              use expanded table format with a line between each body row
-  --indent=<value>        specify indentation for formatting JSON or YAML output
   --language=<value>      ISO language code or "NONE" to not specify a language. Defaults to the OS locale
   --principal=<value>     use this principal instead of the default when authorizing lambda functions
   --statement-id=<value>  use this statement id instead of the default when authorizing lambda functions
@@ -4569,8 +4357,7 @@ Regenerate the clientId and clientSecret of the ST Schema connector. The previou
 
 ```
 USAGE
-  $ smartthings schema:regenerate [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-o <value>] [--compact] [--expanded]
+  $ smartthings schema:regenerate [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
 
 ARGUMENTS
   ID  schema app id
@@ -4582,9 +4369,6 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --compact              use compact table format with no lines between body rows
-  --expanded             use expanded table format with a line between each body row
-  --indent=<value>       specify indentation for formatting JSON or YAML output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
@@ -4600,8 +4384,8 @@ update an ST Schema connector
 
 ```
 USAGE
-  $ smartthings schema:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--indent <value>] [-j] [-y]
-    [-i <value>] [--authorize] [--principal <value>] [--statement-id <value>]
+  $ smartthings schema:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>]
+    [--authorize] [--principal <value>] [--statement-id <value>]
 
 ARGUMENTS
   ID  the app id
@@ -4614,7 +4398,6 @@ FLAGS
   -t, --token=<value>     the auth token to use
   -y, --yaml              use YAML format of input and/or output
   --authorize             authorize Lambda functions to be called by SmartThings
-  --indent=<value>        specify indentation for formatting JSON or YAML output
   --language=<value>      ISO language code or "NONE" to not specify a language. Defaults to the OS locale
   --principal=<value>     use this principal instead of the default when authorizing lambda functions
   --statement-id=<value>  use this statement id instead of the default when authorizing lambda functions

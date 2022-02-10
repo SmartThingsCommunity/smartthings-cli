@@ -45,6 +45,18 @@ tight:
   compactTableOutput: true
 ```
 
+## On the Command Line
+
+These command line options are hidden from the README and help to reduce clutter since they are
+rarely used. (Configuring them via the configuration options above is usually more useful.)
+Command line flags always override configuration options.
+
+| option | description |
+| -- | -- |
+| `--expanded` | Expanded table output with lines between rows. |
+| `--compact` | Compact table output without lines between rows. |
+| `--indent=<value>` | Indent level for JSON or YAML output. |
+
 ## Logging
 
 Logging is useful when you are developing the CLI itself or if you need to debug an issue experienced during general use.
