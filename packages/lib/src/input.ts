@@ -7,6 +7,7 @@ import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, readF
 export const commonIOFlags = {
 	indent: Flags.integer({
 		description: 'specify indentation for formatting JSON or YAML output',
+		hidden: true,
 	}),
 	json: Flags.boolean({
 		description: 'use JSON format of input and/or output',
