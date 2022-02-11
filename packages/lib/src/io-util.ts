@@ -31,7 +31,7 @@ export function formatFromFilename(filename: string): IOFormat {
 
 
 export function parseJSONOrYAML<T>(rawInputData: string, source: string): T {
-	const data = yaml.safeLoad(rawInputData)
+	const data = yaml.load(rawInputData)
 	if (!data) {
 		throw Error(`did not get any data from ${source}`)
 	}

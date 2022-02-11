@@ -15,6 +15,7 @@ class Log4JSLogger implements APILogger {
 	}
 
 	get level(): string {
+		// TODO: fixed in log4js >= 6.4.0
 		// The types are defined for log4js don't match up with the reality
 		// of what it's returning.
 		return (this.logger.level as unknown as Level).levelStr
@@ -129,7 +130,7 @@ export function loadLoggingConfig(configFilename: string, defaultConfig: Logging
 		return defaultConfig
 	}
 
-	const parsed = yaml.safeLoad(fs.readFileSync(configFilename, 'utf-8'))
+	const parsed = yaml.load(fs.readFileSync(configFilename, 'utf-8'))
 	if (parsed && typeof parsed === 'object') {
 		return parsed as LoggingConfig
 	}

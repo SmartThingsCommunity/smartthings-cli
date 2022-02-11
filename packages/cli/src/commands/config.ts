@@ -57,7 +57,7 @@ export default class ConfigCommand extends SmartThingsCommand {
 		]
 		const tableFieldDefinitions: TableFieldDefinition<ConfigItem>[] = [
 			...listTableFieldDefinitions,
-			{ label: 'Definition', value: (item) => yaml.safeDump(item.data) },
+			{ label: 'Definition', value: (item) => yaml.dump(item.data) },
 		]
 
 		const outputListConfig = {

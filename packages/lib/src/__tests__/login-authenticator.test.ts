@@ -132,13 +132,13 @@ describe('LoginAuthenticator', () => {
 
 	logManager.init(config)
 
-	const mkdirMock = fs.mkdirSync as jest.Mock<typeof fs.mkdirSync>
+	const mkdirMock = jest.mocked(fs.mkdirSync)
 	const readFileMock = (fs.readFileSync as unknown as jest.Mock<Buffer, [fs.PathLike]>)
 		.mockImplementation(() => { throw { code: 'ENOENT' } })
 	const writeFileMock = fs.writeFileSync as jest.Mock<typeof fs.writeFileSync>
 	const chmodMock = fs.chmod as unknown as jest.Mock<void, [PathLike, string | number, NoParamCallback]>
 
-	const getPortMock = (getPort as unknown as jest.Mock<Promise<number>, [getPort.Options | undefined]>)
+	const getPortMock = jest.mocked(getPort)
 		.mockResolvedValue(7777)
 	const postMock = (axios.post as unknown as jest.Mock<Promise<AxiosResponse<unknown>>, [string, unknown, AxiosRequestConfig | undefined]>)
 		.mockResolvedValue(tokenResponse)
