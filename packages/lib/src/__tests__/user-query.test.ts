@@ -76,11 +76,13 @@ describe('user-query', () => {
 	})
 
 	describe('askForInteger', () => {
-		it.each`input   | expected
-				${'-1'} | ${-1}
-				${'0'}  | ${0}
-				${'7'}  | ${7}
-				${''}   | ${undefined}`('returns number entered', async ({ input, expected }) => {
+		it.each`
+			input   | expected
+			${'-1'} | ${-1}
+			${'0'}  | ${0}
+			${'7'}  | ${7}
+			${''}   | ${undefined}
+		`('returns number entered', async ({ input, expected }) => {
 			promptSpy.mockResolvedValue({ value: input })
 
 			const result = await askForInteger('prompt message')
@@ -161,11 +163,13 @@ describe('user-query', () => {
 	})
 
 	describe('askForNumber', () => {
-		it.each`input         | expected
-				${'-1'}       | ${-1}
-				${'0'}        | ${0}
-				${'3.141592'} | ${3.141592}
-				${''}         | ${undefined}`('returns number entered', async ({ input, expected }) => {
+		it.each`
+			input         | expected
+			${'-1'}       | ${-1}
+			${'0'}        | ${0}
+			${'3.141592'} | ${3.141592}
+			${''}         | ${undefined}
+		`('returns number entered', async ({ input, expected }) => {
 			promptSpy.mockResolvedValue({ value: input })
 
 			const result = await askForNumber('prompt message')

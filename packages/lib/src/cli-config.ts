@@ -26,7 +26,7 @@ export class CLIConfig {
 		}
 
 		if (this._config == null) {
-			const parsed = yaml.safeLoad(fs.readFileSync(`${this._configFile}`, 'utf-8'))
+			const parsed = yaml.load(fs.readFileSync(`${this._configFile}`, 'utf-8'))
 			if (parsed) {
 				if (typeof parsed === 'object') {
 					this._config = { ...parsed }

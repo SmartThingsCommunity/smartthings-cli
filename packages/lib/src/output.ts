@@ -43,7 +43,7 @@ export function jsonFormatter<T>(indent: number): OutputFormatter<T> {
 }
 
 export function yamlFormatter<T>(indent: number): OutputFormatter<T> {
-	return (data: T) => yaml.safeDump(data, { indent })
+	return (data: T) => yaml.dump(data, { indent })
 }
 
 export function itemTableFormatter<T>(tableGenerator: TableGenerator,

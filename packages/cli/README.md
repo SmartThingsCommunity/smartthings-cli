@@ -186,8 +186,6 @@ that map to the API spec.
 * [`smartthings edge:drivers:logcat [DRIVERID]`](#smartthings-edgedriverslogcat-driverid)
 * [`smartthings edge:drivers:package [PROJECTDIRECTORY]`](#smartthings-edgedriverspackage-projectdirectory)
 * [`smartthings edge:drivers:uninstall [DRIVERID]`](#smartthings-edgedriversuninstall-driverid)
-* [`smartthings generate:java`](#smartthings-generatejava)
-* [`smartthings generate:node`](#smartthings-generatenode)
 * [`smartthings installedapps [ID]`](#smartthings-installedapps-id)
 * [`smartthings installedapps:delete [ID]`](#smartthings-installedappsdelete-id)
 * [`smartthings installedapps:rename [ID] [NAME]`](#smartthings-installedappsrename-id-name)
@@ -3324,42 +3322,6 @@ DESCRIPTION
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/edge-cli-plugin/blob/v1.7.0/src/commands/edge/drivers/uninstall.ts)_
-
-## `smartthings generate:java`
-
-generate a Java starter app
-
-```
-USAGE
-  $ smartthings generate:java [-h] [-p <value>]
-
-FLAGS
-  -h, --help             Show CLI help.
-  -p, --profile=<value>  [default: default] configuration profile
-
-DESCRIPTION
-  generate a Java starter app
-```
-
-_See code: [src/commands/generate/java.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.36/packages/cli/src/commands/generate/java.ts)_
-
-## `smartthings generate:node`
-
-generate a NodeJS starter app
-
-```
-USAGE
-  $ smartthings generate:node [-h] [-p <value>]
-
-FLAGS
-  -h, --help             Show CLI help.
-  -p, --profile=<value>  [default: default] configuration profile
-
-DESCRIPTION
-  generate a NodeJS starter app
-```
-
-_See code: [src/commands/generate/node.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v0.0.0-pre.36/packages/cli/src/commands/generate/node.ts)_
 
 ## `smartthings installedapps [ID]`
 
