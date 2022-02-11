@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.37](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.36...v0.0.0-pre.37) (2022-02-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependencies ([24d0c23](https://github.com/SmartThingsCommunity/smartthings-cli/commit/24d0c23462ec3bb6c4b8fd1e57fd5d27072efe94))
+
+
+### Performance Improvements
+
+* migrate to @oclif/core ([7354083](https://github.com/SmartThingsCommunity/smartthings-cli/commit/7354083c18b52ec04836455a6107d98e8cc741ba))
+
+
+
+
+
 # [0.0.0-pre.36](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.35...v0.0.0-pre.36) (2022-01-27)
 
 
