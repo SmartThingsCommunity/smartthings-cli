@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.38](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.37...v0.0.0-pre.38) (2022-02-17)
+
+
+### Bug Fixes
+
+* **edge:** bump plugin-cli-edge to 1.8.1 ([813c903](https://github.com/john-u/smartthings-cli/commit/813c90399341590af0259c03b3f09d56e2380380))
+
+
+
+
+
 # [0.0.0-pre.37](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.36...v0.0.0-pre.37) (2022-02-11)
 
 
