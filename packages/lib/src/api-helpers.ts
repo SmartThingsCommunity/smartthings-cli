@@ -74,23 +74,20 @@ export async function withLocationsAndRooms<T extends WithRoom>(client: SmartThi
 
 export async function forAllOrganizations<T>(
 		client: SmartThingsClient,
-		query: (org: OrganizationResponse) => Promise<T[]>): Promise<(T & WithOrganization)[]> {
+		query: (orgClient: SmartThingsClient, org: OrganizationResponse) => Promise<T[]>): Promise<(T & WithOrganization)[]> {
 	const organizations = await client.organizations.list()
 	const nestedItems = await Promise.all(organizations.map(async (org) => {
-		const items = await query(org)
-		return items.map(item => {
-			return {...item, organization: org.name}
-		})
+		const orgClient = client.clone({ 'X-ST-Organization': org.organizationId })
+		const items = await query(orgClient, org)
+		return items.map(item => ({ ...item, organization: org.name }))
 	}))
 	return nestedItems.flat()
 }
 
 export async function forAllNamespaces<T>(
 		client: SmartThingsClient,
-		query: (nanmspace: CapabilityNamespace) => Promise<T[]>): Promise<T[]> {
+		query: (namespace: CapabilityNamespace) => Promise<T[]>): Promise<T[]> {
 	const namespaces = await client.capabilities.listNamespaces()
-	const nestedItems = await Promise.all(namespaces.map(async (namespace) => {
-		return query(namespace)
-	}))
+	const nestedItems = await Promise.all(namespaces.map(async (namespace) => query(namespace)))
 	return nestedItems.flat()
 }

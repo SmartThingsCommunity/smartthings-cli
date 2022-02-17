@@ -1,6 +1,7 @@
 import { Device, DevicesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { DefaultTableGenerator, outputListing, TableGenerator, withLocationsAndRooms, WithNamedRoom } from '@smartthings/cli-lib'
+import { CustomCommonOutputProducer, DefaultTableGenerator, outputListing, TableGenerator,
+	withLocationsAndRooms, WithNamedRoom } from '@smartthings/cli-lib'
 
 import DevicesCommand from '../../commands/devices'
 
@@ -20,7 +21,7 @@ jest.mock('@smartthings/cli-lib', () => {
 jest.mock('../../lib/commands/devices/devices-util')
 
 describe('DevicesCommand', () => {
-	const outputListingMock = outputListing as unknown as jest.Mock<typeof outputListing>
+	const outputListingMock = jest.mocked(outputListing)
 
 	afterEach(() => {
 		jest.clearAllMocks()
@@ -63,9 +64,9 @@ describe('DevicesCommand', () => {
 		expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
 			.toEqual(['label', 'name', 'type', 'deviceId'])
 
-		const device = { deviceId: 'device-id' }
+		const device = { deviceId: 'device-id' } as Device
 		const buildTableOutputMock = buildTableOutput as jest.Mock<string, [TableGenerator, Device]>
-		const config = outputListingMock.mock.calls[0][1]
+		const config = outputListingMock.mock.calls[0][1] as CustomCommonOutputProducer<Device>
 		buildTableOutputMock.mockReturnValueOnce('table output')
 
 		expect(config.buildTableOutput(device)).toBe('table output')
@@ -77,8 +78,7 @@ describe('DevicesCommand', () => {
 	describe('list function', () => {
 		const devices = [{ deviceId: 'device-id' }] as Device[]
 		const listSpy = jest.spyOn(DevicesEndpoint.prototype, 'list').mockResolvedValue(devices)
-		const withLocationsAndRoomsMock = withLocationsAndRooms as
-			jest.Mock<Promise<(Device & WithNamedRoom)[]>, [SmartThingsClient, Device[]]>
+		const withLocationsAndRoomsMock = jest.mocked(withLocationsAndRooms)
 
 		it('uses devices.list without verbose flag', async () => {
 			await expect(DevicesCommand.run([])).resolves.not.toThrow()

@@ -127,15 +127,9 @@ export default class DeviceProfilesCommand extends APIOrganizationCommand {
 		}
 
 		await outputListing(this, config, args.id,
-			() => {
-				if (flags['all-organizations']) {
-					return forAllOrganizations(this.client, (org) => {
-						const orgClient = this.client.clone({'X-ST-Organization': org.organizationId})
-						return orgClient.deviceProfiles.list()
-					})
-				}
-				return this.client.deviceProfiles.list()
-			},
+			() => flags['all-organizations']
+				? forAllOrganizations(this.client, (orgClient) => orgClient.deviceProfiles.list())
+				: this.client.deviceProfiles.list(),
 			id => this.client.deviceProfiles.get(id),
 		)
 	}

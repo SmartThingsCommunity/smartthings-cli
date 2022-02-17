@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core'
 
-import { Device, DeviceListOptions } from '@smartthings/core-sdk'
+import { Device, DeviceIntegrationType, DeviceListOptions } from '@smartthings/core-sdk'
 
 import { APICommand, outputListing, withLocationsAndRooms } from '@smartthings/cli-lib'
 
@@ -38,6 +38,10 @@ export default class DevicesCommand extends APICommand {
 			char: 'a',
 			description: 'filter results by installed app that created the device',
 		}),
+		type: Flags.string({
+			description: 'filter results by device type',
+			options: Object.values(DeviceIntegrationType),
+		}),
 		verbose: Flags.boolean({
 			description: 'include location name in output',
 			char: 'v',
@@ -59,7 +63,7 @@ export default class DevicesCommand extends APICommand {
 			listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
 			buildTableOutput: (data: Device) => buildTableOutput(this.tableGenerator, data),
 		}
-		if (this.flags.verbose) {
+		if (flags.verbose) {
 			config.listTableFieldDefinitions.splice(3, 0, 'location', 'room')
 		}
 
@@ -69,6 +73,7 @@ export default class DevicesCommand extends APICommand {
 			locationId: flags['location-id'],
 			deviceId: flags['device-id'],
 			installedAppId: flags['installed-app-id'],
+			type: flags.type as DeviceIntegrationType | undefined,
 		}
 
 		await outputListing(this, config, args.id,

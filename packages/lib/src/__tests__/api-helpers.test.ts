@@ -4,7 +4,7 @@ import { LocationsEndpoint,
 	RoomsEndpoint,
 	SmartThingsClient} from '@smartthings/core-sdk'
 
-import { withLocations, withLocationsAndRooms } from '..'
+import { forAllOrganizations, withLocations, withLocationsAndRooms } from '../api-helpers'
 
 
 describe('api-helpers', () => {
@@ -228,6 +228,51 @@ describe('api-helpers', () => {
 				{ ...things[2], location: 'vacation home', room: 'living room' },
 				{ ...things[3], location: 'main location', room: 'garage' },
 			])
+		})
+	})
+
+	describe('forAllOrganizations', () => {
+		const organizationsListMock = jest.fn()
+		const org1Client = {
+			isFor: 'Organization 1',
+		} as unknown as SmartThingsClient
+		const org2Client = {
+			isFor: 'Organization 1',
+		} as unknown as SmartThingsClient
+		const cloneMock = jest.fn()
+		const client = {
+			organizations: {
+				list: organizationsListMock,
+			},
+			clone: cloneMock,
+		} as unknown as SmartThingsClient
+
+		const organization1 = { organizationId: 'organization-1-id', name: 'Organization 1' }
+		const organization2 = { organizationId: 'organization-2-id', name: 'Organization 2' }
+
+		it('combines multiple results', async () => {
+			organizationsListMock.mockResolvedValueOnce([organization1, organization2])
+			cloneMock.mockReturnValueOnce(org1Client)
+			cloneMock.mockReturnValueOnce(org2Client)
+			const query = jest.fn()
+				.mockResolvedValueOnce([
+					{ name: 'thing 1' },
+					{ name: 'thing 2' },
+				])
+				.mockResolvedValueOnce([{ name: 'thing 3' }])
+
+			expect(await forAllOrganizations(client, query)).toStrictEqual([
+				{ name: 'thing 1', organization: 'Organization 1' },
+				{ name: 'thing 2', organization: 'Organization 1' },
+				{ name: 'thing 3', organization: 'Organization 2' },
+			])
+
+			expect(organizationsListMock).toHaveBeenCalledTimes(1)
+			expect(organizationsListMock).toHaveBeenCalledWith()
+
+			expect(query).toHaveBeenCalledTimes(2)
+			expect(query).toHaveBeenCalledWith(org1Client, organization1)
+			expect(query).toHaveBeenCalledWith(org2Client, organization2)
 		})
 	})
 })
