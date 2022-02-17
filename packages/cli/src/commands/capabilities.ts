@@ -299,10 +299,7 @@ export default class CapabilitiesCommand extends APIOrganizationCommand {
 					return getStandard(this.client)
 				} else if (flags['all-organizations']) {
 					config.listTableFieldDefinitions.push('organization')
-					return forAllOrganizations(this.client, (org) => {
-						const orgClient = this.client.clone({'X-ST-Organization': org.organizationId})
-						return getCustomByNamespace(orgClient, flags.namespace)
-					})
+					return forAllOrganizations(this.client, orgClient => getCustomByNamespace(orgClient, flags.namespace))
 				}
 				return getCustomByNamespace(this.client, flags.namespace)
 			},

@@ -15,8 +15,7 @@ export async function customPreferences(command: APIOrganizationCommand): Promis
 }
 
 export async function preferencesForAllOrganizations(command: APIOrganizationCommand): Promise<DevicePreference[]> {
-	return forAllOrganizations(command.client, (org) => {
-		const orgClient = command.client.clone({'X-ST-Organization': org.organizationId})
+	return forAllOrganizations(command.client, (orgClient, org) => {
 		// TODO - Once it is possible to create device preferences in namespaces other than the
 		// organization's default one, we should restore this logic
 		// return forAllNamespaces(orgClient, (namespace) => {

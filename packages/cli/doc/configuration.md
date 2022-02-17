@@ -20,7 +20,9 @@ environment variable or use the `--profile` (shortcut `-p`) command line
 argument. (When both are used, the command line argument overrides the
 environment variable.)
 
-[YAML Primer](https://github.com/darvid/trine/wiki/YAML-Primer).
+The [YAML Primer](https://github.com/darvid/trine/wiki/YAML-Primer) is a good source of information
+on YAML. Note, however, some features (like merge keys) have been removed in 1.2. The YAML parser
+we use still supports them, at least for now.
 
 ## Configuration Options
 
