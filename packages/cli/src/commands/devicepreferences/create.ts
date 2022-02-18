@@ -15,12 +15,22 @@ export default class DevicePreferencesCreateCommand extends APIOrganizationComma
 
 	static aliases = ['device-preferences:create']
 
-	static examples = [
-		'$ smartthings devicepreferences:create                              # create a new device profile by answering questions',
-		'$ smartthings devicepreferences:create -d                           # generate a device profile by answering questions but do not actually create it',
-		'$ smartthings devicepreferences:create -i dp.json                   # create a new device profile defined by the file dp.json',
-		'$ smartthings devicepreferences:create -i dp.json -o dp-saved.json  # create a new device profile defined by the file dp.json and write the results to dp-saved.json',
-	]
+	static examples = [`
+# create a new device preference by answering questions
+$ smartthings devicepreferences:create
+`,
+	`
+# generate a device preference by answering questions but do not actually create it
+$ smartthings devicepreferences:create -d
+`,
+	`
+# create a new device preference defined by the file dp.json
+$ smartthings devicepreferences:create -i dp.json
+`,
+	`
+# create a new device preference defined by the file dp.json and write the results to dp - saved.json
+$ smartthings devicepreferences: create - i dp.json - o dp - saved.json
+`]
 
 	async run(): Promise<void> {
 		const { args, argv, flags } = await this.parse(DevicePreferencesCreateCommand)
@@ -128,14 +138,14 @@ export default class DevicePreferencesCreateCommand extends APIOrganizationComma
 		}
 
 		if (preferenceType === 'enumeration') {
-			const firstName = await askForRequiredString('Enter a name for the first option.')
+			const firstName = await askForRequiredString('Enter a name (key) for the first option.')
 			let value = await askForRequiredString('Enter a value for the first option.')
 
 			const options: { [name: string]: string } = { [firstName]: value }
 
 			let name: string | undefined
 			do {
-				name = await askForString('Enter a name for the next option or press enter to continue.')
+				name = await askForString('Enter a name (key) for the next option or press enter to continue.')
 				if (name) {
 					value = await askForRequiredString('Enter a value for the option.')
 					options[name] = value
@@ -145,7 +155,7 @@ export default class DevicePreferencesCreateCommand extends APIOrganizationComma
 			const defaultValue = (await inquirer.prompt({
 				type: 'list',
 				name: 'defaultValue',
-				message: 'Choose a default value.',
+				message: 'Choose a default option.',
 				choices: [
 					{ name: 'none', value: undefined },
 					...Object.entries(options).map(([name, value]) => ({ name: `${value} (${name})`, value: name }))],
