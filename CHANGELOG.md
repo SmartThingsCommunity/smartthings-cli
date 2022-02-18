@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.39](https://github.com/rossiam/smartthings-cli/compare/v0.0.0-pre.38...v0.0.0-pre.39) (2022-02-18)
+
+
+### Features
+
+* add type filter to devices command; minor refactoring ([5ea91d7](https://github.com/rossiam/smartthings-cli/commit/5ea91d7825aa87383d0c2a832c4aee4f5e3a0f55))
+
+
+
+
+
 # [0.0.0-pre.38](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.37...v0.0.0-pre.38) (2022-02-17)
 
 
