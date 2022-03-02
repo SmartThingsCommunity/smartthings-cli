@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core'
 import osLocale from 'os-locale'
 
-import { Authenticator, BearerTokenAuthenticator, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
+import { Authenticator, BearerTokenAuthenticator, HttpClientHeaders, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
 
 import { logManager } from './logger'
 import { defaultClientIdProvider, LoginAuthenticator } from './login-authenticator'
@@ -48,6 +48,10 @@ export abstract class APICommand extends SmartThingsCommand {
 		return this._client
 	}
 
+	get userAgent(): string {
+		return this.config.userAgent ?? '@smartthings/cli'
+	}
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
 		await super.setup(args, argv, flags)
@@ -64,8 +68,7 @@ export abstract class APICommand extends SmartThingsCommand {
 
 		const logger = logManager.getLogger('rest-client')
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const headers: { [name: string]: any } = {}
+		const headers: HttpClientHeaders = { 'User-Agent': this.userAgent }
 
 		if (flags.language) {
 			if (flags.language !== 'NONE') {
@@ -83,7 +86,7 @@ export abstract class APICommand extends SmartThingsCommand {
 
 		this._authenticator = this.token
 			? new BearerTokenAuthenticator(this.token)
-			: new LoginAuthenticator(this.profileName, this.clientIdProvider)
+			: new LoginAuthenticator(this.profileName, this.clientIdProvider, this.userAgent)
 
 		const warningLogger = (warnings: WarningFromHeader[] | string): void => {
 			const message = 'Warnings from API:\n' + (typeof(warnings) === 'string'

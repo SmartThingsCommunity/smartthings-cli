@@ -11,7 +11,7 @@ jest.mock('../logger')
 jest.mock('../login-authenticator')
 
 
-describe('api-command', () => {
+describe('api-organization-command', () => {
 	afterEach(() => {
 		jest.clearAllMocks()
 	})
@@ -31,21 +31,21 @@ describe('api-command', () => {
 			}
 		}
 
-		let apiCommand: testCommand
+		let apiOrganizationCommand: testCommand
 		const testConfig = new Config({ root: '' })
 
 		beforeEach(() => {
-			apiCommand = new testCommand([], testConfig)
+			apiOrganizationCommand = new testCommand([], testConfig)
 		})
 
 		it('should pass organization ID header on to client', async () => {
-			await apiCommand.setup({}, [], { organization: 'an-organization-id' })
+			await apiOrganizationCommand.setup({}, [], { organization: 'an-organization-id' })
 			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
 			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed?.headers).toEqual({ 'X-ST-Organization': 'an-organization-id' })
+			expect(configUsed?.headers).toContainEntry(['X-ST-Organization', 'an-organization-id'])
 		})
 	})
 })

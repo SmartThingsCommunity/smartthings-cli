@@ -1,7 +1,8 @@
 import { APICommand } from './api-command'
-import { handleSignals } from './sse-util'
+import { EventSourceError, handleSignals } from './sse-util'
 import EventSource from 'eventsource'
 import { Errors } from '@oclif/core'
+import { HttpClientHeaders } from '@smartthings/core-sdk'
 
 
 export abstract class SseCommand extends APICommand {
@@ -18,16 +19,21 @@ export abstract class SseCommand extends APICommand {
 	}
 
 	async initSource(url: string, sourceInitDict?: EventSource.EventSourceInitDict): Promise<void> {
+		const headers: HttpClientHeaders = { 'User-Agent': this.userAgent }
+
 		// assume auth is taken care of if passing an initDict
 		if (!sourceInitDict && this.authenticator.authenticateGeneric) {
 			const token = await this.authenticator.authenticateGeneric()
-			sourceInitDict = { headers: { 'Authorization': `Bearer ${token}` } }
+			sourceInitDict = { headers: { ...headers, 'Authorization': `Bearer ${token}` } }
+		} else {
+			sourceInitDict = { ...sourceInitDict, headers: { ...headers, ...sourceInitDict?.headers } }
 		}
 
 		this._source = new EventSource(url, sourceInitDict)
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		this._source.onerror = (error: any) => {
+		this._source.onerror = (error: EventSourceError) => {
+			this.teardown()
+
 			try {
 				let message
 				if (error) {
@@ -44,7 +50,6 @@ export abstract class SseCommand extends APICommand {
 					message = 'Unexpected event source error.'
 				}
 
-				this.teardown()
 				this.error(message)
 			} catch (error) {
 				Errors.handle(error)
@@ -75,9 +80,12 @@ export abstract class SseCommand extends APICommand {
 		})
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	async catch(error: any): Promise<void> {
+	async catch(error: unknown): Promise<void> {
 		this.teardown()
+
+		if (error instanceof Error) {
+			await super.catch(error)
+		}
 
 		throw error
 	}

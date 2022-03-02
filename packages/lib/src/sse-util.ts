@@ -8,3 +8,10 @@ export const sseSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGHUP', 'SIG
 export function handleSignals(listener: NodeJS.SignalsListener): void {
 	sseSignals.forEach(signal => process.on(signal, listener))
 }
+
+/**
+ * error Event from eventsource doesn't always overlap with MessageEvent
+ *
+ * TODO: update DefinitelyTyped https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/eventsource
+ */
+export type EventSourceError = MessageEvent & { status?: number; message?: string }

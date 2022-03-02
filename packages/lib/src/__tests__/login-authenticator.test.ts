@@ -1,6 +1,6 @@
 import fs, { NoParamCallback, PathLike } from 'fs'
 
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { Request, Response } from 'express'
 import getPort from 'get-port'
 import open from 'open'
@@ -51,6 +51,7 @@ describe('LoginAuthenticator', () => {
 		oauthAuthTokenRefreshURL: 'https://example.com/refresh-url',
 		clientId: 'client-id',
 	}
+	const userAgent = 'userAgent'
 	const config = {
 		appenders: {
 			main: { type: 'recording' },
@@ -133,19 +134,15 @@ describe('LoginAuthenticator', () => {
 	logManager.init(config)
 
 	const mkdirMock = jest.mocked(fs.mkdirSync)
-	const readFileMock = (fs.readFileSync as unknown as jest.Mock<Buffer, [fs.PathLike]>)
-		.mockImplementation(() => { throw { code: 'ENOENT' } })
-	const writeFileMock = fs.writeFileSync as jest.Mock<typeof fs.writeFileSync>
-	const chmodMock = fs.chmod as unknown as jest.Mock<void, [PathLike, string | number, NoParamCallback]>
-
-	const getPortMock = jest.mocked(getPort)
-		.mockResolvedValue(7777)
-	const postMock = (axios.post as unknown as jest.Mock<Promise<AxiosResponse<unknown>>, [string, unknown, AxiosRequestConfig | undefined]>)
-		.mockResolvedValue(tokenResponse)
+	const readFileMock = jest.mocked(fs.readFileSync).mockImplementation(() => { throw { code: 'ENOENT' } })
+	const writeFileMock = jest.mocked(fs.writeFileSync)
+	const chmodMock = jest.mocked(fs.chmod)
+	const getPortMock = jest.mocked(getPort).mockResolvedValue(7777)
+	const postMock = jest.mocked(axios.post).mockResolvedValue(tokenResponse)
 
 	function setupAuthenticator(): LoginAuthenticator {
 		LoginAuthenticator.init(credentialsFilename)
-		return new LoginAuthenticator(profileName, clientIdProvider)
+		return new LoginAuthenticator(profileName, clientIdProvider, userAgent)
 	}
 
 	type ExpressRouteHandler = (request: Request, response: Response) => void
@@ -192,14 +189,14 @@ describe('LoginAuthenticator', () => {
 
 	describe('constructor', () => {
 		it('throws exception when init not called', function () {
-			expect(() => new LoginAuthenticator(profileName, clientIdProvider))
+			expect(() => new LoginAuthenticator(profileName, clientIdProvider, userAgent))
 				.toThrow('LoginAuthenticator credentials file not set.')
 		})
 
 		it('constructs without errors', function () {
 			LoginAuthenticator.init(credentialsFilename)
 
-			const loginAuthenticator = new LoginAuthenticator(profileName, clientIdProvider)
+			const loginAuthenticator = new LoginAuthenticator(profileName, clientIdProvider, userAgent)
 
 			expect(loginAuthenticator).toBeDefined()
 		})
@@ -208,7 +205,7 @@ describe('LoginAuthenticator', () => {
 			readFileMock.mockReturnValueOnce(Buffer.from(JSON.stringify(credentialsFileData)))
 			LoginAuthenticator.init(credentialsFilename)
 
-			const loginAuthenticator = new LoginAuthenticator(profileName, clientIdProvider)
+			const loginAuthenticator = new LoginAuthenticator(profileName, clientIdProvider, userAgent)
 
 			expect(loginAuthenticator).toBeDefined()
 
@@ -223,7 +220,7 @@ describe('LoginAuthenticator', () => {
 			readFileMock.mockReturnValueOnce(Buffer.from(JSON.stringify(credentialsFileData)))
 			LoginAuthenticator.init(credentialsFilename)
 
-			new LoginAuthenticator(profileName, clientIdProvider)
+			new LoginAuthenticator(profileName, clientIdProvider, userAgent)
 
 			const logs = recording.replay()
 			const authInfoLog = logs[1].data[0]
@@ -277,6 +274,24 @@ describe('LoginAuthenticator', () => {
 			expect(writeFileMock).toHaveBeenCalledWith(credentialsFilename, expect.stringMatching(/"myProfile":/))
 			expect(chmodMock).toHaveBeenCalledTimes(1)
 			expect(chmodMock).toHaveBeenCalledWith(credentialsFilename, 0o600, expect.any(Function))
+		})
+
+		it('includes User-Agent in requests', async () => {
+			const loginAuthenticator = setupAuthenticator()
+			const loginPromise = loginAuthenticator.login()
+
+			await imitateBrowser()
+			await loginPromise
+
+			expect(postMock).toHaveBeenCalledTimes(1)
+			expect(postMock).toHaveBeenCalledWith(
+				'https://example.com/oauth-in-url/token',
+				expect.any(String),
+				expect.anything(),
+			)
+
+			const postConfig = postMock.mock.calls[0][2]
+			expect(postConfig?.headers).toContainEntry(['User-Agent', userAgent])
 		})
 
 		it('logs error if setting permissions of credentials file fails', async () => {
@@ -445,6 +460,24 @@ describe('LoginAuthenticator', () => {
 			expect(readFileMock).toHaveBeenCalledWith(credentialsFilename)
 			expect(writeFileMock).toHaveBeenCalledTimes(1)
 			expect(writeFileMock).toHaveBeenCalledWith(credentialsFilename, expect.stringMatching(/"myProfile":/))
+		})
+
+		it('includes User-Agent on refresh', async () => {
+			readFileMock.mockReturnValueOnce(Buffer.from(JSON.stringify(refreshableCredentialsFileData)))
+			const loginAuthenticator = setupAuthenticator()
+			const requestConfig = {}
+
+			await loginAuthenticator.authenticate(requestConfig)
+
+			expect(postMock).toHaveBeenCalledTimes(1)
+			expect(postMock).toHaveBeenCalledWith(
+				clientIdProvider.oauthAuthTokenRefreshURL,
+				expect.any(String),
+				expect.anything(),
+			)
+
+			const postConfig = postMock.mock.calls[0][2]
+			expect(postConfig?.headers).toContainEntry(['User-Agent', userAgent])
 		})
 
 		it('logs in when refresh fails', async () => {

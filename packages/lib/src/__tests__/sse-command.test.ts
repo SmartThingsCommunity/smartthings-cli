@@ -1,5 +1,4 @@
 import { Config } from '@oclif/core'
-import { v4 as uuidv4 } from 'uuid'
 import { SseCommand } from '../sse-command'
 import * as sseUtil from '../sse-util'
 import EventSource from 'eventsource'
@@ -18,7 +17,7 @@ describe('SseCommand', () => {
 
 	let sseCommand: TestCommand
 	const testConfig = new Config({ root: '' })
-	const flags = { token: uuidv4() }
+	const flags = { token: 'token' }
 
 	const handleSignalsSpy = jest.spyOn(sseUtil, 'handleSignals')
 
@@ -53,13 +52,16 @@ describe('SseCommand', () => {
 		)
 	})
 
-	it('accepts source init dict and uses it instead of default', async () => {
+	it('accepts source init dict and merges it with defaults', async () => {
 		await sseCommand.setup({}, [], flags)
 
 		const initDict = { headers: { 'Cookie': 'test=test' } }
 		await sseCommand.initSource('localhost', initDict)
 
-		expect(EventSource).toBeCalledWith('localhost', initDict)
+		expect(EventSource).toBeCalledWith(
+			'localhost',
+			{ headers: { 'User-Agent': expect.any(String), ...initDict.headers } },
+		)
 	})
 
 	it('registers signal handler on initialization', async () => {
