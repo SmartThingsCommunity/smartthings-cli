@@ -1,13 +1,12 @@
 import { Config } from '@oclif/core'
-import { v4 as uuidv4 } from 'uuid'
 import * as osLocale from 'os-locale'
 
-import { SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
+import { BearerTokenAuthenticator, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
 import * as coreSDK from '@smartthings/core-sdk'
 
 import { APICommand } from '../api-command'
 import { CLIConfig } from '../cli-config'
-import { ClientIdProvider } from '../login-authenticator'
+import { ClientIdProvider, LoginAuthenticator } from '../login-authenticator'
 import { TableGenerator } from '..'
 
 
@@ -28,6 +27,9 @@ describe('api-command', () => {
 		const mockedTableGenerator = {
 			buildTableFromList: buildTableFromListMock,
 		} as unknown as TableGenerator
+
+		const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
+
 		class testCommand extends APICommand {
 			getToken(): string | undefined {
 				return this.token
@@ -47,10 +49,9 @@ describe('api-command', () => {
 		}
 
 		let apiCommand: testCommand
-		const testConfig = new Config({ root: '' })
 
 		beforeEach(() => {
-			apiCommand = new testCommand([], testConfig)
+			apiCommand = new testCommand([], {} as Config)
 			apiCommand.warn = jest.fn()
 		})
 
@@ -73,7 +74,7 @@ describe('api-command', () => {
 		})
 
 		it('should set token when passed via flags during setup', async () => {
-			const token = uuidv4()
+			const token = 'token'
 			await apiCommand.setup({}, [], { token: token })
 
 			expect(apiCommand.getToken()).toBe(token)
@@ -82,22 +83,20 @@ describe('api-command', () => {
 
 		it('should pass language header on to client', async () => {
 			await apiCommand.setup({}, [], { language: 'es-US' })
-			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
 			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed?.headers).toEqual({ 'Accept-Language': 'es-US' })
+			expect(configUsed?.headers).toContainEntry(['Accept-Language', 'es-US'])
 		})
 
 		it('passes organization flag on to client', async () => {
 			await apiCommand.setup({}, [], { organization: 'organization-id-from-flag' })
-			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
 			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed?.headers).toEqual({ 'X-ST-Organization': 'organization-id-from-flag' })
+			expect(configUsed?.headers).toContainEntry(['X-ST-Organization', 'organization-id-from-flag'])
 		})
 
 		it('passes organization config on to client', async () => {
@@ -106,12 +105,42 @@ describe('api-command', () => {
 
 			await apiCommand.setup({}, [], {})
 
-			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
+			expect(stClientSpy).toHaveBeenCalledTimes(1)
+
+			const configUsed = stClientSpy.mock.calls[0][1]
+			expect(configUsed?.headers).toContainEntry(['X-ST-Organization', 'organization-id-from-config'])
+		})
+
+		it('returns oclif config User-Agent and default if undefined', () => {
+			expect(apiCommand.userAgent).toBe('@smartthings/cli')
+
+			apiCommand = new testCommand([], { userAgent: 'userAgent' } as Config)
+
+			expect(apiCommand.userAgent).toBe('userAgent')
+		})
+
+		it('sets User-Agent header on client', async () => {
+			await apiCommand.setup({}, [], {})
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
 			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed?.headers).toEqual({ 'X-ST-Organization': 'organization-id-from-config' })
+			expect(configUsed?.headers).toContainEntry(['User-Agent', expect.any(String)])
+		})
+
+		it('uses BearerTokenAuthenticator in client if token is provided', async () => {
+			await apiCommand.setup({}, [], { token: 'token' })
+
+			expect(stClientSpy).toBeCalledWith(expect.any(BearerTokenAuthenticator), expect.anything())
+		})
+
+		it('uses LoginAuthenticator in client if token is not provided', async () => {
+			await apiCommand.setup({}, [], {})
+
+			expect(stClientSpy).toBeCalledWith(expect.any(LoginAuthenticator), expect.anything())
+
+			// sets User-Agent
+			expect(LoginAuthenticator).toBeCalledWith(expect.anything(), expect.anything(), expect.any(String))
 		})
 
 		it('prefers organization flag over config', async () => {
@@ -120,18 +149,15 @@ describe('api-command', () => {
 
 			await apiCommand.setup({}, [], { organization: 'organization-id-from-flag' })
 
-			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
-
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
 			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed?.headers).toEqual({ 'X-ST-Organization': 'organization-id-from-flag' })
+			expect(configUsed?.headers).toContainEntry(['X-ST-Organization', 'organization-id-from-flag'])
 		})
 
 		describe('warningLogger', () => {
 			it('uses string as-is', async () => {
 				await apiCommand.setup({}, [], { language: 'es-US' })
-				const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
 
 				expect(stClientSpy).toHaveBeenCalledTimes(1)
 
@@ -149,7 +175,6 @@ describe('api-command', () => {
 
 			it('uses builds table out of list of warnings', async () => {
 				await apiCommand.setup({}, [], { language: 'es-US' })
-				const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
 
 				expect(stClientSpy).toHaveBeenCalledTimes(1)
 
@@ -174,29 +199,27 @@ describe('api-command', () => {
 
 		it('should skip language header when "NONE" specified', async () => {
 			await apiCommand.setup({}, [], { language: 'NONE' })
-			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
 			const configUsed = stClientSpy.mock.calls[0][1]
 			expect(configUsed).toBeDefined()
-			expect(configUsed?.headers).toEqual({})
+			expect(configUsed?.headers).not.toContainKey('Accept-Language')
 		})
 
 		it('should uses os language header when not specified', async () => {
 			const osLocaleSpy = jest.spyOn(osLocale, 'default').mockResolvedValue('fr-CA')
 			await apiCommand.setup({}, [], {})
-			const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
 			expect(osLocaleSpy).toHaveBeenCalledTimes(1)
 			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed?.headers).toEqual({ 'Accept-Language': 'fr-CA' })
+			expect(configUsed?.headers).toContainEntry(['Accept-Language', 'fr-CA'])
 		})
 
 		it('should set token when passed via profileConfig during setup', async () => {
-			const token = uuidv4()
+			const token = 'token'
 			jest.spyOn(CLIConfig.prototype, 'getProfile').mockImplementation(() => {
 				return {
 					token: token,
@@ -209,10 +232,9 @@ describe('api-command', () => {
 		})
 
 		it('should override default clientIdProvider when set in profileConfig during setup', async () => {
-			const testClientId = uuidv4()
 			const profileConfig = {
 				clientIdProvider: {
-					clientId: testClientId,
+					clientId: 'clientId',
 				},
 			}
 

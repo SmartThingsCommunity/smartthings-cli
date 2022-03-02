@@ -25,11 +25,6 @@ export const defaultClientIdProvider: ClientIdProvider = {
 
 // All the scopes the clientId we are using is configured to use.
 const scopes = ['controller%3AstCli']
-const postConfig = {
-	headers: {
-		'Content-Type': 'application/x-www-form-urlencoded',
-	},
-}
 
 
 interface AuthenticationInfo {
@@ -74,11 +69,12 @@ export class LoginAuthenticator implements Authenticator {
 		fs.mkdirSync(cliDir, { recursive: true })
 	}
 	private clientId: string
+	private postConfig: AxiosRequestConfig
 
 	private authenticationInfo?: AuthenticationInfo
 	private logger = logManager.getLogger('login-authenticator')
 
-	constructor(private profileName: string, private clientIdProvider: ClientIdProvider) {
+	constructor(private profileName: string, private clientIdProvider: ClientIdProvider, userAgent: string) {
 		this.logger.trace('constructing a LoginAuthenticator')
 		this.clientId = clientIdProvider.clientId
 		// we could consider doing this lazily at some point
@@ -90,6 +86,13 @@ export class LoginAuthenticator implements Authenticator {
 				expires: new Date(authInfo.expires),
 			}
 			this.logger.trace(`authentication info from file = ${scrubAuthInfo(this.authenticationInfo)}`)
+		}
+
+		this.postConfig = {
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'User-Agent': userAgent,
+			},
 		}
 	}
 
@@ -183,13 +186,13 @@ export class LoginAuthenticator implements Authenticator {
 			}
 			this.logger.trace(`making axios request to ${baseOAuthInURL}/token with:`)
 			this.logger.trace(`  body: ${qs.stringify(requestBody)}`)
-			this.logger.trace(`  config: ${JSON.stringify(postConfig)}`)
+			this.logger.trace(`  config: ${JSON.stringify(this.postConfig)}`)
 			this.logger.trace(`code = ${req.query.code}`)
 			// I used this for debugging. Axios does not include the body of the response in any way I could find.
 			// this.logger.trace(`\n\nRun:\ncurl -i --request POST --url '${baseOAuthInURL}/token' --header 'content-type: application/x-www-form-urlencoded' ` +
 			// 	`--data grant_type=authorization_code --data 'client_id=${this.clientId}' --data code_verifier=${verifier} --data code=${req.query.code} ` +
 			// 	`--data 'redirect_uri=${finishURL}' --header 'X-ST-CORRELATION: ross-pkce-attempt'\n\n`)
-			axios.post(`${baseOAuthInURL}/token`, qs.stringify(requestBody), postConfig)
+			axios.post(`${baseOAuthInURL}/token`, qs.stringify(requestBody), this.postConfig)
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				.then((response: AxiosResponse<any>) => {
 					this.updateTokenFromResponse(response)
@@ -246,15 +249,11 @@ export class LoginAuthenticator implements Authenticator {
 			'client_id': this.clientId,
 			'refresh_token': this.authenticationInfo?.refreshToken,
 		}
-		const postConfig = {
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
-		}
+
 		this.logger.trace(`making axios request to ${oauthAuthTokenRefreshURL} with:`)
 		this.logger.trace(`  body: ${qs.stringify(requestBody)}`)
-		this.logger.trace(`  config: ${JSON.stringify(postConfig)}`)
-		await axios.post(oauthAuthTokenRefreshURL, qs.stringify(requestBody), postConfig)
+		this.logger.trace(`  config: ${JSON.stringify(this.postConfig)}`)
+		await axios.post(oauthAuthTokenRefreshURL, qs.stringify(requestBody), this.postConfig)
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			.then((response: AxiosResponse<any>) => {
 				this.updateTokenFromResponse(response)
