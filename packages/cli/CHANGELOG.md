@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.40](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.39...v0.0.0-pre.40) (2022-03-03)
+
+
+### Bug Fixes
+
+* **devicepreferences:** make create prompts more clear ([258b9da](https://github.com/SmartThingsCommunity/smartthings-cli/commit/258b9daa9fa8d7d5cf08a3034d944732ef2bade7))
+
+
+### Features
+
+* include unique User-Agent in client requests ([4886cc2](https://github.com/SmartThingsCommunity/smartthings-cli/commit/4886cc28f7925972aeacabc84b306f60c3fad7c1))
+
+
+
+
+
 # [0.0.0-pre.39](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.38...v0.0.0-pre.39) (2022-02-18)
 
 
