@@ -8,6 +8,9 @@
 	"license": "Apache-2.0",
 	"main": "dist/index",
 	"types": "dist/index",
+	"engines": {
+		"node": ">=12.18.1"
+	},
 	"files": [
 		"dist",
 		"README.md",

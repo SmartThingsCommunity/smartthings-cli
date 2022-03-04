@@ -11,7 +11,7 @@
 	"license": "Apache-2.0",
 	"main": "lib/index.js",
 	"engines": {
-		"node": ">=12.13.1"
+		"node": ">=12.18.1"
 	},
 	"files": [
 		"/bin",
@@ -58,13 +58,13 @@
 		]
 	},
 	"dependencies": {
-		"@oclif/core": "^1.5.0",
+		"@oclif/core": "^1.5.1",
 		"@oclif/plugin-autocomplete": "^1.2.0",
 		"@oclif/plugin-not-found": "^2.3.1",
 		"@oclif/plugin-plugins": "^2.1.0",
 		"@smartthings/cli-lib": "^0.0.0-pre.40",
 		"@smartthings/core-sdk": "^3.4.0",
-		"@smartthings/plugin-cli-edge": "^1.9.0",
+		"@smartthings/plugin-cli-edge": "^1.10.1",
 		"aws-sdk": "^2.1073.0",
 		"cli-table": "^0.3.11",
 		"inquirer": "^8.2.0",

@@ -12,4 +12,7 @@ module.exports = {
 		'/src/typings/',
 		'/src/index.ts',
 	],
+	modulePathIgnorePatterns: [
+		'<rootDir>/dist',
+	],
 }
