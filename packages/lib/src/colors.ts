@@ -2,6 +2,12 @@ import chalk from 'chalk'
 
 
 export const black = chalk.black
+export const blue = chalk.blue
+export const cyan = chalk.cyan
+export const gray = chalk.gray
+export const green = chalk.green
+export const red = chalk.red
+export const yellow = chalk.yellow
 
 /**
  * Background colors

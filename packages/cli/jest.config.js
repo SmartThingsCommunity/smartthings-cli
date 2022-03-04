@@ -16,4 +16,7 @@ module.exports = {
 		'/src/index.ts',
 		'/src/run.ts',
 	],
+	modulePathIgnorePatterns: [
+		'<rootDir>/lib',
+	],
 }
