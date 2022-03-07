@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.0.0-pre.41](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.40...v0.0.0-pre.41) (2022-03-07)
+
+
+### Bug Fixes
+
+* **deps:** bump plugin-cli-edge to 1.10.1 ([14d7ad3](https://github.com/SmartThingsCommunity/smartthings-cli/commit/14d7ad324216105dac2b3ad7b15e673207a63d3d))
+
+
+
+
+
 # [0.0.0-pre.40](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.39...v0.0.0-pre.40) (2022-03-03)
 
 **Note:** Version bump only for package @smartthings/cli-testlib

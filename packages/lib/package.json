@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli-lib",
-	"version": "0.0.0-pre.40",
+	"version": "0.0.0-pre.41",
 	"description": "SmartThings unified CLI utility library",
 	"author": "SmartThings, Inc.",
 	"bugs": "https://github.com/SmartThingsCommunity/smartthings-cli/issues",
