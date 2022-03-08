@@ -2,7 +2,7 @@
 
 ## Overview
 
-The CLI can be configured by creating a YAML file called `config.yaml` in the
+The default CLI configuration can be overridden by creating a YAML file called `config.yaml` in the
 following location:
 
 * `$HOME/.config/@smartthings/cli` on MacOS or Linux
