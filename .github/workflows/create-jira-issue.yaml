@@ -6,11 +6,14 @@ name: Create Jira Issue
 
 jobs:
   create-jira-issue:
+    # don't run on forks
+    if: ${{ github.repository_owner == 'SmartThingsCommunity' }}
+
     uses: SmartThingsCommunity/github-actions/.github/workflows/create-jira-issue.yaml@main
     with:
       trigger-label: reviewed
       project: PI
-      fields: '{"labels": ["pi-github"],"components": [{"id": "19894"}]}'
+      fields: '{"labels": ["pi-github"],"components": [{"id": "19894"},{"id": "19514"}]}'
     secrets:
       JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}

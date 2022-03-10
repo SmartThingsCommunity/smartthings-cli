@@ -9,7 +9,11 @@ permissions:
 
 jobs:
   stale:
+    # don't run on forks
+    if: ${{ github.repository_owner == 'SmartThingsCommunity' }}
+
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/stale@v4
         with:
