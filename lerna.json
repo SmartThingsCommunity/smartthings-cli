@@ -11,7 +11,7 @@
 			"gitRemote": "upstream",
 			"message": "chore(release): publish %s",
 			"conventionalPrerelease": true,
-			"preid": "pre"
+			"preid": "beta"
 		}
 	}
 }
