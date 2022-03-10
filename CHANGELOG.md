@@ -11,6 +11,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+# [1.0.0-beta.0](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.41...v1.0.0-beta.0) (2022-03-10)
+
+**Note:** Version bump only for package root
+
+
+
+
+
 # [0.0.0-pre.41](https://github.com/john-u/smartthings-cli/compare/v0.0.0-pre.40...v0.0.0-pre.41) (2022-03-07)
 
 
