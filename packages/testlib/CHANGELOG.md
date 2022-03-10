@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0-beta.0](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.41...v1.0.0-beta.0) (2022-03-10)
+
+**Note:** Version bump only for package @smartthings/cli-testlib
+
+
+
+
+
 # [0.0.0-pre.41](https://github.com/SmartThingsCommunity/smartthings-cli/compare/v0.0.0-pre.40...v0.0.0-pre.41) (2022-03-07)
 
 
