@@ -1,78 +1,109 @@
-import fs from 'fs'
 import yaml from 'js-yaml'
-import { yamlExists } from './io-util'
+import { readFile, writeFile, yamlExists } from './io-util'
 
 
-export class CLIConfig {
-	private _configFile: string | null = null
-	private _config: Record<string, unknown> | null = null
+export const seeConfigDocs = 'see https://github.com/SmartThingsCommunity/smartthings-cli/blob/master/packages/cli/doc/configuration.md for more information'
 
-	public init(configFile: string): void {
-		this._configFile = configFile
+export type Profile = Record<string, unknown>
+export type ProfilesByName = Record<string, Profile>
+
+export interface CLIConfigDescription {
+	/**
+	 * The name of the user-editable configuration file.
+	 */
+	configFilename: string
+
+	/**
+	 * The name of the configuration file managed by the CLI.
+	 */
+	managedConfigFilename: string
+
+	/**
+	 * The name of the currently selected profile.
+	 */
+	profileName: string
+}
+
+export interface CLIConfig extends CLIConfigDescription {
+	profiles: ProfilesByName
+	managedProfiles: ProfilesByName
+	mergedProfiles: ProfilesByName
+
+	/**
+	 * A convenience reference to the selected profile (same as `mergedConfig[profileName]`).
+	 */
+	profile: Profile
+}
+
+export const loadConfigFile = async (filename: string): Promise<ProfilesByName> => {
+	if (!yamlExists(filename)) {
+		return {}
 	}
 
-	public get configFile(): string|null {
-		return this._configFile
-	}
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	public loadConfig(): { [name: string]: any } {
-		if (this._configFile == null) {
-			throw new Error('config not yet initialized')
-		}
-
-		if (!yamlExists(this._configFile)) {
-			this._config = {}
-		}
-
-		if (this._config == null) {
-			const parsed = yaml.load(fs.readFileSync(`${this._configFile}`, 'utf-8'))
-			if (parsed) {
-				if (typeof parsed === 'object') {
-					this._config = { ...parsed }
+	const parsed = yaml.load(await readFile(`${filename}`, 'utf-8'))
+	if (parsed) {
+		if (typeof parsed === 'object' && !Array.isArray(parsed)) {
+			const errors: string[] = []
+			const config: ProfilesByName = {}
+			for (const [profileName, profile] of Object.entries(parsed)) {
+				if (typeof(profile) === 'object' && !Array.isArray(profile)) {
+					config[profileName] = profile
 				} else {
-					throw new Error('invalid config file format; please specify zero or more profiles')
+					errors.push(`bad profile ${profileName}; profile must be an object`)
 				}
 			}
+			if (errors.length) {
+				throw Error(`${errors.join('\n')}\n${seeConfigDocs}`)
+			}
+			return config
+		} else {
+			throw Error('invalid config file format\n' + seeConfigDocs)
 		}
-
-		if (!this._config) {
-			// empty file; use empty map
-			this._config = {}
-		}
-
-		return this._config
 	}
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	public getRawConfigData(): { [name: string]: any } {
-		if (!this._config) {
-			throw new Error('config not initialized completely')
-		}
-		return this._config
-	}
-
-	public getProfile(name: string): Record<string, unknown> {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const config: { [name: string]: any } = this.loadConfig()
-		if (!(name in config)) {
-			return {}
-		}
-		const retVal = config[name]
-		if (retVal === null) {
-			throw new Error('null profile specified. Check config.yaml for errors.')
-		}
-		if (typeof retVal === 'object') {
-			return retVal
-		}
-		throw new Error(`bad profile configuration for ${name} in ${this._configFile}`)
-	}
+	return {}
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-if (!('_cliConfig' in (global as any))) {
-	(global as any)._cliConfig = new CLIConfig()
+/**
+ * Merge profiles from `preferred` and `secondary`, favoring any config entries from `preferred`
+ * over those in `secondary`.
+ */
+export const mergeProfiles = (preferred: ProfilesByName, secondary: ProfilesByName): ProfilesByName => {
+	const mergeInto = (into: ProfilesByName, from: ProfilesByName): ProfilesByName => {
+		for (const [profileName, profileData] of Object.entries(from)) {
+			if (!(profileName in into)) {
+				into[profileName] = {}
+			}
+			Object.assign(into[profileName], profileData)
+		}
+		return into
+	}
+	return mergeInto(mergeInto({}, secondary), preferred)
 }
 
-export const cliConfig: CLIConfig = (global as any)._cliConfig
-/* eslint-enable @typescript-eslint/no-explicit-any */
+export const loadConfig = async (description: CLIConfigDescription): Promise<CLIConfig> => {
+	const config = await loadConfigFile(description.configFilename)
+	const managedConfig = await loadConfigFile(description.managedConfigFilename)
+	const mergedConfig = mergeProfiles(config, managedConfig)
+
+	const profile = description.profileName in mergedConfig
+		? mergedConfig[description.profileName]
+		: {}
+
+	return { ...description, profiles: config, managedProfiles: managedConfig, mergedProfiles: mergedConfig, profile }
+}
+
+const managedConfigHeader =
+`# This file is used to store settings managed by the CLI. Users are not meant to edit it directly.
+# Any options in the main config file will override values from this one.
+
+`
+
+/**
+ * Save the specified configuration key into managed config so it will be picked up
+ * in the future but not override user settings.
+ */
+export const setConfigKey = async (config: CLIConfig, key: string, value: unknown): Promise<void> => {
+	config.managedProfiles = mergeProfiles({ [config.profileName]: { [key]: value }}, config.managedProfiles)
+	await writeFile(config.managedConfigFilename, managedConfigHeader + yaml.dump(config.managedProfiles))
+	config.mergedProfiles = mergeProfiles(config.profiles, config.managedProfiles)
+}

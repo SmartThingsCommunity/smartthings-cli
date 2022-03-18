@@ -1,6 +1,10 @@
 import { Config } from '@oclif/core'
-import { APICommand, ChooseOptions, chooseOptionsWithDefaults, ListDataFunction, Naming, selectFromList, SelectingConfig, SmartThingsCommandInterface, Sorting, stringTranslateToId } from '@smartthings/cli-lib'
-import { App, AppsEndpoint, NoOpAuthenticator, SmartThingsClient } from '@smartthings/core-sdk'
+
+import { AppsEndpoint, NoOpAuthenticator, SmartThingsClient } from '@smartthings/core-sdk'
+
+import { APICommand, ChooseOptions, chooseOptionsDefaults, chooseOptionsWithDefaults,
+	selectFromList, stringTranslateToId } from '@smartthings/cli-lib'
+
 import { chooseApp } from '../../../../lib/commands/apps/apps-util'
 
 
@@ -25,21 +29,9 @@ describe('chooseApp', () => {
 	const appId = 'appId'
 	const stringIndex = 'stringIndex'
 	const listSpy = jest.spyOn(AppsEndpoint.prototype, 'list').mockResolvedValue([])
-	const mockStringTranslateToId = stringTranslateToId as
-		jest.Mock<Promise<string | undefined>, [
-			Sorting & Naming,
-			string | undefined,
-			ListDataFunction<App>
-		]>
-	const mockSelect = selectFromList as
-		jest.Mock<Promise<string>, [
-			SmartThingsCommandInterface,
-			SelectingConfig<App>,
-			string | undefined,
-			ListDataFunction<App>
-		]>
-	const mockChooseOpts = chooseOptionsWithDefaults as
-		jest.Mock<ChooseOptions, [Partial<ChooseOptions> | undefined]>
+	const mockStringTranslateToId = jest.mocked(stringTranslateToId)
+	const mockSelect = jest.mocked(selectFromList)
+	const mockChooseOpts = jest.mocked(chooseOptionsWithDefaults)
 
 	class MockCommand extends APICommand {
 		async run(): Promise<void> {
@@ -51,7 +43,7 @@ describe('chooseApp', () => {
 
 	beforeAll(() => {
 		mockChooseOpts.mockImplementation(() => {
-			return { allowIndex: false, verbose: false }
+			return chooseOptionsDefaults
 		})
 	})
 
@@ -68,8 +60,8 @@ describe('chooseApp', () => {
 
 	it('resolves id from index when allowed', async () => {
 		const opts: ChooseOptions = {
+			...chooseOptionsDefaults,
 			allowIndex: true,
-			verbose: false,
 		}
 		mockChooseOpts.mockReturnValueOnce(opts)
 		mockStringTranslateToId.mockResolvedValueOnce(appId)
@@ -119,8 +111,8 @@ describe('chooseApp', () => {
 
 	it('uses same list function for index resolution and app selection', async () => {
 		const opts: ChooseOptions = {
+			...chooseOptionsDefaults,
 			allowIndex: true,
-			verbose: false,
 		}
 		mockChooseOpts.mockReturnValueOnce(opts)
 		mockStringTranslateToId.mockResolvedValueOnce(appId)

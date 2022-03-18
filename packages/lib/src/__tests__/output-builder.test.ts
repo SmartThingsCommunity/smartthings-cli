@@ -52,7 +52,7 @@ describe('buildOutputFormatter', () => {
 
 	it('accepts indent from config file over default', () => {
 		calculateOutputFormatSpy.mockReturnValue(IOFormat.JSON)
-		command.profileConfig.indent = 7
+		command.cliConfig.profile.indent = 7
 
 		buildOutputFormatter<SimpleType>(command)
 
@@ -64,7 +64,7 @@ describe('buildOutputFormatter', () => {
 
 	it('accepts indent from command line over config file and default', () => {
 		calculateOutputFormatSpy.mockReturnValue(IOFormat.YAML)
-		command.profileConfig.indent = 7
+		command.cliConfig.profile.indent = 7
 		command.flags.indent = 13
 
 		buildOutputFormatter<SimpleType>(command)

@@ -4,7 +4,7 @@ import osLocale from 'os-locale'
 import { Authenticator, BearerTokenAuthenticator, HttpClientHeaders, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
 
 import { logManager } from './logger'
-import { defaultClientIdProvider, LoginAuthenticator } from './login-authenticator'
+import { ClientIdProvider, defaultClientIdProvider, LoginAuthenticator } from './login-authenticator'
 import { SmartThingsCommand } from './smartthings-command'
 
 
@@ -39,6 +39,7 @@ export abstract class APICommand extends SmartThingsCommand {
 	}
 
 	protected clientIdProvider = defaultClientIdProvider
+
 	private _client?: SmartThingsClient
 
 	get client(): SmartThingsClient {
@@ -52,36 +53,55 @@ export abstract class APICommand extends SmartThingsCommand {
 		return this.config.userAgent ?? '@smartthings/cli'
 	}
 
+	private _headers?: HttpClientHeaders
+	protected get headers(): HttpClientHeaders {
+		if (!this._headers) {
+			throw new Error('APICommand not properly initialized')
+		}
+		return this._headers
+	}
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
 		await super.setup(args, argv, flags)
 
 		if (flags.token) {
 			this.token = flags.token
-		} else if ('token' in this.profileConfig) {
-			this.token = this.profileConfig.token
+		} else {
+			const configToken = this.stringConfigValue('token')
+			if (configToken) {
+				this.token = configToken
+			}
 		}
 
-		if ('clientIdProvider' in this.profileConfig) {
-			this.clientIdProvider = this.profileConfig.clientIdProvider
+		const configClientIdProvider = this.profile.clientIdProvider
+		if (configClientIdProvider) {
+			if (typeof configClientIdProvider !== 'object') {
+				this.logger.error('ignoring invalid configClientIdProvider')
+			} else {
+				this.clientIdProvider = configClientIdProvider as ClientIdProvider
+			}
 		}
 
 		const logger = logManager.getLogger('rest-client')
 
-		const headers: HttpClientHeaders = { 'User-Agent': this.userAgent }
+		this._headers = { 'User-Agent': this.userAgent }
 
 		if (flags.language) {
 			if (flags.language !== 'NONE') {
-				headers[LANGUAGE_HEADER] = flags.language
+				this._headers[LANGUAGE_HEADER] = flags.language
 			}
 		} else {
-			headers[LANGUAGE_HEADER] = await osLocale()
+			this._headers[LANGUAGE_HEADER] = await osLocale()
 		}
 
 		if (flags.organization) {
-			headers[ORGANIZATION_HEADER] = flags.organization
-		} else if ('organization' in this.profileConfig) {
-			headers[ORGANIZATION_HEADER] = this.profileConfig.organization
+			this._headers[ORGANIZATION_HEADER] = flags.organization
+		} else {
+			const configOrganization = this.stringConfigValue('organization')
+			if (configOrganization) {
+				this._headers[ORGANIZATION_HEADER] = configOrganization
+			}
 		}
 
 		this._authenticator = this.token
@@ -96,6 +116,6 @@ export abstract class APICommand extends SmartThingsCommand {
 			this.warn(message)
 		}
 		this._client = new SmartThingsClient(this._authenticator,
-			{ urlProvider: this.clientIdProvider, logger, headers, warningLogger })
+			{ urlProvider: this.clientIdProvider, logger, headers: this.headers, warningLogger })
 	}
 }

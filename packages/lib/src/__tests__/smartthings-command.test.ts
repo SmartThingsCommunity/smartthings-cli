@@ -1,6 +1,8 @@
 import { Command, Config } from '@oclif/core'
+
 import { NoLogLogger } from '@smartthings/core-sdk'
-import { CLIConfig } from '../cli-config'
+
+import { CLIConfig, loadConfig, Profile } from '../cli-config'
 import { LogManager } from '../logger'
 import { SmartThingsCommand } from '../smartthings-command'
 import { DefaultTableGenerator } from '../table-generator'
@@ -22,6 +24,8 @@ describe('SmartThingsCommand', () => {
 	let smartThingsCommand: TestCommand
 	const testConfig = new Config({ root: '' })
 
+	const loadConfigMock = jest.mocked(loadConfig)
+
 	beforeEach(() => {
 		smartThingsCommand = new TestCommand([], testConfig)
 	})
@@ -33,7 +37,7 @@ describe('SmartThingsCommand', () => {
 	it('should throw Error when not properly setup', async () => {
 		const message = 'SmartThingsCommand not properly initialized'
 
-		expect(() => { smartThingsCommand.profileConfig }).toThrowError(message)
+		expect(() => { smartThingsCommand.profile }).toThrowError(message)
 		expect(() => { smartThingsCommand.args }).toThrowError(message)
 		expect(() => { smartThingsCommand.inputArgs }).toThrowError(message)
 		expect(() => { smartThingsCommand.flags }).toThrowError(message)
@@ -44,7 +48,7 @@ describe('SmartThingsCommand', () => {
 	it('should not throw Error when properly setup', async () => {
 		await smartThingsCommand.setup({}, [], {})
 
-		expect(() => { smartThingsCommand.profileConfig }).not.toThrow()
+		expect(() => { smartThingsCommand.profile }).not.toThrow()
 		expect(() => { smartThingsCommand.args }).not.toThrow()
 		expect(() => { smartThingsCommand.inputArgs }).not.toThrow()
 		expect(() => { smartThingsCommand.flags }).not.toThrow()
@@ -72,15 +76,13 @@ describe('SmartThingsCommand', () => {
 		expect(DefaultTableGenerator).toBeCalledWith(true)
 	})
 
-	it('should override default table compact when passed via profileConfig during setup', async () => {
+	it('should override default table compact when passed via profile during setup', async () => {
 		const compact = false
-		const profileConfig = {
+		const profile: Profile = {
 			compactTableOutput: compact,
 		}
 
-		jest.spyOn(CLIConfig.prototype, 'getProfile').mockImplementation(() => {
-			return profileConfig
-		})
+		loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
 		await smartThingsCommand.setup({}, [], {})
 
@@ -90,13 +92,11 @@ describe('SmartThingsCommand', () => {
 
 	it('should override table compact when --expanded flag passed during setup', async () => {
 		const compact = true
-		const profileConfig = {
+		const profile: Profile = {
 			compactTableOutput: compact,
 		}
 
-		jest.spyOn(CLIConfig.prototype, 'getProfile').mockImplementation(() => {
-			return profileConfig
-		})
+		loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
 		const expanded = true
 		await smartThingsCommand.setup({}, [], { expanded: expanded })
@@ -106,13 +106,11 @@ describe('SmartThingsCommand', () => {
 	})
 
 	it('should override table compact when --compact flag passed during setup', async () => {
-		const profileConfig = {
+		const profile: Profile = {
 			compactTableOutput: false,
 		}
 
-		jest.spyOn(CLIConfig.prototype, 'getProfile').mockImplementation(() => {
-			return profileConfig
-		})
+		loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
 		const compact = true
 		await smartThingsCommand.setup({}, [], { compact: compact })
@@ -149,30 +147,47 @@ describe('SmartThingsCommand', () => {
 		it('returns undefined when not set', async () => {
 			await smartThingsCommand.setup({}, [], {})
 
-			expect('configKey' in smartThingsCommand.profileConfig).toBeFalse()
+			expect('configKey' in smartThingsCommand.profile).toBeFalse()
 			expect(smartThingsCommand.stringConfigValue('configKey')).toBeUndefined()
 		})
 
-		it('returns string when not defined', async () => {
-			jest.spyOn(CLIConfig.prototype, 'getProfile').mockImplementation(() => {
-				return { configKey: 'config value' }
-			})
+		it('returns config value when defined', async () => {
+			const profile: Profile = { configKey: 'config value' }
+			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
 			await smartThingsCommand.setup({}, [], {})
 
-			expect(smartThingsCommand.profileConfig.configKey).toEqual('config value')
+			expect(smartThingsCommand.profile.configKey).toEqual('config value')
 			expect(smartThingsCommand.stringConfigValue('configKey')).toBe('config value')
 		})
 
 		it('returns undefined when configured value is not a string', async () => {
-			jest.spyOn(CLIConfig.prototype, 'getProfile').mockImplementation(() => {
-				return { configKey: ['value1', 'value2'] }
-			})
+			const profile: Profile = { configKey: ['value1', 'value2'] }
+			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
 			await smartThingsCommand.setup({}, [], {})
 
-			expect(smartThingsCommand.profileConfig.configKey).toEqual(['value1', 'value2'])
+			expect(smartThingsCommand.profile.configKey).toEqual(['value1', 'value2'])
 			expect(smartThingsCommand.stringConfigValue('configKey')).toBeUndefined()
+		})
+
+		it('returns default value when not set', async () => {
+			await smartThingsCommand.setup({}, [], {})
+
+			expect('configKey' in smartThingsCommand.profile).toBeFalse()
+			expect(smartThingsCommand.stringConfigValue('configKey', 'default value'))
+				.toBe('default value')
+		})
+
+		it('returns default value when configured value is not a string', async () => {
+			const profile: Profile = { configKey: ['value1', 'value2'] }
+			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
+
+			await smartThingsCommand.setup({}, [], {})
+
+			expect(smartThingsCommand.profile.configKey).toEqual(['value1', 'value2'])
+			expect(smartThingsCommand.stringConfigValue('configKey', 'default value'))
+				.toBe('default value')
 		})
 	})
 })

@@ -2,7 +2,7 @@ import { Command, Flags } from '@oclif/core'
 
 import { Logger } from '@smartthings/core-sdk'
 
-import { cliConfig } from './cli-config'
+import { CLIConfig, loadConfig, Profile } from './cli-config'
 import { logManager } from './logger'
 import { DefaultTableGenerator, TableGenerator } from './table-generator'
 
@@ -18,8 +18,38 @@ export interface Loggable {
 export interface SmartThingsCommandInterface extends Loggable {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	readonly flags: { [name: string]: any }
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	readonly profileConfig: { [name: string]: any }
+
+	/**
+	 * The full configuration set, including both user-configured and cli-managed configuration
+	 * values and all profiles. Most often you will just want to use `profile` instead.
+	 *
+	 * Named `cliConfig` to distinguish it from the `config` inherited from oclif's `Command`.
+	 */
+	readonly cliConfig: CLIConfig
+
+	/**
+	 * The configuration set for the selected profile.
+	 */
+	readonly profile: Profile
+
+	// convenience methods for safely accessing configuration values
+
+	/**
+	 * If the configured `keyName` value exists and is a string, return it. Otherwise, return
+	 * the default value. This method logs a warning (and returns the default value) if the
+	 * configured keyName exists but is not a string. (The default `defaultValue` is `undefined`.)
+	 */
+	stringConfigValue(keyName: string): string | undefined
+	stringConfigValue(keyName: string, defaultValue: string): string
+	stringConfigValue(keyName: string, defaultValue?: string): string | undefined
+
+	/**
+	 * If the configured `keyName` value exists and is a boolean, return it. Otherwise, return
+	 * the default value. This method logs a warning if the configured keyName
+	 * exists but is not a boolean.
+	 */
+	booleanConfigValue(keyName: string, defaultValue?: boolean): boolean
+
 	readonly tableGenerator: TableGenerator
 
 	exit(code?: number): void
@@ -56,24 +86,42 @@ export abstract class SmartThingsCommand extends Command implements SmartThingsC
 
 	private _profileName?: string
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private _profileConfig?: { [name: string]: any }
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	get profileConfig(): { [name: string]: any } {
-		if (!this._profileConfig) {
+	private _profile?: Profile
+	get profile(): Profile {
+		if (!this._profile) {
 			throw new Error('SmartThingsCommand not properly initialized')
 		}
-		return this._profileConfig
+		return this._profile
 	}
 
-	stringConfigValue(keyName: string): string | undefined {
-		if (keyName in this.profileConfig) {
-			if (typeof this.profileConfig[keyName] === 'string') {
-				return this.profileConfig[keyName]
+	cliConfig!: CLIConfig
+
+	stringConfigValue(keyName: string): string
+	stringConfigValue(keyName: string, defaultValue: string): string
+	stringConfigValue(keyName: string, defaultValue?: string): string | undefined {
+		if (keyName in this.profile) {
+			const configValue = this.profile[keyName]
+			if (typeof configValue === 'string') {
+				return configValue
 			}
-			this.logger.warn(`expected string value for config key ${keyName} but got ${typeof this.profileConfig[keyName]}`)
+			this.logger.warn(`expected string value for config key ${keyName} but got ${typeof this.profile[keyName]}`)
+			return defaultValue
 		}
 		this.logger.trace(`key ${keyName} not found in ${this.profileName} config`)
+		return defaultValue
+	}
+
+	booleanConfigValue(keyName: string, defaultValue = false): boolean {
+		if (keyName in this.profile) {
+			const configValue = this.profile[keyName]
+			if (typeof configValue === 'boolean') {
+				return configValue
+			}
+			this.logger.warn(`expected boolean value for config key ${keyName} but got ${typeof this.profile[keyName]}`)
+			return defaultValue
+		}
+		this.logger.trace(`key ${keyName} not found in ${this.profileName} config`)
+		return defaultValue
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -124,21 +172,24 @@ export abstract class SmartThingsCommand extends Command implements SmartThingsC
 		this._flags = flags
 
 		this._profileName = flags.profile || 'default'
-		this._profileConfig = cliConfig.getProfile(flags.profile)
 
-		let compact = true
-		if ('compactTableOutput' in this.profileConfig) {
-			compact = this.profileConfig.compactTableOutput
-		}
-		if (this.flags.expanded) {
-			compact = false
-		} else if (this.flags.compact) {
-			compact = true
-		}
+		this.cliConfig = await loadConfig({
+			configFilename: `${this.config.configDir}/config.yaml`,
+			managedConfigFilename: `${this.config.cacheDir}/config-managed.yaml`,
+			profileName: this.profileName,
+		})
+		this._profile = this.cliConfig.profile
+
+		const compact = this.flags.expanded
+			? false
+			: (this.flags.compact ? true : this.booleanConfigValue('compactTableOutput', true))
 		this._tableGenerator = new DefaultTableGenerator(compact)
 	}
 
-	abort(message?: string): void {
+	/**
+	 * This method should be called when the user has decided to not complete a command.
+	 */
+	abort(message?: string): never {
 		if (message) {
 			this.log(message)
 		}

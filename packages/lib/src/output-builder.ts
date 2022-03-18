@@ -10,7 +10,7 @@ export function buildOutputFormatter<T>(command: SmartThingsCommandInterface,
 		inputFormat?: IOFormat, commonOutputFormatter?: OutputFormatter<T>): OutputFormatter<T> {
 	const outputFormat = calculateOutputFormat(command, inputFormat)
 
-	const indent: number | undefined = command.flags.indent || command.profileConfig.indent
+	const indent: number | undefined = command.flags.indent || command.cliConfig.profile.indent
 	if (outputFormat === IOFormat.COMMON && commonOutputFormatter) {
 		return commonOutputFormatter
 	}

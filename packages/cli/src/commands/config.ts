@@ -1,8 +1,9 @@
 import yaml from 'js-yaml'
 import { Flags } from '@oclif/core'
 
-import { buildOutputFormatter, calculateOutputFormat, cliConfig, IOFormat, outputItem, outputList, outputListing,
-	SmartThingsCommand, stringTranslateToId, TableFieldDefinition, writeOutput } from '@smartthings/cli-lib'
+import { buildOutputFormatter, calculateOutputFormat, IOFormat, outputItem, outputList,
+	outputListing, SmartThingsCommand, stringTranslateToId, TableFieldDefinition,
+	writeOutput } from '@smartthings/cli-lib'
 
 
 function reservedKey(key: string): boolean {
@@ -70,11 +71,11 @@ export default class ConfigCommand extends SmartThingsCommand {
 		}
 
 		const getConfig = async (name: string): Promise<ConfigItem> => {
-			const config = cliConfig.getRawConfigData()
+			const config = this.cliConfig.mergedProfiles
 			return new ConfigItem(name, config[name], this.profileName)
 		}
 		const listConfigs = async (): Promise<ConfigItem[]> => {
-			const config = cliConfig.getRawConfigData()
+			const config = this.cliConfig.mergedProfiles
 			const list = Object.keys(config).map(it => {
 				return new ConfigItem(it, config[it], this.profileName)
 			})
@@ -93,7 +94,7 @@ export default class ConfigCommand extends SmartThingsCommand {
 				await outputList(this, outputListConfig, listConfigs, true)
 			} else {
 				const outputFormatter = buildOutputFormatter(this)
-				await writeOutput(outputFormatter(cliConfig.getRawConfigData()), this.flags.output)
+				await writeOutput(outputFormatter(this.cliConfig.mergedProfiles), this.flags.output)
 			}
 		}
 	}

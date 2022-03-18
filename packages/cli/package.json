@@ -109,12 +109,13 @@
 		"watch": "tsc -b -w",
 		"build": "npm run clean && npm run compile",
 		"test": "jest",
+		"test-watch": "jest --watch",
+		"test-coverage": "jest --coverage=true",
 		"postpack": "rimraf oclif.manifest.json",
 		"prepack": "rimraf lib && tsc -b && oclif manifest && oclif readme",
 		"version": "oclif readme && git add README.md",
 		"package": "pkg package.json --out-path=dist_bin --targets=node12-linux-x64,node12-macos-x64,node12-win-x64 && npm run zip-binaries",
-		"zip-binaries": "./zip-binaries.sh",
-		"test-coverage": "jest --coverage=true"
+		"zip-binaries": "./zip-binaries.sh"
 	},
 	"directories": {
 		"doc": "doc"

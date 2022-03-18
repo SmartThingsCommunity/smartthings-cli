@@ -1,82 +1,283 @@
-import { CLIConfig } from '../cli-config'
+import yaml from 'js-yaml'
+
+import { loadConfigFile, mergeProfiles, ProfilesByName } from '..'
+import { CLIConfig, CLIConfigDescription, loadConfig, seeConfigDocs, setConfigKey } from '../cli-config'
+import * as cliConfigModule from '../cli-config'
+import { readFile, writeFile, yamlExists } from '../io-util'
 
 
-const resourcesDir = './src/__tests__/resources'
+jest.mock('js-yaml')
+jest.mock('../io-util')
 
-describe('cliConfig', () => {
-	it('loadConfig throws error when uninitialized', function() {
-		const cliConfig = new CLIConfig()
-		expect(() => cliConfig.loadConfig()).toThrow('config not yet initialized')
+describe('cli-config', () => {
+	const yamlLoadMock = jest.mocked(yaml.load)
+
+	const readFileMock = jest.mocked(readFile)
+	const yamlExistsMock = jest.mocked(yamlExists).mockReturnValue(true)
+
+	afterEach(() => {
+		jest.clearAllMocks()
 	})
 
-	it('getRawConfigData throws error when uninitialized', function() {
-		const cliConfig = new CLIConfig()
-		expect(() => cliConfig.getRawConfigData()).toThrow('config not initialized completely')
+	describe('loadConfigFile', () => {
+		it('returns empty object when filename does not exist', async () => {
+			yamlExistsMock.mockReturnValueOnce(false)
 
-		// sill throws same error when partially initialized
-		cliConfig.init(`${resourcesDir}/good-config.yaml`)
-		expect(() => cliConfig.getRawConfigData()).toThrow('config not initialized completely')
+			expect(await loadConfigFile('does/not/exist')).toEqual({})
+
+			expect(yamlExistsMock).toHaveBeenCalledTimes(1)
+			expect(yamlExistsMock).toHaveBeenCalledWith('does/not/exist')
+			expect(yamlLoadMock).toHaveBeenCalledTimes(0)
+			expect(readFileMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('returns empty object for empty file', async () => {
+			readFileMock.mockResolvedValueOnce('empty contents')
+			yamlLoadMock.mockReturnValueOnce('')
+
+			expect(await loadConfigFile('empty file')).toEqual({})
+
+			expect(yamlExistsMock).toHaveBeenCalledTimes(1)
+			expect(yamlExistsMock).toHaveBeenCalledWith('empty file')
+			expect(readFileMock).toHaveBeenCalledTimes(1)
+			expect(readFileMock).toHaveBeenCalledWith('empty file', 'utf-8')
+			expect(yamlLoadMock).toHaveBeenCalledTimes(1)
+			expect(yamlLoadMock).toHaveBeenCalledWith('empty contents')
+		})
+
+		it.each(['string', ['array']])('throws error for non-object yaml file', async (parsedYAML) => {
+			readFileMock.mockResolvedValueOnce('string contents')
+			yamlLoadMock.mockReturnValueOnce(parsedYAML)
+
+			await expect(loadConfigFile('string file'))
+				.rejects.toThrow('invalid config file format\n' + seeConfigDocs)
+
+			expect(yamlExistsMock).toHaveBeenCalledTimes(1)
+			expect(yamlExistsMock).toHaveBeenCalledWith('string file')
+			expect(readFileMock).toHaveBeenCalledTimes(1)
+			expect(readFileMock).toHaveBeenCalledWith('string file', 'utf-8')
+			expect(yamlLoadMock).toHaveBeenCalledTimes(1)
+			expect(yamlLoadMock).toHaveBeenCalledWith('string contents')
+		})
+
+		it('combines errors for individual profiles', async () => {
+			readFileMock.mockResolvedValueOnce('config with multiple errors')
+			yamlLoadMock.mockReturnValueOnce({
+				goodProfile: {},
+				badProfile1: 'just a string',
+				badProfile2: ['array', 'of', 'strings'],
+			})
+
+			await expect(loadConfigFile('file with bad configs'))
+				.rejects.toThrow('bad profile badProfile1; profile must be an object\n' +
+					'bad profile badProfile2; profile must be an object\n' +  seeConfigDocs)
+
+			expect(yamlExistsMock).toHaveBeenCalledTimes(1)
+			expect(yamlExistsMock).toHaveBeenCalledWith('file with bad configs')
+			expect(readFileMock).toHaveBeenCalledTimes(1)
+			expect(readFileMock).toHaveBeenCalledWith('file with bad configs', 'utf-8')
+			expect(yamlLoadMock).toHaveBeenCalledTimes(1)
+			expect(yamlLoadMock).toHaveBeenCalledWith('config with multiple errors')
+		})
+
+		it('returns properly formatted config file', async () => {
+			const goodConfig = {
+				goodProfile1: {
+					config1: 'configured value',
+					config2: ['array', 'of', 'strings'],
+				},
+				goodProfile2: {
+					config1: 'another value',
+					config3: { complex: 'config' },
+				},
+			}
+			readFileMock.mockResolvedValueOnce('good contents')
+			yamlLoadMock.mockReturnValueOnce(goodConfig)
+
+			expect(await loadConfigFile('good file')).toEqual(goodConfig)
+
+			expect(yamlExistsMock).toHaveBeenCalledTimes(1)
+			expect(yamlExistsMock).toHaveBeenCalledWith('good file')
+			expect(readFileMock).toHaveBeenCalledTimes(1)
+			expect(readFileMock).toHaveBeenCalledWith('good file', 'utf-8')
+			expect(yamlLoadMock).toHaveBeenCalledTimes(1)
+			expect(yamlLoadMock).toHaveBeenCalledWith('good contents')
+		})
 	})
 
-	it('adds config.yaml to directory for config filename', function() {
-		const cliConfig = new CLIConfig()
-		cliConfig.init('/my/config/dir/config.yaml')
-		expect(cliConfig.configFile).toBe('/my/config/dir/config.yaml')
+	describe('mergeProfiles', () => {
+		it('returns empty config given two empty configs', () => {
+			const preferred = {} as ProfilesByName
+			const secondary = {} as ProfilesByName
+
+			expect(mergeProfiles(preferred, secondary)).toEqual({})
+		})
+
+		it('includes profiles from both inputs', () => {
+			const preferred = { profile1: { configItem1: 'value 1' } } as ProfilesByName
+			const secondary = { profile2: { configItem2: 'value 2' } } as ProfilesByName
+
+			expect(mergeProfiles(preferred, secondary)).toEqual({
+				profile1: { configItem1: 'value 1' },
+				profile2: { configItem2: 'value 2' },
+			})
+		})
+
+		it('combines config values from both inputs', () => {
+			const preferred = { profile1: { configItem1: 'value 1' } } as ProfilesByName
+			const secondary = { profile1: { configItem2: 'value 2' } } as ProfilesByName
+
+			expect(mergeProfiles(preferred, secondary)).toEqual({
+				profile1: {
+					configItem1: 'value 1',
+					configItem2: 'value 2',
+				},
+			})
+		})
+
+		it('config values from preferred are used over secondary values', () => {
+			const preferred = { profile1: { configItem1: 'preferred value' } } as ProfilesByName
+			const secondary = { profile1: { configItem1: 'overridden value' } } as ProfilesByName
+
+			expect(mergeProfiles(preferred, secondary)).toEqual({
+				profile1: {
+					configItem1: 'preferred value',
+				},
+			})
+		})
+
+		it('processes complicated example properly', () => {
+			const preferred = {
+				profileInBoth: {
+					onlyInPreferred: 'only in preferred',
+					inBoth: 'preferred value',
+				},
+				profileOnlyInPreferred: {
+					configItem1: 'value 1',
+					configItem2: 'value 2',
+				},
+			} as ProfilesByName
+			const secondary = {
+				profileInBoth: {
+					inBoth: 'overridden value',
+					onlyInSecondary: 'only in secondary',
+				},
+				profileOnlyInSecondary: {
+					configItem1: 'value 1',
+					configItem2: 'value 2',
+				},
+			} as ProfilesByName
+
+			expect(mergeProfiles(preferred, secondary)).toEqual({
+				profileInBoth: {
+					onlyInPreferred: 'only in preferred',
+					inBoth: 'preferred value',
+					onlyInSecondary: 'only in secondary',
+				},
+				profileOnlyInPreferred: {
+					configItem1: 'value 1',
+					configItem2: 'value 2',
+				},
+				profileOnlyInSecondary: {
+					configItem1: 'value 1',
+					configItem2: 'value 2',
+				},
+			})
+		})
 	})
 
-	it('returns an empty config with no config file', function() {
-		const cliConfig = new CLIConfig()
-		cliConfig.init('/path/to/no/file/at/all/config.yaml')
-		expect(cliConfig.loadConfig()).toMatchObject({})
+	const loadConfigFileSpy = jest.spyOn(cliConfigModule, 'loadConfigFile')
+	const mergeProfilesSpy = jest.spyOn(cliConfigModule, 'mergeProfiles')
+
+	const description: CLIConfigDescription = {
+		configFilename: 'config-filename.yaml',
+		managedConfigFilename: 'managed-config-filename.yaml',
+		profileName: 'chosenProfile',
+	}
+
+	const config: ProfilesByName = { mainConfig: {} }
+	const managedConfig: ProfilesByName = { managedConfig: {} }
+
+	describe('loadConfig', () => {
+		it('merges main and managed configurations', async () => {
+			const mergedConfig: ProfilesByName = {
+				chosenProfile: { configKey: 'configured value' },
+			}
+
+			const expected: CLIConfig = {
+				...description,
+				profiles: config,
+				managedProfiles: managedConfig,
+				mergedProfiles: mergedConfig,
+				profile: mergedConfig.chosenProfile,
+			}
+
+			loadConfigFileSpy.mockResolvedValueOnce(config)
+			loadConfigFileSpy.mockResolvedValueOnce(managedConfig)
+			mergeProfilesSpy.mockReturnValueOnce(mergedConfig)
+
+			expect(await loadConfig(description)).toEqual(expected)
+
+			expect(loadConfigFileSpy).toHaveBeenCalledTimes(2)
+			expect(loadConfigFileSpy).toHaveBeenCalledWith(description.configFilename)
+			expect(loadConfigFileSpy).toHaveBeenCalledWith(description.managedConfigFilename)
+			expect(mergeProfilesSpy).toHaveBeenCalledTimes(1)
+			expect(mergeProfilesSpy).toHaveBeenCalledWith(config, managedConfig)
+		})
+
+		it('uses empty profile if none exists', async () => {
+			const mergedConfig: ProfilesByName = {}
+
+			const expected: CLIConfig = {
+				...description,
+				profiles: config,
+				managedProfiles: managedConfig,
+				mergedProfiles: mergedConfig,
+				profile: {},
+			}
+
+			loadConfigFileSpy.mockResolvedValueOnce(config)
+			loadConfigFileSpy.mockResolvedValueOnce(managedConfig)
+			mergeProfilesSpy.mockReturnValueOnce(mergedConfig)
+
+			expect(await loadConfig(description)).toEqual(expected)
+
+			expect(loadConfigFileSpy).toHaveBeenCalledTimes(2)
+			expect(loadConfigFileSpy).toHaveBeenCalledWith(description.configFilename)
+			expect(loadConfigFileSpy).toHaveBeenCalledWith(description.managedConfigFilename)
+			expect(mergeProfilesSpy).toHaveBeenCalledTimes(1)
+			expect(mergeProfilesSpy).toHaveBeenCalledWith(config, managedConfig)
+		})
 	})
 
-	it('returns an empty config for empty config file', function() {
-		const cliConfig = new CLIConfig()
-		cliConfig.init(`${resourcesDir}/empty-config.yaml`)
-		expect(cliConfig.loadConfig()).toMatchObject({})
-	})
+	test('setConfigKey writes updated file and updates config', async () => {
+		const yamlDumpMock = jest.mocked(yaml.dump)
+		const writeFileMock = jest.mocked(writeFile)
 
-	it('throws error for bad config file', function() {
-		const cliConfig = new CLIConfig()
-		cliConfig.init(`${resourcesDir}/bad-config.yaml`)
-		expect(cliConfig.loadConfig.bind(cliConfig)).toThrow()
-	})
+		const cliConfig = {
+			...description,
+			profileName: 'updatedProfile',
+			profiles: config,
+			managedProfiles: managedConfig,
+		} as CLIConfig
 
-	it('throws error for config file with just a string', function() {
-		const cliConfig = new CLIConfig()
-		cliConfig.init(`${resourcesDir}/string-config.yaml`)
-		expect(() => cliConfig.loadConfig()).toThrow('invalid config file format; please specify zero or more profiles')
-	})
+		const updatedManagedConfig: ProfilesByName = { updated: { managed: 'managed' } }
+		const updateMergedConfig: ProfilesByName = { update: { merged: 'config' }}
+		mergeProfilesSpy.mockReturnValueOnce(updatedManagedConfig)
+		mergeProfilesSpy.mockReturnValueOnce(updateMergedConfig)
+		yamlDumpMock.mockReturnValueOnce('yaml output')
 
-	it('getProfile returns profile sub-tree', function() {
-		const cliConfig = new CLIConfig()
-		cliConfig.init(`${resourcesDir}/good-config.yaml`)
-		expect(cliConfig.getProfile('simple')).toMatchObject({key: 'value'})
-	})
+		await expect(setConfigKey(cliConfig, 'keyToSet', 'value')).resolves.not.toThrow()
 
-	it('returns empty config for missing profile', function() {
-		const cliConfig = new CLIConfig()
-		cliConfig.init(`${resourcesDir}/good-config.yaml`)
-		expect(cliConfig.getProfile('does-not-exist')).toMatchObject({})
-	})
+		expect(mergeProfilesSpy).toHaveBeenCalledTimes(2)
+		expect(yamlDumpMock).toHaveBeenCalledTimes(1)
+		expect(writeFileMock).toHaveBeenCalledTimes(1)
 
-	it('throws error for bad profile', function() {
-		const cliConfig = new CLIConfig()
-		cliConfig.init(`${resourcesDir}/good-config.yaml`)
-		expect(() => cliConfig.getProfile('bad-profile')).toThrow('bad profile configuration')
-	})
-
-	it('throws error for null profile', function() {
-		const cliConfig = new CLIConfig()
-		cliConfig.init(`${resourcesDir}/good-config.yaml`)
-		expect(() => cliConfig.getProfile('null-profile')).toThrow('null profile specified. Check config.yaml for errors.')
-	})
-
-	it('getRawConfigData returns raw data', function() {
-		const cliConfig = new CLIConfig()
-		cliConfig.init(`${resourcesDir}/good-config.yaml`)
-		cliConfig.loadConfig()
-		const expected = { simple: { key: 'value' }, 'bad-profile': 'not a real profile', 'null-profile': null }
-		expect(cliConfig.getRawConfigData()).toEqual(expected)
+		expect(mergeProfilesSpy).toHaveBeenCalledWith({ updatedProfile: { keyToSet: 'value' } },
+			managedConfig)
+		expect(yamlDumpMock).toHaveBeenLastCalledWith(updatedManagedConfig)
+		expect(writeFileMock).toHaveBeenCalledWith(description.managedConfigFilename,
+			expect.stringContaining('yaml output'))
+		expect(mergeProfilesSpy).toHaveBeenCalledWith(config, updatedManagedConfig)
 	})
 })

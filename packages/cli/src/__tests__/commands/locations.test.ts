@@ -18,7 +18,7 @@ jest.mock('@smartthings/cli-lib', () => {
 const listSpy = jest.spyOn(LocationsEndpoint.prototype, 'list').mockImplementation()
 
 describe('chooseLocation', () => {
-	const mockSelect = selectFromList as jest.Mock
+	const mockSelect = jest.mocked(selectFromList)
 
 	afterEach(() => {
 		jest.clearAllMocks()
@@ -30,6 +30,7 @@ describe('chooseLocation', () => {
 
 		mockSelect.mockImplementationOnce(async (_command, _config, _id, listFunction) => {
 			await listFunction()
+			return 'selected-location-id'
 		})
 
 		await chooseLocation(command)
@@ -50,7 +51,7 @@ describe('chooseLocation', () => {
 })
 
 describe('LocationsCommand', () => {
-	const mockListing = outputListing as unknown as jest.Mock
+	const mockListing = jest.mocked(outputListing)
 
 	afterEach(() => {
 		jest.clearAllMocks()
@@ -74,7 +75,7 @@ describe('LocationsCommand', () => {
 	it('uses correct endpoints for output', async () => {
 		mockListing.mockImplementationOnce(async (_command, _config, _idOrIndex, listFunction, getFunction) => {
 			await listFunction()
-			await getFunction()
+			await getFunction('chosen-id')
 		})
 
 		const getSpy = jest.spyOn(LocationsEndpoint.prototype, 'get').mockImplementation()

@@ -1,10 +1,14 @@
-export class CLIConfig {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public getProfile(name: string): Record<string, unknown> {
-		return {}
-	}
-}
+import { CLIConfig, CLIConfigDescription } from '../cli-config'
 
-(global as { _cliConfig?: CLIConfig })._cliConfig = new CLIConfig()
 
-export const cliConfig: CLIConfig = (global as never as { _cliConfig: CLIConfig })._cliConfig
+export const loadConfig = jest.fn().mockImplementation(async (description: CLIConfigDescription): Promise<CLIConfig> =>
+	({
+		...description,
+		profiles: {},
+		managedProfiles: {},
+		mergedProfiles: {},
+		profile: {},
+	}))
+
+
+export const setConfigKey = jest.fn()
