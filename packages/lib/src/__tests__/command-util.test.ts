@@ -1,6 +1,7 @@
 import inquirer from 'inquirer'
-import { ChooseOptions, chooseOptionsWithDefaults, convertToId, isIndexArgument, itemName,
-	pluralItemName, stringGetIdFromUser, stringTranslateToId } from '../command-util'
+import { ChooseOptions, chooseOptionsDefaults, chooseOptionsWithDefaults, convertToId,
+	isIndexArgument, itemName, pluralItemName, stringGetIdFromUser,
+	stringTranslateToId } from '../command-util'
 import * as output from '../output'
 
 
@@ -207,17 +208,22 @@ describe('command-util', () => {
 	})
 
 	describe('chooseOptionsWithDefaults', () => {
-		it('defaults to false allowIndex and false verbose with undefined input', () => {
-			expect(chooseOptionsWithDefaults(undefined)).toEqual({ allowIndex: false, verbose: false })
+		it('uses defaults with undefined input', () => {
+			expect(chooseOptionsWithDefaults(undefined)).toEqual(chooseOptionsDefaults)
 		})
 
-		it('defaults to false allowIndex and false verbose with empty input', () => {
-			expect(chooseOptionsWithDefaults({})).toEqual({ allowIndex: false, verbose: false })
+		it('uses defaults with empty input', () => {
+			expect(chooseOptionsWithDefaults({})).toEqual(chooseOptionsDefaults)
 		})
 
 		it('input overrides default', () => {
-			expect(chooseOptionsWithDefaults({ allowIndex: true, verbose: true }))
-				.toEqual({ allowIndex: true, verbose: true })
+			const optionsDifferentThanDefault = {
+				allowIndex: true,
+				verbose: true,
+				useConfigDefault: true,
+			}
+			expect(chooseOptionsWithDefaults(optionsDifferentThanDefault))
+				.toEqual(optionsDifferentThanDefault)
 		})
 
 		it('passes on other values unchanged', () => {

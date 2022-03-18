@@ -86,6 +86,17 @@ export async function outputList<L>(command: SmartThingsCommandInterface, config
 outputList.flags = buildOutputFormatter.flags
 
 
+/**
+ * This is the main function used in most create and update commands. It parses input and passes it
+ * on to the executeAction function parameter.
+ *
+ * By default input is only accepted from stdin or a file specified by the --input command line
+ * flag as JSON or YAML but alternate input processors can be specified as arguments. They simply
+ * need to implement the InputProcessor<I> interface. The most common use-case for this is to use a
+ * Q&A session with the user to build up the input. Another possible use-case would be building
+ * input from command line flags or arguments. Input processors are called in the order they are
+ * specified and the first one to return data is used.
+ */
 export async function inputAndOutputItem<I, O>(command: SmartThingsCommandInterface, config: CommonOutputProducer<O>,
 		executeAction: ActionFunction<void, I, O>, ...alternateInputProcessors: InputProcessor<I>[]) : Promise<void> {
 	const [itemIn, defaultIOFormat] = await inputItem<I>(command, ...alternateInputProcessors)

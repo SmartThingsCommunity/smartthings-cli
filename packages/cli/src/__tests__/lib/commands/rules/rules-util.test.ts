@@ -1,7 +1,6 @@
 import { Action, ExecuteResponse, Rule, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, ListDataFunction, selectFromList, SelectingConfig, SmartThingsCommandInterface,
-	TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, selectFromList, TableGenerator } from '@smartthings/cli-lib'
 
 import { chooseRule, getRulesByLocation, getRuleWithLocation, RuleWithLocation,
 	tableFieldDefinitions } from '../../../../lib/commands/rules/rules-util'
@@ -147,10 +146,7 @@ describe('rules-util', () => {
 	})
 
 	test('chooseRule proxies correctly to selectFromList', async () => {
-		const selectFromListMock = (selectFromList as
-			jest.Mock<Promise<string>, [SmartThingsCommandInterface, SelectingConfig<RuleWithLocation>,
-				string | undefined, ListDataFunction<RuleWithLocation>, string | undefined]>)
-			.mockResolvedValue('chosen-rule-id')
+		const selectFromListMock = jest.mocked(selectFromList).mockResolvedValue('chosen-rule-id')
 		const client = {} as SmartThingsClient
 		const command = { client } as APICommand
 

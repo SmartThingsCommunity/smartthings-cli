@@ -1,7 +1,6 @@
 import Table from 'cli-table'
 
-import { APICommand, ChooseOptions, chooseOptionsWithDefaults, ListDataFunction, Naming,
-	selectFromList, SelectingConfig, SmartThingsCommandInterface, Sorting,
+import { APICommand, ChooseOptions, chooseOptionsWithDefaults, selectFromList,
 	stringTranslateToId, summarizedText, TableGenerator } from '@smartthings/cli-lib'
 
 import { buildTableOutput, chooseDevice } from '../../../../lib/commands/devices/devices-util'
@@ -20,10 +19,10 @@ describe('devices-util', () => {
 	})
 
 	describe('buildTableOutput', () => {
-		const tablePushMock = jest.fn()
+		const tablePushMock: jest.Mock<number, [(string | undefined)[]]> = jest.fn()
 		const tableToStringMock = jest.fn()
 		const tableMock = {
-			push: tablePushMock as jest.Mock<number, [(string | undefined)[]]>,
+			push: tablePushMock,
 			toString: tableToStringMock,
 		} as unknown as Table
 		const newOutputTableMock = jest.fn().mockReturnValue(tableMock)
@@ -268,17 +267,14 @@ describe('devices-util', () => {
 	})
 
 	describe('chooseDevice', () => {
-		const selectFromListMock = selectFromList as unknown as
-			jest.Mock<Promise<string>, [SmartThingsCommandInterface, SelectingConfig<Device>, string,
-				ListDataFunction<Device>, string, boolean]>
+		const selectFromListMock = jest.mocked(selectFromList)
 
 		const listDevicesMock = jest.fn()
 		const client = { devices: { list: listDevicesMock } }
 		const command = { client } as unknown as APICommand
 
-		const chooseOptionsWithDefaultsMock = chooseOptionsWithDefaults as unknown as jest.Mock<ChooseOptions, [Partial<ChooseOptions>]>
-		const stringTranslateToIdMock = stringTranslateToId as unknown as
-			jest.Mock<Promise<string | undefined>, [Sorting & Naming, string | undefined, ListDataFunction<Device>]>
+		const chooseOptionsWithDefaultsMock = jest.mocked(chooseOptionsWithDefaults)
+		const stringTranslateToIdMock = jest.mocked(stringTranslateToId)
 
 		it('proxies correctly to selectFromList', async () => {
 			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions)

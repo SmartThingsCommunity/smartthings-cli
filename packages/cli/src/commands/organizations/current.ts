@@ -1,4 +1,5 @@
-import {APIOrganizationCommand, outputItem, formatAndWriteItem} from '@smartthings/cli-lib'
+import { APIOrganizationCommand, formatAndWriteItem, outputItem } from '@smartthings/cli-lib'
+
 import { tableFieldDefinitions } from '../organizations'
 
 
@@ -17,7 +18,7 @@ export default class OrganizationCurrentCommand extends APIOrganizationCommand {
 		await super.setup(args, argv, flags)
 
 		let currentOrganization
-		const currentOrganizationId = this.profileConfig.organization
+		const currentOrganizationId = this.stringConfigValue('organization')
 		if (currentOrganizationId) {
 			currentOrganization = await this.client.organizations.get(currentOrganizationId)
 		} else {
@@ -25,7 +26,7 @@ export default class OrganizationCurrentCommand extends APIOrganizationCommand {
 		}
 
 		if (currentOrganization) {
-			await formatAndWriteItem(this, {tableFieldDefinitions}, currentOrganization)
+			await formatAndWriteItem(this, { tableFieldDefinitions }, currentOrganization)
 		} else {
 			this.warn(`Organization '${currentOrganizationId}' not found`)
 		}

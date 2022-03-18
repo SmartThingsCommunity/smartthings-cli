@@ -5,7 +5,7 @@ import { BearerTokenAuthenticator, SmartThingsClient, WarningFromHeader } from '
 import * as coreSDK from '@smartthings/core-sdk'
 
 import { APICommand } from '../api-command'
-import { CLIConfig } from '../cli-config'
+import { CLIConfig, loadConfig, Profile } from '../cli-config'
 import { ClientIdProvider, LoginAuthenticator } from '../login-authenticator'
 import { TableGenerator } from '..'
 
@@ -48,6 +48,8 @@ describe('api-command', () => {
 			}
 		}
 
+		const loadConfigMock = jest.mocked(loadConfig)
+
 		let apiCommand: testCommand
 
 		beforeEach(() => {
@@ -74,8 +76,8 @@ describe('api-command', () => {
 		})
 
 		it('should set token when passed via flags during setup', async () => {
-			const token = 'token'
-			await apiCommand.setup({}, [], { token: token })
+			const token = 'token-from-cmd-line'
+			await apiCommand.setup({}, [], { token })
 
 			expect(apiCommand.getToken()).toBe(token)
 			expect(SmartThingsClient).toHaveBeenCalledTimes(1)
@@ -100,8 +102,8 @@ describe('api-command', () => {
 		})
 
 		it('passes organization config on to client', async () => {
-			jest.spyOn(CLIConfig.prototype, 'getProfile')
-				.mockImplementationOnce(() => ({ organization: 'organization-id-from-config' }))
+			const profile: Profile = { organization: 'organization-id-from-config' }
+			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
 			await apiCommand.setup({}, [], {})
 
@@ -144,8 +146,8 @@ describe('api-command', () => {
 		})
 
 		it('prefers organization flag over config', async () => {
-			jest.spyOn(CLIConfig.prototype, 'getProfile')
-				.mockImplementationOnce(() => ({ organization: 'organization-id-from-config' }))
+			const profile: Profile = { organization: 'organization-id-from-config' }
+			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
 			await apiCommand.setup({}, [], { organization: 'organization-id-from-flag' })
 
@@ -218,33 +220,28 @@ describe('api-command', () => {
 			expect(configUsed?.headers).toContainEntry(['Accept-Language', 'fr-CA'])
 		})
 
-		it('should set token when passed via profileConfig during setup', async () => {
-			const token = 'token'
-			jest.spyOn(CLIConfig.prototype, 'getProfile').mockImplementation(() => {
-				return {
-					token: token,
-				}
-			})
+		it('should set token when passed via profile during setup', async () => {
+			const token = 'token-from-profile'
+			const profile: Profile = { token }
+			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
 			await apiCommand.setup({}, [], {})
 
 			expect(apiCommand.getToken()).toBe(token)
 		})
 
-		it('should override default clientIdProvider when set in profileConfig during setup', async () => {
-			const profileConfig = {
+		it('should override default clientIdProvider when set in profile during setup', async () => {
+			const profile: Profile = {
 				clientIdProvider: {
-					clientId: 'clientId',
+					clientId: 'test-client-id',
 				},
 			}
 
-			jest.spyOn(CLIConfig.prototype, 'getProfile').mockImplementation(() => {
-				return profileConfig
-			})
+			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
 			await apiCommand.setup({}, [], {})
 
-			expect(apiCommand.getClientIdProvider()).toStrictEqual(profileConfig.clientIdProvider)
+			expect(apiCommand.getClientIdProvider()).toStrictEqual(profile.clientIdProvider)
 		})
 	})
 })

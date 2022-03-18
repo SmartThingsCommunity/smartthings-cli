@@ -104,15 +104,25 @@ export async function stringGetIdFromUser<L>(fieldInfo: Sorting, list: L[], prom
 	return inputId
 }
 
+/**
+ * Note that not all functions that use this interface support all options. Check the
+ * `chooseThing` (e.g. `chooseDevice`) method itself.
+ */
 export interface ChooseOptions {
 	allowIndex: boolean
 	verbose: boolean
+	useConfigDefault: boolean
+}
+
+export const chooseOptionsDefaults: ChooseOptions = {
+	allowIndex: false,
+	verbose: false,
+	useConfigDefault: false,
 }
 
 export function chooseOptionsWithDefaults(options: Partial<ChooseOptions> | undefined): ChooseOptions {
 	return {
-		allowIndex: false,
-		verbose: false,
+		...chooseOptionsDefaults,
 		...options,
 	}
 }

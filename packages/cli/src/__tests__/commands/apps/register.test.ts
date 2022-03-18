@@ -1,4 +1,4 @@
-import { ListDataFunction, selectFromList, SelectingConfig, SmartThingsCommandInterface } from '@smartthings/cli-lib'
+import { selectFromList } from '@smartthings/cli-lib'
 import { App, AppsEndpoint, AppType } from '@smartthings/core-sdk'
 import AppRegisterCommand from '../../../commands/apps/register'
 
@@ -19,14 +19,7 @@ describe('AppRegisterCommand', () => {
 	})
 	const listSpy = jest.spyOn(AppsEndpoint.prototype, 'list').mockImplementation()
 	const logSpy = jest.spyOn(AppRegisterCommand.prototype, 'log').mockImplementation()
-	const mockSelectFromList = selectFromList as
-		jest.Mock<Promise<string>, [
-			SmartThingsCommandInterface,
-			SelectingConfig<App>,
-			string | undefined,
-			ListDataFunction<App>,
-			string | undefined
-		]>
+	const mockSelectFromList = jest.mocked(selectFromList)
 
 	beforeAll(() => {
 		mockSelectFromList.mockResolvedValue(appId)

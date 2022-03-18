@@ -1,10 +1,9 @@
 import type { Hook } from '@oclif/core'
 
-import { LoginAuthenticator, cliConfig, logManager, defaultLoggingConfig, loadLoggingConfig } from '@smartthings/cli-lib'
+import { LoginAuthenticator, logManager, defaultLoggingConfig, loadLoggingConfig } from '@smartthings/cli-lib'
 
 
 const hook: Hook<'init'> = async function (opts) {
-	cliConfig.init(`${opts.config.configDir}/config.yaml`)
 	LoginAuthenticator.init(`${opts.config.configDir}/credentials.json`)
 
 	const defaultLogConfig = defaultLoggingConfig(`${opts.config.cacheDir}/smartthings.log`)
