@@ -37,7 +37,7 @@ jobs:
           commit: "chore(changesets): version packages"
           title: "chore(changesets): version packages"
         env:
-          GITHUB_TOKEN: ${{ secrets.PI_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Package CLI
