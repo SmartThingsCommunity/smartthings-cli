@@ -27,8 +27,8 @@ describe('chooseLocation', () => {
 		const command = new LocationsCommand([], new Config({ root: '' }))
 		await command.setup({}, [], {})
 
-		mockSelectFromList.mockImplementationOnce(async (_command, _config, _id, listFunction) => {
-			await listFunction()
+		mockSelectFromList.mockImplementationOnce(async (_command, _config, options) => {
+			await options.listItems()
 			return 'selected-location-id'
 		})
 
@@ -41,8 +41,7 @@ describe('chooseLocation', () => {
 				primaryKeyName: 'locationId',
 				sortKeyName: 'name',
 			}),
-			undefined,
-			expect.any(Function),
+			expect.objectContaining({ preselectedId: undefined }),
 		)
 
 		expect(listSpy).toBeCalledTimes(1)

@@ -37,9 +37,9 @@ describe('AppRegisterCommand', () => {
 				sortKeyName: 'displayName',
 				listTableFieldDefinitions: expect.arrayContaining(['displayName', 'appType', 'appId']),
 			}),
-			undefined,
-			expect.any(Function),
-			expect.stringContaining('Select an app to register'),
+			expect.objectContaining({
+				promptMessage: expect.stringContaining('Select an app to register'),
+			}),
 		)
 	})
 
@@ -69,8 +69,8 @@ describe('AppRegisterCommand', () => {
 
 		await expect(AppRegisterCommand.run([])).resolves.not.toThrow()
 
-		const listFunction = mockSelectFromList.mock.calls[0][3]
-		await expect(listFunction()).resolves.toEqual(webhookApps.concat(apiOnlyApps))
+		const listItems = mockSelectFromList.mock.calls[0][2].listItems
+		await expect(listItems()).resolves.toEqual(webhookApps.concat(apiOnlyApps))
 		expect(listSpy).toBeCalledWith(expect.objectContaining({ appType: AppType.WEBHOOK_SMART_APP }))
 		expect(listSpy).toBeCalledWith(expect.objectContaining({ appType: AppType.API_ONLY }))
 	})

@@ -17,9 +17,10 @@ export function buildMockCommand(flags: { [name: string]: any } = {}, profile: P
 			mergedProfiles: { default: { profile } } as ProfilesByName,
 			profile,
 		} as CLIConfig,
-		profile: profile,
+		profile,
 		tableGenerator: new DefaultTableGenerator(true),
 		stringConfigValue: jest.fn(),
+		stringArrayConfigValue: jest.fn(),
 		booleanConfigValue: jest.fn(),
 		exit: exitMock,
 	}

@@ -33,7 +33,10 @@ export default class SchemaUpdateCommand extends APICommand {
 			sortKeyName: 'appName',
 			listTableFieldDefinitions: ['appName', 'endpointAppId', 'hostingType'],
 		}
-		const id = await selectFromList(this, config, args.id, () => this.client.schema.list())
+		const id = await selectFromList(this, config, {
+			preselectedId: args.id,
+			listItems: () => this.client.schema.list(),
+		})
 
 		const [request] = await inputItem<SchemaAppRequest>(this)
 		if (flags.authorize) {

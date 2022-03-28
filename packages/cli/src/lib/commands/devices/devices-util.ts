@@ -87,9 +87,9 @@ export const chooseDevice = async (command: APICommand, deviceFromArg?: string,
 		sortKeyName: 'label',
 		listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
 	}
-	const listDevices = (): Promise<Device[]> => command.client.devices.list()
-	const preselectedDeviceId = opts.allowIndex
-		? await stringTranslateToId(config, deviceFromArg, listDevices)
+	const listItems = (): Promise<Device[]> => command.client.devices.list()
+	const preselectedId = opts.allowIndex
+		? await stringTranslateToId(config, deviceFromArg, listItems)
 		: deviceFromArg
-	return selectFromList(command, config, preselectedDeviceId, listDevices)
+	return selectFromList(command, config, { preselectedId, listItems })
 }

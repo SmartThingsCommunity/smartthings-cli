@@ -139,8 +139,7 @@ describe('rooms-util', () => {
 					sortKeyName: 'name',
 					listTableFieldDefinitions: expect.anything(),
 				}),
-				roomId,
-				expect.any(Function),
+				expect.objectContaining({ preselectedId: roomId }),
 			)
 		})
 

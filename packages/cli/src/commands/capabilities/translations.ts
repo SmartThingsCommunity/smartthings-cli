@@ -2,7 +2,8 @@ import { Flags } from '@oclif/core'
 
 import { CapabilityLocalization, DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, ListingOutputConfig, outputListing, selectGeneric, SelectingConfig, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, ListingOutputConfig, outputListing, selectFromList,
+	SelectingConfig, TableGenerator } from '@smartthings/cli-lib'
 
 import { CapabilityId, capabilityIdOrIndexInputArgs, CapabilitySummaryWithNamespace, getCustomByNamespace,
 	getIdFromUser, translateToId } from '../capabilities'
@@ -143,7 +144,7 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 		if (flags.verbose) {
 			capConfig.listTableFieldDefinitions.splice(3, 0, 'locales')
 		}
-		const listCapabilities = async (): Promise<CapabilitySummaryWithLocales[]> => {
+		const listItems = async (): Promise<CapabilitySummaryWithLocales[]> => {
 			const capabilities =  await getCustomByNamespace(this.client, flags.namespace)
 			if (flags.verbose) {
 				const ops = capabilities.map(it => this.client.capabilities.listLocales(it.id, it.version))
@@ -155,28 +156,32 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 			return capabilities
 		}
 
-		let preselectedCapabilityId: CapabilityId | undefined = undefined
+		let preselectedId: CapabilityId | undefined = undefined
 		let preselectedTag: string | undefined = undefined
 		if (argv.length === 3) {
 			// capabilityId, capabilityVersion, tag
-			preselectedCapabilityId = { id: args.id, version: args.version }
+			preselectedId = { id: args.id, version: args.version }
 			preselectedTag = args.tag
 		} else if (argv.length === 2) {
 			if (isNaN(args.id) && !isNaN(args.version)) {
 				// capabilityId, capabilityVersion, no tag specified
-				preselectedCapabilityId = { id: args.id, version: args.version }
+				preselectedId = { id: args.id, version: args.version }
 			} else {
 				// capability id or index, no capability version specified, tag specified
-				preselectedCapabilityId = await translateToId(capConfig.primaryKeyName, args.id, listCapabilities)
+				preselectedId = await translateToId(capConfig.primaryKeyName, args.id, listItems)
 				preselectedTag = args.version
 			}
 		} else {
 			// capability id or index, no tag specified
-			preselectedCapabilityId = await translateToId(capConfig.primaryKeyName, args.id, listCapabilities)
+			preselectedId = await translateToId(capConfig.primaryKeyName, args.id, listItems)
 		}
 
-		const capabilityId = await selectGeneric(this, capConfig, preselectedCapabilityId, listCapabilities,
-			getIdFromUser, 'Select a capability.')
+		const capabilityId = await selectFromList(this, capConfig, {
+			preselectedId,
+			listItems,
+			getIdFromUser,
+			promptMessage: 'Select a capability.',
+		})
 
 		const config: ListingOutputConfig<DeviceProfileTranslations, LocaleReference> = {
 			primaryKeyName: 'tag',

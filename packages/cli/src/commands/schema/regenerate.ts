@@ -22,9 +22,11 @@ export default class SchemaAppRegenerateCommand extends APICommand {
 			primaryKeyName: 'endpointAppId',
 			sortKeyName: 'appName',
 		}
-		const id = await selectFromList(this, config, args.id,
-			async () => await this.client.schema.list(),
-			'Select a schema app to regenerate its clientId and clientSecret.')
+		const id = await selectFromList(this, config, {
+			preselectedId: args.id,
+			listItems: async () => await this.client.schema.list(),
+			promptMessage: 'Select a schema app to regenerate its clientId and clientSecret.',
+		})
 
 		await outputItem(this, { tableFieldDefinitions: ['endpointAppId', 'stClientId', 'stClientSecret'] }, () =>
 			this.client.schema.regenerateOauth(id))

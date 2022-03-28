@@ -53,9 +53,11 @@ export default class DeviceProfileTranslationsDeleteCommand extends APIOrganizat
 			sortKeyName: 'tag',
 			listTableFieldDefinitions: ['tag'],
 		}
-		const localeTag = await selectFromList(this, localeTagSelectConfig, args.tag,
-			() => this.client.deviceProfiles.listLocales(deviceProfileId),
-			'Select a locale:')
+		const localeTag = await selectFromList(this, localeTagSelectConfig, {
+			preselectedId: args.tag,
+			listItems: () => this.client.deviceProfiles.listLocales(deviceProfileId),
+			promptMessage: 'Select a locale:',
+		})
 
 		await this.client.deviceProfiles.deleteTranslations(deviceProfileId, localeTag)
 		this.log(`Translation ${localeTag} deleted from device profile ${deviceProfileId}.`)

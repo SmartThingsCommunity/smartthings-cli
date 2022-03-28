@@ -54,14 +54,17 @@ export const getRuleWithLocation = async (client: SmartThingsClient, id: string,
 }
 
 export const chooseRule = async (command: APICommand, promptMessage: string, locationId?: string,
-		commandLineRuleId?: string): Promise<string> => {
+		preselectedId?: string): Promise<string> => {
 	const config = {
 		primaryKeyName: 'id',
 		sortKeyName: 'name',
 		listTableFieldDefinitions: ['name', 'id', 'locationId', 'locationName'],
 	}
-	return selectFromList(command, config, commandLineRuleId,
-		() => getRulesByLocation(command.client, locationId), promptMessage)
+	return selectFromList(command, config, {
+		preselectedId,
+		listItems: () => getRulesByLocation(command.client, locationId),
+		promptMessage,
+	})
 }
 
 export const buildExecuteResponseTableOutput = (tableGenerator: TableGenerator, executeResponse: ExecuteResponse): string => {
