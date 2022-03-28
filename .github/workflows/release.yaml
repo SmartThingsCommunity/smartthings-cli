@@ -36,6 +36,7 @@ jobs:
           publish: npm run release
           commit: "chore(changesets): version packages"
           title: "chore(changesets): version packages"
+          createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -45,7 +46,7 @@ jobs:
         # decouple Github Release from library-only publishing
         if: steps.changesets.outputs.published == 'true' && contains(steps.changesets.outputs.publishedPackages.*.name, '@smartthings/cli')
         run: | # output latest tag from changesets
-          echo "::set-output name=tag::$(git describe --abbrev=0 --match '@smartthings/cli*')"
+          echo "::set-output name=tag::$(git describe --abbrev=0 --match '@smartthings/cli@*')"
           npm run package
 
       - name: Create Github Release
