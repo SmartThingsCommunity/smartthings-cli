@@ -47,7 +47,7 @@ export async function chooseDeviceProfile(command: APIOrganizationCommand, devic
 		config.listTableFieldDefinitions.splice(3, 0, 'locales')
 	}
 
-	const listDeviceProfiles = async (): Promise<DeviceProfile[]> => {
+	const listItems = async (): Promise<DeviceProfile[]> => {
 		const deviceProfiles = await command.client.deviceProfiles.list()
 		if (opts.verbose) {
 			const ops = deviceProfiles.map(async (it) => {
@@ -72,9 +72,9 @@ export async function chooseDeviceProfile(command: APIOrganizationCommand, devic
 	}
 
 	const preselectedId = opts.allowIndex
-		? await stringTranslateToId(config, deviceProfileFromArg, listDeviceProfiles)
+		? await stringTranslateToId(config, deviceProfileFromArg, listItems)
 		: deviceProfileFromArg
-	return selectFromList(command, config, preselectedId, listDeviceProfiles)
+	return selectFromList(command, config, { preselectedId, listItems })
 }
 
 export default class DeviceProfilesCommand extends APIOrganizationCommand {

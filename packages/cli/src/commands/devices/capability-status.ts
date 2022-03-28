@@ -66,9 +66,9 @@ export default class DeviceCapabilityStatusCommand extends APICommand {
 			sortKeyName: 'id',
 			listTableFieldDefinitions: ['id'],
 		}
-		const listCapabilities = async (): Promise<CapabilityReference[]> => capabilities
-		const preselectedCapabilityId = await stringTranslateToId(config, args.capability, listCapabilities)
-		const capabilityId = await selectFromList(this, config, preselectedCapabilityId, listCapabilities)
+		const listItems = async (): Promise<CapabilityReference[]> => capabilities
+		const preselectedId = await stringTranslateToId(config, args.capability, listItems)
+		const capabilityId = await selectFromList(this, config, { preselectedId, listItems })
 		const capabilityStatus = await this.client.devices.getCapabilityStatus(deviceId, componentName, capabilityId)
 		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, capabilityStatus)
 	}

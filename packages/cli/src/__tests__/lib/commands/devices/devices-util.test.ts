@@ -288,9 +288,9 @@ describe('devices-util', () => {
 			expect(selectFromListMock).toHaveBeenCalledTimes(1)
 			expect(selectFromListMock).toHaveBeenCalledWith(command,
 				expect.objectContaining({ primaryKeyName: 'deviceId', sortKeyName: 'label' }),
-				'command-line-device-id', expect.any(Function))
+				expect.objectContaining({ preselectedId: 'command-line-device-id' }))
 
-			const listFunction = selectFromListMock.mock.calls[0][3]
+			const listFunction = selectFromListMock.mock.calls[0][2].listItems
 
 			const list = [{ deviceId: 'listed-device-id' }] as Device[]
 			listDevicesMock.mockResolvedValueOnce(list)
@@ -318,7 +318,7 @@ describe('devices-util', () => {
 			expect(selectFromListMock).toHaveBeenCalledTimes(1)
 			expect(selectFromListMock).toHaveBeenCalledWith(command,
 				expect.objectContaining({ primaryKeyName: 'deviceId', sortKeyName: 'label' }),
-				'translated-id', expect.any(Function))
+				expect.objectContaining({ preselectedId: 'translated-id' }))
 		})
 	})
 })

@@ -22,12 +22,14 @@ export default class AppRegisterCommand extends APICommand {
 			sortKeyName: 'displayName',
 			listTableFieldDefinitions: ['displayName', 'appType', 'appId'],
 		}
-		const id = await selectFromList<App>(this, config, args.id,
-			async () => _.flatten(await Promise.all([
+		const id = await selectFromList<App>(this, config, {
+			preselectedId: args.id,
+			listItems: async () => _.flatten(await Promise.all([
 				this.client.apps.list({ appType: AppType.WEBHOOK_SMART_APP }),
 				this.client.apps.list({ appType: AppType.API_ONLY }),
 			])),
-			'Select an app to register.')
+			promptMessage: 'Select an app to register.',
+		})
 		await this.client.apps.register(id),
 		this.log(`Registration request sent to app ${id}. Check server log for confirmation URL.`)
 	}

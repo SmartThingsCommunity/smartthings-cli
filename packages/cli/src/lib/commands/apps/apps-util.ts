@@ -42,11 +42,11 @@ export async function chooseApp(command: APICommand, appFromArg?: string, option
 		primaryKeyName: 'appId',
 		sortKeyName: 'displayName',
 	}
-	const listApps = (): Promise<App[]> => command.client.apps.list()
+	const listItems = (): Promise<App[]> => command.client.apps.list()
 	const preselectedId = opts.allowIndex
-		? await stringTranslateToId(config, appFromArg, listApps)
+		? await stringTranslateToId(config, appFromArg, listItems)
 		: appFromArg
-	return selectFromList(command, config, preselectedId, listApps)
+	return selectFromList(command, config, { preselectedId, listItems })
 }
 
 export function buildTableOutput(tableGenerator: TableGenerator, appSettings: AppSettings): string {

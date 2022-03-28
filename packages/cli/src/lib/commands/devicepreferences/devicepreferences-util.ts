@@ -22,12 +22,15 @@ export const tableFieldDefinitions: TableFieldDefinition<DevicePreference>[] = [
 	},
 ]
 
-export async function chooseDevicePreference(command: APICommand, preferenceFromArg?: string): Promise<string> {
+export async function chooseDevicePreference(command: APICommand, preselectedId?: string): Promise<string> {
 	const config = {
 		itemName: 'device preference',
 		primaryKeyName: 'preferenceId',
 		sortKeyName: 'preferenceId',
 		listTableFieldDefinitions: ['preferenceId', 'title', 'name'],
 	}
-	return selectFromList(command, config, preferenceFromArg, () => command.client.devicePreferences.list())
+	return selectFromList(command, config, {
+		preselectedId,
+		listItems: () => command.client.devicePreferences.list(),
+	})
 }

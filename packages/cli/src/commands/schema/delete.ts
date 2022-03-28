@@ -19,9 +19,11 @@ export default class SchemaAppDeleteCommand extends APICommand {
 			primaryKeyName: 'endpointAppId',
 			sortKeyName: 'appName',
 		}
-		const id = await selectFromList(this, config, args.id,
-			async () => await this.client.schema.list(),
-			'Select a schema app to delete.')
+		const id = await selectFromList(this, config, {
+			preselectedId: args.id,
+			listItems: async () => await this.client.schema.list(),
+			promptMessage: 'Select a schema app to delete.',
+		})
 		await this.client.schema.delete(id)
 		this.log(`Schema app ${id} deleted.`)
 	}

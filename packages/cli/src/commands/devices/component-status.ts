@@ -33,9 +33,9 @@ export async function chooseComponent(command: SmartThingsCommand, componentFrom
 		sortKeyName: 'id',
 		listTableFieldDefinitions: [{ label: 'Id', value: component => component.id === 'main' ? 'main (default)' : component.id }],
 	}
-	const listComponents = async (): Promise<Component[]> => components
-	const preselectedComponentName = await stringTranslateToId(config, componentFromArg, listComponents)
-	return selectFromList(command, config, preselectedComponentName, listComponents, undefined, true)
+	const listItems = async (): Promise<Component[]> => components
+	const preselectedId = await stringTranslateToId(config, componentFromArg, listItems)
+	return selectFromList(command, config, { preselectedId, listItems, autoChoose: true })
 }
 
 export default class DeviceComponentStatusCommand extends APICommand {

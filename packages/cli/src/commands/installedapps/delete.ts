@@ -43,15 +43,17 @@ export default class InstalledAppDeleteCommand extends APICommand {
 			locationId: flags['location-id'],
 		}
 
-		const id = await selectFromList<InstalledApp>(this, config, args.id,
-			async () => {
+		const id = await selectFromList<InstalledApp>(this, config, {
+			preselectedId: args.id,
+			listItems: async () => {
 				const apps = await this.client.installedApps.list(listOptions)
 				if (this.flags.verbose) {
 					return await withLocations(this.client, apps)
 				}
 				return apps
 			},
-			'Select an installed app to delete.')
+			promptMessage: 'Select an installed app to delete.',
+		})
 		await this.client.installedApps.delete(id),
 		this.log(`Installed app ${id} deleted.`)
 	}

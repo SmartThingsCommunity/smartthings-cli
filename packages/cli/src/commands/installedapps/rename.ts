@@ -54,15 +54,17 @@ export default class DeviceComponentStatusCommand extends APICommand {
 			locationId: flags['location-id'],
 		}
 
-		const id = await selectFromList(this, config, args.id,
-			async () => {
+		const id = await selectFromList(this, config, {
+			preselectedId: args.id,
+			listItems: async () => {
 				const apps = await this.client.installedApps.list(listOptions)
 				if (this.flags.verbose) {
 					return await withLocations(this.client, apps)
 				}
 				return apps
 			},
-			'Select an app to rename.')
+			promptMessage: 'Select an app to rename.',
+		})
 		const displayName = args.name ??
 			(await inquirer.prompt({
 				type: 'input',

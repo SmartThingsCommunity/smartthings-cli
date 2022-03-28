@@ -258,7 +258,10 @@ export default class DeviceCommandsCommand extends APICommand {
 			sortKeyName: 'label',
 			listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
 		}
-		const deviceId = await selectFromList(this, config, args.id, () => this.client.devices.list())
+		const deviceId = await selectFromList(this, config, {
+			preselectedId: args.id,
+			listItems: () => this.client.devices.list(),
+		})
 		const [commands] = await inputItem<Command[]>(this, commandLineInputProcessor(this),
 			inputProcessor(() => true, () => this.getInputFromUser(deviceId)))
 		await this.client.devices.executeCommands(deviceId, commands)

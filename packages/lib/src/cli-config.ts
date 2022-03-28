@@ -82,14 +82,14 @@ export const mergeProfiles = (preferred: ProfilesByName, secondary: ProfilesByNa
 
 export const loadConfig = async (description: CLIConfigDescription): Promise<CLIConfig> => {
 	const config = await loadConfigFile(description.configFilename)
-	const managedConfig = await loadConfigFile(description.managedConfigFilename)
-	const mergedConfig = mergeProfiles(config, managedConfig)
+	const managedProfiles = await loadConfigFile(description.managedConfigFilename)
+	const mergedProfiles = mergeProfiles(config, managedProfiles)
 
-	const profile = description.profileName in mergedConfig
-		? mergedConfig[description.profileName]
+	const profile = description.profileName in mergedProfiles
+		? mergedProfiles[description.profileName]
 		: {}
 
-	return { ...description, profiles: config, managedProfiles: managedConfig, mergedProfiles: mergedConfig, profile }
+	return { ...description, profiles: config, managedProfiles, mergedProfiles, profile }
 }
 
 const managedConfigHeader =
@@ -104,6 +104,16 @@ const managedConfigHeader =
  */
 export const setConfigKey = async (config: CLIConfig, key: string, value: unknown): Promise<void> => {
 	config.managedProfiles = mergeProfiles({ [config.profileName]: { [key]: value }}, config.managedProfiles)
+	await writeFile(config.managedConfigFilename, managedConfigHeader + yaml.dump(config.managedProfiles))
+	config.mergedProfiles = mergeProfiles(config.profiles, config.managedProfiles)
+}
+
+/**
+ * Reset all managed config options for the specified profile.
+ */
+export const resetManagedConfig = async (config: CLIConfig, profileName: string): Promise<void> => {
+	config.managedProfiles = { ...config.managedProfiles }
+	delete config.managedProfiles[profileName]
 	await writeFile(config.managedConfigFilename, managedConfigHeader + yaml.dump(config.managedProfiles))
 	config.mergedProfiles = mergeProfiles(config.profiles, config.managedProfiles)
 }

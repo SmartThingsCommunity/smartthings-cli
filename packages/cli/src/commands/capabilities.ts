@@ -4,8 +4,8 @@ import { Flags } from '@oclif/core'
 import { Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace,
 	SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, ListDataFunction, outputGenericListing, selectGeneric, sort, Sorting, TableGenerator,
-	allOrganizationsFlags, forAllOrganizations } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, ListDataFunction, outputGenericListing, selectFromList, sort,
+	Sorting, TableGenerator, allOrganizationsFlags, forAllOrganizations } from '@smartthings/cli-lib'
 
 
 export const capabilityIdInputArgs = [
@@ -242,25 +242,38 @@ export async function translateToId(sortKeyName: string, idOrIndex: string | Cap
 	return { id: matchingItem.id, version: matchingItem.version }
 }
 
-export async function chooseCapability(command: APIOrganizationCommand, idFromArgs?: string, versionFromArgs?: number, prompt?: string): Promise<CapabilityId> {
-	const preselectedId: CapabilityId | undefined = idFromArgs ? { id: idFromArgs, version: versionFromArgs ?? 1 } : undefined
+export async function chooseCapability(command: APIOrganizationCommand, idFromArgs?: string,
+		versionFromArgs?: number, promptMessage?: string): Promise<CapabilityId> {
+	const preselectedId: CapabilityId | undefined = idFromArgs
+		? { id: idFromArgs, version: versionFromArgs ?? 1 }
+		: undefined
 	const config = {
 		itemName: 'capability',
 		primaryKeyName: 'id',
 		sortKeyName: 'id',
 		listTableFieldDefinitions: ['id', 'version', 'status'],
 	}
-	return selectGeneric(command, config, preselectedId, () => getCustomByNamespace(command.client), getIdFromUser, prompt)
+	return selectFromList(command, config, {
+		preselectedId,
+		listItems: () => getCustomByNamespace(command.client),
+		getIdFromUser,
+		promptMessage,
+	})
 }
 
-export async function chooseCapabilityFiltered(command: APIOrganizationCommand, prompt: string, filter: string): Promise<CapabilityId> {
+export async function chooseCapabilityFiltered(command: APIOrganizationCommand,
+		promptMessage: string, filter: string): Promise<CapabilityId> {
 	const config = {
 		itemName: 'capability',
 		primaryKeyName: 'id',
 		sortKeyName: 'id',
 		listTableFieldDefinitions: ['id', 'version', 'status'],
 	}
-	return selectGeneric(command, config, undefined, () => getAllFiltered(command.client, filter), getIdFromUser, prompt, false)
+	return selectFromList(command, config, {
+		listItems: () => getAllFiltered(command.client, filter),
+		getIdFromUser,
+		promptMessage,
+	})
 }
 
 export default class CapabilitiesCommand extends APIOrganizationCommand {

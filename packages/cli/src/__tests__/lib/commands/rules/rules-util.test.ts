@@ -155,17 +155,21 @@ describe('rules-util', () => {
 
 		expect(selectFromListMock).toHaveBeenCalledTimes(1)
 		expect(selectFromListMock).toHaveBeenCalledWith(command,
-			expect.objectContaining({ primaryKeyName: 'id' }), 'cmd-line-rule-id',
-			expect.any(Function), 'prompt message')
+			expect.objectContaining({ primaryKeyName: 'id' }),
+			expect.objectContaining({
+				preselectedId: 'cmd-line-rule-id',
+				promptMessage: 'prompt message',
+			}),
+		)
 
 		const ruleWithLocation = { locationId: 'location-id' } as RuleWithLocation
 		const rulesList = [ruleWithLocation]
-		const listFunction = selectFromListMock.mock.calls[0][3]
+		const listItems = selectFromListMock.mock.calls[0][2].listItems
 		const getRulesByLocationMock = (getRulesByLocation as
 			jest.Mock<Promise<RuleWithLocation[]>, [SmartThingsClient, string | undefined]>)
 			.mockResolvedValue(rulesList)
 
-		expect(await listFunction()).toBe(rulesList)
+		expect(await listItems()).toBe(rulesList)
 
 		expect(getRulesByLocationMock).toHaveBeenCalledTimes(1)
 		expect(getRulesByLocationMock).toHaveBeenCalledWith(client, 'location-id')

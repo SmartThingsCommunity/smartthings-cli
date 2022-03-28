@@ -31,7 +31,7 @@ export type RoomWithLocation = Room & {
 	locationName?: string
 }
 
-export async function chooseRoom(command: APICommand, locationId?: string, roomArg?: string): Promise<[string, string]> {
+export async function chooseRoom(command: APICommand, locationId?: string, preselectedId?: string): Promise<[string, string]> {
 	const rooms = await roomsUtil.getRoomsByLocation(command.client, locationId)
 	const config = {
 		itemName: 'room',
@@ -39,7 +39,10 @@ export async function chooseRoom(command: APICommand, locationId?: string, roomA
 		sortKeyName: 'name',
 		listTableFieldDefinitions: tableFieldDefinitions,
 	}
-	const roomId = await selectFromList(command, config, roomArg, async () => rooms)
+	const roomId = await selectFromList(command, config, {
+		preselectedId,
+		listItems: async () => rooms,
+	})
 	const room = rooms.find(room => room.roomId === roomId)
 	if (!room) {
 		throw new Errors.CLIError(`could not find room with id ${roomId}`)

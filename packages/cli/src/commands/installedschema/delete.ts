@@ -40,9 +40,11 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand {
 			config.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 
-		const id = await selectFromList<InstalledSchemaApp>(this, config, args.id,
-			() => installedSchemaInstances(this.client, flags['location-id'], flags.verbose),
-			'Select an installed schema app to delete.')
+		const id = await selectFromList<InstalledSchemaApp>(this, config, {
+			preselectedId: args.id,
+			listItems: () => installedSchemaInstances(this.client, flags['location-id'], flags.verbose),
+			promptMessage: 'Select an installed schema app to delete.',
+		})
 		await this.client.schema.deleteInstalledApp(id)
 		this.log(`Installed schema app ${id} deleted.`)
 	}

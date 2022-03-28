@@ -83,8 +83,7 @@ describe('chooseApp', () => {
 		expect(selectFromList).toBeCalledWith(
 			command,
 			expect.objectContaining(expectedConfig),
-			appId,
-			expect.any(Function),
+			expect.objectContaining({ preselectedId: appId }),
 		)
 	})
 
@@ -104,8 +103,7 @@ describe('chooseApp', () => {
 		expect(selectFromList).toBeCalledWith(
 			command,
 			expect.objectContaining(expectedConfig),
-			appId,
-			expect.any(Function),
+			expect.objectContaining({ preselectedId: appId }),
 		)
 	})
 
@@ -123,14 +121,14 @@ describe('chooseApp', () => {
 		expect(selectFromList).toBeCalledTimes(1)
 
 		const translateList = mockStringTranslateToId.mock.calls[0][2]
-		const selectList = mockSelectFromList.mock.calls[0][3]
+		const selectList = mockSelectFromList.mock.calls[0][2].listItems
 
 		expect(translateList).toBe(selectList)
 	})
 
 	it('uses correct endpoint to list apps', async () => {
-		mockSelectFromList.mockImplementationOnce(async (_command, _config, _id, listFunction) => {
-			await listFunction()
+		mockSelectFromList.mockImplementationOnce(async (_command, _config, options) => {
+			await options.listItems()
 			return appId
 		})
 

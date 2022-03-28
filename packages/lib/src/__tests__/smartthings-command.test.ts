@@ -190,4 +190,69 @@ describe('SmartThingsCommand', () => {
 				.toBe('default value')
 		})
 	})
+
+	describe('stringArrayConfigValue', () => {
+		jest.spyOn(LogManager.prototype, 'getLogger').mockImplementation(() => {
+			return new NoLogLogger()
+		})
+
+		it('returns [] when not set', async () => {
+			await smartThingsCommand.setup({}, [], {})
+
+			expect('configKey' in smartThingsCommand.profile).toBeFalse()
+			expect(smartThingsCommand.stringArrayConfigValue('configKey')).toEqual([])
+		})
+
+		it('returns string config value as single-item array', async () => {
+			const profile: Profile = { configKey: 'config value' }
+			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
+
+			await smartThingsCommand.setup({}, [], {})
+
+			expect(smartThingsCommand.profile.configKey).toEqual('config value')
+			expect(smartThingsCommand.stringArrayConfigValue('configKey')).toEqual(['config value'])
+		})
+
+		it('returns array config value when configured', async () => {
+			const items = ['config value 1', 'config value 2']
+			const profile: Profile = { configKey: items }
+			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
+
+			await smartThingsCommand.setup({}, [], {})
+
+			expect(smartThingsCommand.profile.configKey).toEqual(items)
+			expect(smartThingsCommand.stringArrayConfigValue('configKey')).toEqual(items)
+		})
+
+		it('returns default value when not set', async () => {
+			await smartThingsCommand.setup({}, [], {})
+
+			expect('configKey' in smartThingsCommand.profile).toBeFalse()
+			expect(smartThingsCommand.stringArrayConfigValue('configKey', ['default value']))
+				.toEqual(['default value'])
+		})
+
+		it('returns default value when configured value is not a string or array', async () => {
+			const profile: Profile = { configKey: 5 }
+			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
+
+			await smartThingsCommand.setup({}, [], {})
+
+			expect(smartThingsCommand.profile.configKey).toEqual(5)
+			expect(smartThingsCommand.stringArrayConfigValue('configKey', ['default value']))
+				.toEqual(['default value'])
+		})
+
+		it('returns default value when configured value is array but not of strings', async () => {
+			const items = [5, { thing: 'one' }]
+			const profile: Profile = { configKey: items }
+			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
+
+			await smartThingsCommand.setup({}, [], {})
+
+			expect(smartThingsCommand.profile.configKey).toEqual(items)
+			expect(smartThingsCommand.stringArrayConfigValue('configKey', ['default value']))
+				.toEqual(['default value'])
+		})
+	})
 })

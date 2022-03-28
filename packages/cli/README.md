@@ -121,6 +121,7 @@ that map to the API spec.
 * [`smartthings capabilities:translations:upsert [ID] [VERSION]`](#smartthings-capabilitiestranslationsupsert-id-version)
 * [`smartthings capabilities:update [ID] [VERSION]`](#smartthings-capabilitiesupdate-id-version)
 * [`smartthings config [NAME]`](#smartthings-config-name)
+* [`smartthings config:reset`](#smartthings-configreset)
 * [`smartthings devicepreferences [IDORINDEX]`](#smartthings-devicepreferences-idorindex)
 * [`smartthings devicepreferences:create`](#smartthings-devicepreferencescreate)
 * [`smartthings devicepreferences:translations [PREFERENCEID] [TAG]`](#smartthings-devicepreferencestranslations-preferenceid-tag)
@@ -1347,6 +1348,27 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v1.0.0-beta.0/packages/cli/src/commands/config.ts)_
+
+## `smartthings config:reset`
+
+clear saved answers to questions
+
+```
+USAGE
+  $ smartthings config:reset [-h] [-p <value>]
+
+FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+
+DESCRIPTION
+  clear saved answers to questions
+
+  The CLI will occasionally ask you if you want it to remember the answer to a question, such as "Which hub do you want
+  to use?" You can use this command to clear those answers.
+```
+
+_See code: [src/commands/config/reset.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/v1.0.0-beta.0/packages/cli/src/commands/config/reset.ts)_
 
 ## `smartthings devicepreferences [IDORINDEX]`
 

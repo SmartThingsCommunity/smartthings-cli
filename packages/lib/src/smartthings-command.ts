@@ -44,6 +44,14 @@ export interface SmartThingsCommandInterface extends Loggable {
 	stringConfigValue(keyName: string, defaultValue?: string): string | undefined
 
 	/**
+	 * If the configured `keyName` exists and is a string or a string array, return it. (A simple
+	 * string will be returned as a single-element array.) Otherwise, return the default value.
+	 * This method logs a warning (and returns the default value) if the configured keyName exists
+	 * but is not a string or array of strings. (The default `defaultValue` is an empty array.)
+	 */
+	stringArrayConfigValue(keyName: string, defaultValue?: string[]) : string[]
+
+	/**
 	 * If the configured `keyName` value exists and is a boolean, return it. Otherwise, return
 	 * the default value. This method logs a warning if the configured keyName
 	 * exists but is not a boolean.
@@ -108,6 +116,21 @@ export abstract class SmartThingsCommand extends Command implements SmartThingsC
 			return defaultValue
 		}
 		this.logger.trace(`key ${keyName} not found in ${this.profileName} config`)
+		return defaultValue
+	}
+
+	stringArrayConfigValue(keyName: string, defaultValue: string[] = []) : string[] {
+		if (keyName in this.profile) {
+			const configValue = this.profile[keyName]
+			if (typeof configValue === 'string') {
+				return [configValue]
+			}
+			if (Array.isArray(configValue) && configValue.every(dir => typeof dir === 'string')) {
+				return configValue
+			}
+			this.logger.warn(`expected string or array of strings for config key ${keyName} but got ${typeof configValue}`)
+			return defaultValue
+		}
 		return defaultValue
 	}
 

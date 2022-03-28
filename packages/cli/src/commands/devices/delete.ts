@@ -19,9 +19,11 @@ export default class DeviceDeleteCommand extends APICommand {
 			primaryKeyName: 'deviceId',
 			sortKeyName: 'name',
 		}
-		const id = await selectFromList(this, config, args.id,
-			() => this.client.devices.list(),
-			'Select device to delete.')
+		const id = await selectFromList(this, config, {
+			preselectedId: args.id,
+			listItems: () => this.client.devices.list(),
+			promptMessage: 'Select device to delete.',
+		})
 		await this.client.devices.delete(id)
 		this.log(`Device ${id} deleted.`)
 	}
