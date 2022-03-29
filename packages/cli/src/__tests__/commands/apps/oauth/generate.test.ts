@@ -1,6 +1,5 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
 import { AppOAuth, AppsEndpoint } from '@smartthings/core-sdk'
-import { v4 as uuid } from 'uuid'
 import AppOauthGenerateCommand from '../../../../commands/apps/oauth/generate'
 import { chooseApp } from '../../../../lib/commands/apps/apps-util'
 
@@ -17,12 +16,12 @@ jest.mock('@smartthings/cli-lib', () => {
 jest.mock('../../../../lib/commands/apps/apps-util')
 
 describe('AppOauthGenerateCommand', () => {
-	const mockInputOutput = inputAndOutputItem as unknown as jest.Mock
-	const mockChooseApp = chooseApp as jest.Mock
+	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)
+	const mockChooseApp = jest.mocked(chooseApp)
 	const regenerateSpy = jest.spyOn(AppsEndpoint.prototype, 'regenerateOauth').mockImplementation()
 
 	beforeAll(() => {
-		mockInputOutput.mockImplementation()
+		mockInputAndOutputItem.mockImplementation()
 	})
 
 	afterEach(() => {
@@ -38,7 +37,7 @@ describe('AppOauthGenerateCommand', () => {
 	it('calls inputOutput with correct config', async () => {
 		await expect(AppOauthGenerateCommand.run([])).resolves.not.toThrow()
 
-		expect(mockInputOutput).toBeCalledWith(
+		expect(mockInputAndOutputItem).toBeCalledWith(
 			expect.any(AppOauthGenerateCommand),
 			expect.objectContaining({
 				tableFieldDefinitions: expect.arrayContaining(['oauthClientId', 'oauthClientSecret']),
@@ -48,11 +47,11 @@ describe('AppOauthGenerateCommand', () => {
 	})
 
 	it('uses correct endpoint to generate oauth', async () => {
-		const appId = uuid()
+		const appId = 'appId'
 		const oAuth: AppOAuth = { clientName: 'test' }
 		mockChooseApp.mockResolvedValueOnce(appId)
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
-			await actionFunction(appId, oAuth)
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
+			await actionFunction(undefined, oAuth)
 		})
 
 		await expect(AppOauthGenerateCommand.run([appId])).resolves.not.toThrow()

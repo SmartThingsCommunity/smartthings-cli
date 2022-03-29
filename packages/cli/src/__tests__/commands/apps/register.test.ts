@@ -14,9 +14,7 @@ jest.mock('@smartthings/cli-lib', () => {
 
 describe('AppRegisterCommand', () => {
 	const appId = 'appId'
-	const registerSpy = jest.spyOn(AppsEndpoint.prototype, 'register').mockImplementation(async () => {
-		return { status: '200' }
-	})
+	const registerSpy = jest.spyOn(AppsEndpoint.prototype, 'register').mockResolvedValue({ status: '200' })
 	const listSpy = jest.spyOn(AppsEndpoint.prototype, 'list').mockImplementation()
 	const logSpy = jest.spyOn(AppRegisterCommand.prototype, 'log').mockImplementation()
 	const mockSelectFromList = jest.mocked(selectFromList)

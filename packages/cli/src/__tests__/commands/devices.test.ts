@@ -1,6 +1,7 @@
 import { Device, DevicesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { CustomCommonOutputProducer, DefaultTableGenerator, outputListing, TableGenerator,
+import {
+	CustomCommonOutputProducer, DefaultTableGenerator, outputListing,
 	withLocationsAndRooms, WithNamedRoom } from '@smartthings/cli-lib'
 
 import DevicesCommand from '../../commands/devices'
@@ -65,7 +66,7 @@ describe('DevicesCommand', () => {
 			.toEqual(['label', 'name', 'type', 'deviceId'])
 
 		const device = { deviceId: 'device-id' } as Device
-		const buildTableOutputMock = buildTableOutput as jest.Mock<string, [TableGenerator, Device]>
+		const buildTableOutputMock = jest.mocked(buildTableOutput)
 		const config = outputListingMock.mock.calls[0][1] as CustomCommonOutputProducer<Device>
 		buildTableOutputMock.mockReturnValueOnce('table output')
 

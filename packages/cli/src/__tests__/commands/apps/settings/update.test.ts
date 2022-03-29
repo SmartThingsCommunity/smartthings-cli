@@ -1,6 +1,5 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
 import { AppsEndpoint, AppSettings } from '@smartthings/core-sdk'
-import { v4 as uuid } from 'uuid'
 import AppSettingsUpdateCommand from '../../../../commands/apps/settings/update'
 import { chooseApp } from '../../../../lib/commands/apps/apps-util'
 
@@ -17,12 +16,12 @@ jest.mock('@smartthings/cli-lib', () => {
 jest.mock('../../../../lib/commands/apps/apps-util')
 
 describe('AppSettingsUpdateCommand', () => {
-	const mockInputOutput = inputAndOutputItem as unknown as jest.Mock
-	const mockChooseApp = chooseApp as jest.Mock
+	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)
+	const mockChooseApp = jest.mocked(chooseApp)
 	const updateSettingsSpy = jest.spyOn(AppsEndpoint.prototype, 'updateSettings').mockImplementation()
 
 	beforeAll(() => {
-		mockInputOutput.mockImplementation()
+		mockInputAndOutputItem.mockImplementation()
 	})
 
 	afterEach(() => {
@@ -36,11 +35,11 @@ describe('AppSettingsUpdateCommand', () => {
 	})
 
 	it('uses correct endpoint to update settings', async () => {
-		const appId = uuid()
+		const appId = 'appId'
 		const settings: AppSettings = {}
 		mockChooseApp.mockResolvedValueOnce(appId)
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
-			await actionFunction(appId, settings)
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
+			await actionFunction(undefined, settings)
 		})
 
 		await expect(AppSettingsUpdateCommand.run([appId])).resolves.not.toThrow()

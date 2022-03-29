@@ -1,7 +1,6 @@
-import { APICommand, ChooseOptions, CustomCommonOutputProducer, DefaultTableGenerator, GetDataFunction, outputItem, SmartThingsCommandInterface } from '@smartthings/cli-lib'
+import { CustomCommonOutputProducer, DefaultTableGenerator, outputItem } from '@smartthings/cli-lib'
 import { AppsEndpoint, AppSettings } from '@smartthings/core-sdk'
 import AppSettingsCommand from '../../../commands/apps/settings'
-import { v4 as uuid } from 'uuid'
 import { buildTableOutput, chooseApp } from '../../../lib/commands/apps/apps-util'
 
 
@@ -17,19 +16,14 @@ jest.mock('@smartthings/cli-lib', () => {
 jest.mock('../../../lib/commands/apps/apps-util')
 
 describe('AppSettingsCommand', () => {
-	const mockChooseApp = chooseApp as
-		jest.Mock<Promise<string>, [APICommand, string | undefined, Partial<ChooseOptions> | undefined]>
-	const mockOutputItem = outputItem as unknown as
-		jest.Mock<Promise<AppSettings>, [
-			SmartThingsCommandInterface,
-			CustomCommonOutputProducer<AppSettings>,
-			GetDataFunction<AppSettings>
-		]>
+	const appId = 'appId'
+	const mockChooseApp = jest.mocked(chooseApp)
+	const mockOutputItem = jest.mocked(outputItem)
 	const settingsSpy = jest.spyOn(AppsEndpoint.prototype, 'getSettings').mockImplementation()
 	const appSettings: AppSettings = {}
 
 	beforeAll(() => {
-		mockChooseApp.mockResolvedValue(uuid())
+		mockChooseApp.mockResolvedValue(appId)
 		mockOutputItem.mockResolvedValue(appSettings)
 	})
 
@@ -49,7 +43,7 @@ describe('AppSettingsCommand', () => {
 
 	it('calls outputItem with correct config', async () => {
 		mockOutputItem.mockImplementationOnce(async (_command, config) => {
-			config.buildTableOutput(appSettings)
+			(config as CustomCommonOutputProducer<AppSettings>).buildTableOutput(appSettings)
 			return appSettings
 		})
 
@@ -70,11 +64,9 @@ describe('AppSettingsCommand', () => {
 	})
 
 	it('calls correct endpoint to get app settings', async () => {
-		const appId = uuid()
 		mockOutputItem.mockImplementationOnce(async (_command, _config, getFunction) => {
 			return getFunction()
 		})
-		mockChooseApp.mockResolvedValueOnce(appId)
 
 		await expect(AppSettingsCommand.run([])).resolves.not.toThrow()
 

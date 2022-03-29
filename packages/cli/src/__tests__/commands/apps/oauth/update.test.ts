@@ -1,6 +1,5 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
 import { AppOAuth, AppsEndpoint } from '@smartthings/core-sdk'
-import { v4 as uuid } from 'uuid'
 import AppOauthUpdateCommand from '../../../../commands/apps/oauth/update'
 import { chooseApp } from '../../../../lib/commands/apps/apps-util'
 
@@ -17,12 +16,12 @@ jest.mock('@smartthings/cli-lib', () => {
 jest.mock('../../../../lib/commands/apps/apps-util')
 
 describe('AppOauthUpdateCommand', () => {
-	const mockInputOutput = inputAndOutputItem as unknown as jest.Mock
-	const mockChooseApp = chooseApp as jest.Mock
+	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)
+	const mockChooseApp = jest.mocked(chooseApp)
 	const updateOauthSpy = jest.spyOn(AppsEndpoint.prototype, 'updateOauth').mockImplementation()
 
 	beforeAll(() => {
-		mockInputOutput.mockImplementation()
+		mockInputAndOutputItem.mockImplementation()
 	})
 
 	afterEach(() => {
@@ -36,11 +35,11 @@ describe('AppOauthUpdateCommand', () => {
 	})
 
 	it('uses correct endpoint to update oauth', async () => {
-		const appId = uuid()
+		const appId = 'appId'
 		const oAuth: AppOAuth = { clientName: 'test' }
 		mockChooseApp.mockResolvedValueOnce(appId)
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
-			await actionFunction(appId, oAuth)
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
+			await actionFunction(undefined, oAuth)
 		})
 
 		await expect(AppOauthUpdateCommand.run([appId])).resolves.not.toThrow()

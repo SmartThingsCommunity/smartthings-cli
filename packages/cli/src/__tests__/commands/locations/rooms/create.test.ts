@@ -1,8 +1,7 @@
-import { ActionFunction, CommonOutputProducer, inputAndOutputItem, SmartThingsCommandInterface } from '@smartthings/cli-lib'
+import { inputAndOutputItem } from '@smartthings/cli-lib'
 import { Room, RoomRequest, RoomsEndpoint } from '@smartthings/core-sdk'
 import { chooseLocation } from '../../../../commands/locations'
 import RoomsCreateCommand from '../../../../commands/locations/rooms/create'
-import { v4 as uuid } from 'uuid'
 
 
 jest.mock('@smartthings/cli-lib', () => {
@@ -17,26 +16,19 @@ jest.mock('@smartthings/cli-lib', () => {
 jest.mock('../../../../commands/locations')
 
 describe('RoomsCreateCommand', () => {
-	const mockInputOutput = inputAndOutputItem as unknown as
-		jest.Mock<Promise<void>, [
-			SmartThingsCommandInterface,
-			CommonOutputProducer<Room>,
-			ActionFunction<void, RoomRequest, Room>
-		]>
-	const mockChooseLocation = chooseLocation as
-		jest.Mock
+	const locationId = 'locationId'
+	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)
+	const mockChooseLocation = jest.mocked(chooseLocation)
 
 	afterEach(() => {
 		jest.clearAllMocks()
 	})
 
 	it('uses correct endpoint to create room', async () => {
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction: ActionFunction<void, RoomRequest, Room>) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			const room: RoomRequest = {}
 			await actionFunction(undefined, room)
 		})
-
-		const locationId = uuid()
 
 		mockChooseLocation.mockResolvedValueOnce(locationId)
 
@@ -46,7 +38,7 @@ describe('RoomsCreateCommand', () => {
 		await expect(RoomsCreateCommand.run([])).resolves.not.toThrow()
 
 		expect(mockChooseLocation).toBeCalledWith(expect.any(RoomsCreateCommand), undefined)
-		expect(mockInputOutput).toBeCalledWith(
+		expect(mockInputAndOutputItem).toBeCalledWith(
 			expect.any(RoomsCreateCommand),
 			expect.anything(),
 			expect.any(Function),
@@ -56,14 +48,10 @@ describe('RoomsCreateCommand', () => {
 	})
 
 	it('takes a specific locationId to query via flags', async () => {
-		let locationId = uuid()
-
 		await expect(RoomsCreateCommand.run([`--location-id=${locationId}`])).resolves.not.toThrow()
 
 		expect(mockChooseLocation).toBeCalledWith(expect.any(RoomsCreateCommand), locationId)
 		mockChooseLocation.mockClear()
-
-		locationId = uuid()
 
 		await expect(RoomsCreateCommand.run([`-l=${locationId}`])).resolves.not.toThrow()
 		expect(mockChooseLocation).toBeCalledWith(expect.any(RoomsCreateCommand), locationId)

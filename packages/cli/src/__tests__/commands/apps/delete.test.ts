@@ -7,7 +7,7 @@ jest.mock('../../../lib/commands/apps/apps-util')
 
 describe('AppDeleteCommand', () => {
 	const appId = 'appId'
-	const mockChooseApp = chooseApp as jest.Mock
+	const mockChooseApp = jest.mocked(chooseApp)
 	const deleteSpy = jest.spyOn(AppsEndpoint.prototype, 'delete').mockImplementation()
 	const logSpy = jest.spyOn(AppDeleteCommand.prototype, 'log').mockImplementation()
 

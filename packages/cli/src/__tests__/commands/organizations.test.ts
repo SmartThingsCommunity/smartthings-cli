@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid'
 import { outputListing } from '@smartthings/cli-lib'
 import OrganizationsCommand from '../../commands/organizations'
 import { OrganizationsEndpoint } from '@smartthings/core-sdk'
@@ -17,7 +16,8 @@ jest.mock('@smartthings/cli-lib', () => {
 const listSpy = jest.spyOn(OrganizationsEndpoint.prototype, 'list').mockImplementation()
 
 describe('OrganizationsCommand', () => {
-	const mockListing = outputListing as unknown as jest.Mock
+	const organizationId = 'organizationId'
+	const mockOutputListing = jest.mocked(outputListing)
 
 	afterEach(() => {
 		jest.clearAllMocks()
@@ -26,29 +26,28 @@ describe('OrganizationsCommand', () => {
 	it('calls outputListing when no id is provided', async () => {
 		await expect(OrganizationsCommand.run([])).resolves.not.toThrow()
 
-		expect(mockListing).toBeCalledTimes(1)
-		expect(mockListing.mock.calls[0][2]).toBeUndefined()
+		expect(mockOutputListing).toBeCalledTimes(1)
+		expect(mockOutputListing.mock.calls[0][2]).toBeUndefined()
 	})
 
 	it('calls outputListing when id is provided', async () => {
-		const organizationId = uuid()
 		await expect(OrganizationsCommand.run([organizationId])).resolves.not.toThrow()
 
-		expect(mockListing).toBeCalledTimes(1)
-		expect(mockListing.mock.calls[0][2]).toBe(organizationId)
+		expect(mockOutputListing).toBeCalledTimes(1)
+		expect(mockOutputListing.mock.calls[0][2]).toBe(organizationId)
 	})
 
 	it('uses correct endpoints for output', async () => {
-		mockListing.mockImplementationOnce(async (_command, _config, _idOrIndex, listFunction, getFunction) => {
+		mockOutputListing.mockImplementationOnce(async (_command, _config, _idOrIndex, listFunction, getFunction) => {
 			await listFunction()
-			await getFunction()
+			await getFunction(organizationId)
 		})
 
 		const getSpy = jest.spyOn(OrganizationsEndpoint.prototype, 'get').mockImplementation()
 
 		await expect(OrganizationsCommand.run([])).resolves.not.toThrow()
 
-		expect(mockListing).toBeCalledWith(
+		expect(mockOutputListing).toBeCalledWith(
 			expect.any(OrganizationsCommand),
 			expect.objectContaining({ primaryKeyName: 'organizationId' }),
 			undefined,

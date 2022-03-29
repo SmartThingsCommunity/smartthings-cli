@@ -1,6 +1,5 @@
-import { ActionFunction, APICommand, ChooseOptions, inputAndOutputItem, SmartThingsCommandInterface, TableCommonOutputProducer } from '@smartthings/cli-lib'
-import { App, AppRequest, AppsEndpoint } from '@smartthings/core-sdk'
-import { FunctionName, Principal, StatementId } from 'aws-sdk/clients/lambda'
+import { inputAndOutputItem } from '@smartthings/cli-lib'
+import { AppRequest, AppsEndpoint } from '@smartthings/core-sdk'
 import AppUpdateCommand from '../../../commands/apps/update'
 import { chooseApp, tableFieldDefinitions } from '../../../lib/commands/apps/apps-util'
 import { addPermission } from '../../../lib/aws-utils'
@@ -21,20 +20,9 @@ jest.mock('../../../lib/commands/apps/apps-util')
 
 describe('AppUpdateCommand', () => {
 	const appId = 'appId'
-	const mockInputOutput = inputAndOutputItem as unknown as
-		jest.Mock<Promise<void>, [
-			SmartThingsCommandInterface,
-			TableCommonOutputProducer<App>,
-			ActionFunction<void, AppRequest, App>
-		]>
-	const mockAddPermission = addPermission as
-		jest.Mock<Promise<string>, [
-			FunctionName,
-			Principal,
-			StatementId
-		]>
-	const mockChooseApp = chooseApp as
-		jest.Mock<Promise<string>, [APICommand, string | undefined, Partial<ChooseOptions> | undefined]>
+	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)
+	const mockAddPermission = jest.mocked(addPermission)
+	const mockChooseApp = jest.mocked(chooseApp)
 	const updateSpy = jest.spyOn(AppsEndpoint.prototype, 'update').mockImplementation()
 
 	beforeAll(() => {
@@ -57,7 +45,7 @@ describe('AppUpdateCommand', () => {
 	it('calls inputOutput with correct config', async () => {
 		await expect(AppUpdateCommand.run([])).resolves.not.toThrow()
 
-		expect(mockInputOutput).toBeCalledWith(
+		expect(mockInputAndOutputItem).toBeCalledWith(
 			expect.any(AppUpdateCommand),
 			expect.objectContaining({
 				tableFieldDefinitions,
@@ -68,7 +56,7 @@ describe('AppUpdateCommand', () => {
 
 	it('calls correct update endpoint', async () => {
 		const appRequest: AppRequest = {}
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 		mockChooseApp.mockResolvedValueOnce(appId)
@@ -86,7 +74,7 @@ describe('AppUpdateCommand', () => {
 				functions: [arn, anotherArn],
 			},
 		}
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 		mockChooseApp.mockResolvedValueOnce(appId)
@@ -103,7 +91,7 @@ describe('AppUpdateCommand', () => {
 		const appRequest: AppRequest = {
 			webhookSmartApp: {},
 		}
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 
@@ -117,7 +105,7 @@ describe('AppUpdateCommand', () => {
 				functions: [],
 			},
 		}
-		mockInputOutput.mockImplementation(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementation(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 		mockChooseApp.mockResolvedValue(appId)
@@ -146,7 +134,7 @@ describe('AppUpdateCommand', () => {
 				functions: [arn],
 			},
 		}
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 
@@ -163,7 +151,7 @@ describe('AppUpdateCommand', () => {
 				functions: [arn],
 			},
 		}
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 
@@ -180,7 +168,7 @@ describe('AppUpdateCommand', () => {
 				functions: [arn],
 			},
 		}
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 

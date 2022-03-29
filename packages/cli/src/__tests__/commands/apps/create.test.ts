@@ -17,8 +17,8 @@ jest.mock('@smartthings/cli-lib', () => {
 jest.mock('../../../lib/aws-utils')
 
 describe('AppCreateCommand', () => {
-	const mockInputOutput = inputAndOutputItem as unknown as jest.Mock
-	const mockAddPermission = addPermission as jest.Mock
+	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)
+	const mockAddPermission = jest.mocked(addPermission)
 	const createSpy = jest.spyOn(AppsEndpoint.prototype, 'create').mockImplementation()
 	const logSpy = jest.spyOn(AppCreateCommand.prototype, 'log').mockImplementation()
 
@@ -32,14 +32,14 @@ describe('AppCreateCommand', () => {
 			oauthClientId: 'oauthClientId',
 			oauthClientSecret: 'oauthClientSecret',
 		}
-		mockInputOutput.mockImplementationOnce(async (_command, config: CustomCommonOutputProducer<AppCreationResponse>) => {
-			config.buildTableOutput(appCreate)
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, config) => {
+			(config as CustomCommonOutputProducer<AppCreationResponse>).buildTableOutput(appCreate)
 		})
 		const buildTableSpy = jest.spyOn(DefaultTableGenerator.prototype, 'buildTableFromItem')
 
 		await expect(AppCreateCommand.run([])).resolves.not.toThrow()
 
-		expect(mockInputOutput).toBeCalledWith(
+		expect(mockInputAndOutputItem).toBeCalledWith(
 			expect.any(AppCreateCommand),
 			expect.objectContaining({
 				buildTableOutput: expect.any(Function),
@@ -51,7 +51,7 @@ describe('AppCreateCommand', () => {
 
 	it('calls correct create endpoint', async () => {
 		const appRequest: AppRequest = {}
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 
@@ -68,7 +68,7 @@ describe('AppCreateCommand', () => {
 				functions: [arn, anotherArn],
 			},
 		}
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 
@@ -84,7 +84,7 @@ describe('AppCreateCommand', () => {
 		const appRequest: AppRequest = {
 			webhookSmartApp: {},
 		}
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 
@@ -98,7 +98,7 @@ describe('AppCreateCommand', () => {
 				functions: [],
 			},
 		}
-		mockInputOutput.mockImplementation(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementation(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 
@@ -126,7 +126,7 @@ describe('AppCreateCommand', () => {
 				functions: [arn],
 			},
 		}
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 
@@ -143,7 +143,7 @@ describe('AppCreateCommand', () => {
 				functions: [arn],
 			},
 		}
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 
@@ -160,7 +160,7 @@ describe('AppCreateCommand', () => {
 				functions: [arn],
 			},
 		}
-		mockInputOutput.mockImplementationOnce(async (_command, _config, actionFunction) => {
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
 
