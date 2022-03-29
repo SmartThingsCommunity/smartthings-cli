@@ -1,7 +1,6 @@
 import { Rule, RuleRequest, RulesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { ActionFunction, APICommand, CommonOutputProducer, inputAndOutputItem, SmartThingsCommandInterface }
-	from '@smartthings/cli-lib'
+import { inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { chooseRule, getRuleWithLocation, RuleWithLocation } from '../../../lib/commands/rules/rules-util'
 import RulesUpdateCommand from '../../../commands/rules/update'
@@ -26,16 +25,10 @@ jest.mock('../../../lib/commands/rules/rules-util', () => {
 })
 
 describe('RulesUpdateCommand', () => {
-	const inputAndOutputItemMock = inputAndOutputItem as unknown as
-		jest.Mock<Promise<void>, [SmartThingsCommandInterface, CommonOutputProducer<Rule>,
-			ActionFunction<void, RuleRequest, Rule>]>
-
+	const inputAndOutputItemMock = jest.mocked(inputAndOutputItem)
 	const ruleWithLocation = { locationId: 'location-id' } as RuleWithLocation
-	const chooseRuleMock = chooseRule as unknown as
-		jest.Mock<Promise<string>, [APICommand, string, string | undefined, string | undefined]>
-	const getRuleWithLocationMock = (getRuleWithLocation as
-			jest.Mock<Promise<RuleWithLocation>, [SmartThingsClient, string, string | undefined]>)
-		.mockResolvedValue(ruleWithLocation)
+	const chooseRuleMock = jest.mocked(chooseRule)
+	const getRuleWithLocationMock = jest.mocked(getRuleWithLocation).mockResolvedValue(ruleWithLocation)
 
 	afterEach(() => {
 		jest.clearAllMocks()

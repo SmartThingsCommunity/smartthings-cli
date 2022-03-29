@@ -1,4 +1,3 @@
-import { v4 as uuid } from 'uuid'
 import { outputListing, selectFromList } from '@smartthings/cli-lib'
 import LocationsCommand, { chooseLocation } from '../../commands/locations'
 import { LocationsEndpoint } from '@smartthings/core-sdk'
@@ -18,7 +17,7 @@ jest.mock('@smartthings/cli-lib', () => {
 const listSpy = jest.spyOn(LocationsEndpoint.prototype, 'list').mockImplementation()
 
 describe('chooseLocation', () => {
-	const mockSelect = jest.mocked(selectFromList)
+	const mockSelectFromList = jest.mocked(selectFromList)
 
 	afterEach(() => {
 		jest.clearAllMocks()
@@ -28,7 +27,7 @@ describe('chooseLocation', () => {
 		const command = new LocationsCommand([], new Config({ root: '' }))
 		await command.setup({}, [], {})
 
-		mockSelect.mockImplementationOnce(async (_command, _config, _id, listFunction) => {
+		mockSelectFromList.mockImplementationOnce(async (_command, _config, _id, listFunction) => {
 			await listFunction()
 			return 'selected-location-id'
 		})
@@ -65,7 +64,7 @@ describe('LocationsCommand', () => {
 	})
 
 	it('calls outputListing when id is provided', async () => {
-		const locationId = uuid()
+		const locationId = 'locationId'
 		await expect(LocationsCommand.run([locationId])).resolves.not.toThrow()
 
 		expect(mockListing).toBeCalledTimes(1)

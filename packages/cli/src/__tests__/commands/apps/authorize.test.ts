@@ -5,7 +5,7 @@ import { addPermission } from '../../../lib/aws-utils'
 jest.mock('../../../lib/aws-utils')
 
 describe('AppsAuthorizeCommand', () => {
-	const mockAddPermission = addPermission as jest.Mock
+	const mockAddPermission = jest.mocked(addPermission)
 	const logSpy = jest.spyOn(AppsAuthorizeCommand.prototype, 'log').mockImplementation()
 	const success = 'Authorization added'
 	const arn = 'arn'

@@ -5,7 +5,7 @@ import { NoLogLogger } from '@smartthings/core-sdk'
 import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, stdinIsTTY, yamlExists } from '../io-util'
 import { LogManager } from '../logger'
 import { validData, validYAML, SimpleType } from './test-lib/simple-type'
-import { existsSync, PathLike } from 'fs'
+import { existsSync } from 'fs'
 import { CliUx } from '@oclif/core'
 
 
@@ -89,7 +89,7 @@ describe('stdinIsTTY', () => {
 })
 
 describe('yamlExists', () => {
-	const mockExistsSync = existsSync as jest.Mock<boolean, [PathLike]>
+	const mockExistsSync = jest.mocked(existsSync)
 
 	afterEach(() => {
 		jest.clearAllMocks()

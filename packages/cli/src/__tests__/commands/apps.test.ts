@@ -14,7 +14,7 @@ jest.mock('@smartthings/cli-lib', () => {
 
 describe('AppsCommand', () => {
 	const appId = 'appId'
-	const mockOutputListing = outputListing as unknown as jest.Mock
+	const mockOutputListing = jest.mocked(outputListing)
 	const getSpy = jest.spyOn(AppsEndpoint.prototype, 'get').mockImplementation()
 	const listSpy = jest.spyOn(AppsEndpoint.prototype, 'list').mockImplementation()
 
@@ -144,5 +144,6 @@ describe('AppsCommand', () => {
 		)
 	})
 
+	//TODO
 	test.todo('listApps includes URLs and ARNs')
 })

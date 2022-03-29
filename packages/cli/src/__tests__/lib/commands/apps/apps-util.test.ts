@@ -30,8 +30,8 @@ describe('chooseApp', () => {
 	const stringIndex = 'stringIndex'
 	const listSpy = jest.spyOn(AppsEndpoint.prototype, 'list').mockResolvedValue([])
 	const mockStringTranslateToId = jest.mocked(stringTranslateToId)
-	const mockSelect = jest.mocked(selectFromList)
-	const mockChooseOpts = jest.mocked(chooseOptionsWithDefaults)
+	const mockSelectFromList = jest.mocked(selectFromList)
+	const mockChooseOptionsWithDefaults = jest.mocked(chooseOptionsWithDefaults)
 
 	class MockCommand extends APICommand {
 		async run(): Promise<void> {
@@ -42,7 +42,7 @@ describe('chooseApp', () => {
 	const command = new MockCommand([], new Config({ root: '' }))
 
 	beforeAll(() => {
-		mockChooseOpts.mockImplementation(() => {
+		mockChooseOptionsWithDefaults.mockImplementation(() => {
 			return chooseOptionsDefaults
 		})
 	})
@@ -63,7 +63,7 @@ describe('chooseApp', () => {
 			...chooseOptionsDefaults,
 			allowIndex: true,
 		}
-		mockChooseOpts.mockReturnValueOnce(opts)
+		mockChooseOptionsWithDefaults.mockReturnValueOnce(opts)
 		mockStringTranslateToId.mockResolvedValueOnce(appId)
 
 		const expectedConfig = {
@@ -114,7 +114,7 @@ describe('chooseApp', () => {
 			...chooseOptionsDefaults,
 			allowIndex: true,
 		}
-		mockChooseOpts.mockReturnValueOnce(opts)
+		mockChooseOptionsWithDefaults.mockReturnValueOnce(opts)
 		mockStringTranslateToId.mockResolvedValueOnce(appId)
 
 		await chooseApp(command, stringIndex, opts)
@@ -123,13 +123,13 @@ describe('chooseApp', () => {
 		expect(selectFromList).toBeCalledTimes(1)
 
 		const translateList = mockStringTranslateToId.mock.calls[0][2]
-		const selectList = mockSelect.mock.calls[0][3]
+		const selectList = mockSelectFromList.mock.calls[0][3]
 
 		expect(translateList).toBe(selectList)
 	})
 
 	it('uses correct endpoint to list apps', async () => {
-		mockSelect.mockImplementationOnce(async (_command, _config, _id, listFunction) => {
+		mockSelectFromList.mockImplementationOnce(async (_command, _config, _id, listFunction) => {
 			await listFunction()
 			return appId
 		})
@@ -141,5 +141,6 @@ describe('chooseApp', () => {
 })
 
 describe('buildTableOutput', () => {
+	// TODO
 	it.todo('returns simple string when app settings are not present')
 })

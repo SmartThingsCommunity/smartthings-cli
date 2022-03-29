@@ -1,7 +1,5 @@
 import { RulesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand } from '@smartthings/cli-lib'
-
 import RulesDeleteCommand from '../../../commands/rules/delete'
 import { chooseRule, getRuleWithLocation, RuleWithLocation } from '../../../lib/commands/rules/rules-util'
 
@@ -19,11 +17,8 @@ jest.mock('../../../lib/commands/rules/rules-util')
 
 describe('RulesDeleteCommand', () => {
 	const ruleWithLocation = { locationId: 'location-id' } as RuleWithLocation
-	const chooseRuleMock = chooseRule as unknown as
-		jest.Mock<Promise<string>, [APICommand, string, string | undefined, string | undefined]>
-	const getRuleWithLocationMock = (getRuleWithLocation as
-			jest.Mock<Promise<RuleWithLocation>, [SmartThingsClient, string, string | undefined]>)
-		.mockResolvedValue(ruleWithLocation)
+	const chooseRuleMock = jest.mocked(chooseRule)
+	const getRuleWithLocationMock = jest.mocked(getRuleWithLocation).mockResolvedValue(ruleWithLocation)
 
 	const deleteSpy = jest.spyOn(RulesEndpoint.prototype, 'delete').mockImplementation()
 	const logSpy = jest.spyOn(RulesDeleteCommand.prototype, 'log').mockImplementation()

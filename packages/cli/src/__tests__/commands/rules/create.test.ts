@@ -1,7 +1,6 @@
 import { Rule, RuleRequest, RulesEndpoint } from '@smartthings/core-sdk'
 
-import { ActionFunction, APICommand, CommonOutputProducer, inputAndOutputItem,
-	SmartThingsCommandInterface } from '@smartthings/cli-lib'
+import { inputAndOutputItem } from '@smartthings/cli-lib'
 
 import RulesCreateCommand from '../../../commands/rules/create'
 import { chooseLocation } from '../../../commands/locations'
@@ -19,12 +18,8 @@ jest.mock('@smartthings/cli-lib', () => {
 jest.mock('../../../commands/locations')
 
 describe('RulesCreateCommand', () => {
-	const inputAndOutputItemMock = inputAndOutputItem as unknown as
-		jest.Mock<Promise<void>, [SmartThingsCommandInterface, CommonOutputProducer<Rule>,
-			ActionFunction<void, RuleRequest, Rule>]>
-
-	const chooseLocationMock = chooseLocation as
-		jest.Mock<Promise<string>, [APICommand, string | undefined]>
+	const inputAndOutputItemMock = jest.mocked(inputAndOutputItem)
+	const chooseLocationMock = jest.mocked(chooseLocation)
 
 	afterEach(() => {
 		jest.clearAllMocks()

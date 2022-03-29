@@ -1,6 +1,5 @@
-import { APICommand, ChooseOptions, CommonOutputProducer, GetDataFunction, outputItem, SmartThingsCommandInterface } from '@smartthings/cli-lib'
+import { outputItem } from '@smartthings/cli-lib'
 import { AppOAuth, AppsEndpoint } from '@smartthings/core-sdk'
-import { v4 as uuid } from 'uuid'
 import AppOauthCommand from '../../../commands/apps/oauth'
 import { chooseApp } from '../../../lib/commands/apps/apps-util'
 
@@ -17,14 +16,12 @@ jest.mock('@smartthings/cli-lib', () => {
 jest.mock('../../../lib/commands/apps/apps-util')
 
 describe('AppOauthCommand', () => {
-	const mockOutput = outputItem as unknown as
-		jest.Mock<Promise<AppOAuth>, [SmartThingsCommandInterface, CommonOutputProducer<AppOAuth>, GetDataFunction<AppOAuth>]>
-	const mockChooseApp = chooseApp as
-		jest.Mock<Promise<string>, [APICommand, string | undefined, Partial<ChooseOptions> | undefined]>
+	const mockOutputItem = jest.mocked(outputItem)
+	const mockChooseApp = jest.mocked(chooseApp)
 	const getOauthSpy = jest.spyOn(AppsEndpoint.prototype, 'getOauth').mockImplementation()
 
 	beforeAll(() => {
-		mockOutput.mockImplementation()
+		mockOutputItem.mockImplementation()
 	})
 
 	afterEach(() => {
@@ -44,7 +41,7 @@ describe('AppOauthCommand', () => {
 	it('calls outputItem with correct config', async () => {
 		await expect(AppOauthCommand.run([])).resolves.not.toThrow()
 
-		expect(mockOutput).toBeCalledWith(
+		expect(mockOutputItem).toBeCalledWith(
 			expect.any(AppOauthCommand),
 			expect.objectContaining({
 				tableFieldDefinitions: expect.anything(),
@@ -54,11 +51,11 @@ describe('AppOauthCommand', () => {
 	})
 
 	it('uses correct endpoint to get oauth details', async () => {
-		const appId = uuid()
+		const appId = 'appId'
 		mockChooseApp.mockResolvedValueOnce(appId)
 		const appOAuth: AppOAuth = { clientName: 'test' }
 		getOauthSpy.mockResolvedValueOnce(appOAuth)
-		mockOutput.mockImplementationOnce(async (_command, _config, actionFunction: GetDataFunction<AppOAuth>) => {
+		mockOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			return actionFunction()
 		})
 

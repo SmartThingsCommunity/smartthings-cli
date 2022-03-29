@@ -1,5 +1,5 @@
-import { APICommand, ListDataFunction, ListingOutputConfig, LookupDataFunction, outputListing, SmartThingsCommandInterface } from '@smartthings/cli-lib'
-import { DevicePreferencesEndpoint, LocaleReference, PreferenceLocalization } from '@smartthings/core-sdk'
+import { outputListing } from '@smartthings/cli-lib'
+import { DevicePreferencesEndpoint } from '@smartthings/core-sdk'
 import DevicePreferencesTranslationsCommand from '../../../commands/devicepreferences/translations'
 import { chooseDevicePreference } from '../../../lib/commands/devicepreferences/devicepreferences-util'
 import { tableFieldDefinitions } from '../../../lib/commands/devicepreferences/translations/translations-util'
@@ -17,15 +17,8 @@ jest.mock('@smartthings/cli-lib', () => {
 })
 
 describe('DevicePreferencesTranslationsCommand', () => {
-	const mockChoosePreference = chooseDevicePreference as jest.Mock<Promise<string>, [APICommand, string | undefined]>
-	const mockOutputListing = outputListing as unknown as
-		jest.Mock<Promise<void>, [
-			SmartThingsCommandInterface,
-			ListingOutputConfig<PreferenceLocalization, LocaleReference>,
-			string | undefined,
-			ListDataFunction<LocaleReference>,
-			LookupDataFunction<string, PreferenceLocalization>
-		]>
+	const mockChooseDevicePreference = jest.mocked(chooseDevicePreference)
+	const mockOutputListing = jest.mocked(outputListing)
 	const getTranslationsSpy = jest.spyOn(DevicePreferencesEndpoint.prototype, 'getTranslations').mockImplementation()
 	const listTranslationsSpy = jest.spyOn(DevicePreferencesEndpoint.prototype, 'listTranslations').mockImplementation()
 
@@ -33,7 +26,7 @@ describe('DevicePreferencesTranslationsCommand', () => {
 	const localeTag = 'localeTag'
 
 	beforeAll(() => {
-		mockChoosePreference.mockResolvedValue(preferenceId)
+		mockChooseDevicePreference.mockResolvedValue(preferenceId)
 	})
 
 	afterEach(() => {
