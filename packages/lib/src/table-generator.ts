@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import at from 'lodash.at'
 import Table from 'cli-table'
 
 import { Logger } from '@smartthings/core-sdk'
@@ -67,10 +67,10 @@ export type TableFieldDefinition<T> = string | {
 	 * The name of the property from which to get data. This reference a nested
 	 * property if desired.
 	 *
-	 * The Lodash _.at function is used to access the property but any path
+	 * The lodash.at function is used to access the property but any path
 	 * used should return a single value.
 	 *
-	 * https://lodash.com/docs/4.17.15#at
+	 * https://lodash.com/docs#at
 	 *
 	 * The default label is also derived from this field when the `label`
 	 * property is not included. Only the final property in the path is used.
@@ -168,6 +168,7 @@ export class DefaultTableGenerator implements TableGenerator {
 
 		return this.convertToLabel(definition.prop)
 	}
+
 	private getDisplayValueFor<T>(item: T, definition: TableFieldDefinition<T>): string {
 		if (!(typeof definition === 'string') && definition.value) {
 			return definition.value(item) ?? ''
@@ -178,9 +179,11 @@ export class DefaultTableGenerator implements TableGenerator {
 			throw Error('both label and value are required if prop is not specified')
 		}
 
+		// No types satisfy the lodash.at documented (Object, string|string[])
+		// Here we are passing (Object, string)
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		const matches = _.at(item, propertyName)
+		const matches = at(item, propertyName)
 		if (matches.length === 0) {
 			this.logger.debug(`did not find match for ${propertyName} in ${JSON.stringify(item)}`)
 			return ''
