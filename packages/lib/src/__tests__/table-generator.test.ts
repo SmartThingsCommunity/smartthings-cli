@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import at from 'lodash.at'
 import { URL } from 'url'
 
 import { logManager } from '../logger'
@@ -8,6 +8,13 @@ import { debugMock, warnMock } from './test-lib/mock-logger'
 
 
 jest.mock('../logger')
+jest.mock('lodash.at', () => {
+	const actualAt = jest.requireActual('lodash.at')
+	return {
+		__esModule: true,
+		default: jest.fn(actualAt),
+	}
+})
 
 /**
  * Quote characters that are special to regular expressions.
@@ -137,6 +144,8 @@ const basicFieldDefinitions: TableFieldDefinition<SimpleData>[] = [
 ]
 
 describe('tableGenerator', () => {
+	const mockAt = jest.mocked(at)
+
 	let tableGenerator: TableGenerator
 
 	beforeEach(() => {
@@ -287,29 +296,29 @@ describe('tableGenerator', () => {
 	})
 
 	it('uses empty string for no match', () => {
-		const atSpy = jest.spyOn(_, 'at').mockReturnValue([])
+		mockAt.mockReturnValue([])
 
 		const output = tableGenerator.buildTableFromList([{}], ['fieldName'])
 
 		expect(output).toHaveItemValues([''])
 		expect(logManager.getLogger).toHaveBeenCalledTimes(1)
 		expect(logManager.getLogger).toHaveBeenCalledWith('table-manager')
-		expect(atSpy).toHaveBeenCalledTimes(1)
-		expect(atSpy).toHaveBeenCalledWith({}, 'fieldName')
+		expect(mockAt).toHaveBeenCalledTimes(1)
+		expect(mockAt).toHaveBeenCalledWith({}, 'fieldName')
 		expect(debugMock).toHaveBeenCalledTimes(1)
 		expect(debugMock).toHaveBeenCalledWith('did not find match for fieldName in {}')
 	})
 
 	it('combines data on multiple matches', () => {
-		const atSpy = jest.spyOn(_, 'at').mockReturnValue(['one', 'two'])
+		mockAt.mockReturnValue(['one', 'two'])
 
 		const output = tableGenerator.buildTableFromList([{}], ['fieldName'])
 
 		expect(output).toHaveItemValues(['one, two'])
 		expect(logManager.getLogger).toHaveBeenCalledTimes(1)
 		expect(logManager.getLogger).toHaveBeenCalledWith('table-manager')
-		expect(atSpy).toHaveBeenCalledTimes(1)
-		expect(atSpy).toHaveBeenCalledWith({}, 'fieldName')
+		expect(mockAt).toHaveBeenCalledTimes(1)
+		expect(mockAt).toHaveBeenCalledWith({}, 'fieldName')
 		expect(warnMock).toHaveBeenCalledTimes(1)
 		expect(warnMock).toHaveBeenCalledWith('found more than one match for fieldName in {}')
 	})

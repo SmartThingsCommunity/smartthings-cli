@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { App, AppType } from '@smartthings/core-sdk'
 import { APICommand, selectFromList, SelectingConfig } from '@smartthings/cli-lib'
 
@@ -24,10 +23,10 @@ export default class AppRegisterCommand extends APICommand {
 		}
 		const id = await selectFromList<App>(this, config, {
 			preselectedId: args.id,
-			listItems: async () => _.flatten(await Promise.all([
+			listItems: async () => (await Promise.all([
 				this.client.apps.list({ appType: AppType.WEBHOOK_SMART_APP }),
 				this.client.apps.list({ appType: AppType.API_ONLY }),
-			])),
+			])).flat(),
 			promptMessage: 'Select an app to register.',
 		})
 		await this.client.apps.register(id),

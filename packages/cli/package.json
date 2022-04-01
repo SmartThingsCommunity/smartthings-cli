@@ -66,13 +66,12 @@
 		"@oclif/plugin-not-found": "^2.3.1",
 		"@oclif/plugin-plugins": "^2.1.0",
 		"@smartthings/cli-lib": "^1.0.0-beta.0",
-		"@smartthings/core-sdk": "^3.4.0",
+		"@smartthings/core-sdk": "^3.4.1",
 		"@smartthings/plugin-cli-edge": "^1.10.1",
 		"aws-sdk": "^2.1073.0",
 		"cli-table": "^0.3.11",
 		"inquirer": "^8.2.0",
-		"js-yaml": "^4.1.0",
-		"lodash": "^4.17.21"
+		"js-yaml": "^4.1.0"
 	},
 	"devDependencies": {
 		"@smartthings/cli-testlib": "^1.0.0-beta.1",
@@ -80,7 +79,6 @@
 		"@types/inquirer": "^8.2.0",
 		"@types/jest": "^27.4.1",
 		"@types/js-yaml": "^4.0.5",
-		"@types/lodash": "^4.14.178",
 		"@types/node": "^16.11.24",
 		"@typescript-eslint/eslint-plugin": "^5.11.0",
 		"@typescript-eslint/parser": "^5.11.0",

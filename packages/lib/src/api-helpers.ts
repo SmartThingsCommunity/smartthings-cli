@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { SmartThingsClient, OrganizationResponse, CapabilityNamespace } from '@smartthings/core-sdk'
 
 
@@ -42,12 +41,12 @@ function notEmpty<T>(value: T | null | undefined): value is T {
 	return value !== null && value !== undefined
 }
 
-function uniqueLocationIds(from: WithLocation[]): string[] {
+function uniqueLocationIds(list: WithLocation[]): string[] {
 	// Note -- the `.filter(notEmpty))` is here because the source types such
 	// as InstalledApp are currently defined with optional locationId even
 	// though locationId is actually always set. The filter can be removed
 	// once that issue is corrected.
-	return _.uniq(from.map(it => it.locationId).filter(notEmpty))
+	return Array.from(new Set(list.map(item => item.locationId).filter(notEmpty)))
 }
 
 export async function withLocationsAndRooms<T extends WithRoom>(client: SmartThingsClient,

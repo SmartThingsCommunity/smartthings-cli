@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 import { Flags } from '@oclif/core'
 
 import { InstalledSchemaApp, SmartThingsClient } from '@smartthings/core-sdk'
@@ -20,18 +18,18 @@ export async function installedSchemaInstances(client: SmartThingsClient, locati
 		locationIds = (await client.locations.list()).map(it => it.locationId)
 	}
 
-	const isas = _.flatten(await Promise.all(locationIds.map(async (locationId) => {
+	const installedApps = (await Promise.all(locationIds.map(async (locationId) => {
 		try {
 			return (await client.schema.installedApps(locationId))
 		} catch(e) {
 			return []
 		}
-	})))
+	}))).flat()
 
 	if (verbose) {
-		return await withLocations(client, isas)
+		return await withLocations(client, installedApps)
 	}
-	return isas
+	return installedApps
 }
 
 export default class InstalledSchemaAppsCommand extends APICommand {
