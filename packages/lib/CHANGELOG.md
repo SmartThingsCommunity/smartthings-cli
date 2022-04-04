@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.0.0-beta.2
+
+### Patch Changes
+
+- [#271](https://github.com/SmartThingsCommunity/smartthings-cli/pull/271) [`2ed225f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/2ed225f6fd4843aad4550634d49facb87ede7c7d) Thanks [@rossiam](https://github.com/rossiam)! - add config:reset command
+
+* [#271](https://github.com/SmartThingsCommunity/smartthings-cli/pull/271) [`2ed225f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/2ed225f6fd4843aad4550634d49facb87ede7c7d) Thanks [@rossiam](https://github.com/rossiam)! - added `configKeyForDefaultValue` option to `selectFromList` function
+  refactor selectFromList
+  added `stringArrayConfigValue` method to `SmartThingsCommand`
+
 ## 1.0.0-beta.1
 
 ### Patch Changes
