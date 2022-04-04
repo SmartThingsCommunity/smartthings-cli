@@ -41,18 +41,29 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      # decouple Github Release from library-only publishing
+      - name: Check if CLI Published
+        id: cli-release
+        run: echo "::set-output name=published::$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq 'any(.name == "@smartthings/cli")')"
+
+      - name: Derive Required Metadata
+        id: cli-metadata
+        if: steps.cli-release.outputs.published == 'true'
+        run: | # derive latest info from changesets output
+          PUBLISHED_PACKAGE=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq 'map(select(.name == "@smartthings/cli")) | .[]')
+          echo "::set-output name=tag::$(echo $PUBLISHED_PACKAGE | jq --raw-output '.name + "@" + .version')"
+          echo "::set-output name=version::$(echo $PUBLISHED_PACKAGE | jq --raw-output '.version')"
+
       - name: Package CLI
-        id: package-cli
-        # decouple Github Release from library-only publishing
-        if: steps.changesets.outputs.published == 'true' && contains(steps.changesets.outputs.publishedPackages.*.name, '@smartthings/cli')
-        run: | # output latest tag from changesets
-          echo "::set-output name=tag::$(git describe --abbrev=0 --match '@smartthings/cli@*')"
-          npm run package
+        id: cli-package
+        if: steps.cli-metadata.outcome == 'success'
+        run: npm run package
 
       - name: Create Github Release
-        if: steps.package-cli.outcome == 'success'
+        if: steps.cli-package.outcome == 'success'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.package-cli.tag }}
+          name: ${{ steps.cli-metadata.outputs.version }}
+          tag_name: ${{ steps.cli-metadata.outputs.tag }}
           prerelease: true
           files: packages/cli/dist_bin/assets/*
