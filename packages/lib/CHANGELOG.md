@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.0-beta.3
+
+### Patch Changes
+
+- [#274](https://github.com/SmartThingsCommunity/smartthings-cli/pull/274) [`efc1eed`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/efc1eed852a61399342b5040c2d60561bbfb17af) Thanks [@john-u](https://github.com/john-u)! - replace usage of lodash with native ES or separate lodash modules
+
+* [#278](https://github.com/SmartThingsCommunity/smartthings-cli/pull/278) [`b0cb399`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b0cb3990dc07b0072d50802de95168acb4e94467) Thanks [@john-u](https://github.com/john-u)! - update oclif packages
+
 ## 1.0.0-beta.2
 
 ### Patch Changes
