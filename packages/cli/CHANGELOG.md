@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.2
+
+### Minor Changes
+
+- [#279](https://github.com/SmartThingsCommunity/smartthings-cli/pull/279) [`08ea9dd`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/08ea9dd52e7af829ba0629d9e7c9a89a7505baca) Thanks [@rossiam](https://github.com/rossiam)! - support saving default hub and channel
+
 ## 1.0.0-beta.1
 
 ### Patch Changes
