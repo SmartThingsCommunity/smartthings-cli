@@ -7,6 +7,7 @@
     "@smartthings/cli-testlib": "1.0.0-beta.0"
   },
   "changesets": [
+    "chilly-chicken-taste",
     "fair-islands-prove",
     "giant-poems-reflect",
     "gorgeous-paws-rush",
