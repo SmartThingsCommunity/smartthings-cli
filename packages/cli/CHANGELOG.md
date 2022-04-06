@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.3
+
+### Patch Changes
+
+- [#282](https://github.com/SmartThingsCommunity/smartthings-cli/pull/282) [`48236e7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/48236e7f19a17b7b36d42a6741ec5adb11d32cee) Thanks [@rossiam](https://github.com/rossiam)! - Updated pkg tool used to build binaries and target Node 16.
+
 ## 1.0.0-beta.2
 
 ### Minor Changes
