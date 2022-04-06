@@ -57,7 +57,7 @@ jobs:
       - name: Package CLI
         id: cli-package
         if: steps.cli-metadata.outcome == 'success'
-        run: npm run package
+        run: pwd && ls -l . packages/cli packages/cli/lib && echo 'packaging' && npm run package && echo 'done packaging' && pwd && ls -l . packages/cli packages/cli/lib packages/cli/dist_bin
 
       - name: Create Github Release
         if: steps.cli-package.outcome == 'success'
