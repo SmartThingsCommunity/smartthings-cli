@@ -114,7 +114,7 @@
 		"test-watch": "jest --watch",
 		"test-coverage": "jest --coverage=true",
 		"postpack": "rimraf oclif.manifest.json",
-		"prepack": "rimraf lib && tsc -b && oclif manifest && oclif readme",
+		"prepack": "tsc -b && oclif manifest && oclif readme",
 		"version": "oclif readme && git add README.md",
 		"package": "pkg package.json && npm run zip-binaries",
 		"zip-binaries": "./zip-binaries.sh"
