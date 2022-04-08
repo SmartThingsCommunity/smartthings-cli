@@ -3,16 +3,6 @@ import OrganizationsCommand from '../../commands/organizations'
 import { OrganizationsEndpoint } from '@smartthings/core-sdk'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		outputListing: jest.fn(),
-		selectFromList: jest.fn(),
-	}
-})
-
 const listSpy = jest.spyOn(OrganizationsEndpoint.prototype, 'list').mockImplementation()
 
 describe('OrganizationsCommand', () => {

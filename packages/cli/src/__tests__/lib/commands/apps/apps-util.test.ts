@@ -1,29 +1,12 @@
 import { Config } from '@oclif/core'
 
-import { AppsEndpoint, NoOpAuthenticator, SmartThingsClient } from '@smartthings/core-sdk'
+import { AppsEndpoint } from '@smartthings/core-sdk'
 
 import { APICommand, ChooseOptions, chooseOptionsDefaults, chooseOptionsWithDefaults,
 	selectFromList, stringTranslateToId } from '@smartthings/cli-lib'
 
 import { chooseApp } from '../../../../lib/commands/apps/apps-util'
 
-
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		// TODO export from testlib
-		APICommand: class {
-			get client(): SmartThingsClient {
-				return new SmartThingsClient(new NoOpAuthenticator)
-			}
-		},
-		chooseOptionsWithDefaults: jest.fn(opts => opts),
-		stringTranslateToId: jest.fn(),
-		selectFromList: jest.fn(),
-	}
-})
 
 describe('chooseApp', () => {
 	const appId = 'appId'
@@ -40,12 +23,6 @@ describe('chooseApp', () => {
 	}
 
 	const command = new MockCommand([], new Config({ root: '' }))
-
-	beforeAll(() => {
-		mockChooseOptionsWithDefaults.mockImplementation(() => {
-			return chooseOptionsDefaults
-		})
-	})
 
 	afterEach(() => {
 		jest.clearAllMocks()

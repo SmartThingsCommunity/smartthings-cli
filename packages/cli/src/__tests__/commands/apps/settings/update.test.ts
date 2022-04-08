@@ -4,15 +4,6 @@ import AppSettingsUpdateCommand from '../../../../commands/apps/settings/update'
 import { chooseApp } from '../../../../lib/commands/apps/apps-util'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		inputAndOutputItem: jest.fn(),
-	}
-})
-
 jest.mock('../../../../lib/commands/apps/apps-util')
 
 describe('AppSettingsUpdateCommand', () => {

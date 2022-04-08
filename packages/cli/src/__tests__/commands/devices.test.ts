@@ -9,16 +9,6 @@ import DevicesCommand from '../../commands/devices'
 import { buildTableOutput } from '../../lib/commands/devices/devices-util'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		outputListing: jest.fn(),
-		withLocationsAndRooms: jest.fn(),
-	}
-})
-
 jest.mock('../../lib/commands/devices/devices-util')
 
 describe('DevicesCommand', () => {

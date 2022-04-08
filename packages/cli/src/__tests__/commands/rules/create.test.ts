@@ -6,15 +6,6 @@ import RulesCreateCommand from '../../../commands/rules/create'
 import { chooseLocation } from '../../../commands/locations'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		inputAndOutputItem: jest.fn(),
-	}
-})
-
 jest.mock('../../../commands/locations')
 
 describe('RulesCreateCommand', () => {

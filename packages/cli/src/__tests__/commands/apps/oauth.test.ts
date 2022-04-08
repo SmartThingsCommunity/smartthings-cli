@@ -4,15 +4,6 @@ import AppOauthCommand from '../../../commands/apps/oauth'
 import { chooseApp } from '../../../lib/commands/apps/apps-util'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		outputItem: jest.fn(),
-	}
-})
-
 jest.mock('../../../lib/commands/apps/apps-util')
 
 describe('AppOauthCommand', () => {

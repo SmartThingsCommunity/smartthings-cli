@@ -11,6 +11,7 @@ import { buildMockCommand, exitMock } from './test-lib/mock-command'
 jest.mock('../cli-config')
 jest.mock('../command-util')
 jest.mock('../basic-io')
+jest.mock('@oclif/core')
 
 describe('select', () => {
 	const item1 = { str: 'string-id-1', num: 5 }

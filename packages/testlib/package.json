@@ -28,7 +28,8 @@
 		"directory": "packages/testlib"
 	},
 	"dependencies": {
-		"@smartthings/cli-lib": "^1.0.0-beta.1"
+		"@smartthings/cli-lib": "^1.0.0-beta.1",
+		"@smartthings/core-sdk": "^3.4.1"
 	},
 	"devDependencies": {
 		"@types/jest": "^27.4.1",

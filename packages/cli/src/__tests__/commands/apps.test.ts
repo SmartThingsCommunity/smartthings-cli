@@ -3,15 +3,6 @@ import { AppClassification, AppsEndpoint, AppType } from '@smartthings/core-sdk'
 import AppsCommand from '../../commands/apps'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		outputListing: jest.fn(),
-	}
-})
-
 describe('AppsCommand', () => {
 	const appId = 'appId'
 	const mockOutputListing = jest.mocked(outputListing)

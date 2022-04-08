@@ -5,20 +5,6 @@ import { Config } from '@oclif/core'
 import { APICommand, selectFromList } from '@smartthings/cli-lib'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		APICommand: class {
-			get client(): SmartThingsClient {
-				return new SmartThingsClient(new NoOpAuthenticator)
-			}
-		},
-		selectFromList: jest.fn(),
-	}
-})
-
 describe('rooms-util', () => {
 	const locationId = 'locationId'
 	const roomId = 'roomId'

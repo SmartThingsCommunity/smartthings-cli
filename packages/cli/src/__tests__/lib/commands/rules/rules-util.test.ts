@@ -7,16 +7,6 @@ import { chooseRule, getRulesByLocation, getRuleWithLocation, RuleWithLocation,
 import * as rulesUtil from '../../../../lib/commands/rules/rules-util'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		selectFromList: jest.fn(),
-		summarizedText: 'summarized text',
-	}
-})
-
 describe('rules-util', () => {
 	const location1 = { locationId: 'location-id-1', name: 'location-name-1' }
 	const location2 = { locationId: 'location-id-2', name: 'location-name-2' }
