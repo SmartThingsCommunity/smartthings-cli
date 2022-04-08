@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.4
+
+### Patch Changes
+
+- [#284](https://github.com/SmartThingsCommunity/smartthings-cli/pull/284) [`51a9c9a`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/51a9c9abec2e05d626979cb8dd59c24f88b01ef7) Thanks [@rossiam](https://github.com/rossiam)! - build fix (don't remove compiled files before publish)
+
 ## 1.0.0-beta.3
 
 ### Patch Changes
