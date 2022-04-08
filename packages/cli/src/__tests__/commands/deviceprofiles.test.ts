@@ -3,15 +3,6 @@ import { outputListing } from '@smartthings/cli-lib'
 import DeviceProfilesCommand from '../../commands/deviceprofiles'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		outputListing: jest.fn(),
-	}
-})
-
 describe('DevicesProfilesCommand', () => {
 	const outputListingMock = jest.mocked(outputListing)
 

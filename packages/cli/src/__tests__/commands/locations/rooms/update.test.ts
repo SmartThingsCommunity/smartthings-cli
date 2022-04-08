@@ -4,15 +4,6 @@ import RoomsUpdateCommand from '../../../../commands/locations/rooms/update'
 import { chooseRoom } from '../../../../lib/commands/locations/rooms/rooms-util'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		inputAndOutputItem: jest.fn(),
-	}
-})
-
 jest.mock('../../../../lib/commands/locations/rooms/rooms-util')
 
 describe('RoomsUpdateCommand', () => {

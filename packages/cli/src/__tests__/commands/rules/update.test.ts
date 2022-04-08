@@ -6,16 +6,6 @@ import { chooseRule, getRuleWithLocation, RuleWithLocation } from '../../../lib/
 import RulesUpdateCommand from '../../../commands/rules/update'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		inputAndOutputItem: jest.fn(),
-		selectFromList: jest.fn(),
-	}
-})
-
 jest.mock('../../../lib/commands/rules/rules-util', () => {
 	return {
 		tableFieldDefinitions: ['field1'],

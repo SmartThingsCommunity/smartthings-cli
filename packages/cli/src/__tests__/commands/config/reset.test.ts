@@ -6,15 +6,8 @@ import { resetManagedConfig } from '@smartthings/cli-lib'
 
 
 jest.mock('inquirer')
+jest.mock('@oclif/core')
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		resetManagedConfig: jest.fn(),
-	}
-})
 
 describe('ConfigResetCommand', () => {
 	const promptMock = jest.mocked(inquirer.prompt)

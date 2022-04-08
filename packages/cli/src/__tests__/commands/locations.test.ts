@@ -4,16 +4,6 @@ import { LocationsEndpoint } from '@smartthings/core-sdk'
 import { Config } from '@oclif/core'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		outputListing: jest.fn(),
-		selectFromList: jest.fn(),
-	}
-})
-
 const listSpy = jest.spyOn(LocationsEndpoint.prototype, 'list').mockImplementation()
 
 describe('chooseLocation', () => {

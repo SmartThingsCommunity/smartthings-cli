@@ -5,7 +5,7 @@ module.exports = {
 		'**/__tests__/**/*.test.ts',
 	],
 	setupFilesAfterEnv: [
-		'<rootDir>/src/__tests__/setup/jest.setup.ts',
+		'@smartthings/cli-testlib',
 		'jest-extended',
 	],
 	collectCoverageFrom: ['src/**/*.ts'],

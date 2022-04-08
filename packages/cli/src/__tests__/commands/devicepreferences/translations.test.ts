@@ -7,14 +7,6 @@ import { tableFieldDefinitions } from '../../../lib/commands/devicepreferences/t
 
 jest.mock('../../../lib/commands/devicepreferences/devicepreferences-util')
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		outputListing: jest.fn(),
-	}
-})
 
 describe('DevicePreferencesTranslationsCommand', () => {
 	const mockChooseDevicePreference = jest.mocked(chooseDevicePreference)

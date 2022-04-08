@@ -5,15 +5,6 @@ import RulesCommand from '../../commands/rules'
 import { getRulesByLocation, getRuleWithLocation, RuleWithLocation } from '../../lib/commands/rules/rules-util'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		outputListing: jest.fn(),
-	}
-})
-
 jest.mock('../../lib/commands/rules/rules-util')
 
 describe('RulesCommand', () => {

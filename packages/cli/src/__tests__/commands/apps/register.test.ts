@@ -3,15 +3,6 @@ import { App, AppsEndpoint, AppType } from '@smartthings/core-sdk'
 import AppRegisterCommand from '../../../commands/apps/register'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		selectFromList: jest.fn(),
-	}
-})
-
 describe('AppRegisterCommand', () => {
 	const appId = 'appId'
 	const registerSpy = jest.spyOn(AppsEndpoint.prototype, 'register').mockResolvedValue({ status: '200' })

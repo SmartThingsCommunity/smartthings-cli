@@ -1,1 +1,44 @@
-export * from './test-setup'
+import { NoLogLogger } from '@smartthings/core-sdk'
+
+import { LogManager, LoginAuthenticator, chooseOptionsDefaults, APICommand } from '@smartthings/cli-lib'
+import { MockSmartThingsClient } from './mocks/core-sdk'
+
+
+/**
+ * Partially mock cli-lib. Most useful for I/O functions.
+ */
+jest.mock('@smartthings/cli-lib', () => {
+	const originalLib = jest.requireActual('@smartthings/cli-lib')
+
+	return {
+		...originalLib,
+		chooseOptionsWithDefaults: jest.fn(() => chooseOptionsDefaults),
+		stringTranslateToId: jest.fn(),
+		selectFromList: jest.fn(),
+		outputListing: jest.fn(),
+		inputAndOutputItem: jest.fn(),
+		outputItem: jest.fn(),
+		resetManagedConfig: jest.fn(),
+		formatAndWriteItem: jest.fn(),
+		withLocationsAndRooms: jest.fn(),
+		summarizedText: 'summarized text', // TODO refactor test using this
+	}
+})
+
+/**
+ * Stub return value for main API client.
+ */
+jest.spyOn(APICommand.prototype, 'client', 'get').mockReturnValue(new MockSmartThingsClient())
+
+/**
+ * Perform minimal 'init' hook stubbing required to get CLI commands running under jest
+ */
+jest.spyOn(LogManager.prototype, 'getLogger').mockImplementation(() => new NoLogLogger)
+jest.spyOn(LoginAuthenticator.prototype, 'login').mockImplementation(() => Promise.resolve())
+jest.spyOn(LoginAuthenticator.prototype, 'authenticate').mockImplementation((requestConfig) => Promise.resolve(requestConfig));
+(global as { _credentialsFile?: string })._credentialsFile = 'credentials.json'
+
+/**
+ * Exports
+ */
+export * from './mocks/core-sdk'

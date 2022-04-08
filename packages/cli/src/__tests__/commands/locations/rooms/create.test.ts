@@ -4,15 +4,6 @@ import { chooseLocation } from '../../../../commands/locations'
 import RoomsCreateCommand from '../../../../commands/locations/rooms/create'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		inputAndOutputItem: jest.fn(),
-	}
-})
-
 jest.mock('../../../../commands/locations')
 
 describe('RoomsCreateCommand', () => {

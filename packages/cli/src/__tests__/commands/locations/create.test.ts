@@ -3,15 +3,6 @@ import LocationsCreateCommand from '../../../commands/locations/create'
 import { LocationCreate, LocationsEndpoint } from '@smartthings/core-sdk'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		inputAndOutputItem: jest.fn(),
-	}
-})
-
 const MOCK_LOCATION_CREATE = {} as LocationCreate
 
 describe('LocationsCreateCommand', () => {

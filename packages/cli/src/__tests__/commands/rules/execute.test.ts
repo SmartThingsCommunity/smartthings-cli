@@ -7,15 +7,6 @@ import { buildExecuteResponseTableOutput, chooseRule, getRuleWithLocation, RuleW
 	from '../../../lib/commands/rules/rules-util'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		formatAndWriteItem: jest.fn(),
-	}
-})
-
 jest.mock('../../../lib/commands/rules/rules-util')
 
 describe('RulesExecuteCommand', () => {

@@ -3,15 +3,6 @@ import { outputItem } from '@smartthings/cli-lib'
 import { PresentationEndpoint } from '@smartthings/core-sdk'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		outputItem: jest.fn(),
-	}
-})
-
 describe('DeviceConfigPresentationCommand', () => {
 	const presentationId = 'presentationId'
 	const manufacturerName = 'manufacturerName'

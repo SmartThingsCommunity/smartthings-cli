@@ -37,7 +37,7 @@ jest.mock('open')
 jest.mock('axios')
 
 async function delay(milliseconds: number): Promise<void> {
-	return new Promise(resolve => setTimeout(resolve, milliseconds))
+	return new Promise(resolve => setTimeout(resolve, milliseconds).unref())
 }
 
 describe('LoginAuthenticator', () => {

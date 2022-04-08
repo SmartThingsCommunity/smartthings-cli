@@ -1,18 +1,27 @@
 # @smartthings/cli-testlib
 
-A library to support testing the SmartThings CLI and plugins written for it with Jest.
+A library to support testing the SmartThings CLI and plugins written for it with Jest. It provides a setup file which stubs out various behavior (config loading, authentication, etc.) in the main CLI. This enables your test suite to start running commands quickly without worrying about these details.
+
+## Installation
+
+`npm i @smartthings/cli-testlib --save-dev`
 
 ## Usage
 
-### Default Bootstrap
+Edit your jest config to include [setupFilesAfterEnv](https://jestjs.io/docs/en/configuration#setupfilesafterenv-array) and specify it as shown.
 
-We provide a setup file which stubs out various init hook behavior (config loading, authentication, etc.) in the main CLI. This enables your test suite to start running commands quickly without worrying about these details.
+```javascript
+module.exports = {
+  setupFilesAfterEnv: ['@smartthings/cli-testlib'],
+}
+```
 
-1. Copy (and rename) [jest.setup.ts.example](./jest.setup.ts.example) to a desired location in your project root.
-1. Edit your jest config to include [setupFiles](https://jestjs.io/docs/en/configuration#setupfilesafterenv-array) and specify the path to the previously copied setup file. See example jest config below.
+You can also extend/override the default setup script with one of your own as needed. (TODO: this may be required in some cases)
+
 ```javascript
 module.exports = {
 	setupFilesAfterEnv: [
+		'@smartthings/cli-testlib',
 		'<rootDir>/jest.setup.ts'
 	],
 }

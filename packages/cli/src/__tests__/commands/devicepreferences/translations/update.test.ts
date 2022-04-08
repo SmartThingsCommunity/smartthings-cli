@@ -7,14 +7,6 @@ import { tableFieldDefinitions } from '../../../../lib/commands/devicepreference
 
 jest.mock('../../../../lib/commands/devicepreferences/devicepreferences-util')
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		inputAndOutputItem: jest.fn(),
-	}
-})
 
 const MOCK_PREFERENCE_L10N = {} as PreferenceLocalization
 

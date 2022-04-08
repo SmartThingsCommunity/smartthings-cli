@@ -5,15 +5,6 @@ import { chooseApp, tableFieldDefinitions } from '../../../lib/commands/apps/app
 import { addPermission } from '../../../lib/aws-utils'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		inputAndOutputItem: jest.fn(),
-	}
-})
-
 jest.mock('../../../lib/aws-utils')
 
 jest.mock('../../../lib/commands/apps/apps-util')

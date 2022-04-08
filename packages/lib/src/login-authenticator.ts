@@ -106,7 +106,7 @@ export class LoginAuthenticator implements Authenticator {
 	}
 
 	private delay(ms: number): Promise<void> {
-		return new Promise(resolve => setTimeout(resolve, ms))
+		return new Promise(resolve => setTimeout(resolve, ms).unref())
 	}
 
 	private readCredentialsFile(): CredentialsFileData {

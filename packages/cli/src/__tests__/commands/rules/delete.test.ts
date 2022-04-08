@@ -4,15 +4,6 @@ import RulesDeleteCommand from '../../../commands/rules/delete'
 import { chooseRule, getRuleWithLocation, RuleWithLocation } from '../../../lib/commands/rules/rules-util'
 
 
-jest.mock('@smartthings/cli-lib', () => {
-	const originalLib = jest.requireActual('@smartthings/cli-lib')
-
-	return {
-		...originalLib,
-		selectFromList: jest.fn(),
-	}
-})
-
 jest.mock('../../../lib/commands/rules/rules-util')
 
 describe('RulesDeleteCommand', () => {
