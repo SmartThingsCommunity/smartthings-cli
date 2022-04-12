@@ -5,7 +5,8 @@ import { AppsEndpoint } from '@smartthings/core-sdk'
 import { APICommand, ChooseOptions, chooseOptionsDefaults, chooseOptionsWithDefaults,
 	selectFromList, stringTranslateToId } from '@smartthings/cli-lib'
 
-import { chooseApp } from '../../../../lib/commands/apps/apps-util'
+import { buildTableOutput, chooseApp } from '../../../../lib/commands/apps/apps-util'
+import Table from 'cli-table'
 
 
 describe('chooseApp', () => {
@@ -116,6 +117,25 @@ describe('chooseApp', () => {
 })
 
 describe('buildTableOutput', () => {
-	// TODO
-	it.todo('returns simple string when app settings are not present')
+	const mockNewOutputTable = jest.fn()
+	const mockTableGenerator = {
+		newOutputTable: mockNewOutputTable,
+		buildTableFromItem: jest.fn(),
+		buildTableFromList: jest.fn(),
+	}
+	it('returns simple string when app settings are not present', () => {
+		expect(buildTableOutput(mockTableGenerator, {})).toBe('No application settings.')
+		expect(buildTableOutput(mockTableGenerator, { settings: {} })).toBe('No application settings.')
+	})
+
+	it('creates new table with correct options and adds settings', () => {
+		const newTable = new Table()
+		mockNewOutputTable.mockReturnValueOnce(newTable)
+
+		expect(buildTableOutput(mockTableGenerator, { settings: { setting: 'setting' } })).toStrictEqual(newTable.toString())
+		expect(mockNewOutputTable).toBeCalledWith(
+			expect.objectContaining({ head: ['Key', 'Value'] }),
+		)
+		expect(newTable).toContainValue(['setting', 'setting'])
+	})
 })

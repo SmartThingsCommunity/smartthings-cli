@@ -7,12 +7,6 @@ import { buildTableOutput, chooseDevice } from '../../../../lib/commands/devices
 import { Device } from '@smartthings/core-sdk'
 
 
-jest.mock('@smartthings/cli-lib', () => ({
-	chooseOptionsWithDefaults: jest.fn(),
-	stringTranslateToId: jest.fn(),
-	selectFromList: jest.fn(),
-}))
-
 describe('devices-util', () => {
 	afterEach(() => {
 		jest.clearAllMocks()

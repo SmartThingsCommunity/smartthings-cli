@@ -70,7 +70,7 @@ export default class AppsCommand extends APICommand {
 					const apps = list.map(app => {
 						// TODO remove assertion when https://github.com/SmartThingsCommunity/smartthings-core-sdk/issues/89 is resolved
 						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-						return this.client.apps.get((app.appId)!)
+						return this.client.apps.get(app.appId!)
 					})
 					return Promise.all(apps).then((list: (App & { 'ARN/URL'?: string })[]) => {
 						for (const app of list) {

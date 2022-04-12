@@ -55,10 +55,8 @@ export function buildTableOutput(tableGenerator: TableGenerator, appSettings: Ap
 	}
 
 	const table = tableGenerator.newOutputTable({ head: ['Key', 'Value'] })
-	if (appSettings.settings) {
-		for (const key of Object.keys(appSettings.settings)) {
-			table.push([key, appSettings.settings[key]])
-		}
+	for (const key of Object.keys(appSettings.settings)) {
+		table.push([key, appSettings.settings[key]])
 	}
 	return table.toString()
 }
