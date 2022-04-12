@@ -1,10 +1,12 @@
 import { outputListing } from '@smartthings/cli-lib'
-import { AppClassification, AppsEndpoint, AppType } from '@smartthings/core-sdk'
+import { App, AppClassification, AppsEndpoint, AppType } from '@smartthings/core-sdk'
 import AppsCommand from '../../commands/apps'
 
 
 describe('AppsCommand', () => {
 	const appId = 'appId'
+	const app: App = { appId: appId, webhookSmartApp: { targetUrl: 'targetUrl' } }
+	const appList = [app]
 	const mockOutputListing = jest.mocked(outputListing)
 	const getSpy = jest.spyOn(AppsEndpoint.prototype, 'get').mockImplementation()
 	const listSpy = jest.spyOn(AppsEndpoint.prototype, 'list').mockImplementation()
@@ -52,8 +54,11 @@ describe('AppsCommand', () => {
 	})
 
 	it('calls correct list endpoint', async () => {
+		listSpy.mockResolvedValueOnce(appList)
+
 		await expect(AppsCommand.run([])).resolves.not.toThrow()
-		expect(listSpy).toBeCalled()
+		expect(listSpy).toBeCalledTimes(1)
+		expect(getSpy).not.toBeCalled()
 	})
 
 	it('takes an app type to filter by via flags', async () => {
@@ -121,7 +126,6 @@ describe('AppsCommand', () => {
 
 	it('includes URLs and ARNs in output when verbose flag is used', async () => {
 		mockOutputListing.mockResolvedValueOnce(undefined)
-		listSpy.mockResolvedValueOnce([])
 
 		await expect(AppsCommand.run(['--verbose'])).resolves.not.toThrow()
 		expect(outputListing).toBeCalledWith(
@@ -135,6 +139,18 @@ describe('AppsCommand', () => {
 		)
 	})
 
-	//TODO
-	test.todo('listApps includes URLs and ARNs')
+	it('fetches details for each app when verbose flag is used', async () => {
+		mockOutputListing.mockResolvedValueOnce(undefined)
+		listSpy.mockResolvedValueOnce(appList)
+		getSpy.mockResolvedValueOnce(app)
+
+		await expect(AppsCommand.run(['--verbose'])).resolves.not.toThrow()
+
+		const listApps = mockOutputListing.mock.calls[0][3]
+		const verboseApp = (await listApps()).pop() as App & { 'ARN/URL'?: string }
+
+		expect(getSpy).toBeCalledTimes(1)
+		expect(getSpy).toBeCalledWith(appId)
+		expect(verboseApp['ARN/URL']).toBeDefined()
+	})
 })
