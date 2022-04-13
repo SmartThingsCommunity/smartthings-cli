@@ -1,15 +1,13 @@
 import inquirer from 'inquirer'
-import { ChooseOptions, chooseOptionsDefaults, chooseOptionsWithDefaults, convertToId,
+import {
+	ChooseOptions, chooseOptionsDefaults, chooseOptionsWithDefaults, convertToId,
 	isIndexArgument, itemName, pluralItemName, stringGetIdFromUser,
-	stringTranslateToId } from '../command-util'
+	stringTranslateToId,
+} from '../command-util'
 import * as output from '../output'
 
 
 describe('command-util', () => {
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('isIndexArgument', () => {
 		const matches = ['1', '2', '9', '10', '101', '999']
 		const noMatches = ['0', '01', '-1', 'apple', 'apple2', '2spooky4me']
@@ -105,7 +103,7 @@ describe('command-util', () => {
 		it('throws an error for missing primary key', async () => {
 			listFunction.mockResolvedValue(list)
 			const sortSpy = jest.spyOn(output, 'sort')
-			sortSpy.mockReturnValue([{num: 5}])
+			sortSpy.mockReturnValue([{ num: 5 }])
 
 			await expect(stringTranslateToId(command, '1', listFunction))
 				.rejects.toThrow('did not find key str in data')
@@ -118,7 +116,7 @@ describe('command-util', () => {
 		it('throws an error for invalid type for primary key', async () => {
 			listFunction.mockResolvedValue(list)
 			const sortSpy = jest.spyOn(output, 'sort')
-			sortSpy.mockReturnValue([{str: 3, num: 5}])
+			sortSpy.mockReturnValue([{ str: 3, num: 5 }])
 
 			await expect(stringTranslateToId(command, '1', listFunction))
 				.rejects.toThrow('invalid type number for primary key str in {"str":3,"num":5}')
@@ -147,7 +145,7 @@ describe('command-util', () => {
 		})
 
 		it('throws an error for invalid type for primary key', async () => {
-			expect(() => convertToId('1', 'str', [{str: 3, num: 5}]))
+			expect(() => convertToId('1', 'str', [{ str: 3, num: 5 }]))
 				.toThrow('invalid type number for primary key str in {"str":3,"num":5}')
 		})
 	})
@@ -163,9 +161,11 @@ describe('command-util', () => {
 			expect(chosenId).toBe('string-id-a')
 
 			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({ type: 'input', name: 'itemIdOrIndex',
-				message: 'Enter id or index', validate: expect.anything() })
-			const validateFunction = (promptSpy.mock.calls[0][0] as { validate: (input: string) => true|string }).validate
+			expect(promptSpy).toHaveBeenCalledWith({
+				type: 'input', name: 'itemIdOrIndex',
+				message: 'Enter id or index', validate: expect.anything(),
+			})
+			const validateFunction = (promptSpy.mock.calls[0][0] as { validate: (input: string) => true | string }).validate
 
 			expect(validateFunction('string-id-a')).toBe(true)
 		})
@@ -178,9 +178,11 @@ describe('command-util', () => {
 			expect(chosenId).toBe('string-id-a')
 
 			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({ type: 'input', name: 'itemIdOrIndex',
-				message: 'Enter id or index', validate: expect.anything() })
-			const validateFunction = (promptSpy.mock.calls[0][0] as { validate: (input: string) => true|string }).validate
+			expect(promptSpy).toHaveBeenCalledWith({
+				type: 'input', name: 'itemIdOrIndex',
+				message: 'Enter id or index', validate: expect.anything(),
+			})
+			const validateFunction = (promptSpy.mock.calls[0][0] as { validate: (input: string) => true | string }).validate
 
 			expect(validateFunction('invalid-id')).toBe('Invalid id or index "invalid-id". Please enter an index or valid id.')
 		})
@@ -199,9 +201,11 @@ describe('command-util', () => {
 			expect(chosenId).toBe('string-id-a')
 
 			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({ type: 'input', name: 'itemIdOrIndex',
-				message: 'give me an id', validate: expect.anything() })
-			const validateFunction = (promptSpy.mock.calls[0][0] as { validate: (input: string) => true|string }).validate
+			expect(promptSpy).toHaveBeenCalledWith({
+				type: 'input', name: 'itemIdOrIndex',
+				message: 'give me an id', validate: expect.anything(),
+			})
+			const validateFunction = (promptSpy.mock.calls[0][0] as { validate: (input: string) => true | string }).validate
 
 			expect(validateFunction('string-id-a')).toBe(true)
 		})

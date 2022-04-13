@@ -18,10 +18,6 @@ describe('RulesExecuteCommand', () => {
 	const executeResponse = { id: 'execute-response-id' } as ExecuteResponse
 	const executeSpy = jest.spyOn(RulesEndpoint.prototype, 'execute').mockResolvedValue(executeResponse)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('allows user to select rule', async () => {
 		chooseRuleMock.mockResolvedValueOnce('chosen-rule-id')
 		getRuleWithLocationMock.mockResolvedValue(ruleWithLocation)

@@ -23,10 +23,6 @@ describe('sse-io', () => {
 
 		const logSpy = jest.spyOn(CliUx.ux, 'log')
 
-		afterEach(() => {
-			jest.clearAllMocks()
-		})
-
 		it('calls formatter function', () => {
 			logEvent(event, formatter)
 

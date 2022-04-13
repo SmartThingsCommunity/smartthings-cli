@@ -11,10 +11,6 @@ describe('RoomsCreateCommand', () => {
 	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)
 	const mockChooseLocation = jest.mocked(chooseLocation)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('uses correct endpoint to create room', async () => {
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			const room: RoomRequest = {}

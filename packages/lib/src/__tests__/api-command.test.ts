@@ -18,10 +18,6 @@ jest.mock('../login-authenticator')
 
 
 describe('api-command', () => {
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('APICommand', () => {
 		const buildTableFromListMock = jest.fn()
 		const mockedTableGenerator = {

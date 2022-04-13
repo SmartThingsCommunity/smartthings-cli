@@ -14,10 +14,6 @@ describe('ConfigResetCommand', () => {
 
 	const resetManagedConfigMock = jest.mocked(resetManagedConfig)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('does nothing if user says no to prompt', async () => {
 		promptMock.mockResolvedValueOnce({ confirmed: false })
 

@@ -9,10 +9,6 @@ describe('OrganizationsCommand', () => {
 	const organizationId = 'organizationId'
 	const mockOutputListing = jest.mocked(outputListing)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('calls outputListing when no id is provided', async () => {
 		await expect(OrganizationsCommand.run([])).resolves.not.toThrow()
 

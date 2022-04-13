@@ -36,10 +36,6 @@ describe('select', () => {
 	const outputListMock = jest.mocked(outputList)
 
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('indefiniteArticleFor', () => {
 		it.each(['apple', 'Animal', 'egret', 'item', 'orange', 'unicorn'])('returns "an" for "%s"', word => {
 			expect(indefiniteArticleFor(word)).toBe('an')

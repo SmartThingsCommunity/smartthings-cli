@@ -26,10 +26,6 @@ describe('listing-io', () => {
 	const outputListSpy = jest.spyOn(basicIO, 'outputList')
 	const translateToId = jest.fn().mockResolvedValue('translated id')
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('outputGenericListing', () => {
 		it('calls outputItem when given idOrIndex', async () => {
 			outputItemSpy.mockResolvedValue(item)

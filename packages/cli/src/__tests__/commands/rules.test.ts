@@ -14,10 +14,6 @@ describe('RulesCommand', () => {
 	const getRulesByLocationMock = jest.mocked(getRulesByLocation).mockResolvedValue(rulesList)
 	const getRuleWithLocationMock = jest.mocked(getRuleWithLocation).mockResolvedValue(ruleWithLocation)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('calls outputListing to list rules', async () => {
 		await expect(RulesCommand.run([])).resolves.not.toThrow()
 

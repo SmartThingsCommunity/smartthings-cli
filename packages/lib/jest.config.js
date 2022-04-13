@@ -15,4 +15,5 @@ module.exports = {
 	modulePathIgnorePatterns: [
 		'<rootDir>/dist',
 	],
+	clearMocks: true,
 }

@@ -6,10 +6,6 @@ import DeviceProfilesCommand from '../../commands/deviceprofiles'
 describe('DevicesProfilesCommand', () => {
 	const outputListingMock = jest.mocked(outputListing)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('uses simple fields by default', async () => {
 		await expect(DeviceProfilesCommand.run([])).resolves.not.toThrow()
 

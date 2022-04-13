@@ -15,10 +15,6 @@ describe('AppOauthGenerateCommand', () => {
 		mockInputAndOutputItem.mockImplementation()
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('prompts user to choose app', async () => {
 		await expect(AppOauthGenerateCommand.run([])).resolves.not.toThrow()
 

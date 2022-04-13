@@ -11,10 +11,6 @@ describe('AppDeleteCommand', () => {
 	const deleteSpy = jest.spyOn(AppsEndpoint.prototype, 'delete').mockImplementation()
 	const logSpy = jest.spyOn(AppDeleteCommand.prototype, 'log').mockImplementation()
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('prompts user to choose app', async () => {
 		await expect(AppDeleteCommand.run([])).resolves.not.toThrow()
 

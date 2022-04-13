@@ -11,10 +11,6 @@ describe('LocationsUpdateCommand', () => {
 	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)
 	const mockChooseLocation = jest.mocked(chooseLocation).mockResolvedValue(locationId)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('prompts user to choose location', async () => {
 		await expect(LocationsUpdateCommand.run([])).resolves.not.toThrow()
 

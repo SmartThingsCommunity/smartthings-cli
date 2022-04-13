@@ -12,10 +12,6 @@ describe('RoomsUpdateCommand', () => {
 	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)
 	const mockChooseRoom = jest.mocked(chooseRoom).mockResolvedValue([roomId, locationId])
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('prompts user to choose room', async () => {
 		await expect(RoomsUpdateCommand.run([])).resolves.not.toThrow()
 

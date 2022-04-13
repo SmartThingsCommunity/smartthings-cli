@@ -2,7 +2,8 @@ import { Device, DevicesEndpoint, SmartThingsClient } from '@smartthings/core-sd
 
 import {
 	CustomCommonOutputProducer, DefaultTableGenerator, outputListing,
-	withLocationsAndRooms, WithNamedRoom } from '@smartthings/cli-lib'
+	withLocationsAndRooms, WithNamedRoom,
+} from '@smartthings/cli-lib'
 
 import DevicesCommand from '../../commands/devices'
 
@@ -13,10 +14,6 @@ jest.mock('../../lib/commands/devices/devices-util')
 
 describe('DevicesCommand', () => {
 	const outputListingMock = jest.mocked(outputListing)
-
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
 
 	it('passes undefined for location id when not specified', async () => {
 		await expect(DevicesCommand.run([])).resolves.not.toThrow()

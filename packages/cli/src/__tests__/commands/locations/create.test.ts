@@ -8,10 +8,6 @@ const MOCK_LOCATION_CREATE = {} as LocationCreate
 describe('LocationsCreateCommand', () => {
 	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('uses correct endpoint to create location', async () => {
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, MOCK_LOCATION_CREATE)

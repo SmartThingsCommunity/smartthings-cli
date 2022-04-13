@@ -5,10 +5,6 @@ import { askForInteger, askForNumber, askForRequiredString, askForString, number
 describe('user-query', () => {
 	const promptSpy = jest.spyOn(inquirer, 'prompt')
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('numberTransformer', () => {
 		it.each(['', 'input value', '7'])('returns input value unchanged when not final', value => {
 			expect(numberTransformer(value, { value }, { isFinal: false })).toBe(value)

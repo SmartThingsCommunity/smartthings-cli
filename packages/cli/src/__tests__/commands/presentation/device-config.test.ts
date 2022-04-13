@@ -9,10 +9,6 @@ describe('DeviceConfigPresentationCommand', () => {
 	const mockOutputItem = jest.mocked(outputItem)
 	const getPresentationSpy = jest.spyOn(PresentationEndpoint.prototype, 'get').mockImplementation()
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('throws error when required arg missing', async () => {
 		await expect(DeviceConfigPresentationCommand.run([])).rejects.toThrow()
 	})

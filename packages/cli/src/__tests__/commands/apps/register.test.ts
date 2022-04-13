@@ -14,10 +14,6 @@ describe('AppRegisterCommand', () => {
 		mockSelectFromList.mockResolvedValue(appId)
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('calls selectFromList with correct config', async () => {
 		await expect(AppRegisterCommand.run([])).resolves.not.toThrow()
 

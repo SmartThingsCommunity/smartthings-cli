@@ -11,10 +11,6 @@ describe('LocationsDeleteCommand', () => {
 	const deleteSpy = jest.spyOn(LocationsEndpoint.prototype, 'delete').mockImplementation()
 	const logSpy = jest.spyOn(LocationsDeleteCommand.prototype, 'log').mockImplementation()
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('prompts user to choose location', async () => {
 		await expect(LocationsDeleteCommand.run([])).resolves.not.toThrow()
 

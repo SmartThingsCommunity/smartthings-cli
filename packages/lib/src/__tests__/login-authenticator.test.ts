@@ -167,7 +167,6 @@ describe('LoginAuthenticator', () => {
 	}
 
 	afterEach(() => {
-		jest.clearAllMocks()
 		delete (globalThis as { _credentialsFile?: string })._credentialsFile
 		recording.reset()
 	})
