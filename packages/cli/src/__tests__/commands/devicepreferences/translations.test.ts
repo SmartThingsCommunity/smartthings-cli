@@ -21,10 +21,6 @@ describe('DevicePreferencesTranslationsCommand', () => {
 		mockChooseDevicePreference.mockResolvedValue(preferenceId)
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('prompts user to choose device preference', async () => {
 		await expect(DevicePreferencesTranslationsCommand.run([])).resolves.not.toThrow()
 

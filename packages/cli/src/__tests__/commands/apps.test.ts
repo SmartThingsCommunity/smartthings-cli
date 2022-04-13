@@ -17,10 +17,6 @@ describe('AppsCommand', () => {
 		})
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('calls outputListing with correct config', async () => {
 		await expect(AppsCommand.run([])).resolves.not.toThrow()
 

@@ -15,10 +15,6 @@ describe('rooms-util', () => {
 		const getLocationsSpy = jest.spyOn(LocationsEndpoint.prototype, 'get').mockImplementation()
 		const listLocationsSpy = jest.spyOn(LocationsEndpoint.prototype, 'list').mockImplementation()
 
-		afterEach(() => {
-			jest.clearAllMocks()
-		})
-
 		it('throws error when no locations are found', async () => {
 			listLocationsSpy.mockResolvedValueOnce([])
 			const forbiddenError = new Error('Request failed with status code 403')
@@ -66,10 +62,6 @@ describe('rooms-util', () => {
 
 		beforeAll(() => {
 			mockSelectFromList.mockResolvedValue(roomId)
-		})
-
-		afterEach(() => {
-			jest.clearAllMocks()
 		})
 
 		it('throws error when room not found', async () => {

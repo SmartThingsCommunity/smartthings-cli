@@ -2,8 +2,10 @@ import { Action, ExecuteResponse, Rule, SmartThingsClient } from '@smartthings/c
 
 import { APICommand, selectFromList, TableGenerator } from '@smartthings/cli-lib'
 
-import { chooseRule, getRulesByLocation, getRuleWithLocation, RuleWithLocation,
-	tableFieldDefinitions } from '../../../../lib/commands/rules/rules-util'
+import {
+	chooseRule, getRulesByLocation, getRuleWithLocation, RuleWithLocation,
+	tableFieldDefinitions,
+} from '../../../../lib/commands/rules/rules-util'
 import * as rulesUtil from '../../../../lib/commands/rules/rules-util'
 
 
@@ -25,10 +27,6 @@ describe('rules-util', () => {
 	}
 
 	const client = { locations, rules } as unknown as SmartThingsClient
-
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
 
 	describe('tableFieldDefinitions', () => {
 		it('counts rule actions', () => {
@@ -75,7 +73,7 @@ describe('rules-util', () => {
 
 			await expect(getRulesByLocation(client)).rejects.toThrow(
 				'Could not find any locations for your account. Perhaps ' +
-					"you haven't created any locations yet.")
+				"you haven't created any locations yet.")
 
 			expect(locations.list).toHaveBeenCalledTimes(1)
 

@@ -32,7 +32,6 @@ describe('logger', () => {
 
 	afterEach(() => {
 		recording.erase()
-		jest.clearAllMocks()
 	})
 
 	describe('loadLoggingConfig', () => {

@@ -12,10 +12,6 @@ jest.mock('../login-authenticator')
 
 
 describe('api-organization-command', () => {
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('APIOrganizationCommand', () => {
 		class testCommand extends APIOrganizationCommand {
 			getToken(): string | undefined {

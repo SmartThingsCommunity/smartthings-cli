@@ -12,10 +12,6 @@ describe('RulesCreateCommand', () => {
 	const inputAndOutputItemMock = jest.mocked(inputAndOutputItem)
 	const chooseLocationMock = jest.mocked(chooseLocation)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('allows user to choose location', async () => {
 		chooseLocationMock.mockResolvedValue('chosen-location-id')
 

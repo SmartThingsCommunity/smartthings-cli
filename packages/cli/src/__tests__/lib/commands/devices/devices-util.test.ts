@@ -1,17 +1,15 @@
 import Table from 'cli-table'
 
-import { APICommand, ChooseOptions, chooseOptionsWithDefaults, selectFromList,
-	stringTranslateToId, summarizedText, TableGenerator } from '@smartthings/cli-lib'
+import {
+	APICommand, ChooseOptions, chooseOptionsWithDefaults, selectFromList,
+	stringTranslateToId, summarizedText, TableGenerator,
+} from '@smartthings/cli-lib'
 
 import { buildTableOutput, chooseDevice } from '../../../../lib/commands/devices/devices-util'
 import { Device } from '@smartthings/core-sdk'
 
 
 describe('devices-util', () => {
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('buildTableOutput', () => {
 		const tablePushMock: jest.Mock<number, [(string | undefined)[]]> = jest.fn()
 		const tableToStringMock = jest.fn()
@@ -20,7 +18,7 @@ describe('devices-util', () => {
 			toString: tableToStringMock,
 		} as unknown as Table
 		const newOutputTableMock = jest.fn().mockReturnValue(tableMock)
-		const buildTableFromItemMock =jest.fn()
+		const buildTableFromItemMock = jest.fn()
 		const buildTableFromListMock = jest.fn()
 
 		const tableGeneratorMock: TableGenerator = {

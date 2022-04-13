@@ -15,10 +15,6 @@ describe('cli-config', () => {
 	const readFileMock = jest.mocked(readFile)
 	const yamlExistsMock = jest.mocked(yamlExists).mockReturnValue(true)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('loadConfigFile', () => {
 		it('returns empty object when filename does not exist', async () => {
 			yamlExistsMock.mockReturnValueOnce(false)

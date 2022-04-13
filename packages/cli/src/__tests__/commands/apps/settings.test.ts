@@ -18,10 +18,6 @@ describe('AppSettingsCommand', () => {
 		mockOutputItem.mockResolvedValue(appSettings)
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('prompts user to choose app allowing index', async () => {
 		await expect(AppSettingsCommand.run([])).resolves.not.toThrow()
 

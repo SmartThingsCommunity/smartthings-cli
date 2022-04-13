@@ -14,10 +14,6 @@ describe('RulesDeleteCommand', () => {
 	const deleteSpy = jest.spyOn(RulesEndpoint.prototype, 'delete').mockImplementation()
 	const logSpy = jest.spyOn(RulesDeleteCommand.prototype, 'log').mockImplementation()
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('allows user to select rule', async () => {
 		chooseRuleMock.mockResolvedValueOnce('chosen-rule-id')
 		getRuleWithLocationMock.mockResolvedValue(ruleWithLocation)

@@ -20,10 +20,6 @@ describe('RulesUpdateCommand', () => {
 	const chooseRuleMock = jest.mocked(chooseRule)
 	const getRuleWithLocationMock = jest.mocked(getRuleWithLocation).mockResolvedValue(ruleWithLocation)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('allows user to select rule', async () => {
 		chooseRuleMock.mockResolvedValueOnce('chosen-rule-id')
 

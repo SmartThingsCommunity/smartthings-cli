@@ -1,8 +1,10 @@
-import { LocationsEndpoint,
+import {
+	LocationsEndpoint,
 	NoOpAuthenticator,
 	Room,
 	RoomsEndpoint,
-	SmartThingsClient} from '@smartthings/core-sdk'
+	SmartThingsClient,
+} from '@smartthings/core-sdk'
 
 import { forAllOrganizations, withLocations, withLocationsAndRooms } from '../api-helpers'
 
@@ -26,8 +28,8 @@ describe('api-helpers', () => {
 		jest.spyOn(LocationsEndpoint.prototype, 'list').mockResolvedValue(locations)
 
 		const roomsByLocationId: Map<string, Room[]> = new Map([
-			['uno',  [{ roomId: 'twelve', name: 'garage' }, { roomId: 'unnamed' }, { name: 'no id' }]],
-			['dos',  [{ roomId: 'thirteen', name: 'kitchen' }, { roomId: 'fourteen', name: 'living room'}]],
+			['uno', [{ roomId: 'twelve', name: 'garage' }, { roomId: 'unnamed' }, { name: 'no id' }]],
+			['dos', [{ roomId: 'thirteen', name: 'kitchen' }, { roomId: 'fourteen', name: 'living room' }]],
 		])
 		jest.spyOn(RoomsEndpoint.prototype, 'list').mockImplementation(async locationId => {
 			let rooms: Room[] | undefined
@@ -41,12 +43,8 @@ describe('api-helpers', () => {
 		})
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('withLocations', () => {
-		it('updates simple object', async function() {
+		it('updates simple object', async function () {
 			const thing = [
 				{ locationId: 'uno', other: 'field' },
 			]
@@ -59,7 +57,7 @@ describe('api-helpers', () => {
 			expect(updated).toEqual([{ ...thing[0], location: 'main location' }])
 		})
 
-		it('succeeds even with no locationId', async function() {
+		it('succeeds even with no locationId', async function () {
 			const things = [
 				{ locationId: 'uno', other: 'field' },
 				{ another: 'value' },
@@ -76,7 +74,7 @@ describe('api-helpers', () => {
 			])
 		})
 
-		it('notes bad locationId', async function() {
+		it('notes bad locationId', async function () {
 			// The API shouldn't allow bad location ids so this shouldn't happen.
 			const things = [
 				{ locationId: 'uno', other: 'field' },
@@ -96,7 +94,7 @@ describe('api-helpers', () => {
 	})
 
 	describe('withLocationsAndRooms', () => {
-		it('updates simple object', async function() {
+		it('updates simple object', async function () {
 			const thing = [
 				{ locationId: 'uno', roomId: 'twelve', other: 'field' },
 			]
@@ -110,7 +108,7 @@ describe('api-helpers', () => {
 			expect(updated).toEqual([{ ...thing[0], location: 'main location', room: 'garage' }])
 		})
 
-		it('succeeds even with no locationId', async function() {
+		it('succeeds even with no locationId', async function () {
 			const things = [
 				{ locationId: 'uno', roomId: 'twelve', other: 'field' },
 				{ another: 'value', roomId: 'twelve' },
@@ -128,7 +126,7 @@ describe('api-helpers', () => {
 			])
 		})
 
-		it('fails with bad locationId', async function() {
+		it('fails with bad locationId', async function () {
 			// The API shouldn't allow bad location ids so this shouldn't happen.
 			const things = [
 				{ locationId: 'uno', roomId: 'twelve', other: 'field' },
@@ -142,7 +140,7 @@ describe('api-helpers', () => {
 			expect(client.rooms.list).toHaveBeenCalledTimes(2)
 		})
 
-		it('succeeds even with no roomId', async function() {
+		it('succeeds even with no roomId', async function () {
 			const things = [
 				{ locationId: 'uno', roomId: 'twelve', other: 'field' },
 				{ another: 'value', locationId: 'dos' },
@@ -160,7 +158,7 @@ describe('api-helpers', () => {
 			])
 		})
 
-		it('handles room with no id', async function() {
+		it('handles room with no id', async function () {
 			// This seems odd but the roomId field is not required in the API.
 			const thing = [
 				{ locationId: 'uno', other: 'field' },
@@ -175,7 +173,7 @@ describe('api-helpers', () => {
 			expect(updated).toEqual([{ ...thing[0], location: 'main location', room: '' }])
 		})
 
-		it('handles unnamed room', async function() {
+		it('handles unnamed room', async function () {
 			const thing = [
 				{ locationId: 'uno', roomId: 'unnamed', other: 'field' },
 			]
@@ -189,7 +187,7 @@ describe('api-helpers', () => {
 			expect(updated).toEqual([{ ...thing[0], location: 'main location', room: '' }])
 		})
 
-		it('succeeds even with bad roomId', async function() {
+		it('succeeds even with bad roomId', async function () {
 			const things = [
 				{ locationId: 'uno', roomId: 'twelve', other: 'field' },
 				{ locationId: 'dos', roomId: 'not-a-real-room', another: 'value' },
@@ -207,7 +205,7 @@ describe('api-helpers', () => {
 			])
 		})
 
-		it('calls rooms only once for each locationId', async function() {
+		it('calls rooms only once for each locationId', async function () {
 			const things = [
 				{ locationId: 'uno', roomId: 'twelve', other: 'field' },
 				{ locationId: 'dos', roomId: 'thirteen', other: 'field' },

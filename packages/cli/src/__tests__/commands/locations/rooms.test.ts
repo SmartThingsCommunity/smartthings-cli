@@ -17,10 +17,6 @@ describe('RoomsCommand', () => {
 		mockGetRoomsByLocation.mockResolvedValue([])
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('calls outputListing correctly', async () => {
 		await expect(RoomsCommand.run([])).resolves.not.toThrow()
 

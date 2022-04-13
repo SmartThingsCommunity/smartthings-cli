@@ -25,10 +25,6 @@ describe('SseCommand', () => {
 		sseCommand = new TestCommand([], testConfig)
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('throws Error when not properly setup', async () => {
 		const message = 'SseCommand not initialized properly'
 

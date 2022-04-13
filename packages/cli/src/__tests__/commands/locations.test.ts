@@ -9,10 +9,6 @@ const listSpy = jest.spyOn(LocationsEndpoint.prototype, 'list').mockImplementati
 describe('chooseLocation', () => {
 	const mockSelectFromList = jest.mocked(selectFromList)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('calls selectFromList with correct config and endpoint', async () => {
 		const command = new LocationsCommand([], new Config({ root: '' }))
 		await command.setup({}, [], {})
@@ -40,10 +36,6 @@ describe('chooseLocation', () => {
 
 describe('LocationsCommand', () => {
 	const mockListing = jest.mocked(outputListing)
-
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
 
 	it('calls outputListing when no id is provided', async () => {
 		await expect(LocationsCommand.run([])).resolves.not.toThrow()

@@ -152,10 +152,6 @@ describe('tableGenerator', () => {
 		tableGenerator = new DefaultTableGenerator(true)
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('buildTableFromItem converts simple column labels properly', function() {
 		const output = tableGenerator.buildTableFromItem(basicData, basicFieldDefinitions)
 

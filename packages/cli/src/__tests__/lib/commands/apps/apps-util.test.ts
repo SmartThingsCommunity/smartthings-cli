@@ -2,8 +2,10 @@ import { Config } from '@oclif/core'
 
 import { AppsEndpoint } from '@smartthings/core-sdk'
 
-import { APICommand, ChooseOptions, chooseOptionsDefaults, chooseOptionsWithDefaults,
-	selectFromList, stringTranslateToId } from '@smartthings/cli-lib'
+import {
+	APICommand, ChooseOptions, chooseOptionsDefaults, chooseOptionsWithDefaults,
+	selectFromList, stringTranslateToId,
+} from '@smartthings/cli-lib'
 
 import { buildTableOutput, chooseApp } from '../../../../lib/commands/apps/apps-util'
 import Table from 'cli-table'
@@ -24,10 +26,6 @@ describe('chooseApp', () => {
 	}
 
 	const command = new MockCommand([], new Config({ root: '' }))
-
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
 
 	it('sets defaults for passed options', async () => {
 		const opts: Partial<ChooseOptions> = {}

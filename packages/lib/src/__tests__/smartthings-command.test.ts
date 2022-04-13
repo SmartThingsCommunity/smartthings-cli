@@ -30,10 +30,6 @@ describe('SmartThingsCommand', () => {
 		smartThingsCommand = new TestCommand([], testConfig)
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('should throw Error when not properly setup', async () => {
 		const message = 'SmartThingsCommand not properly initialized'
 

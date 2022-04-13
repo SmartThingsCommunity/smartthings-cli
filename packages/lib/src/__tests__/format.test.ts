@@ -20,10 +20,6 @@ describe('format', () => {
 	const buildOutputFormatterSpy = jest.spyOn(outputBuilder, 'buildOutputFormatter').mockReturnValue(outputFormatter)
 	const writeOutputSpy = jest.spyOn(output, 'writeOutput').mockResolvedValue()
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('formatAndWriteItem', () => {
 		const itemTableFormatterSpy = jest.spyOn(output, 'itemTableFormatter')
 
@@ -94,7 +90,7 @@ describe('format', () => {
 	})
 
 	describe('formatAndWriteList', () => {
-		const listTableFormatterSpy= jest.spyOn(output, 'listTableFormatter')
+		const listTableFormatterSpy = jest.spyOn(output, 'listTableFormatter')
 
 		it('returns no items found when none found', async () => {
 			const config = {

@@ -20,10 +20,6 @@ describe('AppUpdateCommand', () => {
 		mockChooseApp.mockResolvedValue(appId)
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('prompts user to choose app', async () => {
 		await expect(AppUpdateCommand.run([])).resolves.not.toThrow()
 

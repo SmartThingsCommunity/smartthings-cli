@@ -14,11 +14,7 @@ describe('buildOutputFormatter', () => {
 	const yamlFormatter = jest.fn()
 	const yamlFormatterSpy = jest.spyOn(output, 'yamlFormatter').mockReturnValue(yamlFormatter)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
-	it ('uses commonOutputFormatter when it exists', () => {
+	it('uses commonOutputFormatter when it exists', () => {
 		calculateOutputFormatSpy.mockReturnValue(IOFormat.COMMON)
 		const commonFormatter = jest.fn()
 

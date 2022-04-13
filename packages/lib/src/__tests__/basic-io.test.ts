@@ -23,10 +23,6 @@ describe('basic-io', () => {
 	const formatAndWriteItemSpy = jest.spyOn(format, 'formatAndWriteItem').mockImplementation(async () => { /* empty */ })
 	const formatAndWriteListSpy = jest.spyOn(format, 'formatAndWriteList').mockImplementation(async () => { /* empty */ })
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('inputItem', () => {
 		const buildInputProcessorSpy = jest.spyOn(inputBuilder, 'buildInputProcessor')
 

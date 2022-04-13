@@ -15,5 +15,6 @@ module.exports = {
 	modulePathIgnorePatterns: [
 		'<rootDir>/dist',
 	],
-	passWithNoTests: true
+	passWithNoTests: true,
+	clearMocks: true,
 }

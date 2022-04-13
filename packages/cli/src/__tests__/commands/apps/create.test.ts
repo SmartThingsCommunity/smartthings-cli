@@ -13,10 +13,6 @@ describe('AppCreateCommand', () => {
 	const createSpy = jest.spyOn(AppsEndpoint.prototype, 'create').mockImplementation()
 	const logSpy = jest.spyOn(AppCreateCommand.prototype, 'log').mockImplementation()
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('calls inputOutput with correct config', async () => {
 		const appCreate: AppCreationResponse = {
 			app: {},

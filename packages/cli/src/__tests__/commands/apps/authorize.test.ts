@@ -14,10 +14,6 @@ describe('AppsAuthorizeCommand', () => {
 		mockAddPermission.mockResolvedValue(success)
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('requires ARN arg', async () => {
 		await expect(AppsAuthorizeCommand.run([])).rejects.toThrow('Missing 1 required arg:\narn')
 	})

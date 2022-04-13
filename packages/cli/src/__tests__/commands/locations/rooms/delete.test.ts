@@ -12,10 +12,6 @@ describe('RoomsDeleteCommand', () => {
 	const logSpy = jest.spyOn(RoomsDeleteCommand.prototype, 'log').mockImplementation()
 	const mockChooseRoom = jest.mocked(chooseRoom).mockResolvedValue([roomId, locationId])
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('prompts user to choose room', async () => {
 		await expect(RoomsDeleteCommand.run([])).resolves.not.toThrow()
 
