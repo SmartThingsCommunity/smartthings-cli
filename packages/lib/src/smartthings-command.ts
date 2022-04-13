@@ -1,14 +1,12 @@
+import log4js from '@log4js-node/log4js-api'
 import { Command, Flags } from '@oclif/core'
 
-import { Logger } from '@smartthings/core-sdk'
-
 import { CLIConfig, loadConfig, Profile } from './cli-config'
-import { logManager } from './logger'
 import { DefaultTableGenerator, TableGenerator } from './table-generator'
 
 
 export interface Loggable {
-	readonly logger: Logger
+	readonly logger: log4js.Logger
 }
 
 /**
@@ -84,10 +82,10 @@ export abstract class SmartThingsCommand extends Command implements SmartThingsC
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private _flags?: { [name: string]: any }
 
-	private _logger?: Logger
-	get logger(): Logger {
+	private _logger?: log4js.Logger
+	get logger(): log4js.Logger {
 		if (!this._logger) {
-			this._logger = logManager.getLogger('cli')
+			this._logger = log4js.getLogger('cli')
 		}
 		return this._logger
 	}

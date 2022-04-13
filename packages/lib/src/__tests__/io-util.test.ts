@@ -1,9 +1,5 @@
 import { stdin as mockStdin } from 'mock-stdin'
-
-import { NoLogLogger } from '@smartthings/core-sdk'
-
 import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, stdinIsTTY, yamlExists } from '../io-util'
-import { LogManager } from '../logger'
 import { validData, validYAML, SimpleType } from './test-lib/simple-type'
 import { existsSync } from 'fs'
 import { CliUx } from '@oclif/core'
@@ -34,9 +30,6 @@ describe('formatFromFilename', () => {
 	})
 
 	it('defaults to YAML', function () {
-		jest.spyOn(LogManager.prototype, 'getLogger').mockImplementation(() => {
-			return new NoLogLogger()
-		})
 		expect(formatFromFilename('fn')).toBe(IOFormat.YAML)
 	})
 })

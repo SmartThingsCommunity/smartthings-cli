@@ -1,6 +1,4 @@
-import { NoLogLogger } from '@smartthings/core-sdk'
-
-import { LogManager, LoginAuthenticator, chooseOptionsDefaults, APICommand } from '@smartthings/cli-lib'
+import { LoginAuthenticator, chooseOptionsDefaults, APICommand } from '@smartthings/cli-lib'
 import { MockSmartThingsClient } from './mocks/core-sdk'
 
 
@@ -33,7 +31,7 @@ jest.spyOn(APICommand.prototype, 'client', 'get').mockReturnValue(new MockSmartT
 /**
  * Perform minimal 'init' hook stubbing required to get CLI commands running under jest
  */
-jest.spyOn(LogManager.prototype, 'getLogger').mockImplementation(() => new NoLogLogger)
+jest.mock('log4js')
 jest.spyOn(LoginAuthenticator.prototype, 'login').mockImplementation(() => Promise.resolve())
 jest.spyOn(LoginAuthenticator.prototype, 'authenticate').mockImplementation((requestConfig) => Promise.resolve(requestConfig));
 (global as { _credentialsFile?: string })._credentialsFile = 'credentials.json'

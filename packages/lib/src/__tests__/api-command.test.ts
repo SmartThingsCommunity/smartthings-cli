@@ -13,7 +13,12 @@ import { TableGenerator } from '..'
 jest.mock('os-locale')
 jest.mock('@smartthings/core-sdk')
 jest.mock('../cli-config')
-jest.mock('../logger')
+jest.mock('@log4js-node/log4js-api', () => ({
+	getLogger: jest.fn(() => ({
+		trace: jest.fn(),
+		warn: jest.fn(),
+	})),
+}))
 jest.mock('../login-authenticator')
 
 

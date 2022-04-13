@@ -1,15 +1,18 @@
 import { Command, Config } from '@oclif/core'
-
-import { NoLogLogger } from '@smartthings/core-sdk'
-
 import { CLIConfig, loadConfig, Profile } from '../cli-config'
-import { LogManager } from '../logger'
 import { SmartThingsCommand } from '../smartthings-command'
 import { DefaultTableGenerator } from '../table-generator'
+import log4js from '@log4js-node/log4js-api'
 
 
 jest.mock('../cli-config')
 jest.mock('../table-generator')
+jest.mock('@log4js-node/log4js-api', () => ({
+	getLogger: jest.fn(() => ({
+		trace: jest.fn(),
+		warn: jest.fn(),
+	})),
+}))
 
 
 describe('SmartThingsCommand', () => {
@@ -127,19 +130,11 @@ describe('SmartThingsCommand', () => {
 	})
 
 	it('should set logger on first access', () => {
-		const logManagerSpy = jest.spyOn(LogManager.prototype, 'getLogger').mockImplementation(() => {
-			return new NoLogLogger()
-		})
-
-		expect(smartThingsCommand.logger).toBeInstanceOf(NoLogLogger)
-		expect(logManagerSpy).toBeCalledWith('cli')
+		expect(smartThingsCommand.logger).toBeDefined()
+		expect(log4js.getLogger).toBeCalledWith('cli')
 	})
 
 	describe('stringConfigValue', () => {
-		jest.spyOn(LogManager.prototype, 'getLogger').mockImplementation(() => {
-			return new NoLogLogger()
-		})
-
 		it('returns undefined when not set', async () => {
 			await smartThingsCommand.setup({}, [], {})
 
@@ -188,10 +183,6 @@ describe('SmartThingsCommand', () => {
 	})
 
 	describe('stringArrayConfigValue', () => {
-		jest.spyOn(LogManager.prototype, 'getLogger').mockImplementation(() => {
-			return new NoLogLogger()
-		})
-
 		it('returns [] when not set', async () => {
 			await smartThingsCommand.setup({}, [], {})
 

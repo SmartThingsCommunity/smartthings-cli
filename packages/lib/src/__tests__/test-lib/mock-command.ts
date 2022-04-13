@@ -1,5 +1,4 @@
-import { NoLogLogger } from '@smartthings/core-sdk'
-
+import { Logger } from '@log4js-node/log4js-api'
 import { CLIConfig, Profile, ProfilesByName } from '../../cli-config'
 import { SmartThingsCommandInterface } from '../../smartthings-command'
 import { DefaultTableGenerator } from '../../table-generator'
@@ -10,7 +9,7 @@ export const exitMock = jest.fn() as jest.Mock<never, [code?: number]>
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function buildMockCommand(flags: { [name: string]: any } = {}, profile: Profile = {}): SmartThingsCommandInterface {
 	return {
-		logger: new NoLogLogger(),
+		logger: {} as Logger,
 		flags,
 		cliConfig: {
 			profileName: 'default',
