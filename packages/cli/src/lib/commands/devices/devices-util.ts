@@ -1,7 +1,6 @@
 import { Device } from '@smartthings/core-sdk'
 
-import { APICommand, ChooseOptions, chooseOptionsWithDefaults, selectFromList,
-	stringTranslateToId, summarizedText, TableGenerator } from '@smartthings/cli-lib'
+import { summarizedText, TableGenerator } from '@smartthings/cli-lib'
 
 
 export type DeviceWithLocation = Device & { location?: string }
@@ -76,20 +75,4 @@ export const buildTableOutput = (tableGenerator: TableGenerator, device: Device 
 	return `Main Info\n${mainInfo}\n\n` +
 		(infoFrom ? `Device Integration Info (from ${infoFrom})\n${deviceIntegrationInfo}\n\n` : '') +
 		summarizedText
-}
-
-export const chooseDevice = async (command: APICommand, deviceFromArg?: string,
-		options?: Partial<ChooseOptions>): Promise<string> => {
-	const opts = chooseOptionsWithDefaults(options)
-	const config = {
-		itemName: 'device',
-		primaryKeyName: 'deviceId',
-		sortKeyName: 'label',
-		listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
-	}
-	const listItems = (): Promise<Device[]> => command.client.devices.list()
-	const preselectedId = opts.allowIndex
-		? await stringTranslateToId(config, deviceFromArg, listItems)
-		: deviceFromArg
-	return selectFromList(command, config, { preselectedId, listItems })
 }

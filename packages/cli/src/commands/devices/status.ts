@@ -1,8 +1,6 @@
 import { DeviceStatus } from '@smartthings/core-sdk'
 
-import { APICommand, formatAndWriteItem, TableGenerator } from '@smartthings/cli-lib'
-
-import { chooseDevice } from '../../lib/commands/devices/devices-util'
+import { APICommand, chooseDevice, formatAndWriteItem, TableGenerator } from '@smartthings/cli-lib'
 
 
 export function prettyPrintAttribute(value: unknown): string {

@@ -120,9 +120,7 @@ export const chooseOptionsDefaults: ChooseOptions = {
 	useConfigDefault: false,
 }
 
-export function chooseOptionsWithDefaults(options: Partial<ChooseOptions> | undefined): ChooseOptions {
-	return {
-		...chooseOptionsDefaults,
-		...options,
-	}
-}
+export const chooseOptionsWithDefaults = (options: Partial<ChooseOptions> | undefined): ChooseOptions => ({
+	...chooseOptionsDefaults,
+	...options,
+})
