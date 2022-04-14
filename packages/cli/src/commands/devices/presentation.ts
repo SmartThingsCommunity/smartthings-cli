@@ -1,6 +1,5 @@
-import { APICommand, formatAndWriteItem } from '@smartthings/cli-lib'
+import { APICommand, chooseDevice, formatAndWriteItem } from '@smartthings/cli-lib'
 
-import { chooseDevice } from '../../lib/commands/devices/devices-util'
 import { buildTableOutput } from '../presentation'
 
 

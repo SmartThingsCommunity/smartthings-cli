@@ -2,9 +2,9 @@ import { Errors } from '@oclif/core'
 
 import { CapabilityReference, CapabilityStatus } from '@smartthings/core-sdk'
 
-import { APICommand, formatAndWriteItem, selectFromList, stringTranslateToId, TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, chooseDevice, formatAndWriteItem, selectFromList, stringTranslateToId,
+	TableGenerator } from '@smartthings/cli-lib'
 
-import { chooseDevice } from '../../lib/commands/devices/devices-util'
 import { chooseComponent } from './component-status'
 import { prettyPrintAttribute } from './status'
 

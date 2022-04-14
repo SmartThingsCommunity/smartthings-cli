@@ -1,12 +1,10 @@
 import Table from 'cli-table'
 
-import {
-	APICommand, ChooseOptions, chooseOptionsWithDefaults, selectFromList,
-	stringTranslateToId, summarizedText, TableGenerator,
-} from '@smartthings/cli-lib'
-
-import { buildTableOutput, chooseDevice } from '../../../../lib/commands/devices/devices-util'
 import { Device } from '@smartthings/core-sdk'
+
+import { summarizedText, TableGenerator } from '@smartthings/cli-lib'
+
+import { buildTableOutput } from '../../../../lib/commands/devices/devices-util'
 
 
 describe('devices-util', () => {
@@ -256,61 +254,5 @@ describe('devices-util', () => {
 		it.todo('adds multiple components')
 		it.todo('joins multiple component capabilities with newlines')
 		it.todo('joins multiple children with newlines')
-	})
-
-	describe('chooseDevice', () => {
-		const selectFromListMock = jest.mocked(selectFromList)
-
-		const listDevicesMock = jest.fn()
-		const client = { devices: { list: listDevicesMock } }
-		const command = { client } as unknown as APICommand
-
-		const chooseOptionsWithDefaultsMock = jest.mocked(chooseOptionsWithDefaults)
-		const stringTranslateToIdMock = jest.mocked(stringTranslateToId)
-
-		it('proxies correctly to selectFromList', async () => {
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions)
-			selectFromListMock.mockImplementation(async () => 'chosen-device-id')
-
-			expect(await chooseDevice(command, 'command-line-device-id')).toBe('chosen-device-id')
-
-			expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledTimes(1)
-			expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledWith(undefined)
-			expect(stringTranslateToIdMock).toHaveBeenCalledTimes(0)
-			expect(selectFromListMock).toHaveBeenCalledTimes(1)
-			expect(selectFromListMock).toHaveBeenCalledWith(command,
-				expect.objectContaining({ primaryKeyName: 'deviceId', sortKeyName: 'label' }),
-				expect.objectContaining({ preselectedId: 'command-line-device-id' }))
-
-			const listFunction = selectFromListMock.mock.calls[0][2].listItems
-
-			const list = [{ deviceId: 'listed-device-id' }] as Device[]
-			listDevicesMock.mockResolvedValueOnce(list)
-
-			expect(await listFunction()).toBe(list)
-
-			expect(listDevicesMock).toHaveBeenCalledTimes(1)
-			expect(listDevicesMock).toHaveBeenCalledWith()
-		})
-
-		it('translates input from index if allowed', async () => {
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: true } as ChooseOptions)
-			stringTranslateToIdMock.mockResolvedValueOnce('translated-id')
-			selectFromListMock.mockImplementation(async () => 'chosen-device-id')
-
-			expect(await chooseDevice(command, 'command-line-device-id', { allowIndex: true }))
-				.toBe('chosen-device-id')
-
-			expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledTimes(1)
-			expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledWith({ allowIndex: true })
-			expect(stringTranslateToIdMock).toHaveBeenCalledTimes(1)
-			expect(stringTranslateToIdMock).toHaveBeenCalledWith(
-				expect.objectContaining({ primaryKeyName: 'deviceId', sortKeyName: 'label' }),
-				'command-line-device-id', expect.any(Function))
-			expect(selectFromListMock).toHaveBeenCalledTimes(1)
-			expect(selectFromListMock).toHaveBeenCalledWith(command,
-				expect.objectContaining({ primaryKeyName: 'deviceId', sortKeyName: 'label' }),
-				expect.objectContaining({ preselectedId: 'translated-id' }))
-		})
 	})
 })
