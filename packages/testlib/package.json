@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli-testlib",
-	"version": "1.0.0-beta.1",
+	"version": "1.0.0-beta.2",
 	"description": "SmartThings unified CLI testing utility methods library",
 	"author": "SmartThings, Inc.",
 	"bugs": {
@@ -28,7 +28,7 @@
 		"directory": "packages/testlib"
 	},
 	"dependencies": {
-		"@smartthings/cli-lib": "^1.0.0-beta.1",
+		"@smartthings/cli-lib": "^1.0.0-beta.4",
 		"@smartthings/core-sdk": "^3.4.1"
 	},
 	"devDependencies": {

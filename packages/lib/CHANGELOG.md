@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.4
+
+### Patch Changes
+
+- [#292](https://github.com/SmartThingsCommunity/smartthings-cli/pull/292) [`d91418c`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d91418caa5d54f984728ed02520338ac2410eae6) Thanks [@john-u](https://github.com/john-u)! - Replace LogManager class and associated global in favor of log4js-api.
+
 ## 1.0.0-beta.3
 
 ### Patch Changes

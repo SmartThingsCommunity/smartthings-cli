@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.0.0-beta.2
+
+### Patch Changes
+
+- [#286](https://github.com/SmartThingsCommunity/smartthings-cli/pull/286) [`c316148`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c316148ed51a154743ffc34f033efb97da9ebe48) Thanks [@john-u](https://github.com/john-u)! - refactor setupFiles to avoid duplication and remove setup function in favor of self executing module
+
+* [#292](https://github.com/SmartThingsCommunity/smartthings-cli/pull/292) [`d91418c`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d91418caa5d54f984728ed02520338ac2410eae6) Thanks [@john-u](https://github.com/john-u)! - Replace LogManager class and associated global in favor of log4js-api.
+
+* Updated dependencies [[`d91418c`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d91418caa5d54f984728ed02520338ac2410eae6)]:
+  - @smartthings/cli-lib@1.0.0-beta.4
+
 ## 1.0.0-beta.1
 
 ### Patch Changes
