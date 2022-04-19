@@ -73,8 +73,8 @@ The CLI uses [log4js](https://log4js-node.github.io/log4js-node/) for logging.
 Logging can be configured using a YAML file called `logging.yaml` in the same
 location as the config file mentioned above. The contents of this file are
 passed directly to log4js (overriding any default behavior) so any valid log4js configuration can be included
-here. The following categories are used in the CLI:
+here. The following log categories are used in the CLI:
 
-* rest-client - This category is used for the SDK that interfaces with the API.
-  Turn this on to see detailed information for HTTP calls are made to SmartThings.
-* cli - This is the generic logger used by the CLI.
+* `cli` - Generic logger used by the CLI. Log entries will have the command name appended. (ex. `cli.DriversCommand`)
+* `rest-client` - Used for the SDK that interfaces with the SmartThings API.
+* `login-authenticator` - Used in the default OAuth login flow.
