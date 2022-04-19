@@ -1,7 +1,6 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
-import { Configuration as Log4jsConfig, FileAppender, StandardErrorAppender, LogLevelFilterAppender } from 'log4js'
-
+import { Configuration as Log4jsConfig, FileAppender, StandardErrorAppender } from 'log4js'
 import { yamlExists } from '@smartthings/cli-lib'
 
 
@@ -11,6 +10,13 @@ const LOGGING_DOCS_URL = 'https://github.com/SmartThingsCommunity/smartthings-cl
 
 
 export function buildDefaultLog4jsConfig(logFilename: string): Log4jsConfig {
+	const config: Log4jsConfig = {
+		appenders: {},
+		categories: {
+			default: { appenders: ['smartthings'], level: 'warn' },
+		},
+	}
+
 	const fileAppender: FileAppender = {
 		type: 'file',
 		filename: logFilename,
@@ -19,26 +25,17 @@ export function buildDefaultLog4jsConfig(logFilename: string): Log4jsConfig {
 		keepFileExt: true,
 	}
 
-	const stderrAppender: StandardErrorAppender = { type: 'stderr' }
+	config.appenders.smartthings = fileAppender
 
-	const LogLevelFilterAppender: LogLevelFilterAppender = {
-		type: 'logLevelFilter',
-		appender: 'stderr',
-		level: 'error',
+	if (process.env.SMARTTHINGS_DEBUG) {
+		const stderrAppender: StandardErrorAppender = { type: 'stderr' }
+
+		config.appenders.debug = stderrAppender
+		config.categories.default.appenders.push('debug')
+		config.categories.default.level = 'debug'
 	}
 
-	return {
-		appenders: {
-			smartthings: fileAppender,
-			stderr: stderrAppender,
-			errors: LogLevelFilterAppender,
-		},
-		categories: {
-			default: { appenders: ['smartthings', 'errors'], level: 'warn' },
-			'rest-client': { appenders: ['smartthings', 'errors'], level: 'warn' },
-			cli: { appenders: ['smartthings', 'errors'], level: 'warn' },
-		},
-	}
+	return config
 }
 
 function isLog4jsConfig(config: unknown): config is Log4jsConfig {

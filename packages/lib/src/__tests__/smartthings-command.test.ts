@@ -132,7 +132,7 @@ describe('SmartThingsCommand', () => {
 	it('should set logger on first access', () => {
 		const getLoggerMock = jest.mocked(log4js.getLogger)
 		expect(smartThingsCommand.logger).toBeDefined()
-		expect(getLoggerMock).toBeCalledWith('cli')
+		expect(getLoggerMock).toBeCalledWith('cli.TestCommand')
 	})
 
 	describe('stringConfigValue', () => {

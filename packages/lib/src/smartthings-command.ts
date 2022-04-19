@@ -85,7 +85,7 @@ export abstract class SmartThingsCommand extends Command implements SmartThingsC
 	private _logger?: log4js.Logger
 	get logger(): log4js.Logger {
 		if (!this._logger) {
-			this._logger = log4js.getLogger('cli')
+			this._logger = log4js.getLogger(`cli.${this.constructor.name}`)
 		}
 		return this._logger
 	}
