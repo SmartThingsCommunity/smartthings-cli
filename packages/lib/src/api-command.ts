@@ -1,11 +1,9 @@
 import { Flags } from '@oclif/core'
 import osLocale from 'os-locale'
-
 import { Authenticator, BearerTokenAuthenticator, HttpClientHeaders, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
-
-import { logManager } from './logger'
 import { ClientIdProvider, defaultClientIdProvider, LoginAuthenticator } from './login-authenticator'
 import { SmartThingsCommand } from './smartthings-command'
+import log4js from '@log4js-node/log4js-api'
 
 
 const LANGUAGE_HEADER = 'Accept-Language'
@@ -83,7 +81,7 @@ export abstract class APICommand extends SmartThingsCommand {
 			}
 		}
 
-		const logger = logManager.getLogger('rest-client')
+		const logger = log4js.getLogger('rest-client')
 
 		this._headers = { 'User-Agent': this.userAgent }
 

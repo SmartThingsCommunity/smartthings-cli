@@ -4,8 +4,8 @@ import axios, { AxiosResponse } from 'axios'
 import { Request, Response } from 'express'
 import getPort from 'get-port'
 import open from 'open'
+import log4js from 'log4js'
 
-import { logManager } from '../logger'
 import { LoginAuthenticator } from '../login-authenticator'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -131,7 +131,7 @@ describe('LoginAuthenticator', () => {
 	}
 
 
-	logManager.init(config)
+	log4js.configure(config)
 
 	const mkdirMock = jest.mocked(fs.mkdirSync)
 	const readFileMock = jest.mocked(fs.readFileSync).mockImplementation(() => { throw { code: 'ENOENT' } })

@@ -1,13 +1,19 @@
 import at from 'lodash.at'
 import { URL } from 'url'
-
-import { logManager } from '../logger'
+import log4js from '@log4js-node/log4js-api'
 import { DefaultTableGenerator, TableFieldDefinition, TableGenerator } from '../table-generator'
 
-import { debugMock, warnMock } from './test-lib/mock-logger'
 
+const mockDebug = jest.fn()
+const mockWarn = jest.fn()
 
-jest.mock('../logger')
+jest.mock('@log4js-node/log4js-api', () => ({
+	getLogger: jest.fn(() => ({
+		debug: mockDebug,
+		warn: mockWarn,
+	})),
+}))
+
 jest.mock('lodash.at', () => {
 	const actualAt = jest.requireActual('lodash.at')
 	return {
@@ -145,6 +151,7 @@ const basicFieldDefinitions: TableFieldDefinition<SimpleData>[] = [
 
 describe('tableGenerator', () => {
 	const mockAt = jest.mocked(at)
+	const mockGetLogger = jest.mocked(log4js.getLogger)
 
 	let tableGenerator: TableGenerator
 
@@ -297,12 +304,12 @@ describe('tableGenerator', () => {
 		const output = tableGenerator.buildTableFromList([{}], ['fieldName'])
 
 		expect(output).toHaveItemValues([''])
-		expect(logManager.getLogger).toHaveBeenCalledTimes(1)
-		expect(logManager.getLogger).toHaveBeenCalledWith('table-manager')
+		expect(mockGetLogger).toHaveBeenCalledTimes(1)
+		expect(mockGetLogger).toHaveBeenCalledWith('table-manager')
 		expect(mockAt).toHaveBeenCalledTimes(1)
 		expect(mockAt).toHaveBeenCalledWith({}, 'fieldName')
-		expect(debugMock).toHaveBeenCalledTimes(1)
-		expect(debugMock).toHaveBeenCalledWith('did not find match for fieldName in {}')
+		expect(mockDebug).toHaveBeenCalledTimes(1)
+		expect(mockDebug).toHaveBeenCalledWith('did not find match for fieldName in {}')
 	})
 
 	it('combines data on multiple matches', () => {
@@ -311,19 +318,19 @@ describe('tableGenerator', () => {
 		const output = tableGenerator.buildTableFromList([{}], ['fieldName'])
 
 		expect(output).toHaveItemValues(['one, two'])
-		expect(logManager.getLogger).toHaveBeenCalledTimes(1)
-		expect(logManager.getLogger).toHaveBeenCalledWith('table-manager')
+		expect(mockGetLogger).toHaveBeenCalledTimes(1)
+		expect(mockGetLogger).toHaveBeenCalledWith('table-manager')
 		expect(mockAt).toHaveBeenCalledTimes(1)
 		expect(mockAt).toHaveBeenCalledWith({}, 'fieldName')
-		expect(warnMock).toHaveBeenCalledTimes(1)
-		expect(warnMock).toHaveBeenCalledWith('found more than one match for fieldName in {}')
+		expect(mockWarn).toHaveBeenCalledTimes(1)
+		expect(mockWarn).toHaveBeenCalledWith('found more than one match for fieldName in {}')
 	})
 
 	it('gets logger only once', () => {
 		tableGenerator.buildTableFromList([{}], ['fieldName'])
-		expect(logManager.getLogger).toHaveBeenCalledTimes(1)
-		expect(logManager.getLogger).toHaveBeenCalledWith('table-manager')
+		expect(mockGetLogger).toHaveBeenCalledTimes(1)
+		expect(mockGetLogger).toHaveBeenCalledWith('table-manager')
 		tableGenerator.buildTableFromList([{}], ['fieldName'])
-		expect(logManager.getLogger).toHaveBeenCalledTimes(1)
+		expect(mockGetLogger).toHaveBeenCalledTimes(1)
 	})
 })
