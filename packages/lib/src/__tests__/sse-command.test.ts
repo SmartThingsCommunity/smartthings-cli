@@ -6,7 +6,6 @@ import EventSource from 'eventsource'
 
 jest.mock('eventsource')
 jest.mock('../cli-config')
-jest.mock('../logger')
 
 describe('SseCommand', () => {
 	class TestCommand extends SseCommand {

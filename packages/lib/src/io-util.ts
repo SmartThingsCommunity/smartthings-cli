@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 
-import { logManager } from './logger'
+import log4js from '@log4js-node/log4js-api'
 import { CliUx } from '@oclif/core'
 
 
@@ -25,7 +25,7 @@ export function formatFromFilename(filename: string): IOFormat {
 	if (ext === '.json') {
 		return IOFormat.JSON
 	}
-	logManager.getLogger('cli').warn(`could not determine file type from filename "${filename}, assuming YAML`)
+	log4js.getLogger('cli').warn(`could not determine file type from filename "${filename}, assuming YAML`)
 	return IOFormat.YAML
 }
 

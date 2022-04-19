@@ -28,7 +28,8 @@
 		"directory": "packages/lib"
 	},
 	"dependencies": {
-		"@oclif/core": "^1.6.4",
+		"@log4js-node/log4js-api": "^1.0.2",
+		"@oclif/core": "^1.7.0",
 		"@smartthings/core-sdk": "^3.4.1",
 		"@types/eventsource": "^1.1.8",
 		"axios": "^0.21.4",
@@ -40,7 +41,6 @@
 		"inquirer": "^8.2.2",
 		"js-yaml": "^4.1.0",
 		"lodash.at": "^4.6.0",
-		"log4js": "6.3.0",
 		"open": "^8.4.0",
 		"os-locale": "^5.0.0",
 		"qs": "^6.10.3"
@@ -63,7 +63,7 @@
 		"jest": "^27.5.1",
 		"jest-extended": "^0.11.5",
 		"mock-stdin": "^1.0.0",
-		"oclif": "^2.6.3",
+		"oclif": "^3.0.1",
 		"rimraf": "^3.0.2",
 		"ts-jest": "^27.1.4",
 		"ts-node": "^10.5.0",

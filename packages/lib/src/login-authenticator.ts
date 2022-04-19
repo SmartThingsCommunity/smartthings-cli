@@ -7,7 +7,7 @@ import open from 'open'
 import path from 'path'
 import qs from 'qs'
 import { SmartThingsURLProvider, defaultSmartThingsURLProvider, Authenticator } from '@smartthings/core-sdk'
-import { logManager } from './logger'
+import log4js from '@log4js-node/log4js-api'
 
 
 export interface ClientIdProvider extends SmartThingsURLProvider {
@@ -72,7 +72,7 @@ export class LoginAuthenticator implements Authenticator {
 	private postConfig: AxiosRequestConfig
 
 	private authenticationInfo?: AuthenticationInfo
-	private logger = logManager.getLogger('login-authenticator')
+	private logger = log4js.getLogger('login-authenticator')
 
 	constructor(private profileName: string, private clientIdProvider: ClientIdProvider, userAgent: string) {
 		this.logger.trace('constructing a LoginAuthenticator')

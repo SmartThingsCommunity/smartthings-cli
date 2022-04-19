@@ -3,7 +3,7 @@ import Table from 'cli-table'
 
 import { Logger } from '@smartthings/core-sdk'
 
-import { logManager } from './logger'
+import log4js from '@log4js-node/log4js-api'
 
 
 export const summarizedText = '(Information is summarized, for full details use YAML, -y, or JSON flag, -j.)'
@@ -135,7 +135,7 @@ export class DefaultTableGenerator implements TableGenerator {
 	private _logger?: Logger
 	protected get logger(): Logger {
 		if (!this._logger) {
-			this._logger = logManager.getLogger('table-manager')
+			this._logger = log4js.getLogger('table-manager')
 		}
 		return this._logger
 	}
