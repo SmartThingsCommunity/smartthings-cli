@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.0.0-beta.3
+
+### Patch Changes
+
+- [#294](https://github.com/SmartThingsCommunity/smartthings-cli/pull/294) [`356a24b`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/356a24be75a467f82f627a654dd6a1c8b83c56f8) Thanks [@john-u](https://github.com/john-u)! - Add ability to enable debug logging (to console) via env variable.
+
+- Updated dependencies [[`4464873`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/44648732d54093a1e9f842dfb99dfe8bc81ea131), [`356a24b`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/356a24be75a467f82f627a654dd6a1c8b83c56f8)]:
+  - @smartthings/cli-lib@1.0.0-beta.5
+
 ## 1.0.0-beta.2
 
 ### Patch Changes

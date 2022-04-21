@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.0-beta.5
+
+### Patch Changes
+
+- [#293](https://github.com/SmartThingsCommunity/smartthings-cli/pull/293) [`4464873`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/44648732d54093a1e9f842dfb99dfe8bc81ea131) Thanks [@rossiam](https://github.com/rossiam)! - move chooseDevice into lib for use in plugins
+
+* [#294](https://github.com/SmartThingsCommunity/smartthings-cli/pull/294) [`356a24b`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/356a24be75a467f82f627a654dd6a1c8b83c56f8) Thanks [@john-u](https://github.com/john-u)! - Add ability to enable debug logging (to console) via env variable.
+
 ## 1.0.0-beta.4
 
 ### Patch Changes
