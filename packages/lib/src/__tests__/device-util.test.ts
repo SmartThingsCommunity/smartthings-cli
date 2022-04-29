@@ -15,7 +15,7 @@ describe('device-util', () => {
 
 		const listDevicesMock = jest.fn()
 		const client = { devices: { list: listDevicesMock } }
-		const command = { client } as unknown as APICommand
+		const command = { client } as unknown as APICommand<typeof APICommand.flags>
 
 		const stringTranslateToIdMock = jest.mocked(stringTranslateToId)
 

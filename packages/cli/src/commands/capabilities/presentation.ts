@@ -67,7 +67,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, presentation: C
 		summarizedText
 }
 
-export default class PresentationsCommand extends APIOrganizationCommand {
+export default class PresentationsCommand extends APIOrganizationCommand<typeof PresentationsCommand.flags> {
 	static description = 'get presentation information for a specific capability'
 
 	static flags = {
@@ -82,12 +82,9 @@ export default class PresentationsCommand extends APIOrganizationCommand {
 	static args = capabilityIdOrIndexInputArgs
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(PresentationsCommand)
-		await super.setup(args, argv, flags)
-
-		const idOrIndex = args.version
-			? { id: args.id, version: args.version }
-			: args.id
+		const idOrIndex = this.args.version
+			? { id: this.args.id, version: this.args.version }
+			: this.args.id
 		const config = {
 			primaryKeyName: 'id',
 			sortKeyName: 'id',
@@ -95,7 +92,7 @@ export default class PresentationsCommand extends APIOrganizationCommand {
 			buildTableOutput: (data: CapabilityPresentation) => buildTableOutput(this.tableGenerator, data),
 		}
 		await outputGenericListing(this, config, idOrIndex,
-			() => getCustomByNamespace(this.client, flags.namespace),
+			() => getCustomByNamespace(this.client, this.flags.namespace),
 			(id: CapabilityId) =>  this.client.capabilities.getPresentation(id.id, id.version),
 			(idOrIndex, listFunction) => translateToId(config.sortKeyName, idOrIndex, listFunction))
 	}

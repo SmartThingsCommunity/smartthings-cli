@@ -39,7 +39,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceSta
 	return output
 }
 
-export default class DeviceStatusCommand extends APICommand {
+export default class DeviceStatusCommand extends APICommand<typeof DeviceStatusCommand.flags> {
 	static description = "get the current status of all of a device's component's attributes"
 
 	static flags = {
@@ -53,10 +53,7 @@ export default class DeviceStatusCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceStatusCommand)
-		await super.setup(args, argv, flags)
-
-		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })
+		const deviceId = await chooseDevice(this, this.args.id, { allowIndex: true })
 		const presentation = await this.client.devices.getStatus(deviceId)
 		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, presentation)
 	}

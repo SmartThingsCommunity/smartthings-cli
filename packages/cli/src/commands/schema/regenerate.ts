@@ -1,7 +1,7 @@
 import { APICommand, selectFromList, outputItem } from '@smartthings/cli-lib'
 
 
-export default class SchemaAppRegenerateCommand extends APICommand {
+export default class SchemaAppRegenerateCommand extends APICommand<typeof SchemaAppRegenerateCommand.flags> {
 	static description = 'Regenerate the clientId and clientSecret of the ST Schema connector. The previous values will be invalidated, which may affect existing installations.'
 
 	static flags = {
@@ -15,15 +15,12 @@ export default class SchemaAppRegenerateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(SchemaAppRegenerateCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			primaryKeyName: 'endpointAppId',
 			sortKeyName: 'appName',
 		}
 		const id = await selectFromList(this, config, {
-			preselectedId: args.id,
+			preselectedId: this.args.id,
 			listItems: async () => await this.client.schema.list(),
 			promptMessage: 'Select a schema app to regenerate its clientId and clientSecret.',
 		})

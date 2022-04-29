@@ -3,7 +3,7 @@ import { AppSettings } from '@smartthings/core-sdk'
 import { buildTableOutput, chooseApp } from '../../lib/commands/apps/apps-util'
 
 
-export default class AppSettingsCommand extends APICommand {
+export default class AppSettingsCommand extends APICommand<typeof AppSettingsCommand.flags> {
 	static description = 'get the settings of the app'
 
 	static flags = {
@@ -17,10 +17,7 @@ export default class AppSettingsCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(AppSettingsCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseApp(this, args.id, { allowIndex: true })
+		const id = await chooseApp(this, this.args.id, { allowIndex: true })
 		const config: CustomCommonOutputProducer<AppSettings> =
 			{ buildTableOutput: appSettings => buildTableOutput(this.tableGenerator, appSettings) }
 

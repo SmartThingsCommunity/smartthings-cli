@@ -7,7 +7,7 @@ import { APICommand, inputItem, selectFromList, lambdaAuthFlags } from '@smartth
 import { addSchemaPermission } from '../../lib/aws-utils'
 
 
-export default class SchemaUpdateCommand extends APICommand {
+export default class SchemaUpdateCommand extends APICommand<typeof SchemaUpdateCommand.flags> {
 	static description = 'update an ST Schema connector'
 
 	static flags = {
@@ -25,33 +25,30 @@ export default class SchemaUpdateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(SchemaUpdateCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			primaryKeyName: 'endpointAppId',
 			sortKeyName: 'appName',
 			listTableFieldDefinitions: ['appName', 'endpointAppId', 'hostingType'],
 		}
 		const id = await selectFromList(this, config, {
-			preselectedId: args.id,
+			preselectedId: this.args.id,
 			listItems: () => this.client.schema.list(),
 		})
 
 		const [request] = await inputItem<SchemaAppRequest>(this)
-		if (flags.authorize) {
+		if (this.flags.authorize) {
 			if (request.hostingType === 'lambda') {
 				if (request.lambdaArn) {
-					await addSchemaPermission(request.lambdaArn, flags.principal, flags['statement-id'])
+					await addSchemaPermission(request.lambdaArn, this.flags.principal, this.flags['statement-id'])
 				}
 				if (request.lambdaArnAP) {
-					await addSchemaPermission(request.lambdaArnAP, flags.principal, flags['statement-id'])
+					await addSchemaPermission(request.lambdaArnAP, this.flags.principal, this.flags['statement-id'])
 				}
 				if (request.lambdaArnCN) {
-					await addSchemaPermission(request.lambdaArnCN, flags.principal, flags['statement-id'])
+					await addSchemaPermission(request.lambdaArnCN, this.flags.principal, this.flags['statement-id'])
 				}
 				if (request.lambdaArnEU) {
-					await addSchemaPermission(request.lambdaArnEU, flags.principal, flags['statement-id'])
+					await addSchemaPermission(request.lambdaArnEU, this.flags.principal, this.flags['statement-id'])
 				}
 			} else {
 				throw Error('Authorization is not applicable to WebHook schema connectors')

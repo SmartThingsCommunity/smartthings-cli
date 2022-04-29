@@ -1,11 +1,15 @@
 import inquirer from 'inquirer'
 import { Flags } from '@oclif/core'
 
-import { Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace,
-	SmartThingsClient } from '@smartthings/core-sdk'
+import {
+	Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace,
+	SmartThingsClient,
+} from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, ListDataFunction, outputGenericListing, selectFromList, sort,
-	Sorting, TableGenerator, allOrganizationsFlags, forAllOrganizations } from '@smartthings/cli-lib'
+import {
+	APIOrganizationCommand, ListDataFunction, outputGenericListing, selectFromList, sort,
+	Sorting, TableGenerator, allOrganizationsFlags, forAllOrganizations,
+} from '@smartthings/cli-lib'
 
 
 export const capabilityIdInputArgs = [
@@ -50,7 +54,7 @@ function joinEnums(enums: string[], width: number): string {
 	return result
 }
 
-export function attributeType(attr: CapabilityJSONSchema, multilineObjects= true): string {
+export function attributeType(attr: CapabilityJSONSchema, multilineObjects = true): string {
 	if (attr.type === 'array') {
 		if (Array.isArray(attr.items)) {
 			return 'array[' + attr.items.map(it => it.type).join(', ') + ']'
@@ -131,10 +135,6 @@ export interface CapabilityId {
 
 export type CapabilitySummaryWithNamespace = CapabilitySummary & { namespace: string }
 
-export function buildListTableOutput(this: APIOrganizationCommand, capabilities: CapabilitySummaryWithNamespace[]): string {
-	return this.tableGenerator.buildTableFromList(capabilities, ['id', 'version', 'status'])
-}
-
 /**
  * Get all custom capabilities for all namespaces and include `namespace` as a
  * property in the results. If no namespace is specified, this will make an API
@@ -188,7 +188,7 @@ export async function getIdFromUser(fieldInfo: Sorting, list: CapabilitySummaryW
 			if (typeof id === 'string') {
 				return id
 			} else {
-				throw Error(`invalid type ${typeof id} for primary key`  +
+				throw Error(`invalid type ${typeof id} for primary key` +
 					` id in ${JSON.stringify(list[index - 1])}`)
 			}
 		} else {
@@ -242,7 +242,7 @@ export async function translateToId(sortKeyName: string, idOrIndex: string | Cap
 	return { id: matchingItem.id, version: matchingItem.version }
 }
 
-export async function chooseCapability(command: APIOrganizationCommand, idFromArgs?: string,
+export async function chooseCapability(command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>, idFromArgs?: string,
 		versionFromArgs?: number, promptMessage?: string): Promise<CapabilityId> {
 	const preselectedId: CapabilityId | undefined = idFromArgs
 		? { id: idFromArgs, version: versionFromArgs ?? 1 }
@@ -261,7 +261,7 @@ export async function chooseCapability(command: APIOrganizationCommand, idFromAr
 	})
 }
 
-export async function chooseCapabilityFiltered(command: APIOrganizationCommand,
+export async function chooseCapabilityFiltered(command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>,
 		promptMessage: string, filter: string): Promise<CapabilityId> {
 	const config = {
 		itemName: 'capability',
@@ -276,7 +276,7 @@ export async function chooseCapabilityFiltered(command: APIOrganizationCommand,
 	})
 }
 
-export default class CapabilitiesCommand extends APIOrganizationCommand {
+export default class CapabilitiesCommand extends APIOrganizationCommand<typeof CapabilitiesCommand.flags> {
 	static description = 'get a specific capability'
 
 	static flags = {
@@ -296,10 +296,7 @@ export default class CapabilitiesCommand extends APIOrganizationCommand {
 	static args = capabilityIdOrIndexInputArgs
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(CapabilitiesCommand)
-		await super.setup(args, argv, flags)
-
-		const idOrIndex = args.version ? { id: args.id, version: args.version } : args.id
+		const idOrIndex = this.args.version ? { id: this.args.id, version: this.args.version } : this.args.id
 		const config = {
 			primaryKeyName: 'id',
 			sortKeyName: 'id',
@@ -308,13 +305,13 @@ export default class CapabilitiesCommand extends APIOrganizationCommand {
 		}
 		await outputGenericListing(this, config, idOrIndex,
 			() => {
-				if (flags.standard) {
+				if (this.flags.standard) {
 					return getStandard(this.client)
-				} else if (flags['all-organizations']) {
+				} else if (this.flags['all-organizations']) {
 					config.listTableFieldDefinitions.push('organization')
-					return forAllOrganizations(this.client, orgClient => getCustomByNamespace(orgClient, flags.namespace))
+					return forAllOrganizations(this.client, orgClient => getCustomByNamespace(orgClient, this.flags.namespace))
 				}
-				return getCustomByNamespace(this.client, flags.namespace)
+				return getCustomByNamespace(this.client, this.flags.namespace)
 			},
 			(id: CapabilityId) => this.client.capabilities.get(id.id, id.version),
 			(idOrIndex, listFunction) => translateToId(config.sortKeyName, idOrIndex, listFunction))

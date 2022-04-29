@@ -18,7 +18,7 @@ export const tableFieldDefinitions = [
 	},
 ]
 
-export default class OrganizationsCommand extends APICommand {
+export default class OrganizationsCommand extends APICommand<typeof OrganizationsCommand.flags> {
 	static description = 'list all organizations the user belongs to'
 
 	static flags = {
@@ -32,9 +32,6 @@ export default class OrganizationsCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(OrganizationsCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			tableFieldDefinitions,
 			primaryKeyName: 'organizationId',
@@ -42,7 +39,7 @@ export default class OrganizationsCommand extends APICommand {
 			listTableFieldDefinitions: ['name', 'label', 'organizationId', 'isDefaultUserOrg'],
 		}
 
-		await outputListing(this, config, args.id,
+		await outputListing(this, config, this.args.id,
 			() => this.client.organizations.list(),
 			id => this.client.organizations.get(id),
 		)

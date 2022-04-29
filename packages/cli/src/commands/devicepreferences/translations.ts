@@ -4,7 +4,7 @@ import { chooseDevicePreference } from '../../lib/commands/devicepreferences/dev
 import { tableFieldDefinitions } from '../../lib/commands/devicepreferences/translations/translations-util'
 
 
-export default class DevicePreferencesTranslationsCommand extends APIOrganizationCommand {
+export default class DevicePreferencesTranslationsCommand extends APIOrganizationCommand<typeof DevicePreferencesTranslationsCommand.flags> {
 	static description = 'get translated device preference values in a desired locale'
 
 	static flags = {
@@ -27,13 +27,6 @@ $ smartthings devicepreferences:translations motionSensitivity
 		`# specify device preference ID and locale to get translated device preference values
 $ smartthings devicepreferences:translations motionSensitivity ko`,
 	]
-
-	async init(): Promise<void> {
-		await super.init()
-
-		const { args, argv, flags } = await this.parse(DevicePreferencesTranslationsCommand)
-		await super.setup(args, argv, flags)
-	}
 
 	async run(): Promise<void> {
 		const preferenceId = await chooseDevicePreference(this, this.args.preferenceId)

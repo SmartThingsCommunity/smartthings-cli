@@ -6,7 +6,7 @@ import { buildTableOutput } from '../translations'
 import { chooseDeviceProfile } from '../../deviceprofiles'
 
 
-export default class DeviceProfileTranslationsUpsertCommand extends APIOrganizationCommand {
+export default class DeviceProfileTranslationsUpsertCommand extends APIOrganizationCommand<typeof DeviceProfileTranslationsUpsertCommand.flags> {
 	static description = 'create or update a device profile translation'
 
 	static flags = {
@@ -59,10 +59,7 @@ export default class DeviceProfileTranslationsUpsertCommand extends APIOrganizat
 	static aliases = ['device-profiles:translations:upsert']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceProfileTranslationsUpsertCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseDeviceProfile(this, args.id)
+		const id = await chooseDeviceProfile(this, this.args.id)
 
 		await inputAndOutputItem<DeviceProfileTranslations, DeviceProfileTranslations>(this,
 			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data)},

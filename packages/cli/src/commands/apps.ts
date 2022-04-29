@@ -4,7 +4,7 @@ import { APICommand, outputListing } from '@smartthings/cli-lib'
 import { tableFieldDefinitions } from '../lib/commands/apps/apps-util'
 
 
-export default class AppsCommand extends APICommand {
+export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
 	static description = 'get a specific app or a list of apps'
 
 	static flags = {
@@ -18,11 +18,6 @@ export default class AppsCommand extends APICommand {
 			description: 'filter results by one or more classifications, AUTOMATION, SERVICE, DEVICE, CONNECTED_SERVICE',
 			multiple: true,
 		}),
-		// TODO -- uncomment when implemented
-		// tag: Flags.string({
-		// 	description: 'filter results by one or more tags, e.g. --tag=industry:energy',
-		// 	multiple: true,
-		// }),
 		verbose: Flags.boolean({
 			description: 'include URLs and ARNs in table output',
 			char: 'v',
@@ -35,9 +30,6 @@ export default class AppsCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(AppsCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			primaryKeyName: 'appId',
 			sortKeyName: 'displayName',
@@ -45,27 +37,21 @@ export default class AppsCommand extends APICommand {
 			listTableFieldDefinitions: ['displayName', 'appType', 'appId'],
 		}
 
-		if (flags.verbose) {
+		if (this.flags.verbose) {
 			config.listTableFieldDefinitions.push('ARN/URL')
 		}
 
 		const listApps = async (): Promise<App[]> => {
 			const appListOptions: AppListOptions = {}
-			if (flags.type) {
-				appListOptions.appType = AppType[flags.type as keyof typeof AppType]
+			if (this.flags.type) {
+				appListOptions.appType = AppType[this.flags.type as keyof typeof AppType]
 			}
-			if (flags.classification) {
-				appListOptions.classification = flags.classification.map(it => AppClassification[it as keyof typeof AppClassification])
+
+			if (this.flags.classification) {
+				appListOptions.classification = this.flags.classification.map(classification => AppClassification[classification as keyof typeof AppClassification])
 			}
-			// TODO -- uncomment when implemented
-			// if (flags.tag) {
-			// 	appListOptions.tag = flags.tag.reduce((map: {[key: string]: string}, it) => {
-			// 		const pos = it.indexOf(':')
-			// 		map[it.slice(0, pos)] = it.slice(pos+1)
-			// 		return map
-			// 	}, {})
-			// }
-			if (flags.verbose) {
+
+			if (this.flags.verbose) {
 				return this.client.apps.list(appListOptions).then(list => {
 					const apps = list.map(app => {
 						// TODO remove assertion when https://github.com/SmartThingsCommunity/smartthings-core-sdk/issues/89 is resolved
@@ -89,6 +75,6 @@ export default class AppsCommand extends APICommand {
 			return this.client.apps.list(appListOptions)
 		}
 
-		await outputListing(this, config, args.id, listApps, id => this.client.apps.get(id))
+		await outputListing(this, config, this.args.id, listApps, id => this.client.apps.get(id))
 	}
 }

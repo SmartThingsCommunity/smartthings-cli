@@ -5,7 +5,7 @@ import { addPermission } from '../../lib/aws-utils'
 import { tableFieldDefinitions } from '../../lib/commands/apps/apps-util'
 
 
-export default class AppCreateCommand extends APICommand {
+export default class AppCreateCommand extends APICommand<typeof AppCreateCommand.flags> {
 	static description = 'create an app'
 
 	static flags = {
@@ -18,16 +18,13 @@ export default class AppCreateCommand extends APICommand {
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(AppCreateCommand)
-		await super.setup(args, argv, flags)
-
 		const createApp = async (_: void, data: AppRequest): Promise<AppCreationResponse> => {
 			// TODO extract this authorization block out to util function and use in ./update.ts as well
-			if (flags.authorize) {
+			if (this.flags.authorize) {
 				if (data.lambdaSmartApp) {
 					if (data.lambdaSmartApp.functions) {
 						const requests = data.lambdaSmartApp.functions.map((functionArn) => {
-							return addPermission(functionArn, flags.principal, flags['statement-id'])
+							return addPermission(functionArn, this.flags.principal, this.flags['statement-id'])
 						})
 						await Promise.all(requests)
 					}

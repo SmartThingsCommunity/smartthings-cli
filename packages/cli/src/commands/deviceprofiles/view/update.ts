@@ -6,7 +6,7 @@ import { augmentPresentationValues, buildTableOutput, DeviceDefinition, DeviceDe
 import { chooseDeviceProfile } from '../../deviceprofiles'
 
 
-export default class DeviceProfilesViewUpdateCommand extends APIOrganizationCommand {
+export default class DeviceProfilesViewUpdateCommand extends APIOrganizationCommand<typeof DeviceProfilesViewUpdateCommand.flags> {
 	static description = 'update a device profile and configuration\n' +
 		'Updates a device profile and device configuration and sets the vid of the profile\n' +
 		'to the vid of the updated configuration. Unlike deviceprofiles:update this\n' +
@@ -51,10 +51,7 @@ export default class DeviceProfilesViewUpdateCommand extends APIOrganizationComm
 	static aliases = ['device-profiles:view:update']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceProfilesViewUpdateCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseDeviceProfile(this, args.id)
+		const id = await chooseDeviceProfile(this, this.args.id)
 		const executeUpdate: ActionFunction<void, DeviceDefinitionRequest, DeviceDefinition> = async (_, data) => {
 			const profileData = { ...data }
 			let presentationData = data.view

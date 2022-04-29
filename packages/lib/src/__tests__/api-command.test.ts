@@ -1,4 +1,4 @@
-import { Config } from '@oclif/core'
+import { Config, Interfaces } from '@oclif/core'
 import * as osLocale from 'os-locale'
 
 import { BearerTokenAuthenticator, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
@@ -31,7 +31,7 @@ describe('api-command', () => {
 
 		const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
 
-		class testCommand extends APICommand {
+		class TestCommand extends APICommand<typeof TestCommand.flags> {
 			getToken(): string | undefined {
 				return this.token
 			}
@@ -40,52 +40,50 @@ describe('api-command', () => {
 				return this.clientIdProvider
 			}
 
-			async run(): Promise<void> {
-				this.client
-			}
-
 			get tableGenerator(): TableGenerator {
 				return mockedTableGenerator
+			}
+
+			async run(): Promise<void> {
+				// eslint-disable-line @typescript-eslint/no-empty-function
+			}
+
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+			async parse(options?: Interfaces.Input<any>, argv?: string[]): Promise<Interfaces.ParserOutput<any, any>> {
+				return {
+					flags: {},
+					args: {},
+					argv: [],
+					raw: [],
+					metadata: { flags: {} },
+				}
 			}
 		}
 
 		const loadConfigMock = jest.mocked(loadConfig)
+		const parseSpy = jest.spyOn(TestCommand.prototype, 'parse')
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		type parserOutputType = Interfaces.ParserOutput<any, any>
 
-		let apiCommand: testCommand
+		let apiCommand: TestCommand
 
 		beforeEach(() => {
-			apiCommand = new testCommand([], {} as Config)
+			apiCommand = new TestCommand([], {} as Config)
 			apiCommand.warn = jest.fn()
-		})
-
-		it('should throw Error when not properly setup', async () => {
-			await expect(apiCommand.run()).rejects.toEqual(new Error('APICommand not properly initialized'))
-		})
-
-		it('accessing authenticator throws Error when not properly setup', async () => {
-			expect(() => apiCommand.authenticator).toThrow('APICommand not properly initialized')
-		})
-
-		it('accessing client throws Error when not properly setup', async () => {
-			expect(() => apiCommand.client).toThrow('APICommand not properly initialized')
-		})
-
-		it('should not throw Error when properly setup', async () => {
-			await apiCommand.setup({}, [], {})
-
-			expect(apiCommand.run()).resolves
 		})
 
 		it('should set token when passed via flags during setup', async () => {
 			const token = 'token-from-cmd-line'
-			await apiCommand.setup({}, [], { token })
+			parseSpy.mockResolvedValueOnce({ args: {}, flags: { token } } as parserOutputType)
+			await apiCommand.init()
 
 			expect(apiCommand.getToken()).toBe(token)
 			expect(SmartThingsClient).toHaveBeenCalledTimes(1)
 		})
 
 		it('should pass language header on to client', async () => {
-			await apiCommand.setup({}, [], { language: 'es-US' })
+			parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'es-US' } } as parserOutputType)
+			await apiCommand.init()
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
@@ -94,7 +92,8 @@ describe('api-command', () => {
 		})
 
 		it('passes organization flag on to client', async () => {
-			await apiCommand.setup({}, [], { organization: 'organization-id-from-flag' })
+			parseSpy.mockResolvedValueOnce({ args: {}, flags: { organization: 'organization-id-from-flag' } } as parserOutputType)
+			await apiCommand.init()
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
@@ -106,7 +105,7 @@ describe('api-command', () => {
 			const profile: Profile = { organization: 'organization-id-from-config' }
 			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
-			await apiCommand.setup({}, [], {})
+			await apiCommand.init()
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
@@ -117,13 +116,13 @@ describe('api-command', () => {
 		it('returns oclif config User-Agent and default if undefined', () => {
 			expect(apiCommand.userAgent).toBe('@smartthings/cli')
 
-			apiCommand = new testCommand([], { userAgent: 'userAgent' } as Config)
+			apiCommand = new TestCommand([], { userAgent: 'userAgent' } as Config)
 
 			expect(apiCommand.userAgent).toBe('userAgent')
 		})
 
 		it('sets User-Agent header on client', async () => {
-			await apiCommand.setup({}, [], {})
+			await apiCommand.init()
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
@@ -132,13 +131,14 @@ describe('api-command', () => {
 		})
 
 		it('uses BearerTokenAuthenticator in client if token is provided', async () => {
-			await apiCommand.setup({}, [], { token: 'token' })
+			parseSpy.mockResolvedValueOnce({ args: {}, flags: { token: 'token' } } as parserOutputType)
+			await apiCommand.init()
 
 			expect(stClientSpy).toBeCalledWith(expect.any(BearerTokenAuthenticator), expect.anything())
 		})
 
 		it('uses LoginAuthenticator in client if token is not provided', async () => {
-			await apiCommand.setup({}, [], {})
+			await apiCommand.init()
 
 			expect(stClientSpy).toBeCalledWith(expect.any(LoginAuthenticator), expect.anything())
 
@@ -149,8 +149,9 @@ describe('api-command', () => {
 		it('prefers organization flag over config', async () => {
 			const profile: Profile = { organization: 'organization-id-from-config' }
 			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
+			parseSpy.mockResolvedValueOnce({ args: {}, flags: { organization: 'organization-id-from-flag' } } as parserOutputType)
 
-			await apiCommand.setup({}, [], { organization: 'organization-id-from-flag' })
+			await apiCommand.init()
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
@@ -160,7 +161,8 @@ describe('api-command', () => {
 
 		describe('warningLogger', () => {
 			it('uses string as-is', async () => {
-				await apiCommand.setup({}, [], { language: 'es-US' })
+				parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'es-US' } } as parserOutputType)
+				await apiCommand.init()
 
 				expect(stClientSpy).toHaveBeenCalledTimes(1)
 
@@ -177,7 +179,8 @@ describe('api-command', () => {
 			})
 
 			it('uses builds table out of list of warnings', async () => {
-				await apiCommand.setup({}, [], { language: 'es-US' })
+				parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'es-US' } } as parserOutputType)
+				await apiCommand.init()
 
 				expect(stClientSpy).toHaveBeenCalledTimes(1)
 
@@ -201,7 +204,8 @@ describe('api-command', () => {
 		})
 
 		it('should skip language header when "NONE" specified', async () => {
-			await apiCommand.setup({}, [], { language: 'NONE' })
+			parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'NONE' } } as parserOutputType)
+			await apiCommand.init()
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
@@ -212,7 +216,7 @@ describe('api-command', () => {
 
 		it('should uses os language header when not specified', async () => {
 			const osLocaleSpy = jest.spyOn(osLocale, 'default').mockResolvedValue('fr-CA')
-			await apiCommand.setup({}, [], {})
+			await apiCommand.init()
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
 
@@ -226,7 +230,7 @@ describe('api-command', () => {
 			const profile: Profile = { token }
 			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
-			await apiCommand.setup({}, [], {})
+			await apiCommand.init()
 
 			expect(apiCommand.getToken()).toBe(token)
 		})
@@ -240,7 +244,7 @@ describe('api-command', () => {
 
 			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
-			await apiCommand.setup({}, [], {})
+			await apiCommand.init()
 
 			expect(apiCommand.getClientIdProvider()).toStrictEqual(profile.clientIdProvider)
 		})

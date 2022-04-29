@@ -3,7 +3,7 @@ import { APIOrganizationCommand, formatAndWriteItem, outputItem } from '@smartth
 import { tableFieldDefinitions } from '../organizations'
 
 
-export default class OrganizationCurrentCommand extends APIOrganizationCommand {
+export default class OrganizationCurrentCommand extends APIOrganizationCommand<typeof OrganizationCurrentCommand.flags> {
 	static description = 'return the currently active organization'
 
 	static flags = {
@@ -14,9 +14,6 @@ export default class OrganizationCurrentCommand extends APIOrganizationCommand {
 	static args = []
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(OrganizationCurrentCommand)
-		await super.setup(args, argv, flags)
-
 		let currentOrganization
 		const currentOrganizationId = this.stringConfigValue('organization')
 		if (currentOrganizationId) {

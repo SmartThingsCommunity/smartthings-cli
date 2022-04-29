@@ -21,7 +21,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePro
 
 export type DeviceProfileWithLocales = DeviceProfile & { locales?: string }
 
-export default class DeviceProfileTranslationsCommand extends APIOrganizationCommand {
+export default class DeviceProfileTranslationsCommand extends APIOrganizationCommand<typeof DeviceProfileTranslationsCommand.flags> {
 	static description = 'Get list of locales supported by the device profiles'
 
 	static flags = {
@@ -100,10 +100,7 @@ export default class DeviceProfileTranslationsCommand extends APIOrganizationCom
 	static aliases = ['device-profiles:translations']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceProfileTranslationsCommand)
-		await super.setup(args, argv, flags)
-
-		const deviceProfileId = await chooseDeviceProfile(this, args.id, { verbose: flags.verbose, allowIndex: true })
+		const deviceProfileId = await chooseDeviceProfile(this, this.args.id, { verbose: this.flags.verbose, allowIndex: true })
 
 		const config: ListingOutputConfig<DeviceProfileTranslations, LocaleReference> = {
 			primaryKeyName: 'tag',
@@ -111,7 +108,7 @@ export default class DeviceProfileTranslationsCommand extends APIOrganizationCom
 			buildTableOutput: data => buildTableOutput(this.tableGenerator, data),
 			listTableFieldDefinitions: ['tag'],
 		}
-		await outputListing(this, config, args.tag,
+		await outputListing(this, config, this.args.tag,
 			() => this.client.deviceProfiles.listLocales(deviceProfileId),
 			tag =>  this.client.deviceProfiles.getTranslations(deviceProfileId, tag))
 	}

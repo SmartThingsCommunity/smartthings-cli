@@ -44,7 +44,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: Capabilit
 
 export type CapabilitySummaryWithLocales = CapabilitySummaryWithNamespace & { locales?: string }
 
-export default class CapabilityTranslationsCommand extends APIOrganizationCommand {
+export default class CapabilityTranslationsCommand extends APIOrganizationCommand<typeof CapabilityTranslationsCommand.flags> {
 
 	static description = 'get list of locales supported by the capability'
 
@@ -133,20 +133,17 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(CapabilityTranslationsCommand)
-		await super.setup(args, argv, flags)
-
 		const capConfig: SelectingConfig<CapabilitySummaryWithNamespace> = {
 			primaryKeyName: 'id',
 			sortKeyName: 'id',
 			listTableFieldDefinitions: ['id', 'version', 'status'],
 		}
-		if (flags.verbose) {
+		if (this.flags.verbose) {
 			capConfig.listTableFieldDefinitions.splice(3, 0, 'locales')
 		}
 		const listItems = async (): Promise<CapabilitySummaryWithLocales[]> => {
-			const capabilities =  await getCustomByNamespace(this.client, flags.namespace)
-			if (flags.verbose) {
+			const capabilities = await getCustomByNamespace(this.client, this.flags.namespace)
+			if (this.flags.verbose) {
 				const ops = capabilities.map(it => this.client.capabilities.listLocales(it.id, it.version))
 				const locales = await Promise.all(ops)
 				return capabilities.map((it, index) => {
@@ -158,22 +155,22 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 
 		let preselectedId: CapabilityId | undefined = undefined
 		let preselectedTag: string | undefined = undefined
-		if (argv.length === 3) {
+		if (this.argv.length === 3) {
 			// capabilityId, capabilityVersion, tag
-			preselectedId = { id: args.id, version: args.version }
-			preselectedTag = args.tag
-		} else if (argv.length === 2) {
-			if (isNaN(args.id) && !isNaN(args.version)) {
+			preselectedId = { id: this.args.id, version: this.args.version }
+			preselectedTag = this.args.tag
+		} else if (this.argv.length === 2) {
+			if (isNaN(this.args.id) && !isNaN(this.args.version)) {
 				// capabilityId, capabilityVersion, no tag specified
-				preselectedId = { id: args.id, version: args.version }
+				preselectedId = { id: this.args.id, version: this.args.version }
 			} else {
 				// capability id or index, no capability version specified, tag specified
-				preselectedId = await translateToId(capConfig.primaryKeyName, args.id, listItems)
-				preselectedTag = args.version
+				preselectedId = await translateToId(capConfig.primaryKeyName, this.args.id, listItems)
+				preselectedTag = this.args.version
 			}
 		} else {
 			// capability id or index, no tag specified
-			preselectedId = await translateToId(capConfig.primaryKeyName, args.id, listItems)
+			preselectedId = await translateToId(capConfig.primaryKeyName, this.args.id, listItems)
 		}
 
 		const capabilityId = await selectFromList(this, capConfig, {

@@ -4,7 +4,7 @@ import inquirer from 'inquirer'
 import { resetManagedConfig, SmartThingsCommand } from '@smartthings/cli-lib'
 
 
-export default class ConfigResetCommand extends SmartThingsCommand {
+export default class ConfigResetCommand extends SmartThingsCommand<typeof ConfigResetCommand.flags> {
 	static description = 'clear saved answers to questions\n' +
 		'The CLI will occasionally ask you if you want it to remember the answer to a question, such as ' +
 		'"Which hub do you want to use?" You can use this command to clear those answers.'
@@ -12,9 +12,6 @@ export default class ConfigResetCommand extends SmartThingsCommand {
 	static flags = SmartThingsCommand.flags
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(ConfigResetCommand)
-		await super.setup(args, argv, flags)
-
 		const confirmed: boolean = (await inquirer.prompt({
 			type: 'confirm',
 			name: 'confirmed',

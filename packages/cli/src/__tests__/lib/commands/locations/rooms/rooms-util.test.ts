@@ -52,7 +52,7 @@ describe('rooms-util', () => {
 
 	describe('chooseRoom', () => {
 		const getRoomsByLocationSpy = jest.spyOn(roomsUtil, 'getRoomsByLocation')
-		class MockCommand extends APICommand {
+		class MockCommand extends APICommand<typeof MockCommand.flags> {
 			async run(): Promise<void> {
 				// eslint-disable-line @typescript-eslint/no-empty-function
 			}

@@ -22,7 +22,7 @@ export const tableFieldDefinitions: TableFieldDefinition<DevicePreference>[] = [
 	},
 ]
 
-export async function chooseDevicePreference(command: APICommand, preselectedId?: string): Promise<string> {
+export async function chooseDevicePreference(command: APICommand<typeof APICommand.flags>, preselectedId?: string): Promise<string> {
 	const config = {
 		itemName: 'device preference',
 		primaryKeyName: 'preferenceId',

@@ -5,7 +5,7 @@ import { APICommand, chooseDevice, inputAndOutputItem } from '@smartthings/cli-l
 import { buildTableOutput } from '../../lib/commands/devices/devices-util'
 
 
-export default class DeviceUpdateCommand extends APICommand {
+export default class DeviceUpdateCommand extends APICommand<typeof DeviceUpdateCommand.flags> {
 	static description = "get the current status of all of a device's component's attributes"
 
 	static flags = {
@@ -21,10 +21,7 @@ export default class DeviceUpdateCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceUpdateCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseDevice(this, args.id)
+		const id = await chooseDevice(this, this.args.id)
 		await inputAndOutputItem<DeviceUpdate, Device>(this,
 			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
 			(_, data) => this.client.devices.update(id, data))

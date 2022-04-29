@@ -3,7 +3,7 @@ import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib
 import { chooseDevicePreference, tableFieldDefinitions } from '../../lib/commands/devicepreferences/devicepreferences-util'
 
 
-export default class DevicePreferencesUpdateCommand extends APIOrganizationCommand {
+export default class DevicePreferencesUpdateCommand extends APIOrganizationCommand<typeof DevicePreferencesUpdateCommand.flags> {
 	static description = 'update a device preference'
 
 	static flags = {
@@ -24,10 +24,7 @@ export default class DevicePreferencesUpdateCommand extends APIOrganizationComma
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DevicePreferencesUpdateCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseDevicePreference(this, args.id)
+		const id = await chooseDevicePreference(this, this.args.id)
 		await inputAndOutputItem<DevicePreference, DevicePreference>(this, { tableFieldDefinitions },
 			(_, devicePreference) => this.client.devicePreferences.update(id, devicePreference))
 	}

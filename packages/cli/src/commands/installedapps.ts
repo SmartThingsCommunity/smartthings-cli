@@ -18,7 +18,7 @@ export const tableFieldDefinitions: TableFieldDefinition<InstalledApp>[] = [
 	},
 ]
 
-export default class InstalledAppsCommand extends APICommand {
+export default class InstalledAppsCommand extends APICommand<typeof InstalledAppsCommand.flags> {
 	static description = 'get a specific app or a list of apps'
 
 	static flags = {
@@ -41,9 +41,6 @@ export default class InstalledAppsCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(InstalledAppsCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			primaryKeyName: 'installedAppId',
 			sortKeyName: 'displayName',
@@ -55,10 +52,10 @@ export default class InstalledAppsCommand extends APICommand {
 		}
 
 		const listOptions: InstalledAppListOptions = {
-			locationId: flags['location-id'],
+			locationId: this.flags['location-id'],
 		}
 
-		await outputListing<InstalledApp, InstalledAppWithLocation>(this, config, args.id,
+		await outputListing<InstalledApp, InstalledAppWithLocation>(this, config, this.args.id,
 			async () => {
 				const apps = await this.client.installedApps.list(listOptions)
 				if (this.flags.verbose) {

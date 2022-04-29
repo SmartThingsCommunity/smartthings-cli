@@ -123,7 +123,7 @@ export function augmentPresentationValues(view: DeviceView): DeviceView {
 	return view
 }
 
-export default class DeviceProfilesViewCommand extends APIOrganizationCommand {
+export default class DeviceProfilesViewCommand extends APIOrganizationCommand<typeof DeviceProfilesViewCommand.flags> {
 	static description = 'show device profile and device configuration in a single, consolidated view'
 
 	static flags = {
@@ -139,9 +139,6 @@ export default class DeviceProfilesViewCommand extends APIOrganizationCommand {
 	static aliases = ['device-profiles:view']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceProfilesViewCommand)
-		await super.setup(args, argv, flags)
-
 		const config: ListingOutputConfig<DeviceDefinition, DeviceProfile> = {
 			primaryKeyName: 'id',
 			sortKeyName: 'name',
@@ -163,7 +160,7 @@ export default class DeviceProfilesViewCommand extends APIOrganizationCommand {
 				return profile
 			}
 		}
-		await outputListing(this, config, args.id,
+		await outputListing(this, config, this.args.id,
 			() => this.client.deviceProfiles.list(),
 			getDeviceProfileAndConfig)
 	}

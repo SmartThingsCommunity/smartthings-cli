@@ -6,7 +6,7 @@ import { buildTableOutput } from '../presentation'
 import { chooseDeviceProfile } from '../deviceprofiles'
 
 
-export default class DeviceProfilePresentationCommand extends APIOrganizationCommand {
+export default class DeviceProfilePresentationCommand extends APIOrganizationCommand<typeof DeviceProfilePresentationCommand.flags> {
 	static description = 'get the presentation associated with a device profile'
 
 	static flags = {
@@ -33,10 +33,7 @@ export default class DeviceProfilePresentationCommand extends APIOrganizationCom
 	static aliases = ['device-profiles:presentation']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceProfilePresentationCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseDeviceProfile(this, args.id, { allowIndex: true })
+		const id = await chooseDeviceProfile(this, this.args.id, { allowIndex: true })
 
 		const profile = await this.client.deviceProfiles.get(id)
 		if (!profile.metadata) {

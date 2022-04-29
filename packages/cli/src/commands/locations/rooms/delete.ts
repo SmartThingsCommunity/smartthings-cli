@@ -3,7 +3,7 @@ import { APICommand } from '@smartthings/cli-lib'
 import { chooseRoom } from '../../../lib/commands/locations/rooms/rooms-util'
 
 
-export default class RoomsDeleteCommand extends APICommand {
+export default class RoomsDeleteCommand extends APICommand<typeof RoomsDeleteCommand.flags> {
 	static description = 'delete a room'
 
 	static flags = {
@@ -22,10 +22,7 @@ export default class RoomsDeleteCommand extends APICommand {
 	static aliases = ['rooms:delete']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(RoomsDeleteCommand)
-		await super.setup(args, argv, flags)
-
-		const [roomId, locationId] = await chooseRoom(this, flags['location-id'], args.id)
+		const [roomId, locationId] = await chooseRoom(this, this.flags['location-id'], this.args.id)
 		await this.client.rooms.delete(roomId, locationId)
 		this.log(`room ${roomId} deleted`)
 	}

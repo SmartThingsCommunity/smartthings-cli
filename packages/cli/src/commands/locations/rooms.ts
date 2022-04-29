@@ -4,7 +4,7 @@ import { Room } from '@smartthings/core-sdk'
 import { getRoomsByLocation, RoomWithLocation, tableFieldDefinitions } from '../../lib/commands/locations/rooms/rooms-util'
 
 
-export default class RoomsCommand extends APICommand {
+export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> {
 	static description = 'list rooms or get information for a specific room'
 
 	static flags = {
@@ -24,17 +24,14 @@ export default class RoomsCommand extends APICommand {
 	static aliases = ['rooms']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(RoomsCommand)
-		await super.setup(args, argv, flags)
-
 		const config: ListingOutputConfig<Room, RoomWithLocation> = {
 			primaryKeyName: 'roomId',
 			sortKeyName: 'name',
 			listTableFieldDefinitions: tableFieldDefinitions,
 			tableFieldDefinitions,
 		}
-		const rooms = await getRoomsByLocation(this.client, flags['location-id'])
-		await outputListing(this, config, args.idOrIndex,
+		const rooms = await getRoomsByLocation(this.client, this.flags['location-id'])
+		await outputListing(this, config, this.args.idOrIndex,
 			async () => rooms,
 			async id => {
 				const room = rooms.find(room => room.roomId === id)

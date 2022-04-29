@@ -6,7 +6,7 @@ import { buildTableOutput } from '../translations'
 import { capabilityIdInputArgs, chooseCapability } from '../../capabilities'
 
 
-export default class CapabilityTranslationsUpdateCommand extends APIOrganizationCommand {
+export default class CapabilityTranslationsUpdateCommand extends APIOrganizationCommand<typeof CapabilityTranslationsUpdateCommand.flags> {
 	static description = 'update a capability translation'
 
 	static flags = {
@@ -66,10 +66,7 @@ export default class CapabilityTranslationsUpdateCommand extends APIOrganization
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(CapabilityTranslationsUpdateCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseCapability(this, args.id, args.version)
+		const id = await chooseCapability(this, this.args.id, this.args.version)
 		await inputAndOutputItem<CapabilityLocalization, CapabilityLocalization>(this,
 			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
 			(_, translations) => this.client.capabilities.updateTranslations(id.id, id.version, translations))

@@ -7,7 +7,7 @@ import { APICommand, outputListing, withLocationsAndRooms } from '@smartthings/c
 import { buildTableOutput } from '../lib/commands/devices/devices-util'
 
 
-export default class DevicesCommand extends APICommand {
+export default class DevicesCommand extends APICommand<typeof DevicesCommand.flags> {
 	static description = 'list all devices available in a user account or retrieve a single device'
 
 	static flags = {
@@ -54,32 +54,29 @@ export default class DevicesCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DevicesCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			primaryKeyName: 'deviceId',
 			sortKeyName: 'label',
 			listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
 			buildTableOutput: (data: Device) => buildTableOutput(this.tableGenerator, data),
 		}
-		if (flags.verbose) {
+		if (this.flags.verbose) {
 			config.listTableFieldDefinitions.splice(3, 0, 'location', 'room')
 		}
 
 		const deviceListOptions: DeviceListOptions = {
-			capability: flags.capability,
-			capabilitiesMode: flags['capabilities-mode'] === 'or' ? 'or' : 'and',
-			locationId: flags['location-id'],
-			deviceId: flags['device-id'],
-			installedAppId: flags['installed-app-id'],
-			type: flags.type as DeviceIntegrationType | undefined,
+			capability: this.flags.capability,
+			capabilitiesMode: this.flags['capabilities-mode'] === 'or' ? 'or' : 'and',
+			locationId: this.flags['location-id'],
+			deviceId: this.flags['device-id'],
+			installedAppId: this.flags['installed-app-id'],
+			type: this.flags.type as DeviceIntegrationType | undefined,
 		}
 
-		await outputListing(this, config, args.id,
+		await outputListing(this, config, this.args.id,
 			async () => {
 				const devices = await this.client.devices.list(deviceListOptions)
-				if (flags.verbose) {
+				if (this.flags.verbose) {
 					return await withLocationsAndRooms(this.client, devices)
 				}
 				return devices

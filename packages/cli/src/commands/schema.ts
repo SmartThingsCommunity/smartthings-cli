@@ -3,7 +3,7 @@ import { Flags } from '@oclif/core'
 import { APICommand, outputListing } from '@smartthings/cli-lib'
 
 
-export default class SchemaCommand extends APICommand {
+export default class SchemaCommand extends APICommand<typeof SchemaCommand.flags> {
 	static description = 'list all ST Schema Apps currently available in a user account'
 
 	static flags = {
@@ -21,9 +21,6 @@ export default class SchemaCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(SchemaCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			tableFieldDefinitions: [
 				'appName', 'partnerName', 'endpointAppId', 'schemaType', 'hostingType',
@@ -39,11 +36,11 @@ export default class SchemaCommand extends APICommand {
 			sortKeyName: 'appName',
 			listTableFieldDefinitions: ['appName', 'endpointAppId', 'hostingType'],
 		}
-		if (flags.verbose) {
+		if (this.flags.verbose) {
 			config.listTableFieldDefinitions.push('ARN/URL')
 		}
 
-		await outputListing(this, config, args.id,
+		await outputListing(this, config, this.args.id,
 			async () => {
 				const items = await this.client.schema.list()
 				return items.map(item => {

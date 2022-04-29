@@ -1,7 +1,7 @@
 import { APIOrganizationCommand, outputList } from '@smartthings/cli-lib'
 
 
-export default class CapabilitiesListNamespacesCommand extends APIOrganizationCommand {
+export default class CapabilitiesListNamespacesCommand extends APIOrganizationCommand<typeof CapabilitiesListNamespacesCommand.flags> {
 	static description = 'list all capability namespaces currently available in a user account'
 
 	static flags = {
@@ -10,9 +10,6 @@ export default class CapabilitiesListNamespacesCommand extends APIOrganizationCo
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(CapabilitiesListNamespacesCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			sortKeyName: 'name',
 			primaryKeyName: 'name',

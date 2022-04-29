@@ -8,7 +8,7 @@ import { addSchemaPermission } from '../../lib/aws-utils'
 import { SCHEMA_AWS_PRINCIPAL } from './authorize'
 
 
-export default class SchemaAppCreateCommand extends APICommand {
+export default class SchemaAppCreateCommand extends APICommand<typeof SchemaAppCreateCommand.flags> {
 	static description = 'create an ST Schema connector'
 
 	static flags = {
@@ -21,14 +21,11 @@ export default class SchemaAppCreateCommand extends APICommand {
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(SchemaAppCreateCommand)
-		await super.setup(args, argv, flags)
-
 		const createApp = async (_: void, data: SchemaAppRequest): Promise<SchemaCreateResponse> => {
-			if (flags.authorize) {
+			if (this.flags.authorize) {
 				if (data.hostingType === 'lambda') {
-					const principal = flags.principal ?? SCHEMA_AWS_PRINCIPAL
-					const statementId = flags['statement-id']
+					const principal = this.flags.principal ?? SCHEMA_AWS_PRINCIPAL
+					const statementId = this.flags['statement-id']
 
 					if (data.lambdaArn) {
 						await addSchemaPermission(data.lambdaArn, principal, statementId)

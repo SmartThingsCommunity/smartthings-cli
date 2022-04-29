@@ -23,7 +23,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePro
 	return table.toString()
 }
 
-export default class DeviceProfileUpdateCommand extends APIOrganizationCommand {
+export default class DeviceProfileUpdateCommand extends APIOrganizationCommand<typeof DeviceProfileUpdateCommand.flags> {
 	static description = 'update a device profile'
 
 	static flags = {
@@ -39,10 +39,7 @@ export default class DeviceProfileUpdateCommand extends APIOrganizationCommand {
 	static aliases = ['device-profiles:update']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceProfileUpdateCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseDeviceProfile(this, args.id)
+		const id = await chooseDeviceProfile(this, this.args.id)
 		const executeUpdate: ActionFunction<void, DeviceDefinitionRequest, DeviceProfile> = async (_, data) => {
 			if (data.view) {
 				throw new Errors.CLIError('Input contains "view" property. Use deviceprofiles:view:update instead.')

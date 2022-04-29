@@ -2,7 +2,7 @@ import { APICommand, outputItem, outputListing } from '@smartthings/cli-lib'
 import { chooseApp, oauthTableFieldDefinitions } from '../../lib/commands/apps/apps-util'
 
 
-export default class AppOauthCommand extends APICommand {
+export default class AppOauthCommand extends APICommand<typeof AppOauthCommand.flags> {
 	static description = 'get OAuth information for the app'
 
 	static flags = {
@@ -16,10 +16,7 @@ export default class AppOauthCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(AppOauthCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseApp(this, args.id, { allowIndex: true })
+		const id = await chooseApp(this, this.args.id, { allowIndex: true })
 		await outputItem(this, { tableFieldDefinitions: oauthTableFieldDefinitions }, () => this.client.apps.getOauth(id))
 	}
 }

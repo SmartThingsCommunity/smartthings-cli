@@ -4,17 +4,17 @@ import { APIOrganizationCommand, outputListing, allOrganizationsFlags, forAllOrg
 import { tableFieldDefinitions } from '../lib/commands/devicepreferences/devicepreferences-util'
 
 
-export async function standardPreferences(command: APIOrganizationCommand): Promise<DevicePreference[]> {
+export async function standardPreferences(command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>): Promise<DevicePreference[]> {
 	return (await command.client.devicePreferences.list())
 		.filter(preference => preference.preferenceId.split('.').length === 1)
 }
 
-export async function customPreferences(command: APIOrganizationCommand): Promise<DevicePreference[]> {
+export async function customPreferences(command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>): Promise<DevicePreference[]> {
 	return (await command.client.devicePreferences.list())
 		.filter(preference => preference.preferenceId.split('.').length > 1)
 }
 
-export async function preferencesForAllOrganizations(command: APIOrganizationCommand): Promise<DevicePreference[]> {
+export async function preferencesForAllOrganizations(command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>): Promise<DevicePreference[]> {
 	return forAllOrganizations(command.client, (orgClient, org) => {
 		// TODO - Once it is possible to create device preferences in namespaces other than the
 		// organization's default one, we should restore this logic
@@ -25,7 +25,7 @@ export async function preferencesForAllOrganizations(command: APIOrganizationCom
 	})
 }
 
-export default class DevicePreferencesCommand extends APIOrganizationCommand {
+export default class DevicePreferencesCommand extends APIOrganizationCommand<typeof DevicePreferencesCommand.flags> {
 	static description = 'list device preferences or get information for a specific device preference'
 
 	static flags = {
@@ -57,9 +57,6 @@ export default class DevicePreferencesCommand extends APIOrganizationCommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DevicePreferencesCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			itemName: 'device preference',
 			primaryKeyName: 'preferenceId',
@@ -69,14 +66,14 @@ export default class DevicePreferencesCommand extends APIOrganizationCommand {
 				'required', 'preferenceType'],
 		}
 
-		await outputListing(this, config, args.idOrIndex,
+		await outputListing(this, config, this.args.idOrIndex,
 			async () => {
-				if (flags.standard) {
+				if (this.flags.standard) {
 					return standardPreferences(this)
 				} else if (this.flags.namespace) {
 					return this.client.devicePreferences.list(this.flags.namespace)
 				}
-				else if (flags['all-organizations']) {
+				else if (this.flags['all-organizations']) {
 					config.listTableFieldDefinitions.push('organization')
 					return preferencesForAllOrganizations(this)
 				}

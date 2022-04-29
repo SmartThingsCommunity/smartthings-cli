@@ -4,16 +4,22 @@ import { Authenticator, BearerTokenAuthenticator, HttpClientHeaders, SmartThings
 import { ClientIdProvider, defaultClientIdProvider, LoginAuthenticator } from './login-authenticator'
 import { SmartThingsCommand } from './smartthings-command'
 import log4js from '@log4js-node/log4js-api'
+import { APIOrganizationCommand } from './api-organization-command'
 
 
 const LANGUAGE_HEADER = 'Accept-Language'
 const ORGANIZATION_HEADER = 'X-ST-Organization'
 
 /**
- * Base class for commands that need to use Rest API commands via the
- * SmartThings Core SDK.
+ * The command being parsed will not always have {@link APIOrganizationCommand.flags}.
+ * Therefore, we make them all optional to be safely accessible in init below.
  */
-export abstract class APICommand extends SmartThingsCommand {
+type InputFlags = typeof APICommand.flags & Partial<typeof APIOrganizationCommand.flags>
+
+/**
+ * Base class for commands that need to use Rest API via the SmartThings Core SDK.
+ */
+export abstract class APICommand<T extends InputFlags> extends SmartThingsCommand<T> {
 	static flags = {
 		...SmartThingsCommand.flags,
 		token: Flags.string({
@@ -26,45 +32,33 @@ export abstract class APICommand extends SmartThingsCommand {
 		}),
 	}
 
+	protected clientIdProvider = defaultClientIdProvider
 	protected token?: string
+	private _authenticator!: Authenticator
+	private _client!: SmartThingsClient
+	private _headers!: HttpClientHeaders
 
-	private _authenticator?: Authenticator
 	get authenticator(): Authenticator {
-		if (!this._authenticator) {
-			throw new Error('APICommand not properly initialized')
-		}
 		return this._authenticator
 	}
 
-	protected clientIdProvider = defaultClientIdProvider
-
-	private _client?: SmartThingsClient
-
 	get client(): SmartThingsClient {
-		if (!this._client) {
-			throw new Error('APICommand not properly initialized')
-		}
 		return this._client
+	}
+
+	protected get headers(): HttpClientHeaders {
+		return this._headers
 	}
 
 	get userAgent(): string {
 		return this.config.userAgent ?? '@smartthings/cli'
 	}
 
-	private _headers?: HttpClientHeaders
-	protected get headers(): HttpClientHeaders {
-		if (!this._headers) {
-			throw new Error('APICommand not properly initialized')
-		}
-		return this._headers
-	}
+	async init(): Promise<void> {
+		await super.init()
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
-		await super.setup(args, argv, flags)
-
-		if (flags.token) {
-			this.token = flags.token
+		if (this.flags.token) {
+			this.token = this.flags.token
 		} else {
 			const configToken = this.stringConfigValue('token')
 			if (configToken) {
@@ -85,16 +79,16 @@ export abstract class APICommand extends SmartThingsCommand {
 
 		this._headers = { 'User-Agent': this.userAgent }
 
-		if (flags.language) {
-			if (flags.language !== 'NONE') {
-				this._headers[LANGUAGE_HEADER] = flags.language
+		if (this.flags.language) {
+			if (this.flags.language !== 'NONE') {
+				this._headers[LANGUAGE_HEADER] = this.flags.language
 			}
 		} else {
 			this._headers[LANGUAGE_HEADER] = await osLocale()
 		}
 
-		if (flags.organization) {
-			this._headers[ORGANIZATION_HEADER] = flags.organization
+		if (this.flags.organization) {
+			this._headers[ORGANIZATION_HEADER] = this.flags.organization
 		} else {
 			const configOrganization = this.stringConfigValue('organization')
 			if (configOrganization) {

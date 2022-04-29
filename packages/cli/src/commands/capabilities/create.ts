@@ -34,7 +34,7 @@ function unitOfMeasureValidator(input: string): boolean | string {
 	return input.length < 25 ? true : 'The unit should be less than 25 characters'
 }
 
-export default class CapabilitiesCreateCommand extends APIOrganizationCommand {
+export default class CapabilitiesCreateCommand extends APIOrganizationCommand<typeof CapabilitiesCreateCommand.flags> {
 	static description = 'create a capability for a user'
 
 	static flags = {
@@ -47,18 +47,15 @@ export default class CapabilitiesCreateCommand extends APIOrganizationCommand {
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(CapabilitiesCreateCommand)
-		await super.setup(args, argv, flags)
-
 		const params: HttpClientParams = {}
-		if (flags.namespace) {
-			params.namespace = flags.namespace
+		if (this.flags.namespace) {
+			params.namespace = this.flags.namespace
 		}
 
 		const createCapability = async (_: void, capability: CapabilityCreate): Promise<Capability> => {
 			return this.client.capabilities.create(capability, params)
 				.catch(error => {
-					if (error.response?.status == 403 && flags.namespace) {
+					if (error.response?.status == 403 && this.flags.namespace) {
 						throw new Errors.CLIError('Unable to create capability under specified namespace. ' +
 							'Either the namespace does not exist or you do not have permission.')
 					}

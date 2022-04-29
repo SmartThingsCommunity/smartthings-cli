@@ -4,7 +4,7 @@ import { APICommand, CommonOutputProducer, inputAndOutputItem } from '@smartthin
 import { chooseRoom, tableFieldDefinitions } from '../../../lib/commands/locations/rooms/rooms-util'
 
 
-export default class RoomsUpdateCommand extends APICommand {
+export default class RoomsUpdateCommand extends APICommand<typeof RoomsUpdateCommand.flags> {
 	static description = 'update a room'
 
 	static flags = {
@@ -24,10 +24,7 @@ export default class RoomsUpdateCommand extends APICommand {
 	static aliases = ['rooms:update']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(RoomsUpdateCommand)
-		await super.setup(args, argv, flags)
-
-		const [roomId, locationId] = await chooseRoom(this, flags['location-id'], args.id)
+		const [roomId, locationId] = await chooseRoom(this, this.flags['location-id'], this.args.id)
 		const config: CommonOutputProducer<Room> = { tableFieldDefinitions }
 		await inputAndOutputItem<RoomRequest, Room>(this, config,
 			(_, data) => this.client.rooms.update(roomId, data, locationId))

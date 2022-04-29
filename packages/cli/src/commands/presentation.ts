@@ -83,7 +83,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, presentation: P
 		summarizedText
 }
 
-export default class PresentationCommand extends APICommand {
+export default class PresentationCommand extends APICommand<typeof PresentationCommand.flags> {
 	static description = 'query device presentation by vid'
 
 	static flags = {
@@ -117,13 +117,10 @@ export default class PresentationCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(PresentationCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			buildTableOutput: (data: PresentationDevicePresentation) => buildTableOutput(this.tableGenerator, data),
 		}
 		await outputItem(this, config,
-			() => this.client.presentation.getPresentation(args.presentationId, args.manufacturerName))
+			() => this.client.presentation.getPresentation(this.args.presentationId, this.args.manufacturerName))
 	}
 }

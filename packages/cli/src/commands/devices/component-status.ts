@@ -1,7 +1,8 @@
 import { Component, ComponentStatus } from '@smartthings/core-sdk'
 
 import { APICommand, chooseDevice, formatAndWriteItem, selectFromList, SelectingConfig,
-	SmartThingsCommand, stringTranslateToId, TableGenerator } from '@smartthings/cli-lib'
+	SmartThingsCommandInterface, stringTranslateToId, TableGenerator,
+} from '@smartthings/cli-lib'
 
 import { prettyPrintAttribute } from './status'
 
@@ -22,7 +23,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, component: Comp
 	return table.toString()
 }
 
-export async function chooseComponent(command: SmartThingsCommand, componentFromArg?: string, components?: Component[]): Promise<string> {
+export async function chooseComponent(command: SmartThingsCommandInterface, componentFromArg?: string, components?: Component[]): Promise<string> {
 	if (!components || components.length === 0) {
 		return 'main'
 	}
@@ -38,7 +39,7 @@ export async function chooseComponent(command: SmartThingsCommand, componentFrom
 	return selectFromList(command, config, { preselectedId, listItems, autoChoose: true })
 }
 
-export default class DeviceComponentStatusCommand extends APICommand {
+export default class DeviceComponentStatusCommand extends APICommand<typeof DeviceComponentStatusCommand.flags> {
 	static description = "get the current status of a device component's attributes"
 
 	static flags = {
@@ -58,13 +59,10 @@ export default class DeviceComponentStatusCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceComponentStatusCommand)
-		await super.setup(args, argv, flags)
-
-		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })
+		const deviceId = await chooseDevice(this, this.args.id, { allowIndex: true })
 
 		const device = await this.client.devices.get(deviceId)
-		const componentName = await chooseComponent(this, args.component, device.components)
+		const componentName = await chooseComponent(this, this.args.component, device.components)
 
 		const componentStatus = await this.client.devices.getComponentStatus(deviceId, componentName)
 		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, componentStatus)

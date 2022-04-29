@@ -8,7 +8,7 @@ import { chooseLocation } from '../locations'
 import { tableFieldDefinitions } from '../../lib/commands/rules/rules-util'
 
 
-export default class RulesCreateCommand extends APICommand {
+export default class RulesCreateCommand extends APICommand<typeof RulesCreateCommand.flags> {
 	static description = 'create a rule'
 
 	static flags = {
@@ -21,10 +21,7 @@ export default class RulesCreateCommand extends APICommand {
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(RulesCreateCommand)
-		await super.setup(args, argv, flags)
-
-		const locationId = await chooseLocation(this, flags['location-id'])
+		const locationId = await chooseLocation(this, this.flags['location-id'])
 
 		await inputAndOutputItem<RuleRequest, Rule>(this, { tableFieldDefinitions },
 			(_, rule) => this.client.rules.create(rule, locationId))

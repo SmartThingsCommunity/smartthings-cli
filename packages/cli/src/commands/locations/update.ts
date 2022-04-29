@@ -5,7 +5,7 @@ import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 import { chooseLocation, tableFieldDefinitions } from '../locations'
 
 
-export default class LocationsUpdateCommand extends APICommand {
+export default class LocationsUpdateCommand extends APICommand<typeof LocationsUpdateCommand.flags> {
 	static description = 'update a location'
 
 	static flags = {
@@ -19,10 +19,7 @@ export default class LocationsUpdateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(LocationsUpdateCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseLocation(this, args.id)
+		const id = await chooseLocation(this, this.args.id)
 		await inputAndOutputItem<LocationUpdate, Location>(this, { tableFieldDefinitions },
 			(_, location) => this.client.locations.update(id, location))
 	}

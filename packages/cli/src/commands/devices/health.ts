@@ -1,7 +1,7 @@
 import { APICommand, chooseDevice, formatAndWriteItem } from '@smartthings/cli-lib'
 
 
-export default class DeviceHealthCommand extends APICommand {
+export default class DeviceHealthCommand extends APICommand<typeof DeviceHealthCommand.flags> {
 	static description = 'get the current health status of a device'
 
 	static flags = {
@@ -15,10 +15,7 @@ export default class DeviceHealthCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceHealthCommand)
-		await super.setup(args, argv, flags)
-
-		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })
+		const deviceId = await chooseDevice(this, this.args.id, { allowIndex: true })
 		const health = await this.client.devices.getHealth(deviceId)
 		await formatAndWriteItem(this, { tableFieldDefinitions: ['deviceId', 'state', 'lastUpdatedDate'] }, health)
 	}
