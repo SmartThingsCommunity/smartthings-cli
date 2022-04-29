@@ -3,7 +3,7 @@ import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 import { chooseApp, oauthTableFieldDefinitions } from '../../../lib/commands/apps/apps-util'
 
 
-export default class AppOauthGenerateCommand extends APICommand {
+export default class AppOauthGenerateCommand extends APICommand<typeof AppOauthGenerateCommand.flags> {
 	static description = 'regenerate the OAuth clientId and clientSecret of an app'
 
 	static flags = {
@@ -17,10 +17,7 @@ export default class AppOauthGenerateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(AppOauthGenerateCommand)
-		await super.setup(args, argv, flags)
-
-		const appId = await chooseApp(this, args.id)
+		const appId = await chooseApp(this, this.args.id)
 		await inputAndOutputItem(this,
 			{ tableFieldDefinitions: oauthTableFieldDefinitions.concat('oauthClientId', 'oauthClientSecret') },
 			(_, data: AppOAuth) => this.client.apps.regenerateOauth(appId, data))

@@ -11,7 +11,6 @@ describe('chooseLocation', () => {
 
 	it('calls selectFromList with correct config and endpoint', async () => {
 		const command = new LocationsCommand([], new Config({ root: '' }))
-		await command.setup({}, [], {})
 
 		mockSelectFromList.mockImplementationOnce(async (_command, _config, options) => {
 			await options.listItems()

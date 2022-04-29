@@ -5,7 +5,7 @@ import { addPermission } from '../../lib/aws-utils'
 import { chooseApp, tableFieldDefinitions } from '../../lib/commands/apps/apps-util'
 
 
-export default class AppUpdateCommand extends APICommand {
+export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand.flags> {
 	static description = 'update the settings of the app'
 
 	static flags = {
@@ -23,17 +23,14 @@ export default class AppUpdateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(AppUpdateCommand)
-		await super.setup(args, argv, flags)
-
-		const appId = await chooseApp(this, args.id)
+		const appId = await chooseApp(this, this.args.id)
 
 		const executeUpdate: ActionFunction<void, AppRequest, App> = async (_, data) => {
-			if (flags.authorize) {
+			if (this.flags.authorize) {
 				if (data.lambdaSmartApp) {
 					if (data.lambdaSmartApp.functions) {
 						const requests = data.lambdaSmartApp.functions.map((it) => {
-							return addPermission(it, flags.principal, flags['statement-id'])
+							return addPermission(it, this.flags.principal, this.flags['statement-id'])
 						})
 						await Promise.all(requests)
 					}

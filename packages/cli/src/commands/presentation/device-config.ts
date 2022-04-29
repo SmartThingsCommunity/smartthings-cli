@@ -75,7 +75,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, deviceConfig: P
 		summarizedText
 }
 
-export default class DeviceConfigPresentationCommand extends APICommand {
+export default class DeviceConfigPresentationCommand extends APICommand<typeof DeviceConfigPresentationCommand.flags> {
 	static description = 'query device config by presentationId'
 
 	static flags = {
@@ -95,10 +95,7 @@ export default class DeviceConfigPresentationCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceConfigPresentationCommand)
-		await super.setup(args, argv, flags)
-
 		await outputItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
-			() => this.client.presentation.get(args.presentationId, args.manufacturerName))
+			() => this.client.presentation.get(this.args.presentationId, this.args.manufacturerName))
 	}
 }

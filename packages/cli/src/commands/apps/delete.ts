@@ -2,7 +2,7 @@ import { APICommand } from '@smartthings/cli-lib'
 import { chooseApp } from '../../lib/commands/apps/apps-util'
 
 
-export default class AppDeleteCommand extends APICommand {
+export default class AppDeleteCommand extends APICommand<typeof AppDeleteCommand.flags> {
 	static description = 'delete the app'
 
 	static flags = APICommand.flags
@@ -13,10 +13,7 @@ export default class AppDeleteCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(AppDeleteCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseApp(this, args.id)
+		const id = await chooseApp(this, this.args.id)
 		await this.client.apps.delete(id)
 		this.log(`App ${id} deleted.`)
 	}

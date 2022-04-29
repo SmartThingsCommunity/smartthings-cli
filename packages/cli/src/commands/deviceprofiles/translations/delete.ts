@@ -2,7 +2,7 @@ import { APIOrganizationCommand, selectFromList } from '@smartthings/cli-lib'
 import { chooseDeviceProfile } from '../../deviceprofiles'
 
 
-export default class DeviceProfileTranslationsDeleteCommand extends APIOrganizationCommand {
+export default class DeviceProfileTranslationsDeleteCommand extends APIOrganizationCommand<typeof DeviceProfileTranslationsDeleteCommand.flags> {
 	static description = 'delete a device profile translation'
 
 	static flags = APIOrganizationCommand.flags
@@ -43,10 +43,7 @@ export default class DeviceProfileTranslationsDeleteCommand extends APIOrganizat
 	static aliases = ['device-profiles:translations:delete']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceProfileTranslationsDeleteCommand)
-		await super.setup(args, argv, flags)
-
-		const deviceProfileId = await chooseDeviceProfile(this, args.id)
+		const deviceProfileId = await chooseDeviceProfile(this, this.args.id)
 
 		const localeTagSelectConfig = {
 			primaryKeyName: 'tag',
@@ -54,7 +51,7 @@ export default class DeviceProfileTranslationsDeleteCommand extends APIOrganizat
 			listTableFieldDefinitions: ['tag'],
 		}
 		const localeTag = await selectFromList(this, localeTagSelectConfig, {
-			preselectedId: args.tag,
+			preselectedId: this.args.tag,
 			listItems: () => this.client.deviceProfiles.listLocales(deviceProfileId),
 			promptMessage: 'Select a locale:',
 		})

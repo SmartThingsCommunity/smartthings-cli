@@ -7,7 +7,7 @@ import { APICommand, outputItem } from '@smartthings/cli-lib'
 import { buildTableOutput } from '../device-config'
 
 
-export default class GeneratePresentationCommand extends APICommand {
+export default class GeneratePresentationCommand extends APICommand<typeof GeneratePresentationCommand.flags> {
 	static description = 'generate the default device configuration'
 
 	static flags = {
@@ -29,14 +29,11 @@ export default class GeneratePresentationCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(GeneratePresentationCommand)
-		await super.setup(args, argv, flags)
-
 		const extraParams: HttpClientParams = {}
-		if (flags.dth) {
+		if (this.flags.dth) {
 			extraParams.typeIntegration = 'dth'
-			if (args['type-shard-id']) {
-				extraParams.typeShareId = args['type-shard-id']
+			if (this.args['type-shard-id']) {
+				extraParams.typeShareId = this.args['type-shard-id']
 			}
 		}
 		this.logger.debug(`extraParams = ${JSON.stringify(extraParams)}`)
@@ -45,6 +42,6 @@ export default class GeneratePresentationCommand extends APICommand {
 			buildTableOutput: (data: PresentationDeviceConfig) => buildTableOutput(this.tableGenerator, data),
 		}
 		await outputItem<PresentationDeviceConfig>(this, config,
-			() => this.client.presentation.generate(args.id, extraParams))
+			() => this.client.presentation.generate(this.args.id, extraParams))
 	}
 }

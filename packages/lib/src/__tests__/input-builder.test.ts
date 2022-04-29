@@ -6,7 +6,6 @@ import { buildMockCommand } from './test-lib/mock-command'
 
 
 jest.mock('../input')
-jest.mock('../smartthings-command')
 
 afterEach(() => {
 	jest.resetAllMocks()

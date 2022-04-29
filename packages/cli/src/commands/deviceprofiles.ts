@@ -35,7 +35,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePro
 		summarizedText
 }
 
-export async function chooseDeviceProfile(command: APIOrganizationCommand, deviceProfileFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
+export async function chooseDeviceProfile(command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>, deviceProfileFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
 	const opts = chooseOptionsWithDefaults(options)
 	const config = {
 		itemName: 'device profile',
@@ -77,7 +77,7 @@ export async function chooseDeviceProfile(command: APIOrganizationCommand, devic
 	return selectFromList(command, config, { preselectedId, listItems })
 }
 
-export default class DeviceProfilesCommand extends APIOrganizationCommand {
+export default class DeviceProfilesCommand extends APIOrganizationCommand<typeof DeviceProfilesCommand.flags> {
 	static description = 'list all device profiles available in a user account or retrieve a single profile'
 
 	static flags = {
@@ -107,9 +107,6 @@ export default class DeviceProfilesCommand extends APIOrganizationCommand {
 	static aliases = ['device-profiles']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceProfilesCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			primaryKeyName: 'id',
 			sortKeyName: 'name',
@@ -126,8 +123,8 @@ export default class DeviceProfilesCommand extends APIOrganizationCommand {
 			config.listTableFieldDefinitions.push({ label: 'Manufacturer Name', value: item => item.metadata?.mnmn ?? '' })
 		}
 
-		await outputListing(this, config, args.id,
-			() => flags['all-organizations']
+		await outputListing(this, config, this.args.id,
+			() => this.flags['all-organizations']
 				? forAllOrganizations(this.client, (orgClient) => orgClient.deviceProfiles.list())
 				: this.client.deviceProfiles.list(),
 			id => this.client.deviceProfiles.get(id),

@@ -7,7 +7,7 @@ import { APICommand, selectFromList } from '@smartthings/cli-lib'
 import { installedSchemaInstances } from '../installedschema'
 
 
-export default class InstalledSchemaAppDeleteCommand extends APICommand {
+export default class InstalledSchemaAppDeleteCommand extends APICommand<typeof InstalledSchemaAppDeleteCommand.flags> {
 	static description = 'delete the installed schema connector instance'
 
 	static flags = {
@@ -28,9 +28,6 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(InstalledSchemaAppDeleteCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			primaryKeyName: 'isaId',
 			sortKeyName: 'appName',
@@ -41,8 +38,8 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand {
 		}
 
 		const id = await selectFromList<InstalledSchemaApp>(this, config, {
-			preselectedId: args.id,
-			listItems: () => installedSchemaInstances(this.client, flags['location-id'], flags.verbose),
+			preselectedId: this.args.id,
+			listItems: () => installedSchemaInstances(this.client, this.flags['location-id'], this.flags.verbose),
 			promptMessage: 'Select an installed schema app to delete.',
 		})
 		await this.client.schema.deleteInstalledApp(id)

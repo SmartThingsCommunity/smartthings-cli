@@ -10,7 +10,7 @@ export interface ChooseDeviceOptions extends ChooseOptions {
 	deviceListOptions?: DeviceListOptions
 	deviceListFilter?: DevicePredicate
 }
-export const chooseDevice = async (command: APICommand, deviceFromArg?: string,
+export const chooseDevice = async (command: APICommand<typeof APICommand.flags>, deviceFromArg?: string,
 		options?: Partial<ChooseDeviceOptions>): Promise<string> => {
 	const opts = { ...chooseOptionsDefaults, ...options }
 	const config = {

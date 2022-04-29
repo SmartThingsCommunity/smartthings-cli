@@ -5,7 +5,7 @@ import { Errors } from '@oclif/core'
 import { HttpClientHeaders } from '@smartthings/core-sdk'
 
 
-export abstract class SseCommand extends APICommand {
+export abstract class SseCommand<T extends typeof SseCommand.flags> extends APICommand<T> {
 	static flags = APICommand.flags
 
 	private _source?: EventSource
@@ -55,11 +55,6 @@ export abstract class SseCommand extends APICommand {
 				Errors.handle(error)
 			}
 		}
-	}
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
-		await super.setup(args, argv, flags)
 	}
 
 	teardown(): void {

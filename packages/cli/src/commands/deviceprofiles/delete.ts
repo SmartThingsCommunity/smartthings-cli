@@ -3,7 +3,7 @@ import { APIOrganizationCommand } from '@smartthings/cli-lib'
 import { chooseDeviceProfile } from '../deviceprofiles'
 
 
-export default class DeviceProfileDeleteCommand extends APIOrganizationCommand {
+export default class DeviceProfileDeleteCommand extends APIOrganizationCommand<typeof DeviceProfileDeleteCommand.flags> {
 	static description = 'delete a device profile'
 
 	static flags = APIOrganizationCommand.flags
@@ -21,10 +21,7 @@ export default class DeviceProfileDeleteCommand extends APIOrganizationCommand {
 	static aliases = ['device-profiles:delete']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceProfileDeleteCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseDeviceProfile(this, args.id)
+		const id = await chooseDeviceProfile(this, this.args.id)
 		await this.client.deviceProfiles.delete(id)
 		this.log(`Device profile ${id} deleted.`)
 	}

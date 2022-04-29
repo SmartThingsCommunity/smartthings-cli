@@ -19,7 +19,7 @@ describe('chooseApp', () => {
 	const mockSelectFromList = jest.mocked(selectFromList)
 	const mockChooseOptionsWithDefaults = jest.mocked(chooseOptionsWithDefaults)
 
-	class MockCommand extends APICommand {
+	class MockCommand extends APICommand<typeof MockCommand.flags> {
 		async run(): Promise<void> {
 			// eslint-disable-line @typescript-eslint/no-empty-function
 		}

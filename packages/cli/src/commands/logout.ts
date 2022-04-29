@@ -1,13 +1,10 @@
 import { APICommand } from '@smartthings/cli-lib'
 
 
-export default class LogoutCommand extends APICommand {
+export default class LogoutCommand extends APICommand<typeof LogoutCommand.flags> {
 	static flags = APICommand.flags
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(LogoutCommand)
-		await super.setup(args, argv, flags)
-
 		if (this.token) {
 			this.log(`Profile ${this.profileName} is set up using a PAT.`)
 			this.exit()

@@ -136,7 +136,7 @@ describe('rules-util', () => {
 	test('chooseRule proxies correctly to selectFromList', async () => {
 		const selectFromListMock = jest.mocked(selectFromList).mockResolvedValue('chosen-rule-id')
 		const client = {} as SmartThingsClient
-		const command = { client } as APICommand
+		const command = { client } as APICommand<typeof APICommand.flags>
 
 		expect(await chooseRule(command, 'prompt message', 'location-id', 'cmd-line-rule-id'))
 			.toBe('chosen-rule-id')

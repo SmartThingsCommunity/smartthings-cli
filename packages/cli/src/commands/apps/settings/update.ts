@@ -3,7 +3,7 @@ import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 import { buildTableOutput, chooseApp } from '../../../lib/commands/apps/apps-util'
 
 
-export default class AppSettingsUpdateCommand extends APICommand {
+export default class AppSettingsUpdateCommand extends APICommand<typeof AppSettingsUpdateCommand.flags> {
 	static description = 'update the settings of the app'
 
 	static flags = {
@@ -17,10 +17,7 @@ export default class AppSettingsUpdateCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(AppSettingsUpdateCommand)
-		await super.setup(args, argv, flags)
-
-		const appId = await chooseApp(this, args.id)
+		const appId = await chooseApp(this, this.args.id)
 		await inputAndOutputItem(this,
 			{ buildTableOutput: (data: AppSettings) => buildTableOutput(this.tableGenerator, data) },
 			(_, data: AppSettings) => this.client.apps.updateSettings(appId, data))

@@ -137,7 +137,7 @@ export function cleanupRequest(deviceProfileRequest: Partial<DeviceProfile & { r
 	return deviceProfileRequest
 }
 
-export default class DeviceProfileCreateCommand extends APIOrganizationCommand {
+export default class DeviceProfileCreateCommand extends APIOrganizationCommand<typeof DeviceProfileCreateCommand.flags> {
 	static description = 'Create a new device profile\n' +
 		'Creates a new device profile. If a vid field is not present in the meta\n' +
 		'then a default device presentation will be created for this profile and the\n' +
@@ -157,9 +157,6 @@ export default class DeviceProfileCreateCommand extends APIOrganizationCommand {
 	static aliases = ['device-profiles:create']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceProfileCreateCommand)
-		await super.setup(args, argv, flags)
-
 		const createDeviceProfile = async (_: void, data: DeviceDefinitionRequest): Promise<DeviceProfile> => {
 			if (data.view) {
 				throw new Error('Input contains "view" property. Use deviceprofiles:view:create instead.')

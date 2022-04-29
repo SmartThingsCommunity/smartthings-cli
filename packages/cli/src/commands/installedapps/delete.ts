@@ -5,7 +5,7 @@ import { InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
 import {selectFromList, APICommand, withLocations} from '@smartthings/cli-lib'
 
 
-export default class InstalledAppDeleteCommand extends APICommand {
+export default class InstalledAppDeleteCommand extends APICommand<typeof InstalledAppDeleteCommand.flags> {
 	static description = 'delete the installed app instance'
 
 	static flags = {
@@ -27,24 +27,21 @@ export default class InstalledAppDeleteCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(InstalledAppDeleteCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			primaryKeyName: 'installedAppId',
 			sortKeyName: 'displayName',
 			listTableFieldDefinitions: ['displayName', 'installedAppType', 'installedAppStatus', 'installedAppId'],
 		}
-		if (flags.verbose) {
+		if (this.flags.verbose) {
 			config.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 
 		const listOptions: InstalledAppListOptions = {
-			locationId: flags['location-id'],
+			locationId: this.flags['location-id'],
 		}
 
 		const id = await selectFromList<InstalledApp>(this, config, {
-			preselectedId: args.id,
+			preselectedId: this.args.id,
 			listItems: async () => {
 				const apps = await this.client.installedApps.list(listOptions)
 				if (this.flags.verbose) {

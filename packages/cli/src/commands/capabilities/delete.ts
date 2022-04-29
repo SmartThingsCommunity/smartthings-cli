@@ -3,7 +3,7 @@ import { APIOrganizationCommand } from '@smartthings/cli-lib'
 import { capabilityIdInputArgs, chooseCapability } from '../capabilities'
 
 
-export default class CapabilitiesDeleteCommand extends APIOrganizationCommand {
+export default class CapabilitiesDeleteCommand extends APIOrganizationCommand<typeof CapabilitiesDeleteCommand.flags> {
 	static description = 'delete a capability'
 
 	static flags = APIOrganizationCommand.flags
@@ -11,10 +11,7 @@ export default class CapabilitiesDeleteCommand extends APIOrganizationCommand {
 	static args = capabilityIdInputArgs
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(CapabilitiesDeleteCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseCapability(this, args.id, args.version)
+		const id = await chooseCapability(this, this.args.id, this.args.version)
 		await this.client.capabilities.delete(id.id, id.version)
 		this.log(`capability ${id.id} (version ${id.version}) deleted`)
 	}

@@ -5,7 +5,7 @@ import { buildTableOutput } from '../presentation'
 
 export const tableFieldDefinitions = ['clientName', 'scope', 'redirectUris']
 
-export default class DevicePresentationCommand extends APICommand {
+export default class DevicePresentationCommand extends APICommand<typeof DevicePresentationCommand.flags> {
 	static description = 'get a device presentation'
 
 	static flags = {
@@ -19,10 +19,7 @@ export default class DevicePresentationCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DevicePresentationCommand)
-		await super.setup(args, argv, flags)
-
-		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })
+		const deviceId = await chooseDevice(this, this.args.id, { allowIndex: true })
 		const presentation = await this.client.devices.getPresentation(deviceId)
 		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, presentation)
 	}

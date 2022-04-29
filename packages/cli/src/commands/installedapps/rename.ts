@@ -8,7 +8,7 @@ import { APICommand, formatAndWriteItem, selectFromList, withLocations } from '@
 import { listTableFieldDefinitions, tableFieldDefinitions } from '../installedapps'
 
 
-export default class DeviceComponentStatusCommand extends APICommand {
+export default class DeviceComponentStatusCommand extends APICommand<typeof DeviceComponentStatusCommand.flags> {
 	static description = 'renamed an installed app instance'
 
 	static flags = {
@@ -37,9 +37,6 @@ export default class DeviceComponentStatusCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceComponentStatusCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			itemName: 'installed app',
 			primaryKeyName: 'installedAppId',
@@ -47,15 +44,15 @@ export default class DeviceComponentStatusCommand extends APICommand {
 			tableFieldDefinitions,
 			listTableFieldDefinitions,
 		}
-		if (flags.verbose) {
+		if (this.flags.verbose) {
 			config.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 		const listOptions: InstalledAppListOptions = {
-			locationId: flags['location-id'],
+			locationId: this.flags['location-id'],
 		}
 
 		const id = await selectFromList(this, config, {
-			preselectedId: args.id,
+			preselectedId: this.args.id,
 			listItems: async () => {
 				const apps = await this.client.installedApps.list(listOptions)
 				if (this.flags.verbose) {
@@ -65,7 +62,7 @@ export default class DeviceComponentStatusCommand extends APICommand {
 			},
 			promptMessage: 'Select an app to rename.',
 		})
-		const displayName = args.name ??
+		const displayName = this.args.name ??
 			(await inquirer.prompt({
 				type: 'input',
 				name: 'label',

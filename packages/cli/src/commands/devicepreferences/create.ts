@@ -5,7 +5,7 @@ import { APIOrganizationCommand, askForInteger, askForNumber, askForRequiredStri
 import { tableFieldDefinitions } from '../../lib/commands/devicepreferences/devicepreferences-util'
 
 
-export default class DevicePreferencesCreateCommand extends APIOrganizationCommand {
+export default class DevicePreferencesCreateCommand extends APIOrganizationCommand<typeof DevicePreferencesCreateCommand.flags> {
 	static description = 'create a device preference'
 
 	static flags = {
@@ -33,9 +33,6 @@ $ smartthings devicepreferences: create - i dp.json - o dp - saved.json
 `]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DevicePreferencesCreateCommand)
-		await super.setup(args, argv, flags)
-
 		await inputAndOutputItem(this, { tableFieldDefinitions },
 			(_, input: DevicePreferenceCreate) => this.client.devicePreferences.create(input),
 			userInputProcessor(this))

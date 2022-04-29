@@ -32,7 +32,7 @@ export async function installedSchemaInstances(client: SmartThingsClient, locati
 	return installedApps
 }
 
-export default class InstalledSchemaAppsCommand extends APICommand {
+export default class InstalledSchemaAppsCommand extends APICommand<typeof InstalledSchemaAppsCommand.flags> {
 	static description = 'get a specific schema connector instance or a list of instances'
 
 	static flags = {
@@ -55,9 +55,6 @@ export default class InstalledSchemaAppsCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(InstalledSchemaAppsCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			primaryKeyName: 'isaId',
 			sortKeyName: 'appName',
@@ -68,8 +65,8 @@ export default class InstalledSchemaAppsCommand extends APICommand {
 			config.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 
-		await outputListing(this, config, args.id,
-			() => installedSchemaInstances(this.client, flags['location-id'], flags.verbose),
+		await outputListing(this, config, this.args.id,
+			() => installedSchemaInstances(this.client, this.flags['location-id'], this.flags.verbose),
 			id => this.client.schema.getInstalledApp(id),
 		)
 	}

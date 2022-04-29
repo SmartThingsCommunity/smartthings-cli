@@ -35,7 +35,7 @@ export const tableFieldDefinitions: TableFieldDefinition<App>[] = [
 
 export const oauthTableFieldDefinitions = ['clientName', 'scope', 'redirectUris']
 
-export async function chooseApp(command: APICommand, appFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
+export async function chooseApp(command: APICommand<typeof APICommand.flags>, appFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
 	const opts = chooseOptionsWithDefaults(options)
 	const config: SelectingConfig<App> = {
 		itemName: 'app',

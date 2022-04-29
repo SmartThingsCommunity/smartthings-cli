@@ -53,7 +53,7 @@ export const getRuleWithLocation = async (client: SmartThingsClient, id: string,
 	return rule
 }
 
-export const chooseRule = async (command: APICommand, promptMessage: string, locationId?: string,
+export const chooseRule = async (command: APICommand<typeof APICommand.flags>, promptMessage: string, locationId?: string,
 		preselectedId?: string): Promise<string> => {
 	const config = {
 		primaryKeyName: 'id',

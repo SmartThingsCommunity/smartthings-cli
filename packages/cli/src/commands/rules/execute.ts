@@ -7,7 +7,7 @@ import { APICommand, formatAndWriteItem } from '@smartthings/cli-lib'
 import { buildExecuteResponseTableOutput, chooseRule, getRuleWithLocation } from '../../lib/commands/rules/rules-util'
 
 
-export default class RulesExecuteCommand extends APICommand {
+export default class RulesExecuteCommand extends APICommand<typeof RulesExecuteCommand.flags> {
 	static description = 'execute a rule'
 
 	static flags = {
@@ -33,13 +33,10 @@ export default class RulesExecuteCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(RulesExecuteCommand)
-		await super.setup(args, argv, flags)
+		const ruleId = await chooseRule(this, 'Select a rule to execute.', this.flags['location-id'], this.args.id)
 
-		const ruleId = await chooseRule(this, 'Select a rule to execute.', flags['location-id'], args.id)
-
-		const locationId = flags['location-id']
-			?? (await getRuleWithLocation(this.client, ruleId, flags['location-id'])).locationId
+		const locationId = this.flags['location-id']
+			?? (await getRuleWithLocation(this.client, ruleId, this.flags['location-id'])).locationId
 
 		const result = await this.client.rules.execute(ruleId, locationId)
 		await formatAndWriteItem<ExecuteResponse>(this,

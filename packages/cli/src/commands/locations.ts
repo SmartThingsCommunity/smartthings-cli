@@ -8,7 +8,7 @@ export const tableFieldDefinitions = [
 	'latitude', 'longitude', 'regionRadius', 'temperatureScale', 'locale',
 ]
 
-export async function chooseLocation(command: APICommand, preselectedId?: string): Promise<string> {
+export async function chooseLocation(command: APICommand<typeof APICommand.flags>, preselectedId?: string): Promise<string> {
 	const config = {
 		itemName: 'location',
 		primaryKeyName: 'locationId',
@@ -20,7 +20,7 @@ export async function chooseLocation(command: APICommand, preselectedId?: string
 	})
 }
 
-export default class LocationsCommand extends APICommand {
+export default class LocationsCommand extends APICommand<typeof LocationsCommand.flags> {
 	static description = 'list locations or get information for a specific Location'
 
 	static flags = {
@@ -34,15 +34,12 @@ export default class LocationsCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(LocationsCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			primaryKeyName: 'locationId',
 			sortKeyName: 'name',
 			tableFieldDefinitions,
 		}
-		await outputListing<Location, LocationItem>(this, config, args.idOrIndex,
+		await outputListing<Location, LocationItem>(this, config, this.args.idOrIndex,
 			() => this.client.locations.list(),
 			id => this.client.locations.get(id))
 	}

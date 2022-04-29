@@ -5,7 +5,7 @@ import { APIOrganizationCommand, formatAndWriteItem } from '@smartthings/cli-lib
 import { buildTableOutput, chooseDeviceProfile } from '../deviceprofiles'
 
 
-export default class DeviceProfilePublishCommand extends APIOrganizationCommand {
+export default class DeviceProfilePublishCommand extends APIOrganizationCommand<typeof DeviceProfilePublishCommand.flags> {
 	static description = 'publish a device profile (published profiles cannot be modified)'
 
 	static flags = {
@@ -21,10 +21,7 @@ export default class DeviceProfilePublishCommand extends APIOrganizationCommand 
 	static aliases = ['device-profiles:publish']
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceProfilePublishCommand)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseDeviceProfile(this, args.id)
+		const id = await chooseDeviceProfile(this, this.args.id)
 
 		const deviceProfile = await this.client.deviceProfiles.updateStatus(id, DeviceProfileStatus.PUBLISHED)
 		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, deviceProfile)

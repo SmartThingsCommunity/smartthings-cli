@@ -4,7 +4,7 @@ import { chooseDevicePreference } from '../../../lib/commands/devicepreferences/
 import { tableFieldDefinitions } from '../../../lib/commands/devicepreferences/translations/translations-util'
 
 
-export default class DevicePreferencesTranslationsCreateCommand extends APIOrganizationCommand {
+export default class DevicePreferencesTranslationsCreateCommand extends APIOrganizationCommand<typeof DevicePreferencesTranslationsCreateCommand.flags> {
 	static description = 'create a device preference translation'
 
 	static flags = {
@@ -20,13 +20,6 @@ export default class DevicePreferencesTranslationsCreateCommand extends APIOrgan
 	static examples = [
 		'$ smartthings devicepreferences:translations:create -i preferenceTranslation.json',
 	]
-
-	async init(): Promise<void> {
-		await super.init()
-
-		const { args, argv, flags } = await this.parse(DevicePreferencesTranslationsCreateCommand)
-		await super.setup(args, argv, flags)
-	}
 
 	async run(): Promise<void> {
 		const preferenceId = await chooseDevicePreference(this, this.args.preferenceId)

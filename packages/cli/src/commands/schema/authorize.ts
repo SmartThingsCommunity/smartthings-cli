@@ -5,7 +5,7 @@ import { addPermission } from '../../lib/aws-utils'
 
 export const SCHEMA_AWS_PRINCIPAL = '148790070172'
 
-export default class SchemaAppAuthorizeCommand extends SmartThingsCommand {
+export default class SchemaAppAuthorizeCommand extends SmartThingsCommand<typeof SchemaAppAuthorizeCommand.flags> {
 	static description = 'authorize calls to your ST Schema Lambda function from SmartThings'
 
 	static flags = {
@@ -33,13 +33,10 @@ export default class SchemaAppAuthorizeCommand extends SmartThingsCommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(SchemaAppAuthorizeCommand)
-		await super.setup(args, argv, flags)
+		const principal = this.flags.principal ?? SCHEMA_AWS_PRINCIPAL
+		const statementId = this.flags['statement-id']
 
-		const principal = flags.principal ?? SCHEMA_AWS_PRINCIPAL
-		const statementId = flags['statement-id']
-
-		addPermission(args.arn, principal, statementId).then(async (message) => {
+		addPermission(this.args.arn, principal, statementId).then(async (message) => {
 			this.log(message)
 		}).catch(err => {
 			this.log(`caught error ${err}`)

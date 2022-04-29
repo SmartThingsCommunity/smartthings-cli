@@ -63,7 +63,7 @@ export function parseDeviceCommand(str: string, componentId?: string, capability
 	}
 }
 
-export default class DeviceCommandsCommand extends APICommand {
+export default class DeviceCommandsCommand extends APICommand<typeof DeviceCommandsCommand.flags> {
 	static description = 'execute a device command'
 
 	static flags = {
@@ -250,16 +250,13 @@ export default class DeviceCommandsCommand extends APICommand {
 	}
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceCommandsCommand)
-		await super.setup(args, argv, flags)
-
 		const config = {
 			primaryKeyName: 'deviceId',
 			sortKeyName: 'label',
 			listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
 		}
 		const deviceId = await selectFromList(this, config, {
-			preselectedId: args.id,
+			preselectedId: this.args.id,
 			listItems: () => this.client.devices.list(),
 		})
 		const [commands] = await inputItem<Command[]>(this, commandLineInputProcessor(this),

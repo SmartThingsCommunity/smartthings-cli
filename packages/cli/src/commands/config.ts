@@ -31,7 +31,7 @@ export class ConfigItem {
 	}
 }
 
-export default class ConfigCommand extends SmartThingsCommand {
+export default class ConfigCommand extends SmartThingsCommand<typeof ConfigCommand.flags> {
 	static description = 'list config file entries'
 
 	static flags = {
@@ -49,9 +49,6 @@ export default class ConfigCommand extends SmartThingsCommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(ConfigCommand)
-		await super.setup(args, argv, flags)
-
 		const listTableFieldDefinitions: TableFieldDefinition<ConfigItem>[] = [
 			'name',
 			{ label: 'Active', value: (item) => reservedKey(item.name) ? 'N/A' : item.active ? 'true' : '' },
@@ -85,8 +82,8 @@ export default class ConfigCommand extends SmartThingsCommand {
 			return list
 		}
 
-		if (args.name) {
-			const id = await stringTranslateToId(outputListConfig, args.name, listConfigs)
+		if (this.args.name) {
+			const id = await stringTranslateToId(outputListConfig, this.args.name, listConfigs)
 			await outputItem(this, { tableFieldDefinitions }, () => getConfig(id))
 		} else {
 			const outputFormat = calculateOutputFormat(this)

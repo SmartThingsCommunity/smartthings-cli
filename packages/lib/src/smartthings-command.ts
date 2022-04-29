@@ -1,7 +1,7 @@
 import log4js from '@log4js-node/log4js-api'
-import { Command, Flags } from '@oclif/core'
-
+import { Command, Flags, Interfaces } from '@oclif/core'
 import { CLIConfig, loadConfig, Profile } from './cli-config'
+import { outputFlags } from './output-builder'
 import { DefaultTableGenerator, TableGenerator } from './table-generator'
 
 
@@ -15,7 +15,7 @@ export interface Loggable {
  */
 export interface SmartThingsCommandInterface extends Loggable {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	readonly flags: { [name: string]: any }
+	readonly flags: Interfaces.OutputFlags<any>
 
 	/**
 	 * The full configuration set, including both user-configured and cli-managed configuration
@@ -29,6 +29,8 @@ export interface SmartThingsCommandInterface extends Loggable {
 	 * The configuration set for the selected profile.
 	 */
 	readonly profile: Profile
+
+	readonly tableGenerator: TableGenerator
 
 	// convenience methods for safely accessing configuration values
 
@@ -47,7 +49,7 @@ export interface SmartThingsCommandInterface extends Loggable {
 	 * This method logs a warning (and returns the default value) if the configured keyName exists
 	 * but is not a string or array of strings. (The default `defaultValue` is an empty array.)
 	 */
-	stringArrayConfigValue(keyName: string, defaultValue?: string[]) : string[]
+	stringArrayConfigValue(keyName: string, defaultValue?: string[]): string[]
 
 	/**
 	 * If the configured `keyName` value exists and is a boolean, return it. Otherwise, return
@@ -56,15 +58,28 @@ export interface SmartThingsCommandInterface extends Loggable {
 	 */
 	booleanConfigValue(keyName: string, defaultValue?: boolean): boolean
 
-	readonly tableGenerator: TableGenerator
-
 	exit(code?: number): void
 }
 
 /**
+ * This is needed to get type safety working in derived classes.
+ */
+export type InferredFlagsType<T> = T extends Interfaces.FlagInput<infer F>
+	? F & {
+		json: boolean | undefined
+	}
+	: any // eslint-disable-line @typescript-eslint/no-explicit-any
+
+/**
+ * The command being parsed will not always have {@link outputFlags}.
+ * Therefore, we make them all optional to be safely accessible in init below.
+ */
+type InputFlags = typeof SmartThingsCommand.flags & Partial<typeof outputFlags>
+
+/**
  * The base class for all commands in the SmartThings CLI.
  */
-export abstract class SmartThingsCommand extends Command implements SmartThingsCommandInterface {
+export abstract class SmartThingsCommand<T extends InputFlags> extends Command implements SmartThingsCommandInterface {
 	static flags = {
 		help: Flags.help({ char: 'h' }),
 		profile: Flags.string({
@@ -75,32 +90,49 @@ export abstract class SmartThingsCommand extends Command implements SmartThingsC
 		}),
 	}
 
-	// TODO: consider using Map<String, any> here and elsewhere (see api-helper for example)
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private _args?: { [name: string]: any }
-	private _argv?: string[]
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private _flags?: { [name: string]: any }
+	private _args!: Interfaces.OutputArgs
+	private _argv!: string[]
+	private _flags!: InferredFlagsType<T>
+	private _profile!: Profile
+	private _profileName!: string
+	private _cliConfig!: CLIConfig
+	private _tableGenerator!: TableGenerator
+	private _logger!: log4js.Logger
 
-	private _logger?: log4js.Logger
-	get logger(): log4js.Logger {
-		if (!this._logger) {
-			this._logger = log4js.getLogger(`cli.${this.constructor.name}`)
-		}
-		return this._logger
+	get args(): Interfaces.OutputArgs {
+		return this._args
 	}
 
-	private _profileName?: string
+	/**
+	 * Return input arguments, not including flags.
+	 */
+	get inputArgs(): string[] {
+		return this._argv
+	}
 
-	private _profile?: Profile
+	get flags(): InferredFlagsType<T> {
+		return this._flags
+	}
+
 	get profile(): Profile {
-		if (!this._profile) {
-			throw new Error('SmartThingsCommand not properly initialized')
-		}
 		return this._profile
 	}
 
-	cliConfig!: CLIConfig
+	get profileName(): string {
+		return this._profileName
+	}
+
+	get cliConfig(): CLIConfig {
+		return this._cliConfig
+	}
+
+	get tableGenerator(): TableGenerator {
+		return this._tableGenerator
+	}
+
+	get logger(): log4js.Logger {
+		return this._logger
+	}
 
 	stringConfigValue(keyName: string): string
 	stringConfigValue(keyName: string, defaultValue: string): string
@@ -117,7 +149,7 @@ export abstract class SmartThingsCommand extends Command implements SmartThingsC
 		return defaultValue
 	}
 
-	stringArrayConfigValue(keyName: string, defaultValue: string[] = []) : string[] {
+	stringArrayConfigValue(keyName: string, defaultValue: string[] = []): string[] {
 		if (keyName in this.profile) {
 			const configValue = this.profile[keyName]
 			if (typeof configValue === 'string') {
@@ -145,76 +177,41 @@ export abstract class SmartThingsCommand extends Command implements SmartThingsC
 		return defaultValue
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	get args(): { [name: string]: any } {
-		if (!this._args) {
-			throw new Error('SmartThingsCommand not properly initialized')
-		}
-		return this._args
-	}
+	async init(): Promise<void> {
+		await super.init()
 
-	/**
-	 * Return input arguments, not including flags.
-	 */
-	get inputArgs(): string[] {
-		if (!this._argv) {
-			throw new Error('SmartThingsCommand not properly initialized')
-		}
-		return this._argv
-	}
+		this._logger = log4js.getLogger(`cli.${this.ctor.name}`)
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	get flags(): { [name: string]: any } {
-		if (!this._flags) {
-			throw new Error('SmartThingsCommand not properly initialized')
-		}
-		return this._flags
-	}
-
-	get profileName(): string {
-		if (!this._profileName) {
-			throw new Error('SmartThingsCommand not properly initialized')
-		}
-		return this._profileName
-	}
-
-	protected _tableGenerator?: TableGenerator
-	get tableGenerator(): TableGenerator {
-		if (!this._tableGenerator) {
-			throw new Error('SmartThingsCommand not properly initialized')
-		}
-		return this._tableGenerator
-	}
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	async setup(args: { [name: string]: any }, argv: string[], flags: { [name: string]: any }): Promise<void> {
+		const { args, argv, flags } = await this.parse(this.ctor)
 		this._args = args
 		this._argv = argv
 		this._flags = flags
 
-		this._profileName = flags.profile || 'default'
+		this._profileName = this.flags.profile || 'default'
 
-		this.cliConfig = await loadConfig({
+		this._cliConfig = await loadConfig({
 			configFilename: `${this.config.configDir}/config.yaml`,
 			managedConfigFilename: `${this.config.cacheDir}/config-managed.yaml`,
 			profileName: this.profileName,
 		})
+
 		this._profile = this.cliConfig.profile
 
 		const compact = this.flags.expanded
 			? false
 			: (this.flags.compact ? true : this.booleanConfigValue('compactTableOutput', true))
+
 		this._tableGenerator = new DefaultTableGenerator(compact)
 	}
 
 	/**
-	 * This method should be called when the user has decided to not complete a command.
+	 * This method is called when the user has decided to not complete a command.
 	 */
-	abort(message?: string): never {
+	abort(message?: string): void {
 		if (message) {
 			this.log(message)
 		}
-		// eslint-disable-next-line no-process-exit
-		process.exit(0)
+
+		this.exit(0)
 	}
 }

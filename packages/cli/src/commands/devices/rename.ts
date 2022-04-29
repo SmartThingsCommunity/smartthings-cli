@@ -5,7 +5,7 @@ import { APICommand, chooseDevice, outputItem } from '@smartthings/cli-lib'
 import { buildTableOutput } from '../../lib/commands/devices/devices-util'
 
 
-export default class DeviceRenameCommand extends APICommand {
+export default class DeviceRenameCommand extends APICommand<typeof DeviceRenameCommand.flags> {
 	static description = 'rename a device'
 
 	static flags = {
@@ -25,12 +25,9 @@ export default class DeviceRenameCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceRenameCommand)
-		await super.setup(args, argv, flags)
+		const id = await chooseDevice(this, this.args.id)
 
-		const id = await chooseDevice(this, args.id)
-
-		const label = args.label ?? (await inquirer.prompt({
+		const label = this.args.label ?? (await inquirer.prompt({
 			type: 'input',
 			name: 'label',
 			message: 'Enter new device label:',

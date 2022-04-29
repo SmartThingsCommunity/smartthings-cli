@@ -23,7 +23,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePre
 	return output
 }
 
-export default class DevicePreferencesCommand extends APICommand {
+export default class DevicePreferencesCommand extends APICommand<typeof DevicePreferencesCommand.flags> {
 	static description = 'get the current preferences of a device'
 
 	static flags = {
@@ -37,10 +37,7 @@ export default class DevicePreferencesCommand extends APICommand {
 	}]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DevicePreferencesCommand)
-		await super.setup(args, argv, flags)
-
-		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })
+		const deviceId = await chooseDevice(this, this.args.id, { allowIndex: true })
 		const preferences = await this.client.devices.getPreferences(deviceId)
 		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, preferences)
 	}

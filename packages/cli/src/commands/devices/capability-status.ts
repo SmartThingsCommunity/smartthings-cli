@@ -22,7 +22,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, capability: Cap
 	return table.toString()
 }
 
-export default class DeviceCapabilityStatusCommand extends APICommand {
+export default class DeviceCapabilityStatusCommand extends APICommand<typeof DeviceCapabilityStatusCommand.flags> {
 	static description = "get the current status of all of a device capability's attributes"
 
 	static flags = {
@@ -46,13 +46,10 @@ export default class DeviceCapabilityStatusCommand extends APICommand {
 	]
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(DeviceCapabilityStatusCommand)
-		await super.setup(args, argv, flags)
-
-		const deviceId = await chooseDevice(this, args.id, { allowIndex: true })
+		const deviceId = await chooseDevice(this, this.args.id, { allowIndex: true })
 
 		const device = await this.client.devices.get(deviceId)
-		const componentName = await chooseComponent(this, args.component, device.components)
+		const componentName = await chooseComponent(this, this.args.component, device.components)
 
 		const component = device.components?.find(it => it.id === componentName)
 		const capabilities = component?.capabilities
@@ -67,7 +64,7 @@ export default class DeviceCapabilityStatusCommand extends APICommand {
 			listTableFieldDefinitions: ['id'],
 		}
 		const listItems = async (): Promise<CapabilityReference[]> => capabilities
-		const preselectedId = await stringTranslateToId(config, args.capability, listItems)
+		const preselectedId = await stringTranslateToId(config, this.args.capability, listItems)
 		const capabilityId = await selectFromList(this, config, { preselectedId, listItems })
 		const capabilityStatus = await this.client.devices.getCapabilityStatus(deviceId, componentName, capabilityId)
 		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, capabilityStatus)

@@ -6,7 +6,7 @@ import { buildTableOutput } from '../presentation'
 import { capabilityIdInputArgs, chooseCapability } from '../../capabilities'
 
 
-export default class CapabilitiesPresentationUpdate extends APIOrganizationCommand {
+export default class CapabilitiesPresentationUpdate extends APIOrganizationCommand<typeof CapabilitiesPresentationUpdate.flags> {
 	static description = 'update presentation information of a capability'
 
 	static flags = {
@@ -17,10 +17,7 @@ export default class CapabilitiesPresentationUpdate extends APIOrganizationComma
 	static args = capabilityIdInputArgs
 
 	async run(): Promise<void> {
-		const { args, argv, flags } = await this.parse(CapabilitiesPresentationUpdate)
-		await super.setup(args, argv, flags)
-
-		const id = await chooseCapability(this, args.id, args.version)
+		const id = await chooseCapability(this, this.args.id, this.args.version)
 		await inputAndOutputItem<CapabilityPresentationUpdate, CapabilityPresentation>(this,
 			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
 			(_, capabilityPresentation) => this.client.capabilities.updatePresentation(id.id, id.version, capabilityPresentation))

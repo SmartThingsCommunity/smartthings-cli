@@ -1,16 +1,26 @@
-import { Config } from '@oclif/core'
+import { Config, Interfaces } from '@oclif/core'
 import { SseCommand } from '../sse-command'
 import * as sseUtil from '../sse-util'
 import EventSource from 'eventsource'
 
 
 jest.mock('eventsource')
-jest.mock('../cli-config')
 
 describe('SseCommand', () => {
-	class TestCommand extends SseCommand {
+	class TestCommand extends SseCommand<typeof TestCommand.flags> {
 		async run(): Promise<void> {
 			// eslint-disable-line @typescript-eslint/no-empty-function
+		}
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+		async parse(options?: Interfaces.Input<any>, argv?: string[]): Promise<Interfaces.ParserOutput<any, any>> {
+			return {
+				flags: {},
+				args: {},
+				argv: [],
+				raw: [],
+				metadata: { flags: {} },
+			}
 		}
 	}
 
@@ -19,6 +29,9 @@ describe('SseCommand', () => {
 	const flags = { token: 'token' }
 
 	const handleSignalsSpy = jest.spyOn(sseUtil, 'handleSignals')
+	const parseSpy = jest.spyOn(TestCommand.prototype, 'parse')
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	type parserOutputType = Interfaces.ParserOutput<any, any>
 
 	beforeEach(() => {
 		sseCommand = new TestCommand([], testConfig)
@@ -31,14 +44,16 @@ describe('SseCommand', () => {
 	})
 
 	it('does not throw Error when source properly setup', async () => {
-		await sseCommand.setup({}, [], flags)
+		parseSpy.mockResolvedValueOnce({ args: {}, flags } as parserOutputType)
+		await sseCommand.init()
 		await sseCommand.initSource('localhost')
 
 		expect(() => { sseCommand.source }).not.toThrow()
 	})
 
 	it('adds auth header with token to eventsource by default', async () => {
-		await sseCommand.setup({}, [], flags)
+		parseSpy.mockResolvedValueOnce({ args: {}, flags } as parserOutputType)
+		await sseCommand.init()
 		await sseCommand.initSource('localhost')
 
 		expect(EventSource).toBeCalledWith(
@@ -48,7 +63,8 @@ describe('SseCommand', () => {
 	})
 
 	it('accepts source init dict and merges it with defaults', async () => {
-		await sseCommand.setup({}, [], flags)
+		parseSpy.mockResolvedValueOnce({ args: {}, flags } as parserOutputType)
+		await sseCommand.init()
 
 		const initDict = { headers: { 'Cookie': 'test=test' } }
 		await sseCommand.initSource('localhost', initDict)
@@ -60,13 +76,15 @@ describe('SseCommand', () => {
 	})
 
 	it('registers signal handler on initialization', async () => {
+		parseSpy.mockResolvedValueOnce({ args: {}, flags } as parserOutputType)
 		await sseCommand.init()
 
 		expect(handleSignalsSpy).toBeCalled()
 	})
 
 	it('sets default error handler', async () => {
-		await sseCommand.setup({}, [], flags)
+		parseSpy.mockResolvedValueOnce({ args: {}, flags } as parserOutputType)
+		await sseCommand.init()
 		await sseCommand.initSource('localhost')
 
 		expect(sseCommand.source.onerror).toBeDefined()
