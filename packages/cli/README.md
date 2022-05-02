@@ -982,7 +982,7 @@ DESCRIPTION
   create a capability translation
 
 EXAMPLES
-  $ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml
+  $ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml 
 
   tag: en
 
@@ -1106,7 +1106,7 @@ DESCRIPTION
   update a capability translation
 
 EXAMPLES
-  $ smartthings capabilities:translations:update custom1.outputModulation 1 -i en.yaml
+  $ smartthings capabilities:translations:update custom1.outputModulation 1 -i en.yaml 
 
   tag: en
 
@@ -1230,7 +1230,7 @@ DESCRIPTION
   create or update a capability translation
 
 EXAMPLES
-  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml
+  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml 
 
   tag: en
 
@@ -5021,7 +5021,7 @@ ALIASES
   $ smartthings plugins:add
 
 EXAMPLES
-  $ smartthings plugins:install myplugin
+  $ smartthings plugins:install myplugin 
 
   $ smartthings plugins:install https://github.com/someuser/someplugin
 
@@ -5083,7 +5083,7 @@ ALIASES
   $ smartthings plugins:add
 
 EXAMPLES
-  $ smartthings plugins:install myplugin
+  $ smartthings plugins:install myplugin 
 
   $ smartthings plugins:install https://github.com/someuser/someplugin
 

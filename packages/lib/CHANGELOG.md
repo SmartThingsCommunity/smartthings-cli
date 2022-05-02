@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.6
+
+### Patch Changes
+
+- [#297](https://github.com/SmartThingsCommunity/smartthings-cli/pull/297) [`d0fd25d`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d0fd25d12158214c051584a19efb260f938204ce) Thanks [@john-u](https://github.com/john-u)! - parse once from base command
+
 ## 1.0.0-beta.5
 
 ### Patch Changes
