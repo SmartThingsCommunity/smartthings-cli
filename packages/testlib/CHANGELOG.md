@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.4
+
+### Patch Changes
+
+- [#301](https://github.com/SmartThingsCommunity/smartthings-cli/pull/301) [`6ad407a`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/6ad407a0e98b4125ff8bbdd1ed237b8e9f81e8ca) Thanks [@john-u](https://github.com/john-u)! - bump @smartthings/plugin-cli-edge
+
 ## 1.0.0-beta.3
 
 ### Patch Changes
