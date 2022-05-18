@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core'
 
-import { ExecuteResponse } from '@smartthings/core-sdk'
+import { RuleExecutionResponse } from '@smartthings/core-sdk'
 
 import { APICommand, formatAndWriteItem } from '@smartthings/cli-lib'
 
@@ -39,8 +39,8 @@ export default class RulesExecuteCommand extends APICommand<typeof RulesExecuteC
 			?? (await getRuleWithLocation(this.client, ruleId, this.flags['location-id'])).locationId
 
 		const result = await this.client.rules.execute(ruleId, locationId)
-		await formatAndWriteItem<ExecuteResponse>(this,
-			{ buildTableOutput: (data: ExecuteResponse) => buildExecuteResponseTableOutput(this.tableGenerator, data) },
+		await formatAndWriteItem<RuleExecutionResponse>(this,
+			{ buildTableOutput: (data: RuleExecutionResponse) => buildExecuteResponseTableOutput(this.tableGenerator, data) },
 			result)
 	}
 }

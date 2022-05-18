@@ -84,6 +84,7 @@ module.exports = {
 		'@typescript-eslint/ban-ts-ignore': 0,
 		'@typescript-eslint/explicit-module-boundary-types': 'off',
 		'@typescript-eslint/no-floating-promises': 'error',
+		'@typescript-eslint/space-infix-ops': 'error',
 
 		// disallow non-import statements appearing before import statements
 		'import/first': 'error',

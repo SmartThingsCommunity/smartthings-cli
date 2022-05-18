@@ -19,7 +19,7 @@ export function parseDeviceCommand(str: string, componentId?: string, capability
 	const pos = str.indexOf('(')
 	if (pos > 0) {
 		cmdStr = str.slice(0, pos)
-		const argStr = str.slice(pos+1, -1)
+		const argStr = str.slice(pos + 1, -1)
 		args = JSON.parse(`[${argStr}]`)
 	}
 
@@ -197,7 +197,7 @@ export default class DeviceCommandsCommand extends APICommand<typeof DeviceComma
 
 			const command = capability.commands[cmd.command]
 			if (command.arguments && command.arguments?.length > 0 && (!cmd.arguments || cmd.arguments.length === 0)) {
-				const args = command?.arguments?.map(it => it.optional ?`[${it.name}]` :it.name).join(', ') || ''
+				const args = command?.arguments?.map(it => it.optional ? `[${it.name}]` : it.name).join(', ') || ''
 				const input = (await inquirer.prompt({
 					type: 'input',
 					name: 'arguments',

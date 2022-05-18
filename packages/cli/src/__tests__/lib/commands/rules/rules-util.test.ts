@@ -1,4 +1,4 @@
-import { Action, ExecuteResponse, Rule, SmartThingsClient } from '@smartthings/core-sdk'
+import { Rule, RuleAction, RuleExecutionResponse, SmartThingsClient } from '@smartthings/core-sdk'
 
 import { APICommand, selectFromList, TableGenerator } from '@smartthings/cli-lib'
 
@@ -31,7 +31,7 @@ describe('rules-util', () => {
 	describe('tableFieldDefinitions', () => {
 		it('counts rule actions', () => {
 			const numActionsDefinition = tableFieldDefinitions[2] as { value: (rule: Rule) => string }
-			const rule = { actions: [1, 2, 3] as unknown as Action[] } as Rule
+			const rule = { actions: [1, 2, 3] as unknown as RuleAction[] } as Rule
 			expect(numActionsDefinition.value(rule)).toBe('3')
 		})
 	})
@@ -175,7 +175,7 @@ describe('rules-util', () => {
 			const executeResponse = {
 				id: 'execute-response-id',
 				actions: [{ actionId: 'action-id' }],
-			} as ExecuteResponse
+			} as RuleExecutionResponse
 
 			expect(rulesUtil.buildExecuteResponseTableOutput(tableGenerator, executeResponse))
 				.toBe('main info\n\nActions\nactions info\nsummarized text')
@@ -189,7 +189,7 @@ describe('rules-util', () => {
 		})
 
 		it('leaves out actions table when there are no actions', () => {
-			const executeResponse = { id: 'execute-response-id' } as ExecuteResponse
+			const executeResponse = { id: 'execute-response-id' } as RuleExecutionResponse
 
 			expect(rulesUtil.buildExecuteResponseTableOutput(tableGenerator, executeResponse))
 				.toBe('main info\nsummarized text')
