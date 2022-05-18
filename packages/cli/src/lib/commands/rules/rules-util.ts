@@ -1,6 +1,6 @@
 import { Errors } from '@oclif/core'
 
-import { ActionExecutionResult, ExecuteResponse, LocationItem, Rule, SmartThingsClient } from '@smartthings/core-sdk'
+import { ActionExecutionResult, LocationItem, Rule, RuleExecutionResponse, SmartThingsClient } from '@smartthings/core-sdk'
 
 import { APICommand, selectFromList, summarizedText, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
 
@@ -67,7 +67,7 @@ export const chooseRule = async (command: APICommand<typeof APICommand.flags>, p
 	})
 }
 
-export const buildExecuteResponseTableOutput = (tableGenerator: TableGenerator, executeResponse: ExecuteResponse): string => {
+export const buildExecuteResponseTableOutput = (tableGenerator: TableGenerator, executeResponse: RuleExecutionResponse): string => {
 	const mainInfo = tableGenerator.buildTableFromItem(executeResponse, ['executionId', 'id', 'result'])
 	const calculateResult = (action: ActionExecutionResult): string =>
 		action.if?.result ?? action.location?.result ?? (action.command ? action.command.length.toString() : undefined) ?? action.sleep?.result ?? ''

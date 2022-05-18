@@ -1,4 +1,4 @@
-import { ExecuteResponse, RulesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
+import { RulesEndpoint, RuleExecutionResponse, SmartThingsClient } from '@smartthings/core-sdk'
 
 import { CustomCommonOutputProducer, DefaultTableGenerator, formatAndWriteItem } from '@smartthings/cli-lib'
 
@@ -15,7 +15,7 @@ describe('RulesExecuteCommand', () => {
 	const getRuleWithLocationMock = jest.mocked(getRuleWithLocation).mockResolvedValue(ruleWithLocation)
 	const buildExecuteResponseTableOutputMock = jest.mocked(buildExecuteResponseTableOutput)
 	const formatAndWriteItemMock = jest.mocked(formatAndWriteItem).mockImplementation()
-	const executeResponse = { id: 'execute-response-id' } as ExecuteResponse
+	const executeResponse = { id: 'execute-response-id' } as RuleExecutionResponse
 	const executeSpy = jest.spyOn(RulesEndpoint.prototype, 'execute').mockResolvedValue(executeResponse)
 
 	it('allows user to select rule', async () => {
@@ -38,7 +38,7 @@ describe('RulesExecuteCommand', () => {
 		expect(formatAndWriteItemMock).toHaveBeenCalledWith(expect.any(RulesExecuteCommand),
 			expect.objectContaining({}), executeResponse)
 
-		const config = formatAndWriteItemMock.mock.calls[0][1] as CustomCommonOutputProducer<ExecuteResponse>
+		const config = formatAndWriteItemMock.mock.calls[0][1] as CustomCommonOutputProducer<RuleExecutionResponse>
 
 		const tableOutput = 'table output'
 		buildExecuteResponseTableOutputMock.mockReturnValueOnce(tableOutput)
