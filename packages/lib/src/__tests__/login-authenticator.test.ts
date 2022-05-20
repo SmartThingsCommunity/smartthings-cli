@@ -7,6 +7,7 @@ import open from 'open'
 import log4js from 'log4js'
 
 import { LoginAuthenticator } from '../login-authenticator'
+import { CliUx } from '@oclif/core'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const recording = require('log4js/lib/appenders/recording')
@@ -35,6 +36,9 @@ jest.mock('express', () => {
 jest.mock('get-port')
 jest.mock('open')
 jest.mock('axios')
+
+jest.spyOn(CliUx.ux.action, 'start').mockImplementation()
+jest.spyOn(CliUx.ux.action, 'stop').mockImplementation()
 
 async function delay(milliseconds: number): Promise<void> {
 	return new Promise(resolve => setTimeout(resolve, milliseconds).unref())
@@ -388,7 +392,7 @@ describe('LoginAuthenticator', () => {
 			expect(postConfig?.headers['Content-Type']).toBe('application/x-www-form-urlencoded')
 
 			expect(mockFinishResponse.send).toHaveBeenCalledTimes(1)
-			expect(mockFinishResponse.send).toHaveBeenCalledWith(expect.stringContaining('Failure trying retrieve token.'))
+			expect(mockFinishResponse.send).toHaveBeenCalledWith(expect.stringContaining('Failure obtaining access token.'))
 
 			expect(readFileMock).toHaveBeenCalledTimes(1)
 			expect(writeFileMock).toHaveBeenCalledTimes(0)
