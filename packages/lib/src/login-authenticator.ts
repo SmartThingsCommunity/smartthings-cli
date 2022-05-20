@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 import { createHash, randomBytes, BinaryLike } from 'crypto'
 import express from 'express'
 import fs from 'fs'
@@ -8,6 +8,7 @@ import path from 'path'
 import qs from 'qs'
 import { SmartThingsURLProvider, defaultSmartThingsURLProvider, Authenticator } from '@smartthings/core-sdk'
 import log4js from '@log4js-node/log4js-api'
+import { CliUx } from '@oclif/core'
 
 
 export interface ClientIdProvider extends SmartThingsURLProvider {
@@ -24,8 +25,7 @@ export const defaultClientIdProvider: ClientIdProvider = {
 }
 
 // All the scopes the clientId we are using is configured to use.
-const scopes = ['controller%3AstCli']
-
+const scopes = ['controller:stCli']
 
 interface AuthenticationInfo {
 	accessToken: string
@@ -37,7 +37,6 @@ interface AuthenticationInfo {
 	installedAppId: string
 	deviceId: string
 }
-
 
 function credentialsFile(): string {
 	if (!('_credentialsFile' in (global as { _credentialsFile?: string }))) {
@@ -96,17 +95,8 @@ export class LoginAuthenticator implements Authenticator {
 		}
 	}
 
-	private base64URLEncode(data: Buffer): string {
-		return data.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
-	}
-
 	private sha256(data: BinaryLike): Buffer {
 		return createHash('sha256').update(data).digest()
-
-	}
-
-	private delay(ms: number): Promise<void> {
-		return new Promise(resolve => setTimeout(resolve, ms).unref())
 	}
 
 	private readCredentialsFile(): CredentialsFileData {
@@ -122,9 +112,9 @@ export class LoginAuthenticator implements Authenticator {
 
 	private writeCredentialsFile(credentialsFileData: CredentialsFileData): void {
 		fs.writeFileSync(credentialsFile(), JSON.stringify(credentialsFileData, null, 4))
-		fs.chmod(credentialsFile(), 0o600, err => {
-			if (err) {
-				this.logger.error('failed to set permissions on credentials file', err)
+		fs.chmod(credentialsFile(), 0o600, error => {
+			if (error) {
+				this.logger.error('failed to set permissions on credentials file', error)
 			}
 		})
 	}
@@ -146,37 +136,44 @@ export class LoginAuthenticator implements Authenticator {
 	}
 
 	async login(): Promise<void> {
-		const verifier = this.base64URLEncode(randomBytes(32))
-
 		const app = express()
-
 		const port = await getPort({ port: [61973, 61974, 61975] })
-
-		const baseOAuthInURL = this.clientIdProvider.baseOAuthInURL
-		const codeChallenge = this.base64URLEncode(this.sha256(verifier))
 		const finishURL = `http://localhost:${port}/finish`
+		const baseOAuthInURL = this.clientIdProvider.baseOAuthInURL
+
+		const verifier = randomBytes(32).toString('base64url')
+		const codeChallenge = this.sha256(verifier).toString('base64url')
+
 		let loginFailed = false
 
-		app.get('/start', (req, res) => {
-			const redirectTo = `${baseOAuthInURL}/authorize?scope=${scopes.join('+')}&` +
-				`response_type=code&client_id=${this.clientId}&` +
-				`code_challenge=${codeChallenge}&code_challenge_method=S256&` +
-				`redirect_uri=${encodeURIComponent(finishURL)}&` +
-				'client_type=USER_LEVEL'
-			this.logger.trace(`redirecting to: ${redirectTo}`)
-			res.redirect(redirectTo)
+		app.get('/start', (_req, res) => {
+			const authorizeURL = new URL(`${baseOAuthInURL}/authorize`)
+			authorizeURL.search = new URLSearchParams({
+				scope: scopes.join('+'),
+				response_type: 'code',
+				client_id: this.clientId,
+				code_challenge: codeChallenge,
+				code_challenge_method: 'S256',
+				redirect_uri: finishURL,
+				client_type: 'USER_LEVEL',
+			}).toString()
+
+			this.logger.debug('redirecting to', `${authorizeURL.origin}${authorizeURL.pathname}`)
+			res.redirect(authorizeURL.toString())
 		})
 
 		app.get('/finish', (req, res) => {
 			if ('error' in req.query) {
-				this.logger.error(`received "${req.query.error}" error when trying to authenticate`)
+				this.logger.error('error trying to authenticate', req.query.error)
 				if ('error_description' in req.query) {
-					this.logger.error(`  ${req.query.error_description}`)
+					this.logger.error(`${req.query.error_description}`)
 				}
+
 				loginFailed = true
 				res.send('<html><body><h1>Failure trying to authenticate.</h1></body></html>')
 				return
 			}
+
 			const requestBody = {
 				'grant_type': 'authorization_code',
 				'client_id': this.clientId,
@@ -184,30 +181,31 @@ export class LoginAuthenticator implements Authenticator {
 				'code': req.query.code,
 				'redirect_uri': finishURL,
 			}
-			this.logger.trace(`making axios request to ${baseOAuthInURL}/token with:`)
-			this.logger.trace(`  body: ${qs.stringify(requestBody)}`)
-			this.logger.trace(`  config: ${JSON.stringify(this.postConfig)}`)
-			this.logger.trace(`code = ${req.query.code}`)
-			// I used this for debugging. Axios does not include the body of the response in any way I could find.
-			// this.logger.trace(`\n\nRun:\ncurl -i --request POST --url '${baseOAuthInURL}/token' --header 'content-type: application/x-www-form-urlencoded' ` +
-			// 	`--data grant_type=authorization_code --data 'client_id=${this.clientId}' --data code_verifier=${verifier} --data code=${req.query.code} ` +
-			// 	`--data 'redirect_uri=${finishURL}' --header 'X-ST-CORRELATION: ross-pkce-attempt'\n\n`)
+
+			this.logger.debug(`making axios request: ${baseOAuthInURL}/token`)
 			axios.post(`${baseOAuthInURL}/token`, qs.stringify(requestBody), this.postConfig)
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				.then((response: AxiosResponse<any>) => {
 					this.updateTokenFromResponse(response)
 					res.send('<html><body><h1>You can close the window.</h1></body></html>')
 				})
-				.catch(err => {
-					this.logger.trace(`got error ${err.name}/${err}}/${err.message} trying to get final token`)
-					this.logger.trace(`err = ${JSON.stringify(err, null, 4)}`)
+				.catch(error => {
+					this.logger.error('error obtaining token:', error.message)
+					if (error.isAxiosError) {
+						const axiosError = error as AxiosError
+						if (axiosError.response) {
+							this.logger.error(axiosError.response.data)
+						}
+					}
+
 					loginFailed = true
-					res.send('<html><body><h1>Failure trying retrieve token.</h1></body></html>')
+					res.send('<html><body><h1>Failure obtaining access token.</h1></body></html>')
 				})
 		})
 
 		const server = app.listen(port, async () => {
-			this.logger.trace(`listening on port ${port}`)
+			this.logger.debug(`login start: listening on port ${port}`)
+			CliUx.ux.action.start('logging in')
 			await open(`http://localhost:${port}/start`)
 		})
 
@@ -217,18 +215,24 @@ export class LoginAuthenticator implements Authenticator {
 		// eslint-disable-next-line no-async-promise-executor
 		return new Promise(async (resolve, reject) => {
 			while (!loginFailed && !this.authenticationInfo && Date.now() < startTime + maxDelay) {
-				process.stderr.write('.')
-				await this.delay(1000)
+				await CliUx.ux.wait(1000)
 			}
-			server.close(err => {
-				if (err) {
-					this.logger.error(`error closing express server: ${err}`)
+
+			server.close(error => {
+				if (error) {
+					this.logger.error('error closing express server', error)
 				}
+
 				if (this.authenticationInfo) {
-					this.logger.trace(`got authentication info: ${scrubAuthInfo(this.authenticationInfo)}`)
+					this.logger.trace('got authentication info', scrubAuthInfo(this.authenticationInfo))
+					this.logger.debug('login success')
+					CliUx.ux.action.stop()
+
 					resolve()
 				} else {
-					this.logger.trace('unable to get authentication info')
+					this.logger.error('unable to get authentication info')
+					CliUx.ux.action.stop('failed')
+
 					reject('unable to get authentication info')
 				}
 			})
@@ -242,7 +246,7 @@ export class LoginAuthenticator implements Authenticator {
 	}
 
 	private async refreshToken(): Promise<void> {
-		this.logger.trace('refreshing token')
+		this.logger.debug('refreshing token')
 		const oauthAuthTokenRefreshURL = this.clientIdProvider.oauthAuthTokenRefreshURL
 		const requestBody = {
 			'grant_type': 'refresh_token',
@@ -250,17 +254,20 @@ export class LoginAuthenticator implements Authenticator {
 			'refresh_token': this.authenticationInfo?.refreshToken,
 		}
 
-		this.logger.trace(`making axios request to ${oauthAuthTokenRefreshURL} with:`)
-		this.logger.trace(`  body: ${qs.stringify(requestBody)}`)
-		this.logger.trace(`  config: ${JSON.stringify(this.postConfig)}`)
+		this.logger.debug(`making axios request: ${oauthAuthTokenRefreshURL}`)
 		await axios.post(oauthAuthTokenRefreshURL, qs.stringify(requestBody), this.postConfig)
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			.then((response: AxiosResponse<any>) => {
 				this.updateTokenFromResponse(response)
 			})
-			.catch(err => {
-				this.logger.trace(`got error ${err.name}/${err}}/${err.message} trying to get refresh token`)
-				this.logger.trace(`err = ${JSON.stringify(err, null, 4)}`)
+			.catch(error => {
+				this.logger.error('error trying to refresh token:', error.message)
+				if (error.isAxiosError) {
+					const axiosError = error as AxiosError
+					if (axiosError.response) {
+						this.logger.error(axiosError.response.data)
+					}
+				}
 			})
 	}
 
@@ -277,11 +284,12 @@ export class LoginAuthenticator implements Authenticator {
 	}
 
 	async authenticateGeneric(): Promise<string> {
-		this.logger.trace('authentication - enter')
+		this.logger.debug('authentication - enter')
 		// refresh if we have less than an hour left on the auth token
 		if (this.authenticationInfo && this.authenticationInfo.expires.getTime() < Date.now() + 60 * 60 * 1000) {
 			await this.refreshToken()
 		}
+
 		// log in if we don't have authentication info or the refresh failed
 		if (!this.authenticationInfo || this.authenticationInfo.expires.getTime() < Date.now() + 59 * 60 * 1000) {
 			await this.login()
