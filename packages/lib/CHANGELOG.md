@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.7
+
+### Patch Changes
+
+- [#306](https://github.com/SmartThingsCommunity/smartthings-cli/pull/306) [`d4730e0`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d4730e00712ddb18b916295b138301afaa8c23eb) Thanks [@john-u](https://github.com/john-u)! - add debug logging to defualt login authenticator
+
 ## 1.0.0-beta.6
 
 ### Patch Changes
