@@ -40,9 +40,7 @@ export default class SchemaAppCreateCommand extends APICommand<typeof SchemaAppC
 						await addSchemaPermission(data.lambdaArnEU, principal, statementId)
 					}
 				} else {
-					this.logger.error('Authorization is not applicable to WebHook schema connectors')
-					// eslint-disable-next-line no-process-exit
-					process.exit(1)
+					this.error('Authorization is not applicable to WebHook schema connectors')
 				}
 			}
 			return this.client.schema.create(data)

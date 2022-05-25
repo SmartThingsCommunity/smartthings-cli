@@ -65,5 +65,6 @@ jobs:
         with:
           name: ${{ steps.cli-metadata.outputs.version }}
           tag_name: ${{ steps.cli-metadata.outputs.tag }}
+          generate_release_notes: true
           prerelease: true
           files: packages/cli/dist_bin/assets/*

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const oclif = require('@oclif/core')
+const log4js = require('log4js')
 
 const path = require('path')
 const project = path.join(__dirname, '..', 'tsconfig.json')
@@ -14,4 +15,7 @@ require('ts-node').register({project})
 oclif.settings.debug = true;
 
 // Start the CLI
-oclif.run().then(oclif.flush).catch(oclif.Errors.handle)
+oclif.run()
+	.then(oclif.flush)
+	.catch(oclif.Errors.handle)
+	.finally(log4js.shutdown)
