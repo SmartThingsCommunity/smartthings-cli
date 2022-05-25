@@ -6,7 +6,7 @@ import { buildTableOutput } from '../../lib/commands/devices/devices-util'
 
 
 export default class DeviceUpdateCommand extends APICommand<typeof DeviceUpdateCommand.flags> {
-	static description = "get the current status of all of a device's component's attributes"
+	static description = "update a device's label and room"
 
 	static flags = {
 		...APICommand.flags,
