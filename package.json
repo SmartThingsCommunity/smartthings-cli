@@ -1,6 +1,11 @@
 {
 	"name": "root",
 	"private": true,
+	"//": {
+		"scripts": {
+			"version": "TODO: remove 'npm i --package-lock-only' when this is resolved https://github.com/changesets/changesets/issues/421"
+		}
+	},
 	"scripts": {
 		"clean": "npm run clean --workspaces",
 		"full-clean": "npm run full-clean --workspaces && rimraf node_modules",
@@ -12,7 +17,7 @@
 		"test": "npm run test --workspaces",
 		"test-coverage": "npm run test-coverage --workspaces",
 		"package": "npm run package -w packages/cli",
-		"version": "changeset version && npm run build && npm run version -w packages/cli",
+		"version": "changeset version && npm i --package-lock-only && npm run build && npm run version -w packages/cli",
 		"release": "npm run build && changeset publish",
 		"readme": "npm run readme -w packages/cli"
 	},
