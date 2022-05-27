@@ -78,7 +78,7 @@
 		"cli-table": "^0.3.11",
 		"inquirer": "^8.2.4",
 		"js-yaml": "^4.1.0",
-		"log4js": "6.3.0"
+		"log4js": "6.4.0"
 	},
 	"devDependencies": {
 		"@smartthings/cli-testlib": "^1.0.0-beta.4",
