@@ -1,5 +1,19 @@
 # Change Log
 
+## 1.0.0-beta.8
+
+### Patch Changes
+
+- [#309](https://github.com/SmartThingsCommunity/smartthings-cli/pull/309) [`7e3a1b8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/7e3a1b83d6c301aa86fe35d5660cfadde2bcfaf1) Thanks [@john-u](https://github.com/john-u)! - - shutdown logger before Node exits
+  - update @oclif deps to latest
+  - replace process exits with command errors
+
+* [#313](https://github.com/SmartThingsCommunity/smartthings-cli/pull/313) [`3aa7e60`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/3aa7e6071b451818670b7553491e73557cad72b3) Thanks [@rossiam](https://github.com/rossiam)! - - edge:drivers:package command - log error when broken symlink is encountered
+  - edge:drivers:package command - log error when symlink to directory is encountered
+  - added edge:drivers:switch command for switching driver used by a device
+* Updated dependencies [[`7e3a1b8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/7e3a1b83d6c301aa86fe35d5660cfadde2bcfaf1)]:
+  - @smartthings/cli-lib@1.0.0-beta.8
+
 ## 1.0.0-beta.7
 
 ### Patch Changes
