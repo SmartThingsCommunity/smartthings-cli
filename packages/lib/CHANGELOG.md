@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.0-beta.8
+
+### Patch Changes
+
+- [#309](https://github.com/SmartThingsCommunity/smartthings-cli/pull/309) [`7e3a1b8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/7e3a1b83d6c301aa86fe35d5660cfadde2bcfaf1) Thanks [@john-u](https://github.com/john-u)! - - shutdown logger before Node exits
+  - update @oclif deps to latest
+  - replace process exits with command errors
+
 ## 1.0.0-beta.7
 
 ### Patch Changes
