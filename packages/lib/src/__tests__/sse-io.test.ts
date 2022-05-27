@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom
+ * @jest-environment jsdom // required due to use of MessageEvent
  */
 
 import { logEvent } from '../sse-io'

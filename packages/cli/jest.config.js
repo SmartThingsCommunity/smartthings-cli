@@ -1,23 +1,14 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const rootConfig = require('../../jest.config')
+
+
 module.exports = {
-	preset: 'ts-jest',
-	testEnvironment: 'node',
-	testMatch: [
-		'**/__tests__/**/*.test.ts',
-	],
+	...rootConfig,
 	setupFilesAfterEnv: [
 		'@smartthings/cli-testlib',
 		'jest-extended',
 	],
-	collectCoverageFrom: ['src/**/*.ts'],
-	coveragePathIgnorePatterns: [
-		'/node_modules/',
-		'/__tests__/',
-		'/src/typings/',
-		'/src/index.ts',
-		'/src/run.ts',
-	],
 	modulePathIgnorePatterns: [
 		'<rootDir>/lib',
 	],
-	clearMocks: true,
 }
