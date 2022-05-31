@@ -1,8 +1,8 @@
-import { Device } from '@smartthings/core-sdk'
+import { Component, Device } from '@smartthings/core-sdk'
 
 import { APICommand } from '../api-command'
 import { stringTranslateToId } from '../command-util'
-import { chooseDevice } from '../device-util'
+import { chooseComponent, chooseDevice } from '../device-util'
 import { selectFromList } from '../select'
 
 
@@ -10,15 +10,14 @@ jest.mock('../command-util')
 jest.mock('../select')
 
 describe('device-util', () => {
+	const listDevicesMock = jest.fn()
+	const client = { devices: { list: listDevicesMock } }
+	const command = { client } as unknown as APICommand<typeof APICommand.flags>
+
+	const selectFromListMock = jest.mocked(selectFromList)
+	const stringTranslateToIdMock = jest.mocked(stringTranslateToId)
+
 	describe('chooseDevice', () => {
-		const selectFromListMock = jest.mocked(selectFromList)
-
-		const listDevicesMock = jest.fn()
-		const client = { devices: { list: listDevicesMock } }
-		const command = { client } as unknown as APICommand<typeof APICommand.flags>
-
-		const stringTranslateToIdMock = jest.mocked(stringTranslateToId)
-
 		it('proxies correctly to selectFromList', async () => {
 			selectFromListMock.mockImplementation(async () => 'chosen-device-id')
 
@@ -110,6 +109,52 @@ describe('device-util', () => {
 			expect(selectFromListMock).toHaveBeenCalledWith(command,
 				expect.objectContaining({ primaryKeyName: 'deviceId', sortKeyName: 'label' }),
 				expect.objectContaining({ preselectedId: 'translated-id' }))
+		})
+	})
+
+	describe('chooseComponent', () => {
+		const components = [{ id: 'componentId' }] as Component[]
+
+		it('returns "main" by default if components are empty', async () => {
+			expect(await chooseComponent(command, 'command-line-component-id')).toBe('main')
+			expect(await chooseComponent(command, 'command-line-component-id', [])).toBe('main')
+		})
+
+		it('uses components as listItems when prompting', async () => {
+			await chooseComponent(command, 'command-line-component-id', components)
+
+			const listFunction = stringTranslateToIdMock.mock.calls[0][2]
+			expect(await listFunction()).toStrictEqual(components)
+		})
+
+		it('calls prompt functions with correct config', async () => {
+			selectFromListMock.mockResolvedValueOnce('componentId')
+			stringTranslateToIdMock.mockResolvedValueOnce('componentId')
+
+			expect(await chooseComponent(command, 'command-line-component-id', components)).toBe('componentId')
+
+			const expectedConfig = expect.objectContaining({
+				itemName: 'component',
+				primaryKeyName: 'id',
+				sortKeyName: 'id',
+				listTableFieldDefinitions: [{ label: 'Id', value: expect.any(Function) }],
+			})
+
+			expect(stringTranslateToIdMock).toBeCalledWith(
+				expectedConfig,
+				'command-line-component-id',
+				expect.any(Function),
+			)
+
+			expect(selectFromListMock).toBeCalledWith(
+				expect.anything(),
+				expectedConfig,
+				expect.objectContaining({
+					preselectedId: 'componentId',
+					listItems: expect.any(Function),
+					autoChoose: true,
+				}),
+			)
 		})
 	})
 })
