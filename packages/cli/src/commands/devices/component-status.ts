@@ -1,13 +1,11 @@
-import { Component, ComponentStatus } from '@smartthings/core-sdk'
+import { ComponentStatus } from '@smartthings/core-sdk'
 
-import { APICommand, chooseDevice, formatAndWriteItem, selectFromList, SelectingConfig,
-	SmartThingsCommandInterface, stringTranslateToId, TableGenerator,
-} from '@smartthings/cli-lib'
+import { APICommand, chooseComponent, chooseDevice, formatAndWriteItem, TableGenerator } from '@smartthings/cli-lib'
 
 import { prettyPrintAttribute } from './status'
 
 
-export function buildTableOutput(tableGenerator: TableGenerator, component: ComponentStatus): string {
+function buildTableOutput(tableGenerator: TableGenerator, component: ComponentStatus): string {
 	const table = tableGenerator.newOutputTable({head: ['Capability', 'Attribute', 'Value']})
 	for (const capabilityName of Object.keys(component)) {
 		const capability = component[capabilityName]
@@ -21,22 +19,6 @@ export function buildTableOutput(tableGenerator: TableGenerator, component: Comp
 		}
 	}
 	return table.toString()
-}
-
-export async function chooseComponent(command: SmartThingsCommandInterface, componentFromArg?: string, components?: Component[]): Promise<string> {
-	if (!components || components.length === 0) {
-		return 'main'
-	}
-
-	const config: SelectingConfig<Component> = {
-		itemName: 'component',
-		primaryKeyName: 'id',
-		sortKeyName: 'id',
-		listTableFieldDefinitions: [{ label: 'Id', value: component => component.id === 'main' ? 'main (default)' : component.id }],
-	}
-	const listItems = async (): Promise<Component[]> => components
-	const preselectedId = await stringTranslateToId(config, componentFromArg, listItems)
-	return selectFromList(command, config, { preselectedId, listItems, autoChoose: true })
 }
 
 export default class DeviceComponentStatusCommand extends APICommand<typeof DeviceComponentStatusCommand.flags> {

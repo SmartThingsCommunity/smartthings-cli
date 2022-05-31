@@ -20,6 +20,8 @@ jest.mock('@smartthings/cli-lib', () => {
 		formatAndWriteItem: jest.fn(),
 		withLocationsAndRooms: jest.fn(),
 		yamlExists: jest.fn(),
+		chooseDevice: jest.fn(),
+		chooseComponent: jest.fn(),
 		summarizedText: 'summarized text', // TODO refactor test using this
 	}
 })

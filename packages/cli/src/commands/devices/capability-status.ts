@@ -1,15 +1,12 @@
-import { Errors } from '@oclif/core'
-
 import { CapabilityReference, CapabilityStatus } from '@smartthings/core-sdk'
 
-import { APICommand, chooseDevice, formatAndWriteItem, selectFromList, stringTranslateToId,
+import { APICommand, chooseComponent, chooseDevice, formatAndWriteItem, selectFromList, stringTranslateToId,
 	TableGenerator } from '@smartthings/cli-lib'
 
-import { chooseComponent } from './component-status'
 import { prettyPrintAttribute } from './status'
 
 
-export function buildTableOutput(tableGenerator: TableGenerator, capability: CapabilityStatus): string {
+function buildTableOutput(tableGenerator: TableGenerator, capability: CapabilityStatus): string {
 	const table = tableGenerator.newOutputTable({head: ['Attribute', 'Value']})
 
 	for (const attributeName of Object.keys(capability)) {
@@ -54,7 +51,7 @@ export default class DeviceCapabilityStatusCommand extends APICommand<typeof Dev
 		const component = device.components?.find(it => it.id === componentName)
 		const capabilities = component?.capabilities
 		if (!capabilities) {
-			throw new Errors.CLIError(`no capabilities found for component ${componentName} of device ${deviceId}`)
+			this.error(`no capabilities found for component ${componentName} of device ${deviceId}`)
 		}
 
 		const config = {
