@@ -9,11 +9,11 @@ import { attributeType } from '../capabilities'
 
 const inputRegex = new RegExp(/^([a-zA-Z0-9]+:)?([a-zA-Z0-9]+:)?([a-zA-Z0-9]+(\(.*\))?)?$/)
 
-export function parseArguments(str: string): (Record<string, unknown> | string | number)[] {
+function parseArguments(str: string): (Record<string, unknown> | string | number)[] {
 	return JSON.parse(`[${str}]`)
 }
 
-export function parseDeviceCommand(str: string, componentId?: string, capabilityId?: string): Command {
+function parseDeviceCommand(str: string, componentId?: string, capabilityId?: string): Command {
 	let cmdStr = str
 	let args = []
 	const pos = str.indexOf('(')
@@ -255,12 +255,15 @@ export default class DeviceCommandsCommand extends APICommand<typeof DeviceComma
 			sortKeyName: 'label',
 			listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
 		}
+
 		const deviceId = await selectFromList(this, config, {
 			preselectedId: this.args.id,
 			listItems: () => this.client.devices.list(),
 		})
+
 		const [commands] = await inputItem<Command[]>(this, commandLineInputProcessor(this),
 			inputProcessor(() => true, () => this.getInputFromUser(deviceId)))
+
 		await this.client.devices.executeCommands(deviceId, commands)
 		this.log('Command executed successfully')
 	}
