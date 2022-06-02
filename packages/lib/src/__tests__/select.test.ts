@@ -37,7 +37,7 @@ describe('select', () => {
 
 
 	describe('indefiniteArticleFor', () => {
-		it.each(['apple', 'Animal', 'egret', 'item', 'orange', 'unicorn'])('returns "an" for "%s"', word => {
+		it.each(['apple', 'Animal', 'egret', 'item', 'orange'])('returns "an" for "%s"', word => {
 			expect(indefiniteArticleFor(word)).toBe('an')
 		})
 
