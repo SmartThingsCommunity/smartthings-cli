@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.0.0-beta.5
+
+### Patch Changes
+
+- [#317](https://github.com/SmartThingsCommunity/smartthings-cli/pull/317) [`1e0bae5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/1e0bae5d33dbb2ca967ab18677616b407baf86fe) Thanks [@rossiam](https://github.com/rossiam)! - bump core SDK version
+
+- Updated dependencies [[`1e0bae5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/1e0bae5d33dbb2ca967ab18677616b407baf86fe)]:
+  - @smartthings/cli-lib@1.0.0-beta.9
+
 ## 1.0.0-beta.4
 
 ### Patch Changes
