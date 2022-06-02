@@ -31,7 +31,7 @@ export type RoomWithLocation = Room & {
 	locationName?: string
 }
 
-export async function chooseRoom(command: APICommand<typeof APICommand.flags>, locationId?: string, preselectedId?: string): Promise<[string, string]> {
+export async function chooseRoom(command: APICommand<typeof APICommand.flags>, locationId?: string, preselectedId?: string, autoChoose?: boolean): Promise<[string, string]> {
 	const rooms = await roomsUtil.getRoomsByLocation(command.client, locationId)
 	const config = {
 		itemName: 'room',
@@ -41,6 +41,7 @@ export async function chooseRoom(command: APICommand<typeof APICommand.flags>, l
 	}
 	const roomId = await selectFromList(command, config, {
 		preselectedId,
+		autoChoose,
 		listItems: async () => rooms,
 	})
 	const room = rooms.find(room => room.roomId === roomId)

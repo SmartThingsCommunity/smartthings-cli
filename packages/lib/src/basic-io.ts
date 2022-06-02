@@ -35,7 +35,7 @@ export interface Sorting {
 	/**
 	 * The field you want to sort by when presenting a list of items.
 	 */
-	sortKeyName: string
+	sortKeyName?: string
 }
 
 /**
@@ -79,7 +79,7 @@ outputItem.flags = buildOutputFormatter.flags
 
 export async function outputList<L>(command: SmartThingsCommandInterface, config: CommonListOutputProducer<L> & Sorting,
 		getData: GetDataFunction<L[]>, includeIndex = false, forUserQuery = false): Promise<L[]> {
-	const list = sort(await getData(), config.sortKeyName)
+	const list = config.sortKeyName ? sort(await getData(), config.sortKeyName) : await getData()
 	await formatAndWriteList(command, config, list, includeIndex, forUserQuery)
 	return list
 }

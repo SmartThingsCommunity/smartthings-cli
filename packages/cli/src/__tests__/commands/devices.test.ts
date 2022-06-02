@@ -144,6 +144,23 @@ describe('DevicesCommand', () => {
 			}))
 			expect(withLocationsAndRoomsMock).toHaveBeenCalledTimes(0)
 		})
+
+		it('uses type flag in devices.list', async () => {
+			await expect(DevicesCommand.run(['--type', 'VIRTUAL'])).resolves.not.toThrow()
+
+			expect(outputListingMock).toHaveBeenCalledTimes(1)
+			expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
+				.toEqual(['label', 'name', 'type', 'deviceId'])
+
+			const listDevices = outputListingMock.mock.calls[0][3]
+
+			expect(await listDevices()).toBe(devices)
+
+			expect(listSpy).toHaveBeenCalledTimes(1)
+			expect(listSpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'VIRTUAL' }))
+			expect(listSpy).toHaveBeenCalledWith(expect.objectContaining({ capability: undefined }))
+			expect(withLocationsAndRoomsMock).toHaveBeenCalledTimes(0)
+		})
 	})
 
 	it('uses devices.get to get device', async () => {

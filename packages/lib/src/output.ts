@@ -5,7 +5,10 @@ import { SmartThingsCommandInterface } from './smartthings-command'
 import { TableFieldDefinition, TableGenerator } from './table-generator'
 
 
-export function sort<L>(list: L[], keyName: string): L[] {
+export function sort<L>(list: L[], keyName?: string): L[] {
+	if (!keyName) {
+		return list
+	}
 	return list.sort((a, b) => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore

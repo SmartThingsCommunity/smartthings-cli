@@ -8,7 +8,7 @@ export const tableFieldDefinitions = [
 	'latitude', 'longitude', 'regionRadius', 'temperatureScale', 'locale',
 ]
 
-export async function chooseLocation(command: APICommand<typeof APICommand.flags>, preselectedId?: string): Promise<string> {
+export async function chooseLocation(command: APICommand<typeof APICommand.flags>, preselectedId?: string, autoChoose?: boolean): Promise<string> {
 	const config = {
 		itemName: 'location',
 		primaryKeyName: 'locationId',
@@ -16,6 +16,7 @@ export async function chooseLocation(command: APICommand<typeof APICommand.flags
 	}
 	return selectFromList(command, config, {
 		preselectedId,
+		autoChoose,
 		listItems: () => command.client.locations.list(),
 	})
 }

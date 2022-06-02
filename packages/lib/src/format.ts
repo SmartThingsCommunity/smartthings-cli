@@ -66,8 +66,10 @@ export async function formatAndWriteList<L>(command: SmartThingsCommandInterface
 		commonFormatter = data => config.buildListTableOutput(data)
 	} else if ('listTableFieldDefinitions' in config) {
 		commonFormatter = listTableFormatter<L>(command.tableGenerator, config.listTableFieldDefinitions, includeIndex)
-	} else {
+	} else if (config.sortKeyName) {
 		commonFormatter = listTableFormatter<L>(command.tableGenerator, [config.sortKeyName, config.primaryKeyName], includeIndex)
+	} else {
+		commonFormatter = listTableFormatter<L>(command.tableGenerator, [config.primaryKeyName], includeIndex)
 	}
 	const outputFormatter = forUserQuery ? commonFormatter : buildOutputFormatter(command, undefined, commonFormatter)
 	await writeOutput(outputFormatter(list), forUserQuery ? undefined : command.flags.output)
