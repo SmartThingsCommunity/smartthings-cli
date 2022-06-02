@@ -10,7 +10,7 @@ import { SmartThingsCommandInterface } from './smartthings-command'
 
 export type SelectingConfig<L> = Sorting & Naming & CommonListOutputProducer<L>
 
-export const indefiniteArticleFor = (name: string): string => name.match(/^[aeiou]/i) ? 'an' : 'a'
+export const indefiniteArticleFor = (name: string): string => name.match(/^[aeio]/i) ? 'an' : 'a'
 
 function promptFromNaming(config: Naming): string | undefined {
 	return config.itemName ? `Select ${indefiniteArticleFor(config.itemName)} ${config.itemName}.` : undefined
