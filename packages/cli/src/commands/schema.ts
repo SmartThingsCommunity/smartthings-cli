@@ -42,11 +42,11 @@ export default class SchemaCommand extends APICommand<typeof SchemaCommand.flags
 
 		await outputListing(this, config, this.args.id,
 			async () => {
-				const items = await this.client.schema.list()
-				return items.map(item => {
+				const schemaApps = await this.client.schema.list()
+				return schemaApps.map(app => {
 					return {
-						...item,
-						'ARN/URL': item.hostingType === 'lambda' ? item.lambdaArn : item.webhookUrl,
+						...app,
+						'ARN/URL': app.hostingType === 'lambda' ? app.lambdaArn : app.webhookUrl,
 					}
 				})
 			},
