@@ -1,0 +1,1 @@
+export const SCHEMA_AWS_PRINCIPAL = '148790070172'
