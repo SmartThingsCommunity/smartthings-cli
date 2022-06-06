@@ -5,7 +5,7 @@ import { SchemaAppRequest, SchemaCreateResponse } from '@smartthings/core-sdk'
 import { APICommand, inputAndOutputItem, lambdaAuthFlags } from '@smartthings/cli-lib'
 
 import { addSchemaPermission } from '../../lib/aws-utils'
-import { SCHEMA_AWS_PRINCIPAL } from './authorize'
+import { SCHEMA_AWS_PRINCIPAL } from '../../lib/commands/schema/schema-util'
 
 
 export default class SchemaAppCreateCommand extends APICommand<typeof SchemaAppCreateCommand.flags> {

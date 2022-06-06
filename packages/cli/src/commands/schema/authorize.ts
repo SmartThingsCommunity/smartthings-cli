@@ -1,9 +1,8 @@
 import { SmartThingsCommand, lambdaAuthFlags } from '@smartthings/cli-lib'
 
 import { addPermission } from '../../lib/aws-utils'
+import { SCHEMA_AWS_PRINCIPAL } from '../../lib/commands/schema/schema-util'
 
-
-export const SCHEMA_AWS_PRINCIPAL = '148790070172'
 
 export default class SchemaAppAuthorizeCommand extends SmartThingsCommand<typeof SchemaAppAuthorizeCommand.flags> {
 	static description = 'authorize calls to your ST Schema Lambda function from SmartThings'
