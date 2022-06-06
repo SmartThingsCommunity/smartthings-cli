@@ -15,6 +15,7 @@ jest.mock('@smartthings/cli-lib', () => {
 		selectFromList: jest.fn(),
 		outputListing: jest.fn(),
 		inputAndOutputItem: jest.fn(),
+		inputItem: jest.fn(),
 		outputItem: jest.fn(),
 		resetManagedConfig: jest.fn(),
 		formatAndWriteItem: jest.fn(),
