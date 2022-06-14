@@ -196,7 +196,7 @@ export class DefaultTableGenerator implements TableGenerator {
 	}
 
 	newOutputTable(options?: Partial<TableOptions>): Table {
-		const configuredOptions = { style: { compact: this.compact }}
+		const configuredOptions = { style: { compact: this.compact } }
 
 		if (options) {
 			return new Table({ ...configuredOptions, ...options })

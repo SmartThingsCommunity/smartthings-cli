@@ -62,7 +62,7 @@ export default class DeviceProfileTranslationsUpsertCommand extends APIOrganizat
 		const id = await chooseDeviceProfile(this, this.args.id)
 
 		await inputAndOutputItem<DeviceProfileTranslations, DeviceProfileTranslations>(this,
-			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data)},
+			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
 			async (_, data) => this.client.deviceProfiles.upsertTranslations(id, data))
 	}
 }

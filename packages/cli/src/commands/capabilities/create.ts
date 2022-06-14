@@ -233,7 +233,7 @@ export default class CapabilitiesCreateCommand extends APIOrganizationCommand<ty
 				name: 'answer',
 				message: `Attribute Name ${name} is too long to make a setter.`,
 				choices: [
-					{ name: 'Enter a shorter name (max 33 characters)', value: 'shorter '},
+					{ name: 'Enter a shorter name (max 33 characters)', value: 'shorter ' },
 					{ name: 'I won\'t need a setter', value: 'noSetter' },
 				],
 			})).answer

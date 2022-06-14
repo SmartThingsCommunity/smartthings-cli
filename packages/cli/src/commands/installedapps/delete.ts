@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 
 import { InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
 
-import {selectFromList, APICommand, withLocations} from '@smartthings/cli-lib'
+import { selectFromList, APICommand, withLocations } from '@smartthings/cli-lib'
 
 
 export default class InstalledAppDeleteCommand extends APICommand<typeof InstalledAppDeleteCommand.flags> {
