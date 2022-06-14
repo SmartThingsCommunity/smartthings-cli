@@ -6,7 +6,7 @@ import { APICommand, chooseDevice, formatAndWriteItem, TableGenerator } from '@s
 export function buildTableOutput(tableGenerator: TableGenerator, data: DevicePreferenceResponse): string {
 	let output = ''
 	if (data.values) {
-		const table = tableGenerator.newOutputTable({head: ['Name', 'Type','Value']})
+		const table = tableGenerator.newOutputTable({ head: ['Name', 'Type', 'Value'] })
 		const names = Object.keys(data.values).sort()
 		for (const name of names) {
 			const item = data.values[name]

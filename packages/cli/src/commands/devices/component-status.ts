@@ -6,7 +6,7 @@ import { prettyPrintAttribute } from './status'
 
 
 function buildTableOutput(tableGenerator: TableGenerator, component: ComponentStatus): string {
-	const table = tableGenerator.newOutputTable({head: ['Capability', 'Attribute', 'Value']})
+	const table = tableGenerator.newOutputTable({ head: ['Capability', 'Attribute', 'Value'] })
 	for (const capabilityName of Object.keys(component)) {
 		const capability = component[capabilityName]
 		for (const attributeName of Object.keys(capability)) {

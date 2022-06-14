@@ -201,7 +201,7 @@ export default class DeviceProfileCreateCommand extends APIOrganizationCommand<t
 				capabilityId = await chooseCapabilityFiltered(this, `${prompt}:`, idStr.slice(0, idStr.length - 1))
 			} else {
 				// TODO - update once capability versions are supported
-				capabilityId = {id: idStr, version: 1}
+				capabilityId = { id: idStr, version: 1 }
 			}
 		}
 
@@ -229,7 +229,7 @@ export default class DeviceProfileCreateCommand extends APIOrganizationCommand<t
 		})).componentId
 
 		if (componentId) {
-			components.push({id: componentId, capabilities: []})
+			components.push({ id: componentId, capabilities: [] })
 		} else {
 			componentId = previousComponentId
 		}

@@ -191,8 +191,8 @@ describe('cli-config', () => {
 		profileName: 'chosenProfile',
 	}
 
-	const profiles: ProfilesByName = { mainConfig: { mainConfigProfile: { key: 'value' }} }
-	const managedProfiles: ProfilesByName = { managedConfig: { managedConfigProfile: { key: 'value' }} }
+	const profiles: ProfilesByName = { mainConfig: { mainConfigProfile: { key: 'value' } } }
+	const managedProfiles: ProfilesByName = { managedConfig: { managedConfigProfile: { key: 'value' } } }
 
 	const yamlDumpMock = jest.mocked(yaml.dump)
 	const writeFileMock = jest.mocked(writeFile)
@@ -258,7 +258,7 @@ describe('cli-config', () => {
 		} as CLIConfig
 
 		const updatedManagedConfig: ProfilesByName = { updated: { managed: 'managed' } }
-		const updateMergedConfig: ProfilesByName = { update: { merged: 'config' }}
+		const updateMergedConfig: ProfilesByName = { update: { merged: 'config' } }
 		mergeProfilesSpy.mockReturnValueOnce(updatedManagedConfig)
 		mergeProfilesSpy.mockReturnValueOnce(updateMergedConfig)
 		yamlDumpMock.mockReturnValueOnce('yaml output')
@@ -285,7 +285,7 @@ describe('cli-config', () => {
 			profiles,
 			managedProfiles: { ...managedProfilesWithProfileToReset },
 		} as CLIConfig
-		const updateMergedConfig: ProfilesByName = { update: { merged: 'config' }}
+		const updateMergedConfig: ProfilesByName = { update: { merged: 'config' } }
 		yamlDumpMock.mockReturnValueOnce('yaml output')
 		mergeProfilesSpy.mockReturnValueOnce(updateMergedConfig)
 

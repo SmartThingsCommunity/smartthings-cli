@@ -16,7 +16,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceSta
 	if (data.components) {
 		const componentIds = Object.keys(data.components)
 		for (const componentId of componentIds) {
-			const table = tableGenerator.newOutputTable({head: ['Capability', 'Attribute','Value']})
+			const table = tableGenerator.newOutputTable({ head: ['Capability', 'Attribute', 'Value'] })
 			if (componentIds.length > 1) {
 				output += `\n${componentId} component\n`
 			}

@@ -103,7 +103,7 @@ const managedConfigHeader =
  * in the future but not override user settings.
  */
 export const setConfigKey = async (config: CLIConfig, key: string, value: unknown): Promise<void> => {
-	config.managedProfiles = mergeProfiles({ [config.profileName]: { [key]: value }}, config.managedProfiles)
+	config.managedProfiles = mergeProfiles({ [config.profileName]: { [key]: value } }, config.managedProfiles)
 	await writeFile(config.managedConfigFilename, managedConfigHeader + yaml.dump(config.managedProfiles))
 	config.mergedProfiles = mergeProfiles(config.profiles, config.managedProfiles)
 }

@@ -9,7 +9,7 @@ import { chooseDeviceProfile } from '../deviceprofiles'
 export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfileTranslations): string {
 	let result = `Tag: ${data.tag}`
 	if (data.components) {
-		const table = tableGenerator.newOutputTable({ head: ['Component','Label','Description'] })
+		const table = tableGenerator.newOutputTable({ head: ['Component', 'Label', 'Description'] })
 		for (const name of Object.keys(data.components)) {
 			const component = data.components[name]
 			table.push([name, component.label, component.description || ''])

@@ -12,7 +12,7 @@ import { CapabilityId, capabilityIdOrIndexInputArgs, CapabilitySummaryWithNamesp
 export function buildTableOutput(tableGenerator: TableGenerator, data: CapabilityLocalization): string {
 	let result = `Tag: ${data.tag}`
 	if (data.attributes) {
-		const table = tableGenerator.newOutputTable({head: ['Name','Label','Description', 'Template']})
+		const table = tableGenerator.newOutputTable({ head: ['Name', 'Label', 'Description', 'Template'] })
 		for (const name of Object.keys(data.attributes)) {
 			const attr = data.attributes[name]
 			table.push([name, attr.label, attr.description || '', attr.displayTemplate || ''])
@@ -26,7 +26,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: Capabilit
 		result += '\n\nAttributes:\n' + table.toString()
 	}
 	if (data.commands) {
-		const table = tableGenerator.newOutputTable({head: ['Name','Label','Description']})
+		const table = tableGenerator.newOutputTable({ head: ['Name', 'Label', 'Description'] })
 		for (const name of Object.keys(data.commands)) {
 			const cmd = data.commands[name]
 			table.push([name, cmd.label || '', cmd.description || ''])
