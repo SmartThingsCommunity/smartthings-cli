@@ -245,6 +245,12 @@ that map to the API spec.
 * [`smartthings schema:delete [ID]`](#smartthings-schemadelete-id)
 * [`smartthings schema:regenerate [ID]`](#smartthings-schemaregenerate-id)
 * [`smartthings schema:update [ID]`](#smartthings-schemaupdate-id)
+* [`smartthings virtualdevices [ID]`](#smartthings-virtualdevices-id)
+* [`smartthings virtualdevices:create`](#smartthings-virtualdevicescreate)
+* [`smartthings virtualdevices:create-standard`](#smartthings-virtualdevicescreate-standard)
+* [`smartthings virtualdevices:delete [ID]`](#smartthings-virtualdevicesdelete-id)
+* [`smartthings virtualdevices:events [ID] [NAME] [VALUE] [UNIT]`](#smartthings-virtualdevicesevents-id-name-value-unit)
+* [`smartthings virtualdevices:update [ID]`](#smartthings-virtualdevicesupdate-id)
 
 ## `smartthings apps [ID]`
 
@@ -3348,6 +3354,15 @@ FLAGS
 
 DESCRIPTION
   execute a device command
+
+EXAMPLES
+  # simple capability and command
+
+    $ smartthings devices:commands 00000000-0000-0000-0000-000000000000 switch:off
+
+  # capability and command with an argument (note: single quote command arg to prevent specific shell parsing errors)
+
+    $ smartthings devices:commands 00000000-0000-0000-0000-000000000000 'switchLevel:setLevel(50)'
 ```
 
 _See code: [src/commands/devices/commands.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.8/packages/cli/src/commands/devices/commands.ts)_
@@ -5851,6 +5866,230 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/schema/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.8/packages/cli/src/commands/schema/update.ts)_
+
+## `smartthings virtualdevices [ID]`
+
+list all virtual devices available in a user account or retrieve a single device
+
+```
+USAGE
+  $ smartthings virtualdevices [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>] [-l
+    <value>] [-a <value>] [-v]
+
+ARGUMENTS
+  ID  device to retrieve; UUID or the number of the device from list
+
+FLAGS
+  -a, --installed-app-id=<value>  filter results by installed app that created the device
+  -h, --help                      Show CLI help.
+  -j, --json                      use JSON format of input and/or output
+  -l, --location-id=<value>...    filter results by location
+  -o, --output=<value>            specify output file
+  -p, --profile=<value>           [default: default] configuration profile
+  -t, --token=<value>             the auth token to use
+  -v, --verbose                   include location name in output
+  -y, --yaml                      use YAML format of input and/or output
+  --language=<value>              ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  list all virtual devices available in a user account or retrieve a single device
+```
+
+_See code: [src/commands/virtualdevices.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.8/packages/cli/src/commands/virtualdevices.ts)_
+
+## `smartthings virtualdevices:create`
+
+create a virtual device from a device profile ID or definition
+
+```
+USAGE
+  $ smartthings virtualdevices:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
+    <value>] [-o <value>] [-d] [-N <value>] [-l <value>] [-R <value>] [-P <value>] [-f <value>]
+
+FLAGS
+  -N, --name=<value>                 name of the device to be created
+  -O, --organization=<value>         The organization ID to use for this command
+  -P, --device-profile-id=<value>    the device profile ID
+  -R, --room-id=<value>              the room to put the device into
+  -d, --dry-run                      produce JSON but don't actually submit
+  -f, --device-profile-file=<value>  a file containing the device profile definition
+  -h, --help                         Show CLI help.
+  -i, --input=<value>                specify input file
+  -j, --json                         use JSON format of input and/or output
+  -l, --location-id=<value>          location into which device should be created
+  -o, --output=<value>               specify output file
+  -p, --profile=<value>              [default: default] configuration profile
+  -t, --token=<value>                the auth token to use
+  -y, --yaml                         use YAML format of input and/or output
+  --language=<value>                 ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  create a virtual device from a device profile ID or definition
+
+  The command can be run interactively in question & answer mode, with command line parameters, or with input from a
+  file or standard in. You can also run this command multiple times with the same input file but different command line
+  arguments to create multiple devices with different names in different locations and rooms.
+
+EXAMPLES
+  $ smartthings virtualdevices:create                            # interactive mode
+
+  $ smartthings virtualdevices:create -i data.yml                # using request body from a YAML file
+
+  $ smartthings virtualdevices:create -N "My Device" -i data.yml # using file request body with "My Device" for the name
+
+  $ smartthings virtualdevices:create \                          # using command line parameters for everything
+  >    --name="My Second Device" \ 
+  >    --device-profile-id=7633ef68-6433-47ab-89c3-deb04b8b0d61 \ 
+  >    --location-id=95bdd473-4498-42fc-b932-974d6e5c236e \ 
+  >    --room-id=c7266cb7-7dcc-4958-8bc4-4288f5b50e1b
+
+  $ smartthings virtualdevices:create -f profile.yml             # using a device profile and prompting for the remaining values
+```
+
+_See code: [src/commands/virtualdevices/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.8/packages/cli/src/commands/virtualdevices/create.ts)_
+
+## `smartthings virtualdevices:create-standard`
+
+create a device from one of the standard prototypes.
+
+```
+USAGE
+  $ smartthings virtualdevices:create-standard [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d] [-N <value>] [-l <value>] [-R <value>] [-T <value>]
+
+FLAGS
+  -N, --name=<value>         name of the device to be created
+  -R, --room-id=<value>      the room to put the device into
+  -T, --prototype=<value>    standard device prototype, e.g. VIRTUAL_SWITCH or VIRTUAL_DIMMER_SWITCH
+  -d, --dry-run              produce JSON but don't actually submit
+  -h, --help                 Show CLI help.
+  -i, --input=<value>        specify input file
+  -j, --json                 use JSON format of input and/or output
+  -l, --location-id=<value>  location into which device should be created
+  -o, --output=<value>       specify output file
+  -p, --profile=<value>      [default: default] configuration profile
+  -t, --token=<value>        the auth token to use
+  -y, --yaml                 use YAML format of input and/or output
+  --language=<value>         ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  create a device from one of the standard prototypes.
+
+  The command can be run interactively in question & answer mode, with command line parameters, or with input from a
+  file or standard in. You can also run this command multiple times with the same input file but different command line
+  arguments to create multiple devices with different names in different locations and rooms.
+
+EXAMPLES
+  $ smartthings virtualdevices:create-standard                            # interactive mode
+
+  $ smartthings virtualdevices:create-standard -i data.yml                # using request body from a YAML file
+
+  $ smartthings virtualdevices:create-standard -N "My Device" -i data.yml # using file request body with "My Device" for the name
+
+  $ smartthings virtualdevices:create-standard \                          # using command line parameters for everything
+  >    --name="My Second Device" \ 
+  >    --prototype=VIRTUAL_SWITCH \ 
+  >    --location-id=95bdd473-4498-42fc-b932-974d6e5c236e \ 
+  >    --room-id=c7266cb7-7dcc-4958-8bc4-4288f5b50e1b
+```
+
+_See code: [src/commands/virtualdevices/create-standard.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.8/packages/cli/src/commands/virtualdevices/create-standard.ts)_
+
+## `smartthings virtualdevices:delete [ID]`
+
+delete a virtual device
+
+```
+USAGE
+  $ smartthings virtualdevices:delete [ID] [-h] [-p <value>] [-t <value>] [--language <value>]
+
+ARGUMENTS
+  ID  device UUID
+
+FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  delete a virtual device
+```
+
+_See code: [src/commands/virtualdevices/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.8/packages/cli/src/commands/virtualdevices/delete.ts)_
+
+## `smartthings virtualdevices:events [ID] [NAME] [VALUE] [UNIT]`
+
+create events for a virtual device
+
+```
+USAGE
+  $ smartthings virtualdevices:events [ID] [NAME] [VALUE] [UNIT] [-h] [-p <value>] [-t <value>] [--language <value>] [-j]
+    [-y] [-i <value>] [-o <value>] [-d]
+
+ARGUMENTS
+  ID     the device id
+  NAME   the fully qualified attribute name [<component>]:<capability>:<attribute>
+  VALUE  the attribute value
+  UNIT   optional unit of measure
+
+FLAGS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  create events for a virtual device
+
+  The command can be run interactively, in question & answer mode, with command line parameters, or with input from a
+  file or standard in.
+
+EXAMPLES
+  $ smartthings virtualdevices:events                                                 # interactive mode
+
+  $ smartthings virtualdevices:events <id> -i data.yml                                # from a YAML or JSON file
+
+  $ smartthings virtualdevices:events <id> switch:switch on                           # command line input
+
+  $ smartthings virtualdevices:events <id> temperatureMeasurement:temperature 22.5 C  # command line input
+```
+
+_See code: [src/commands/virtualdevices/events.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.8/packages/cli/src/commands/virtualdevices/events.ts)_
+
+## `smartthings virtualdevices:update [ID]`
+
+update a virtual device's label and room
+
+```
+USAGE
+  $ smartthings virtualdevices:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d]
+
+ARGUMENTS
+  ID  the device id
+
+FLAGS
+  -d, --dry-run          produce JSON but don't actually submit
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  update a virtual device's label and room
+```
+
+_See code: [src/commands/virtualdevices/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.8/packages/cli/src/commands/virtualdevices/update.ts)_
 <!-- commandsstop -->
 
 # Configuration and Logging

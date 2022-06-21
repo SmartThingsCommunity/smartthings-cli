@@ -82,6 +82,13 @@ export default class DeviceCommandsCommand extends APICommand<typeof DeviceComma
 		},
 	]
 
+	static examples = [
+		`# simple capability and command
+$ smartthings devices:commands 00000000-0000-0000-0000-000000000000 switch:off`,
+		`# capability and command with an argument (note: single quote command arg to prevent specific shell parsing errors)
+$ smartthings devices:commands 00000000-0000-0000-0000-000000000000 'switchLevel:setLevel(50)'`,
+	]
+
 	hasCommandLineInput(): boolean {
 		return !!this.args.command
 	}
