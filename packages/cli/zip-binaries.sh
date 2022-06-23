@@ -9,6 +9,9 @@ function zip_binary() {
 		cd dist_bin
 		mkdir -p assets
 		mv "cli-$os$ext" "smartthings$ext"
+		if [[ "$os" == "macos" ]]; then
+			tar -czf assets/smartthings-$os.tar.gz "smartthings$ext"
+		fi
 		zip assets/smartthings-$os.zip "smartthings$ext"
 		mv "smartthings$ext" "smartthings-$os$ext"
 	)
