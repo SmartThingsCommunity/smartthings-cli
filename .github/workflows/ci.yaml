@@ -20,6 +20,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         # add/remove versions as we move support forward
         node-version: [16, 18]

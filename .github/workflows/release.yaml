@@ -65,6 +65,7 @@ jobs:
         run: node generate-release-notes.mjs ${{ steps.cli-metadata.outputs.version }}
 
       - name: Create Github Release
+        id: gh-release
         if: steps.cli-package.outcome == 'success'
         uses: softprops/action-gh-release@v1
         with:
@@ -73,3 +74,18 @@ jobs:
           tag_name: ${{ steps.cli-metadata.outputs.tag }}
           prerelease: true
           files: packages/cli/dist_bin/assets/*
+
+      - name: Bump Homebrew Formula
+        if: steps.gh-release.outcome == 'success'
+        uses: mislav/bump-homebrew-formula-action@v2
+        with:
+          formula-name: smartthings
+          tag-name: ${{ steps.cli-metadata.outputs.tag }}
+          download-url: https://github.com/SmartThingsCommunity/smartthings-cli/releases/download/${{ steps.cli-metadata.outputs.tag }}/smartthings-macos.tar.gz
+          homebrew-tap: SmartThingsCommunity/homebrew-smartthings
+          commit-message: |
+            chore: bump {{formulaName}} {{version}}
+
+            Created by https://github.com/mislav/bump-homebrew-formula-action
+        env:
+          COMMITTER_TOKEN: ${{ secrets.HOMEBREW_COMMITTER_TOKEN }}
