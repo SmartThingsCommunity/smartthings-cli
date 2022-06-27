@@ -1,5 +1,5 @@
 import { CustomCommonOutputProducer, DefaultTableGenerator, inputAndOutputItem } from '@smartthings/cli-lib'
-import { AppCreationResponse, AppRequest, AppsEndpoint } from '@smartthings/core-sdk'
+import { AppCreationResponse, AppCreateRequest, AppsEndpoint, AppResponse } from '@smartthings/core-sdk'
 import AppCreateCommand from '../../../commands/apps/create'
 import { tableFieldDefinitions } from '../../../lib/commands/apps/apps-util'
 import { addPermission } from '../../../lib/aws-utils'
@@ -15,7 +15,7 @@ describe('AppCreateCommand', () => {
 
 	it('calls inputOutput with correct config', async () => {
 		const appCreate: AppCreationResponse = {
-			app: {},
+			app: { appName: 'app ' } as AppResponse,
 			oauthClientId: 'oauthClientId',
 			oauthClientSecret: 'oauthClientSecret',
 		}
@@ -37,7 +37,7 @@ describe('AppCreateCommand', () => {
 	})
 
 	it('calls correct create endpoint', async () => {
-		const appRequest: AppRequest = {}
+		const appRequest = { appName: 'app' } as AppCreateRequest
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
@@ -50,11 +50,11 @@ describe('AppCreateCommand', () => {
 	it('accepts authorize flag for lambda apps', async () => {
 		const arn = 'arn'
 		const anotherArn = 'anotherArn'
-		const appRequest: AppRequest = {
+		const appRequest = {
 			lambdaSmartApp: {
 				functions: [arn, anotherArn],
 			},
-		}
+		} as AppCreateRequest
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
@@ -68,9 +68,9 @@ describe('AppCreateCommand', () => {
 	})
 
 	it('throws error if authorize flag is used on non-lambda app', async () => {
-		const appRequest: AppRequest = {
+		const appRequest = {
 			webhookSmartApp: {},
-		}
+		} as AppCreateRequest
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
@@ -80,11 +80,11 @@ describe('AppCreateCommand', () => {
 	})
 
 	it('ignores authorize flag for lambda apps with no functions', async () => {
-		let appRequest: AppRequest = {
+		const appRequest = {
 			lambdaSmartApp: {
 				functions: [],
 			},
-		}
+		} as unknown as AppCreateRequest
 		mockInputAndOutputItem.mockImplementation(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
@@ -95,24 +95,15 @@ describe('AppCreateCommand', () => {
 		expect(createSpy).toBeCalledWith(appRequest)
 
 		createSpy.mockClear()
-
-		appRequest = {
-			lambdaSmartApp: {},
-		}
-
-		await expect(AppCreateCommand.run(['--authorize'])).resolves.not.toThrow()
-
-		expect(addPermission).not.toBeCalled()
-		expect(createSpy).toBeCalledWith(appRequest)
 	})
 
 	it('calls addPermission with principal flag', async () => {
 		const arn = 'arn'
-		const appRequest: AppRequest = {
+		const appRequest = {
 			lambdaSmartApp: {
 				functions: [arn],
 			},
-		}
+		} as AppCreateRequest
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
@@ -125,11 +116,11 @@ describe('AppCreateCommand', () => {
 
 	it('calls addPermission with statement-id flag', async () => {
 		const arn = 'arn'
-		const appRequest: AppRequest = {
+		const appRequest = {
 			lambdaSmartApp: {
 				functions: [arn],
 			},
-		}
+		} as AppCreateRequest
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
@@ -142,11 +133,11 @@ describe('AppCreateCommand', () => {
 
 	it('ignores already authorized functions', async () => {
 		const arn = 'arn'
-		const appRequest: AppRequest = {
+		const appRequest = {
 			lambdaSmartApp: {
 				functions: [arn],
 			},
-		}
+		} as AppCreateRequest
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})

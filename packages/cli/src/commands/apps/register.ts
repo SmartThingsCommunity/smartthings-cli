@@ -1,5 +1,6 @@
-import { App, AppType } from '@smartthings/core-sdk'
+import { AppType, PagedApp } from '@smartthings/core-sdk'
 import { APICommand, selectFromList, SelectingConfig } from '@smartthings/cli-lib'
+import { inspect } from 'util'
 
 
 export default class AppRegisterCommand extends APICommand<typeof AppRegisterCommand.flags> {
@@ -13,12 +14,12 @@ export default class AppRegisterCommand extends APICommand<typeof AppRegisterCom
 	}]
 
 	async run(): Promise<void> {
-		const config: SelectingConfig<App> = {
+		const config: SelectingConfig<PagedApp> = {
 			primaryKeyName: 'appId',
 			sortKeyName: 'displayName',
 			listTableFieldDefinitions: ['displayName', 'appType', 'appId'],
 		}
-		const id = await selectFromList<App>(this, config, {
+		const id = await selectFromList<PagedApp>(this, config, {
 			preselectedId: this.args.id,
 			listItems: async () => (await Promise.all([
 				this.client.apps.list({ appType: AppType.WEBHOOK_SMART_APP }),
@@ -26,7 +27,7 @@ export default class AppRegisterCommand extends APICommand<typeof AppRegisterCom
 			])).flat(),
 			promptMessage: 'Select an app to register.',
 		})
-		await this.client.apps.register(id),
-		this.log(`Registration request sent to app ${id}. Check server log for confirmation URL.`)
+		const result = await this.client.apps.register(id)
+		this.log(`Registration request sent to app ${id}. Check server log for confirmation URL: ${inspect(result)}`)
 	}
 }

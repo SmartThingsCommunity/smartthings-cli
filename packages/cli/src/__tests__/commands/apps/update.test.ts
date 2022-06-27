@@ -1,5 +1,5 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
-import { AppRequest, AppsEndpoint } from '@smartthings/core-sdk'
+import { AppUpdateRequest, AppsEndpoint } from '@smartthings/core-sdk'
 import AppUpdateCommand from '../../../commands/apps/update'
 import { chooseApp, tableFieldDefinitions } from '../../../lib/commands/apps/apps-util'
 import { addPermission } from '../../../lib/aws-utils'
@@ -42,7 +42,9 @@ describe('AppUpdateCommand', () => {
 	})
 
 	it('calls correct update endpoint', async () => {
-		const appRequest: AppRequest = {}
+		const appRequest = {
+			displayName: 'app',
+		} as AppUpdateRequest
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
@@ -56,11 +58,11 @@ describe('AppUpdateCommand', () => {
 	it('accepts authorize flag for lambda apps', async () => {
 		const arn = 'arn'
 		const anotherArn = 'anotherArn'
-		const appRequest: AppRequest = {
+		const appRequest = {
 			lambdaSmartApp: {
 				functions: [arn, anotherArn],
 			},
-		}
+		} as AppUpdateRequest
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
@@ -75,9 +77,9 @@ describe('AppUpdateCommand', () => {
 	})
 
 	it('throws error if authorize flag is used on non-lambda app', async () => {
-		const appRequest: AppRequest = {
+		const appRequest = {
 			webhookSmartApp: {},
-		}
+		} as AppUpdateRequest
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
@@ -87,11 +89,11 @@ describe('AppUpdateCommand', () => {
 	})
 
 	it('ignores authorize flag for lambda apps with no functions', async () => {
-		let appRequest: AppRequest = {
+		const appRequest = {
 			lambdaSmartApp: {
 				functions: [],
 			},
-		}
+		} as unknown as AppUpdateRequest
 		mockInputAndOutputItem.mockImplementation(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
@@ -103,24 +105,15 @@ describe('AppUpdateCommand', () => {
 		expect(updateSpy).toBeCalledWith(appId, appRequest)
 
 		updateSpy.mockClear()
-
-		appRequest = {
-			lambdaSmartApp: {},
-		}
-
-		await expect(AppUpdateCommand.run([appId, '--authorize'])).resolves.not.toThrow()
-
-		expect(addPermission).not.toBeCalled()
-		expect(updateSpy).toBeCalledWith(appId, appRequest)
 	})
 
 	it('calls addPermission with principal flag', async () => {
 		const arn = 'arn'
-		const appRequest: AppRequest = {
+		const appRequest = {
 			lambdaSmartApp: {
 				functions: [arn],
 			},
-		}
+		} as AppUpdateRequest
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
@@ -133,11 +126,11 @@ describe('AppUpdateCommand', () => {
 
 	it('calls addPermission with statement-id flag', async () => {
 		const arn = 'arn'
-		const appRequest: AppRequest = {
+		const appRequest: AppUpdateRequest = {
 			lambdaSmartApp: {
 				functions: [arn],
 			},
-		}
+		} as AppUpdateRequest
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})
@@ -150,11 +143,11 @@ describe('AppUpdateCommand', () => {
 
 	it('ignores already authorized functions', async () => {
 		const arn = 'arn'
-		const appRequest: AppRequest = {
+		const appRequest: AppUpdateRequest = {
 			lambdaSmartApp: {
 				functions: [arn],
 			},
-		}
+		} as AppUpdateRequest
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, appRequest)
 		})

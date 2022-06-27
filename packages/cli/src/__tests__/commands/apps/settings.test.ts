@@ -1,5 +1,5 @@
 import { CustomCommonOutputProducer, DefaultTableGenerator, outputItem } from '@smartthings/cli-lib'
-import { AppsEndpoint, AppSettings } from '@smartthings/core-sdk'
+import { AppsEndpoint, AppSettingsResponse } from '@smartthings/core-sdk'
 import AppSettingsCommand from '../../../commands/apps/settings'
 import { buildTableOutput, chooseApp } from '../../../lib/commands/apps/apps-util'
 
@@ -11,7 +11,9 @@ describe('AppSettingsCommand', () => {
 	const mockChooseApp = jest.mocked(chooseApp)
 	const mockOutputItem = jest.mocked(outputItem)
 	const settingsSpy = jest.spyOn(AppsEndpoint.prototype, 'getSettings').mockImplementation()
-	const appSettings: AppSettings = {}
+	const appSettings: AppSettingsResponse = {
+		settings: {},
+	}
 
 	beforeAll(() => {
 		mockChooseApp.mockResolvedValue(appId)
@@ -30,7 +32,7 @@ describe('AppSettingsCommand', () => {
 
 	it('calls outputItem with correct config', async () => {
 		mockOutputItem.mockImplementationOnce(async (_command, config) => {
-			(config as CustomCommonOutputProducer<AppSettings>).buildTableOutput(appSettings)
+			(config as CustomCommonOutputProducer<AppSettingsResponse>).buildTableOutput(appSettings)
 			return appSettings
 		})
 

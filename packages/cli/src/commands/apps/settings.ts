@@ -1,5 +1,5 @@
 import { APICommand, CustomCommonOutputProducer, outputItem, outputListing } from '@smartthings/cli-lib'
-import { AppSettings } from '@smartthings/core-sdk'
+import { AppSettingsResponse } from '@smartthings/core-sdk'
 import { buildTableOutput, chooseApp } from '../../lib/commands/apps/apps-util'
 
 
@@ -18,7 +18,7 @@ export default class AppSettingsCommand extends APICommand<typeof AppSettingsCom
 
 	async run(): Promise<void> {
 		const id = await chooseApp(this, this.args.id, { allowIndex: true })
-		const config: CustomCommonOutputProducer<AppSettings> =
+		const config: CustomCommonOutputProducer<AppSettingsResponse> =
 			{ buildTableOutput: appSettings => buildTableOutput(this.tableGenerator, appSettings) }
 
 		await outputItem(this, config, () => this.client.apps.getSettings(id))

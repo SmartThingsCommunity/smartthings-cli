@@ -1,5 +1,5 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
-import { AppsEndpoint, AppSettings } from '@smartthings/core-sdk'
+import { AppsEndpoint, AppSettingsRequest } from '@smartthings/core-sdk'
 import AppSettingsUpdateCommand from '../../../../commands/apps/settings/update'
 import { chooseApp } from '../../../../lib/commands/apps/apps-util'
 
@@ -23,7 +23,7 @@ describe('AppSettingsUpdateCommand', () => {
 
 	it('uses correct endpoint to update settings', async () => {
 		const appId = 'appId'
-		const settings: AppSettings = {}
+		const settings: AppSettingsRequest = {}
 		mockChooseApp.mockResolvedValueOnce(appId)
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, settings)

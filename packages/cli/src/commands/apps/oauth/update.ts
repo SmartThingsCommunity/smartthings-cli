@@ -1,4 +1,4 @@
-import { AppOAuth } from '@smartthings/core-sdk'
+import { AppOAuthRequest } from '@smartthings/core-sdk'
 import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 import { chooseApp, oauthTableFieldDefinitions } from '../../../lib/commands/apps/apps-util'
 
@@ -19,6 +19,6 @@ export default class AppOauthUpdateCommand extends APICommand<typeof AppOauthUpd
 	async run(): Promise<void> {
 		const appId = await chooseApp(this, this.args.id)
 		await inputAndOutputItem(this, { tableFieldDefinitions: oauthTableFieldDefinitions },
-			(_, data: AppOAuth) => this.client.apps.updateOauth(appId, data))
+			(_, data: AppOAuthRequest) => this.client.apps.updateOauth(appId, data))
 	}
 }

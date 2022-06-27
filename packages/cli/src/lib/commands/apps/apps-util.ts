@@ -1,11 +1,11 @@
 import { APICommand, ChooseOptions, chooseOptionsWithDefaults, selectFromList, SelectingConfig, stringTranslateToId, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
-import { App, AppSettings } from '@smartthings/core-sdk'
+import { AppResponse, AppSettingsResponse, PagedApp } from '@smartthings/core-sdk'
 
 
-const isWebhookSmartApp = (app: App): boolean => !!app.webhookSmartApp
-const hasSubscription = (app: App): boolean => !!app.apiOnly?.subscription
+const isWebhookSmartApp = (app: AppResponse): boolean => !!app.webhookSmartApp
+const hasSubscription = (app: AppResponse): boolean => !!app.apiOnly?.subscription
 
-export const tableFieldDefinitions: TableFieldDefinition<App>[] = [
+export const tableFieldDefinitions: TableFieldDefinition<AppResponse>[] = [
 	'displayName',
 	'appId',
 	'appName',
@@ -37,19 +37,19 @@ export const oauthTableFieldDefinitions = ['clientName', 'scope', 'redirectUris'
 
 export async function chooseApp(command: APICommand<typeof APICommand.flags>, appFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
 	const opts = chooseOptionsWithDefaults(options)
-	const config: SelectingConfig<App> = {
+	const config: SelectingConfig<AppResponse> = {
 		itemName: 'app',
 		primaryKeyName: 'appId',
 		sortKeyName: 'displayName',
 	}
-	const listItems = (): Promise<App[]> => command.client.apps.list()
+	const listItems = (): Promise<PagedApp[]> => command.client.apps.list()
 	const preselectedId = opts.allowIndex
 		? await stringTranslateToId(config, appFromArg, listItems)
 		: appFromArg
 	return selectFromList(command, config, { preselectedId, listItems })
 }
 
-export function buildTableOutput(tableGenerator: TableGenerator, appSettings: AppSettings): string {
+export function buildTableOutput(tableGenerator: TableGenerator, appSettings: AppSettingsResponse): string {
 	if (!appSettings.settings || Object.keys(appSettings.settings).length === 0) {
 		return 'No application settings.'
 	}
