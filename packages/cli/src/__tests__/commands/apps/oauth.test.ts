@@ -1,5 +1,5 @@
 import { outputItem } from '@smartthings/cli-lib'
-import { AppOAuth, AppsEndpoint } from '@smartthings/core-sdk'
+import { AppOAuthResponse, AppsEndpoint } from '@smartthings/core-sdk'
 import AppOauthCommand from '../../../commands/apps/oauth'
 import { chooseApp } from '../../../lib/commands/apps/apps-util'
 
@@ -40,7 +40,7 @@ describe('AppOauthCommand', () => {
 	it('uses correct endpoint to get oauth details', async () => {
 		const appId = 'appId'
 		mockChooseApp.mockResolvedValueOnce(appId)
-		const appOAuth: AppOAuth = { clientName: 'test' }
+		const appOAuth = { clientName: 'test' } as AppOAuthResponse
 		getOauthSpy.mockResolvedValueOnce(appOAuth)
 		mockOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			return actionFunction()

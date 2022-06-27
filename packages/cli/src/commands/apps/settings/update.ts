@@ -1,4 +1,4 @@
-import { AppSettings } from '@smartthings/core-sdk'
+import { AppSettingsRequest, AppSettingsResponse } from '@smartthings/core-sdk'
 import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 import { buildTableOutput, chooseApp } from '../../../lib/commands/apps/apps-util'
 
@@ -19,7 +19,7 @@ export default class AppSettingsUpdateCommand extends APICommand<typeof AppSetti
 	async run(): Promise<void> {
 		const appId = await chooseApp(this, this.args.id)
 		await inputAndOutputItem(this,
-			{ buildTableOutput: (data: AppSettings) => buildTableOutput(this.tableGenerator, data) },
-			(_, data: AppSettings) => this.client.apps.updateSettings(appId, data))
+			{ buildTableOutput: (data: AppSettingsResponse) => buildTableOutput(this.tableGenerator, data) },
+			(_, data: AppSettingsRequest) => this.client.apps.updateSettings(appId, data))
 	}
 }

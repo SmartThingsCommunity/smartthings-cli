@@ -1,5 +1,5 @@
 import { Flags } from '@oclif/core'
-import { App, AppRequest } from '@smartthings/core-sdk'
+import { AppUpdateRequest, AppResponse } from '@smartthings/core-sdk'
 import { ActionFunction, APICommand, inputAndOutputItem, TableCommonOutputProducer, lambdaAuthFlags } from '@smartthings/cli-lib'
 import { addPermission } from '../../lib/aws-utils'
 import { chooseApp, tableFieldDefinitions } from '../../lib/commands/apps/apps-util'
@@ -25,7 +25,7 @@ export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand
 	async run(): Promise<void> {
 		const appId = await chooseApp(this, this.args.id)
 
-		const executeUpdate: ActionFunction<void, AppRequest, App> = async (_, data) => {
+		const executeUpdate: ActionFunction<void, AppUpdateRequest, AppResponse> = async (_, data) => {
 			if (this.flags.authorize) {
 				if (data.lambdaSmartApp) {
 					if (data.lambdaSmartApp.functions) {
@@ -41,7 +41,7 @@ export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand
 			return this.client.apps.update(appId, data)
 		}
 
-		const config: TableCommonOutputProducer<App> = { tableFieldDefinitions }
+		const config: TableCommonOutputProducer<AppResponse> = { tableFieldDefinitions }
 		await inputAndOutputItem(this, config, executeUpdate)
 	}
 }

@@ -1,12 +1,12 @@
 import { outputListing } from '@smartthings/cli-lib'
-import { App, AppClassification, AppsEndpoint, AppType } from '@smartthings/core-sdk'
+import { AppResponse, AppClassification, AppsEndpoint, AppType, PagedApp } from '@smartthings/core-sdk'
 import AppsCommand from '../../commands/apps'
 
 
 describe('AppsCommand', () => {
 	const appId = 'appId'
-	const app: App = { appId: appId, webhookSmartApp: { targetUrl: 'targetUrl' } }
-	const appList = [app]
+	const app = { appId: appId, webhookSmartApp: { targetUrl: 'targetUrl' } } as AppResponse
+	const appList = [{ appId: appId }] as PagedApp[]
 	const mockOutputListing = jest.mocked(outputListing)
 	const getSpy = jest.spyOn(AppsEndpoint.prototype, 'get').mockImplementation()
 	const listSpy = jest.spyOn(AppsEndpoint.prototype, 'list').mockImplementation()
@@ -143,7 +143,7 @@ describe('AppsCommand', () => {
 		await expect(AppsCommand.run(['--verbose'])).resolves.not.toThrow()
 
 		const listApps = mockOutputListing.mock.calls[0][3]
-		const verboseApp = (await listApps()).pop() as App & { 'ARN/URL'?: string }
+		const verboseApp = (await listApps()).pop() as AppResponse & { 'ARN/URL'?: string }
 
 		expect(getSpy).toBeCalledTimes(1)
 		expect(getSpy).toBeCalledWith(appId)

@@ -1,5 +1,5 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
-import { AppOAuth, AppsEndpoint } from '@smartthings/core-sdk'
+import { GenerateAppOAuthRequest, AppsEndpoint } from '@smartthings/core-sdk'
 import AppOauthGenerateCommand from '../../../../commands/apps/oauth/generate'
 import { chooseApp } from '../../../../lib/commands/apps/apps-util'
 
@@ -35,7 +35,7 @@ describe('AppOauthGenerateCommand', () => {
 
 	it('uses correct endpoint to generate oauth', async () => {
 		const appId = 'appId'
-		const oAuth: AppOAuth = { clientName: 'test' }
+		const oAuth = { clientName: 'test' } as GenerateAppOAuthRequest
 		mockChooseApp.mockResolvedValueOnce(appId)
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction) => {
 			await actionFunction(undefined, oAuth)

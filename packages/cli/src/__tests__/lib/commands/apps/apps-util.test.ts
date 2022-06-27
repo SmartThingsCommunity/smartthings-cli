@@ -122,7 +122,6 @@ describe('buildTableOutput', () => {
 		buildTableFromList: jest.fn(),
 	}
 	it('returns simple string when app settings are not present', () => {
-		expect(buildTableOutput(mockTableGenerator, {})).toBe('No application settings.')
 		expect(buildTableOutput(mockTableGenerator, { settings: {} })).toBe('No application settings.')
 	})
 

@@ -1,11 +1,11 @@
 import { selectFromList } from '@smartthings/cli-lib'
-import { App, AppsEndpoint, AppType } from '@smartthings/core-sdk'
+import { PagedApp, AppsEndpoint, AppType } from '@smartthings/core-sdk'
 import AppRegisterCommand from '../../../commands/apps/register'
 
 
 describe('AppRegisterCommand', () => {
 	const appId = 'appId'
-	const registerSpy = jest.spyOn(AppsEndpoint.prototype, 'register').mockResolvedValue({ status: '200' })
+	const registerSpy = jest.spyOn(AppsEndpoint.prototype, 'register').mockResolvedValue()
 	const listSpy = jest.spyOn(AppsEndpoint.prototype, 'list').mockImplementation()
 	const logSpy = jest.spyOn(AppRegisterCommand.prototype, 'log').mockImplementation()
 	const mockSelectFromList = jest.mocked(selectFromList)
@@ -41,10 +41,10 @@ describe('AppRegisterCommand', () => {
 	})
 
 	it('lists all app types that support registration', async () => {
-		const webhookApps: App[] = [{ appType: AppType.WEBHOOK_SMART_APP, webhookSmartApp: {} }]
-		const apiOnlyApps: App[] = [{ appType: AppType.API_ONLY, apiOnly: {} }]
+		const webhookApps = [{ appType: AppType.WEBHOOK_SMART_APP }] as PagedApp[]
+		const apiOnlyApps = [{ appType: AppType.API_ONLY }] as PagedApp[]
 		listSpy.mockImplementation(async (options) => {
-			let apps: App[] = []
+			let apps: PagedApp[] = []
 			if (options?.appType == AppType.WEBHOOK_SMART_APP) {
 				apps = webhookApps
 			} else if (options?.appType == AppType.API_ONLY) {

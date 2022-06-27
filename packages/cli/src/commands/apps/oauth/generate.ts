@@ -1,4 +1,4 @@
-import { AppOAuth } from '@smartthings/core-sdk'
+import { GenerateAppOAuthRequest } from '@smartthings/core-sdk'
 import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 import { chooseApp, oauthTableFieldDefinitions } from '../../../lib/commands/apps/apps-util'
 
@@ -20,6 +20,6 @@ export default class AppOauthGenerateCommand extends APICommand<typeof AppOauthG
 		const appId = await chooseApp(this, this.args.id)
 		await inputAndOutputItem(this,
 			{ tableFieldDefinitions: oauthTableFieldDefinitions.concat('oauthClientId', 'oauthClientSecret') },
-			(_, data: AppOAuth) => this.client.apps.regenerateOauth(appId, data))
+			(_, data: GenerateAppOAuthRequest) => this.client.apps.regenerateOauth(appId, data))
 	}
 }

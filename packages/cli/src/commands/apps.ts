@@ -1,5 +1,5 @@
 import { Flags } from '@oclif/core'
-import { App, AppType, AppClassification, AppListOptions } from '@smartthings/core-sdk'
+import { AppType, AppClassification, AppListOptions, PagedApp, AppResponse } from '@smartthings/core-sdk'
 import { APICommand, outputListing } from '@smartthings/cli-lib'
 import { tableFieldDefinitions } from '../lib/commands/apps/apps-util'
 
@@ -41,7 +41,7 @@ export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
 			config.listTableFieldDefinitions.push('ARN/URL')
 		}
 
-		const listApps = async (): Promise<App[]> => {
+		const listApps = async (): Promise<PagedApp[] | AppResponse[]> => {
 			const appListOptions: AppListOptions = {}
 			if (this.flags.type) {
 				appListOptions.appType = AppType[this.flags.type as keyof typeof AppType]
@@ -58,7 +58,7 @@ export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
 						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 						return this.client.apps.get(app.appId!)
 					})
-					return Promise.all(apps).then((list: (App & { 'ARN/URL'?: string })[]) => {
+					return Promise.all(apps).then((list: (AppResponse & { 'ARN/URL'?: string })[]) => {
 						for (const app of list) {
 							const uri = (app.webhookSmartApp ?
 								app.webhookSmartApp.targetUrl :
