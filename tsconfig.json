@@ -10,6 +10,7 @@
 		"esModuleInterop": true,
 		"noErrorTruncation": true,
 		"useUnknownInCatchVariables": false,
+		"isolatedModules": true
 	},
 	"references": [
 		{
