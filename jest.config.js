@@ -19,4 +19,11 @@ module.exports = {
 		'default',
 		'github-actions',
 	],
+	globals: {
+		// TODO: remove when https://github.com/kulshekhar/ts-jest/issues/1967 is resolved
+		// related flag in tsconfig as well
+		'ts-jest': {
+			isolatedModules: true,
+		},
+	},
 }
