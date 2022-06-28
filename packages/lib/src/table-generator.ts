@@ -1,52 +1,11 @@
+import log4js from '@log4js-node/log4js-api'
 import at from 'lodash.at'
-import Table from 'cli-table'
+import { table } from 'table'
 
 import { Logger } from '@smartthings/core-sdk'
 
-import log4js from '@log4js-node/log4js-api'
-
 
 export const summarizedText = '(Information is summarized, for full details use YAML, -y, or JSON flag, -j.)'
-
-/**
- * This code is copied from the DefinitelyTyped source code because it is not
- * exported there.
- *
- * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/cli-table/index.d.ts
- *
- * TODO: open a pull request to export this in DefinitelyTyped
- */
-export interface TableOptions {
-	chars: Partial<Record<(
-		'top' |
-		'top-mid' |
-		'top-left' |
-		'top-right' |
-		'bottom' |
-		'bottom-mid' |
-		'bottom-left' |
-		'bottom-right' |
-		'left' |
-		'left-mid' |
-		'mid' |
-		'mid-mid' |
-		'right' |
-		'right-mid' |
-		'middle'
-	), string>>
-	truncate: string
-	colors: boolean
-	colWidths: number[]
-	colAligns: Array<'left' | 'middle' | 'right'>
-	style: Partial<{
-		'padding-left': number
-		'padding-right': number
-		head: string[]
-		border: string[]
-		compact: boolean
-	}>
-	head: string[]
-}
 
 /**
  * Used to define a field in an output table.
@@ -129,8 +88,95 @@ export interface TableGenerator {
 	buildTableFromList<T>(items: T[], tableFieldDefinitions: TableFieldDefinition<T>[]): string
 }
 
+export interface TableOptions {
+	/**
+	 * Separate groups of four rows by a line to make long rows easier to follow across the screen.
+	 */
+	groupRows: boolean
+	head: string[]
+	isList?: boolean
+}
+
+export const stringFromUnknown = (input: unknown): string => {
+	if (typeof input === 'string') {
+		return input
+	}
+	if (input == undefined) {
+		return ''
+	}
+	if (typeof input === 'function') {
+		return '<Function>'
+	}
+	if (typeof input === 'number' || typeof input == 'boolean' || typeof input === 'bigint' ||
+			typeof input === 'symbol') {
+		return input.toString()
+	}
+	if (typeof input === 'object') {
+		// For object, only use the toString if it's not the default
+		if (input.toString !== Object.prototype.toString) {
+			return input.toString()
+		}
+	}
+	return JSON.stringify(input)
+}
+
+export type TableCellData = string | number | boolean | undefined
+export interface Table {
+	push: (row: TableCellData[]) => void
+
+	toString: () => string
+}
+
+class TableAdapter implements Table {
+	private data: string[][] = []
+	private hasHeaderRow: boolean
+
+	push(row: TableCellData[]): void {
+		this.data.push(row.map(cell => cell?.toString() ?? ''))
+	}
+
+	constructor(private options: Partial<TableOptions>) {
+		this.hasHeaderRow = options.head != undefined
+		if (options.head) {
+			this.data.push(options.head)
+		}
+	}
+
+	toString(): string {
+		const border = {
+			topBody: '─',
+			topJoin: '',
+			topLeft: '',
+			topRight: '',
+
+			bottomBody: '─',
+			bottomJoin: '',
+			bottomLeft: '',
+			bottomRight: '',
+
+			bodyLeft: '',
+			bodyRight: '',
+			bodyJoin: '',
+
+			joinBody: '─',
+			joinLeft: '',
+			joinRight: '',
+			joinJoin: '',
+		}
+
+		const listDrawHorizontalLine = this.options.groupRows
+			? (index: number) => index === 0 || index === this.data.length || (index - 1) % 5 === 0
+			: (index: number) => index === 0 || index === this.data.length || index === 1
+		const drawHorizontalLine = this.options.isList
+			? listDrawHorizontalLine
+			: (index: number) => index === 0 || index === this.data.length
+		const config = { drawHorizontalLine, border }
+		return table(this.data, config)
+	}
+}
+
 export class DefaultTableGenerator implements TableGenerator {
-	constructor(private compact: boolean) {}
+	constructor(private groupRows: boolean) {}
 
 	private _logger?: Logger
 	protected get logger(): Logger {
@@ -169,9 +215,9 @@ export class DefaultTableGenerator implements TableGenerator {
 		return this.convertToLabel(definition.prop)
 	}
 
-	private getDisplayValueFor<T>(item: T, definition: TableFieldDefinition<T>): string {
+	private getDisplayValueFor<T>(item: T, definition: TableFieldDefinition<T>): string | undefined {
 		if (!(typeof definition === 'string') && definition.value) {
-			return definition.value(item) ?? ''
+			return definition.value(item)
 		}
 
 		const propertyName = typeof definition === 'string' ? definition : definition.prop
@@ -196,12 +242,12 @@ export class DefaultTableGenerator implements TableGenerator {
 	}
 
 	newOutputTable(options?: Partial<TableOptions>): Table {
-		const configuredOptions = { style: { compact: this.compact } }
+		const configuredOptions = { groupRows: this.groupRows }
 
 		if (options) {
-			return new Table({ ...configuredOptions, ...options })
+			return new TableAdapter({ ...configuredOptions, ...options })
 		}
-		return new Table(configuredOptions)
+		return new TableAdapter(configuredOptions)
 	}
 
 	buildTableFromItem<T>(item: T, definitions: TableFieldDefinition<T>[]): string {
@@ -223,7 +269,7 @@ export class DefaultTableGenerator implements TableGenerator {
 
 	buildTableFromList<T>(items: T[], definitions: TableFieldDefinition<T>[]): string {
 		const headingLabels = definitions.map(def => this.getLabelFor(def))
-		const table = this.newOutputTable({ head: headingLabels })
+		const table = this.newOutputTable({ isList: true, head: headingLabels })
 		for (const item of items) {
 			table.push(definitions.map(def => this.getDisplayValueFor(item, def)))
 		}

@@ -197,11 +197,11 @@ export abstract class SmartThingsCommand<T extends InputFlags> extends Command i
 
 		this._profile = this.cliConfig.profile
 
-		const compact = this.flags.expanded
+		const groupRows = this.flags['no-group-rows']
 			? false
-			: (this.flags.compact ? true : this.booleanConfigValue('compactTableOutput', true))
+			: (this.flags['group-rows'] ? true : this.booleanConfigValue('groupTableOutputRows', true))
 
-		this._tableGenerator = new DefaultTableGenerator(compact)
+		this._tableGenerator = new DefaultTableGenerator(groupRows)
 	}
 
 	/**

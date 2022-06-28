@@ -1,8 +1,6 @@
-import Table from 'cli-table'
-
 import { Device } from '@smartthings/core-sdk'
 
-import { summarizedText, TableGenerator } from '@smartthings/cli-lib'
+import { summarizedText, Table, TableGenerator } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../../../../lib/commands/devices/devices-util'
 

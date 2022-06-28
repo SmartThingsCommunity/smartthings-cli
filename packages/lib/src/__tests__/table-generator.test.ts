@@ -1,7 +1,7 @@
 import at from 'lodash.at'
 import { URL } from 'url'
 import log4js from '@log4js-node/log4js-api'
-import { DefaultTableGenerator, TableFieldDefinition, TableGenerator } from '../table-generator'
+import { DefaultTableGenerator, stringFromUnknown, TableFieldDefinition, TableGenerator } from '../table-generator'
 
 
 const mockDebug = jest.fn()
@@ -49,25 +49,20 @@ function stripEscapeSequences(str: string): string {
 	return retVal
 }
 
-function rowCount(table: string): number {
-	return table.split('\n').length - 2
-}
+/**
+ * Clean up string created using backticks. Lines are stripped of ` +|` at the beginning of each
+ * line (allowing indentation) and `|` at the end (allowing for spaces at the end of the line
+ * that are not automatically removed by tooling). If there is a new-line at the beginning of the
+ * string, it is also removed.
+ */
+const fixIndent = (input: string): string => input.replace(/^\s*\|/gm, '').replace(/\|$/gm, '').replace(/^\n/, '')
 
-// These are the characters the used by the cli-table library:
-// \u250c ┌
-// \u252c ┬
-// \u2510 ┐
-// \u2502 │
-// \u2500 ─
-// \u2514 └
-// \u2534 ┴
-// \u2518 ┘
-// https://en.wikipedia.org/wiki/Box_Drawing_(Unicode_block)
+const lineCount = (input: string): number =>(input.match(/\n/g) ?? []).length
 
 expect.extend({
 	toHaveLabel(received: string, label: string) {
 		const stripped = stripEscapeSequences(received)
-		const regex = new RegExp(`\u2502 +${quoteForRegex(label)} +\u2502 +[^\u2502]*? +\u2502`, 'g')
+		const regex = new RegExp(` +${quoteForRegex(label)} +`, 'g')
 		return {
 			message: (): string => `expected ${stripped} to have label ${label}`,
 			pass: regex.test(stripped),
@@ -75,7 +70,7 @@ expect.extend({
 	},
 	toHaveValue(received: string, value: string) {
 		const stripped = stripEscapeSequences(received)
-		const regex = new RegExp(`\u2502 +[^\u2502]*? +\u2502 +${quoteForRegex(value)} +\u2502`, 'g')
+		const regex = new RegExp(` +${quoteForRegex(value)} +`, 'g')
 		return {
 			message: (): string => `expected ${stripped} to have value ${value}`,
 			pass: regex.test(stripped),
@@ -83,7 +78,7 @@ expect.extend({
 	},
 	toHaveLabelAndValue(received: string, label: string, value: string) {
 		const stripped = stripEscapeSequences(received)
-		const regex = new RegExp(`\u2502 +${quoteForRegex(label)} +\u2502 +${quoteForRegex(value)} +\u2502`, 'g')
+		const regex = new RegExp(` +${quoteForRegex(label)} +${quoteForRegex(value)} +`, 'g')
 		return {
 			message: (): string => `expected ${stripped} to have label ${label} and value ${value}`,
 			pass: regex.test(stripped),
@@ -91,8 +86,8 @@ expect.extend({
 	},
 	toHaveItemValues(received: string, values: string[]) {
 		const stripped = stripEscapeSequences(received)
-		const valuesRegex = values.map(value => quoteForRegex(value)).join(' +\u2502 +')
-		const regex = new RegExp(`\u2502 +${valuesRegex} +\u2502`, 'g')
+		const valuesRegex = values.map(value => quoteForRegex(value)).join(' +')
+		const regex = new RegExp(` +${valuesRegex} +`, 'g')
 		return {
 			message: (): string => `expected ${stripped} to have values ${JSON.stringify(values)}`,
 			pass: regex.test(stripped),
@@ -149,188 +144,248 @@ const basicFieldDefinitions: TableFieldDefinition<SimpleData>[] = [
 	'oauthClientId',
 ]
 
-describe('tableGenerator', () => {
+describe('table-generator', () => {
 	const mockAt = jest.mocked(at)
 	const mockGetLogger = jest.mocked(log4js.getLogger)
 
 	let tableGenerator: TableGenerator
 
 	beforeEach(() => {
-		tableGenerator = new DefaultTableGenerator(true)
+		tableGenerator = new DefaultTableGenerator(false)
 	})
 
-	it('buildTableFromItem converts simple column labels properly', function() {
-		const output = tableGenerator.buildTableFromItem(basicData, basicFieldDefinitions)
-
-		expect(output).toHaveLabel('Id')
-		expect(output).toHaveLabel('Simple Field')
-		expect(output).toHaveLabel('Really Long Field Name')
-		expect(output).toHaveLabel('Request URI')
-		// "URL" string should be made all caps
-		expect(output).toHaveLabel('Target URL')
-		expect(output).toHaveLabel('Sub Field')
-		// "url" in "Burley" should NOT be all caps.
-		expect(output).toHaveLabel('Burley')
-		// "is" should be dropped for boolean-style fields
-		expect(output).not.toHaveLabel('Is Burley')
-		// "uri" string in "centuries" should not be made all caps
-		expect(output).toHaveLabel('Age In Centuries')
-		expect(output).toHaveLabel('Lambda ARN EU')
-		expect(output).toHaveLabel('Red Barn Shade')
-		expect(output).toHaveLabel('OAuth Token URL')
-		expect(output).toHaveLabel('OAuth Client Id')
+	describe('stringFromUnknown', () => {
+		it.each`
+			input                             | result
+			${'string'}                       | ${'string'}
+			${undefined}                      | ${''}
+			${() => 5}                        | ${'<Function>'}
+			${1}                              | ${'1'}
+			${true}                           | ${'true'}
+			${BigInt(5)}                      | ${'5'}
+			${Symbol('symbol')}               | ${'Symbol(symbol)'}
+			${{ toString: () => 'toString' }} | ${'toString'}
+			${{ simple: 'object' }}           | ${'{"simple":"object"}'}
+		`('converts $input to $result', ({ input, result }) => {
+			expect(stringFromUnknown(input)).toBe(result)
+		})
 	})
 
-	it('buildTableFromItem converts simple column values properly', function() {
-		const output = tableGenerator.buildTableFromItem(basicData, basicFieldDefinitions)
+	describe('buildTableFromItem', () => {
+		it('converts simple column labels properly', function() {
+			const output = tableGenerator.buildTableFromItem(basicData, basicFieldDefinitions)
 
-		expect(output).toHaveValue('uuid-here')
-		expect(output).toHaveValue('value')
-		expect(output).toHaveValue('7.2')
-		expect(output).toHaveLabelAndValue('Really Long Field Name', '7.2')
-		expect(output).toHaveLabelAndValue('Request URI', 'a request URI')
-		expect(output).toHaveLabelAndValue('Target URL', 'https://www.google.com/')
-		expect(output).toHaveLabelAndValue('Sub Field', 'sub-field value')
+			expect(output).toHaveLabel('Id')
+			expect(output).toHaveLabel('Simple Field')
+			expect(output).toHaveLabel('Really Long Field Name')
+			expect(output).toHaveLabel('Request URI')
+			// "URL" string should be made all caps
+			expect(output).toHaveLabel('Target URL')
+			expect(output).toHaveLabel('Sub Field')
+			// "url" in "Burley" should NOT be all caps.
+			expect(output).toHaveLabel('Burley')
+			// "is" should be dropped for boolean-style fields
+			expect(output).not.toHaveLabel('Is Burley')
+			// "uri" string in "centuries" should not be made all caps
+			expect(output).toHaveLabel('Age In Centuries')
+			expect(output).toHaveLabel('Lambda ARN EU')
+			expect(output).toHaveLabel('Red Barn Shade')
+			expect(output).toHaveLabel('OAuth Token URL')
+			expect(output).toHaveLabel('OAuth Client Id')
+		})
+
+		it('converts simple column values properly', function() {
+			const output = tableGenerator.buildTableFromItem(basicData, basicFieldDefinitions)
+
+			expect(output).toHaveValue('uuid-here')
+			expect(output).toHaveValue('value')
+			expect(output).toHaveValue('7.2')
+			expect(output).toHaveLabelAndValue('Really Long Field Name', '7.2')
+			expect(output).toHaveLabelAndValue('Request URI', 'a request URI')
+			expect(output).toHaveLabelAndValue('Target URL', 'https://www.google.com/')
+			expect(output).toHaveLabelAndValue('Sub Field', 'sub-field value')
+		})
+
+		it('uses specified column headings', function() {
+			const basicFieldDefinitions = [{
+				prop: 'reallyLongFieldName',
+				label: 'Shorter Name',
+			}]
+			const output = tableGenerator.buildTableFromItem(basicData, basicFieldDefinitions)
+
+			expect(output).not.toHaveLabel('Really Long Field Name')
+			expect(output).toHaveLabel('Shorter Name')
+		})
+
+		it('uses calculated value', function() {
+			const fieldDefinitions = [{
+				prop: 'reallyLongFieldName',
+				value: (item: SimpleData): string => `${item.reallyLongFieldName} ms`,
+			}]
+			const output = tableGenerator.buildTableFromItem(basicData, fieldDefinitions)
+
+			expect(output).toHaveValue('7.2 ms')
+		})
+
+		it('uses empty string for undefined calculated value', function() {
+			const fieldDefinitions = [{
+				prop: 'reallyLongFieldName',
+				value: (): string | undefined => undefined,
+			}]
+			const output = tableGenerator.buildTableFromItem(basicData, fieldDefinitions)
+
+			expect(output).toBe(fixIndent(`
+			|──────────────────────────|
+			| Really Long Field Name   |
+			|──────────────────────────|
+			|`))
+		})
+
+		it('skips rows when include returns false', function() {
+			const fieldDefinitions = ['id', {
+				prop: 'someNumber',
+				include: (item: SimpleData): boolean => item.someNumber < 5,
+			}]
+			const output = tableGenerator.buildTableFromItem(basicData, fieldDefinitions)
+
+			expect(output).toHaveLabelAndValue('Id', 'uuid-here')
+			expect(output).not.toHaveLabel('Some Number')
+			expect(lineCount(output)).toBe(3)
+		})
+
+		it('remembers to include rows when include returns true', function() {
+			const fieldDefinitions = ['id', {
+				prop: 'someNumber',
+				include: (item: SimpleData): boolean => item.someNumber > 5,
+			}]
+			const output = tableGenerator.buildTableFromItem(basicData, fieldDefinitions)
+
+			expect(output).toHaveLabelAndValue('Id', 'uuid-here')
+			expect(output).toHaveLabelAndValue('Some Number', '14.4')
+			expect(lineCount(output)).toBe(4)
+		})
+
+		it('skips falsy values with skipEmpty', function() {
+			const fieldDefinitions = ['id', { prop: 'mightBeNull', skipEmpty: true }]
+			const output = tableGenerator.buildTableFromItem(basicData, fieldDefinitions)
+
+			expect(output).toHaveLabelAndValue('Id', 'uuid-here')
+			expect(output).not.toHaveLabel('Might Be Null')
+			expect(lineCount(output)).toBe(3)
+		})
+
+		it('include truthy values with skipEmpty', function() {
+			const fieldDefinitions = ['id', { prop: 'mightBeNull', skipEmpty: true }]
+			const output = tableGenerator.buildTableFromItem({ ...basicData, mightBeNull: 'not null' }, fieldDefinitions)
+
+			expect(output).toHaveLabelAndValue('Id', 'uuid-here')
+			expect(output).toHaveLabelAndValue('Might Be Null', 'not null')
+			expect(lineCount(output)).toBe(4)
+		})
+
+		it('throws exception if value missing with no prop', () => {
+			expect(() => tableGenerator.buildTableFromItem(basicData, [{ label: 'Label' }]))
+				.toThrow('both label and value are required if prop is not specified')
+		})
+
+		it('throws exception if label missing with no prop', () => {
+			expect(() => tableGenerator.buildTableFromItem(basicData, [{ value: () => 'some value' }]))
+				.toThrow('both label and value are required if prop is not specified')
+		})
+
+		it('handles all possible TableCellData types', () => {
+			const item = {
+				stringField: 'string',
+				numberField: 'number',
+				booleanField: true,
+				undefinedField: undefined,
+			}
+			const output = tableGenerator.buildTableFromItem(item,
+				['stringField', 'numberField', 'booleanField', 'undefinedField'])
+
+			expect(output).toBe(fixIndent(`
+				|─────────────────────────|
+				| String Field     string |
+				| Number Field     number |
+				| Boolean Field    true   |
+				| Undefined Field         |
+				|─────────────────────────|
+				|`))
+		})
 	})
 
-	it('buildTableFromItem uses specified column headings', function() {
-		const basicFieldDefinitions = [{
-			prop: 'reallyLongFieldName',
-			label: 'Shorter Name',
-		}]
-		const output = tableGenerator.buildTableFromItem(basicData, basicFieldDefinitions)
+	describe('buildTableFromList', () => {
+		it('generates the correct number of rows', function() {
+			let output = tableGenerator.buildTableFromList([basicData], ['id', 'someNumber'])
 
-		expect(output).not.toHaveLabel('Really Long Field Name')
-		expect(output).toHaveLabel('Shorter Name')
-	})
+			expect(lineCount(output)).toBe(5) // top and bottom, header, header separator and data row
 
-	it('buildTableFromItem uses calculated value', function() {
-		const fieldDefinitions = [{
-			prop: 'reallyLongFieldName',
-			value: (item: SimpleData): string => `${item.reallyLongFieldName} ms`,
-		}]
-		const output = tableGenerator.buildTableFromItem(basicData, fieldDefinitions)
+			output = tableGenerator.buildTableFromList([basicData, basicData], ['id', 'someNumber'])
+			expect(lineCount(output)).toBe(6) // top and bottom, header, header separator and two data rows
+		})
 
-		expect(output).not.toHaveValue('7.2')
-		expect(output).toHaveValue('7.2 ms')
-	})
+		it('generates the correct header', function() {
+			const output = tableGenerator.buildTableFromList([basicData], ['id', 'someNumber'])
 
-	it('buildTableFromItem uses empty string for undefined calculated value', function() {
-		const fieldDefinitions = [{
-			prop: 'reallyLongFieldName',
-			value: (): string | undefined => undefined,
-		}]
-		const output = tableGenerator.buildTableFromItem(basicData, fieldDefinitions)
+			expect(output).toHaveItemValues(['Id', 'Some Number'])
+		})
 
-		expect(output).toHaveValue('')
-	})
+		it('generates the correct data values', function() {
+			const output = tableGenerator.buildTableFromList([basicData], ['id', 'someNumber'])
 
-	it('buildTableFromItem skips rows when include returns false', function() {
-		const fieldDefinitions = ['id', {
-			prop: 'someNumber',
-			include: (item: SimpleData): boolean => item.someNumber < 5,
-		}]
-		const output = tableGenerator.buildTableFromItem(basicData, fieldDefinitions)
+			expect(output).toHaveItemValues(['uuid-here', '14.4'])
+		})
 
-		expect(output).toHaveLabelAndValue('Id', 'uuid-here')
-		expect(output).not.toHaveLabel('Some Number')
-		expect(rowCount(output)).toBe(1)
-	})
+		it('uses empty string for no match', () => {
+			mockAt.mockReturnValue([])
 
-	it('buildTableFromItem remembers to include rows when include returns true', function() {
-		const fieldDefinitions = ['id', {
-			prop: 'someNumber',
-			include: (item: SimpleData): boolean => item.someNumber > 5,
-		}]
-		const output = tableGenerator.buildTableFromItem(basicData, fieldDefinitions)
+			const output = tableGenerator.buildTableFromList([{}], ['fieldName'])
 
-		expect(output).toHaveLabelAndValue('Id', 'uuid-here')
-		expect(output).toHaveLabelAndValue('Some Number', '14.4')
-		expect(rowCount(output)).toBe(2)
-	})
+			expect(output).toHaveItemValues([''])
+			expect(mockGetLogger).toHaveBeenCalledTimes(1)
+			expect(mockGetLogger).toHaveBeenCalledWith('table-manager')
+			expect(mockAt).toHaveBeenCalledTimes(1)
+			expect(mockAt).toHaveBeenCalledWith({}, 'fieldName')
+			expect(mockDebug).toHaveBeenCalledTimes(1)
+			expect(mockDebug).toHaveBeenCalledWith('did not find match for fieldName in {}')
+		})
 
-	it('buildTableFromItem skips falsy values with skipEmpty', function() {
-		const fieldDefinitions = ['id', { prop: 'mightBeNull', skipEmpty: true }]
-		const output = tableGenerator.buildTableFromItem(basicData, fieldDefinitions)
+		it('combines data on multiple matches', () => {
+			mockAt.mockReturnValue(['one', 'two'])
 
-		expect(output).toHaveLabelAndValue('Id', 'uuid-here')
-		expect(output).not.toHaveLabel('Might Be Null')
-		expect(rowCount(output)).toBe(1)
-	})
+			const output = tableGenerator.buildTableFromList([{}], ['fieldName'])
 
-	it('buildTableFromItem include truthy values with skipEmpty', function() {
-		const fieldDefinitions = ['id', { prop: 'mightBeNull', skipEmpty: true }]
-		const output = tableGenerator.buildTableFromItem({ ...basicData, mightBeNull: 'not null' }, fieldDefinitions)
+			expect(output).toHaveItemValues(['one, two'])
+			expect(mockGetLogger).toHaveBeenCalledTimes(1)
+			expect(mockGetLogger).toHaveBeenCalledWith('table-manager')
+			expect(mockAt).toHaveBeenCalledTimes(1)
+			expect(mockAt).toHaveBeenCalledWith({}, 'fieldName')
+			expect(mockWarn).toHaveBeenCalledTimes(1)
+			expect(mockWarn).toHaveBeenCalledWith('found more than one match for fieldName in {}')
+		})
 
-		expect(output).toHaveLabelAndValue('Id', 'uuid-here')
-		expect(output).toHaveLabelAndValue('Might Be Null', 'not null')
-		expect(rowCount(output)).toBe(2)
-	})
+		it('gets logger only once', () => {
+			tableGenerator.buildTableFromList([{}], ['fieldName'])
+			expect(mockGetLogger).toHaveBeenCalledTimes(1)
+			expect(mockGetLogger).toHaveBeenCalledWith('table-manager')
+			tableGenerator.buildTableFromList([{}], ['fieldName'])
+			expect(mockGetLogger).toHaveBeenCalledTimes(1)
+		})
 
-	it('buildTableFromList generates the correct number of rows', function() {
-		let output = tableGenerator.buildTableFromList([basicData], ['id', 'someNumber'])
+		it('includes separators every 4 rows with grouping on', () => {
+			const longList: SimpleData[] = [
+				{ id: 'uno', someNumber: 10 },
+				{ id: 'dos', someNumber: 9 },
+				{ id: 'tres', someNumber: 8 },
+				{ id: 'cuatro', someNumber: 7.2 },
+				{ id: 'cinco', someNumber: 6 },
+				{ id: 'seis', someNumber: 5 },
+				{ id: 'siete', someNumber: 4 },
+				{ id: 'ocho', someNumber: 3 },
+			]
 
-		expect(rowCount(output)).toBe(3) // header, header separator and data row
-
-		output = tableGenerator.buildTableFromList([basicData, basicData], ['id', 'someNumber'])
-		expect(rowCount(output)).toBe(4) // header, header separator and two data rows
-	})
-
-	it('buildTableFromList generates the correct header', function() {
-		const output = tableGenerator.buildTableFromList([basicData], ['id', 'someNumber'])
-
-		expect(output).toHaveItemValues(['Id', 'Some Number'])
-	})
-
-	it('buildTableFromList generates the correct data values', function() {
-		const output = tableGenerator.buildTableFromList([basicData], ['id', 'someNumber'])
-
-		expect(output).toHaveItemValues(['uuid-here', '14.4'])
-	})
-
-	it('throws exception if value missing with no prop', () => {
-		expect(() => tableGenerator.buildTableFromItem(basicData, [{ label: 'Label' }]))
-			.toThrow('both label and value are required if prop is not specified')
-	})
-
-	it('throws exception if label missing with no prop', () => {
-		expect(() => tableGenerator.buildTableFromItem(basicData, [{ value: () => 'some value' }]))
-			.toThrow('both label and value are required if prop is not specified')
-	})
-
-	it('uses empty string for no match', () => {
-		mockAt.mockReturnValue([])
-
-		const output = tableGenerator.buildTableFromList([{}], ['fieldName'])
-
-		expect(output).toHaveItemValues([''])
-		expect(mockGetLogger).toHaveBeenCalledTimes(1)
-		expect(mockGetLogger).toHaveBeenCalledWith('table-manager')
-		expect(mockAt).toHaveBeenCalledTimes(1)
-		expect(mockAt).toHaveBeenCalledWith({}, 'fieldName')
-		expect(mockDebug).toHaveBeenCalledTimes(1)
-		expect(mockDebug).toHaveBeenCalledWith('did not find match for fieldName in {}')
-	})
-
-	it('combines data on multiple matches', () => {
-		mockAt.mockReturnValue(['one', 'two'])
-
-		const output = tableGenerator.buildTableFromList([{}], ['fieldName'])
-
-		expect(output).toHaveItemValues(['one, two'])
-		expect(mockGetLogger).toHaveBeenCalledTimes(1)
-		expect(mockGetLogger).toHaveBeenCalledWith('table-manager')
-		expect(mockAt).toHaveBeenCalledTimes(1)
-		expect(mockAt).toHaveBeenCalledWith({}, 'fieldName')
-		expect(mockWarn).toHaveBeenCalledTimes(1)
-		expect(mockWarn).toHaveBeenCalledWith('found more than one match for fieldName in {}')
-	})
-
-	it('gets logger only once', () => {
-		tableGenerator.buildTableFromList([{}], ['fieldName'])
-		expect(mockGetLogger).toHaveBeenCalledTimes(1)
-		expect(mockGetLogger).toHaveBeenCalledWith('table-manager')
-		tableGenerator.buildTableFromList([{}], ['fieldName'])
-		expect(mockGetLogger).toHaveBeenCalledTimes(1)
+			const output = tableGenerator.buildTableFromList(longList, ['id', 'someNumber'])
+			expect(lineCount(output)).toBe(12)
+		})
 	})
 })
