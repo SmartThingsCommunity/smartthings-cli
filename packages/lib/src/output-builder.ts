@@ -25,12 +25,12 @@ export const outputFlags = {
 		char: 'o',
 		description: 'specify output file',
 	}),
-	compact: Flags.boolean({
-		description: 'use compact table format with no lines between body rows',
+	'group-rows': Flags.boolean({
+		description: 'separate groups of four rows by a line to make long rows easier to follow across the screen',
 		hidden: true,
 	}),
-	expanded: Flags.boolean({
-		description: 'use expanded table format with a line between each body row',
+	'no-group-rows': Flags.boolean({
+		description: 'do not separate groups of four rows by a line to make long rows easier to follow across the screen',
 		hidden: true,
 	}),
 }

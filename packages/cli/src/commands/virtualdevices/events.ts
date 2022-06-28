@@ -7,6 +7,7 @@ import {
 	inputAndOutputItem,
 	inputProcessor,
 	selectFromList,
+	stringFromUnknown,
 	TableGenerator,
 } from '@smartthings/cli-lib'
 import { VirtualDeviceEventsResponse } from '@smartthings/core-sdk/dist/endpoint/virtualdevices'
@@ -26,7 +27,8 @@ function buildTableOutput(tableGenerator: TableGenerator, data: EventInputOutput
 	for (const index in input) {
 		const event = input[index]
 		const isStateChange = parseInt(index) < stateChanges.length ? stateChanges[index] : 'undefined'
-		table.push([event.component, event.capability, event.attribute, event.value, isStateChange])
+		const value = stringFromUnknown(event.value)
+		table.push([event.component, event.capability, event.attribute, value, isStateChange])
 	}
 	return table.toString()
 }

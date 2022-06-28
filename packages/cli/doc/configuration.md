@@ -31,7 +31,7 @@ The following per-profile config options are supported:
 | Option | Default Value | Description |
 | -- | -- | -- |
 | indent | 2 | Indent level for JSON or YAML output. |
-| compactTableOutput | true | Compact table output without lines between rows. |
+| groupTableOutputRows | true | Separate groups of four rows by a line to make long rows easier to follow across the screen. |
 | organization | none | UUID of the organization to use in applicable CLI commands. |
 | token | none | Use a bearer token (such as a PAT) for authentication instead of the default login flow. |
 
@@ -40,11 +40,11 @@ The following per-profile config options are supported:
 ```yaml
 default:
   indent: 4
-  compactTableOutput: false
+  groupTableOutputRows: false
 
 tight:
   indent: 1
-  compactTableOutput: true
+  groupTableOutputRows: true
 ```
 
 ## On the Command Line

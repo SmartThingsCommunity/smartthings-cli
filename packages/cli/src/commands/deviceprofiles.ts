@@ -1,11 +1,10 @@
 import { Flags } from '@oclif/core'
-import Table from 'cli-table'
 
 import { DeviceProfile, LocaleReference } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, ChooseOptions, WithOrganization, allOrganizationsFlags,
 	chooseOptionsWithDefaults, outputListing, forAllOrganizations, selectFromList,
-	stringTranslateToId, summarizedText, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
+	stringTranslateToId, summarizedText, Table, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile,

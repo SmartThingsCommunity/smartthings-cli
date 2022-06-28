@@ -60,17 +60,16 @@ describe('SmartThingsCommand', () => {
 		expect(smartThingsCommand.profileName).toBe(profileName)
 	})
 
-	it('should set tableGenerator to compact by default during setup', async () => {
+	it('should set tableGenerator to group rows by default during setup', async () => {
 		await smartThingsCommand.init()
 
 		expect(smartThingsCommand.tableGenerator).toBeInstanceOf(DefaultTableGenerator)
 		expect(DefaultTableGenerator).toBeCalledWith(true)
 	})
 
-	it('should override default table compact when passed via profile during setup', async () => {
-		const compact = false
+	it('should override default table group rows when passed via profile during setup', async () => {
 		const profile: Profile = {
-			compactTableOutput: compact,
+			groupTableOutputRows: false,
 		}
 
 		loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
@@ -78,38 +77,36 @@ describe('SmartThingsCommand', () => {
 		await smartThingsCommand.init()
 
 		expect(smartThingsCommand.tableGenerator).toBeInstanceOf(DefaultTableGenerator)
-		expect(DefaultTableGenerator).toBeCalledWith(compact)
+		expect(DefaultTableGenerator).toBeCalledWith(false)
 	})
 
-	it('should override table compact when --expanded flag passed during setup', async () => {
-		const compact = true
+	it('should override groupTableOutputRows when --no-group-rows flag passed during setup', async () => {
 		const profile: Profile = {
-			compactTableOutput: compact,
+			groupTableOutputRows: true,
 		}
 
 		loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
-		const expanded = true
-		parseSpy.mockResolvedValueOnce({ args: {}, flags: { expanded } } as parserOutputType)
+		parseSpy.mockResolvedValueOnce({ args: {}, flags: { 'no-group-rows': true } } as parserOutputType)
 		await smartThingsCommand.init()
 
 		expect(smartThingsCommand.tableGenerator).toBeInstanceOf(DefaultTableGenerator)
-		expect(DefaultTableGenerator).toBeCalledWith(!compact)
+		expect(DefaultTableGenerator).toBeCalledWith(false)
 	})
 
-	it('should override table compact when --compact flag passed during setup', async () => {
+	it('should override table row grouping when --group-rows flag passed during setup', async () => {
 		const profile: Profile = {
-			compactTableOutput: false,
+			groupTableOutputRows: false,
 		}
 
 		loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
-		const compact = true
-		parseSpy.mockResolvedValueOnce({ args: {}, flags: { compact } } as parserOutputType)
+		const groupRows = true
+		parseSpy.mockResolvedValueOnce({ args: {}, flags: { 'group-rows': groupRows } } as parserOutputType)
 		await smartThingsCommand.init()
 
 		expect(smartThingsCommand.tableGenerator).toBeInstanceOf(DefaultTableGenerator)
-		expect(DefaultTableGenerator).toBeCalledWith(compact)
+		expect(DefaultTableGenerator).toBeCalledWith(groupRows)
 	})
 
 	it('should abort command with message and successful exit', () => {

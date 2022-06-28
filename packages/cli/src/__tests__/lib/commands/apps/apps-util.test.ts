@@ -4,11 +4,10 @@ import { AppsEndpoint } from '@smartthings/core-sdk'
 
 import {
 	APICommand, ChooseOptions, chooseOptionsDefaults, chooseOptionsWithDefaults,
-	selectFromList, stringTranslateToId,
+	selectFromList, stringTranslateToId, Table,
 } from '@smartthings/cli-lib'
 
 import { buildTableOutput, chooseApp } from '../../../../lib/commands/apps/apps-util'
-import Table from 'cli-table'
 
 
 describe('chooseApp', () => {
@@ -126,13 +125,18 @@ describe('buildTableOutput', () => {
 	})
 
 	it('creates new table with correct options and adds settings', () => {
-		const newTable = new Table()
+		const pushMock = jest.fn()
+		const toStringMock = jest.fn().mockReturnValue('table output')
+		const newTable = { push: pushMock, toString: toStringMock } as Table
 		mockNewOutputTable.mockReturnValueOnce(newTable)
 
-		expect(buildTableOutput(mockTableGenerator, { settings: { setting: 'setting' } })).toStrictEqual(newTable.toString())
+		expect(buildTableOutput(mockTableGenerator, { settings: { setting: 'setting value' } })).toEqual('table output')
 		expect(mockNewOutputTable).toBeCalledWith(
 			expect.objectContaining({ head: ['Key', 'Value'] }),
 		)
-		expect(newTable).toContainValue(['setting', 'setting'])
+		expect(pushMock).toHaveBeenCalledTimes(1)
+		expect(pushMock).toHaveBeenCalledWith(['setting', 'setting value'])
+		expect(toStringMock).toHaveBeenCalledTimes(1)
+		expect(toStringMock).toHaveBeenCalledWith()
 	})
 })
