@@ -1,39 +1,21 @@
-import { selectFromList } from '@smartthings/cli-lib'
+import { chooseDevice } from '@smartthings/cli-lib'
 import { DevicesEndpoint } from '@smartthings/core-sdk'
 import DeviceDeleteCommand from '../../../commands/devices/delete'
 
 
 describe('DeviceDeleteCommand', () => {
 	const deleteDevicesSpy = jest.spyOn(DevicesEndpoint.prototype, 'delete').mockImplementation()
-	const listDevicesSpy = jest.spyOn(DevicesEndpoint.prototype, 'list').mockImplementation()
 	const logSpy = jest.spyOn(DeviceDeleteCommand.prototype, 'log').mockImplementation()
 
-	const selectFromListMock = jest.mocked(selectFromList).mockResolvedValue('deviceId')
+	const deviceSelectionMock = jest.mocked(chooseDevice).mockResolvedValue('deviceId')
 
 	it('prompts user to select device', async () => {
 		await expect(DeviceDeleteCommand.run(['deviceId'])).resolves.not.toThrow()
 
-		expect(selectFromListMock).toBeCalledWith(
+		expect(deviceSelectionMock).toBeCalledWith(
 			expect.any(DeviceDeleteCommand),
-			expect.objectContaining({
-				primaryKeyName: 'deviceId',
-				sortKeyName: 'name',
-			}),
-			expect.objectContaining({
-				preselectedId: 'deviceId',
-				listItems: expect.any(Function),
-				promptMessage: 'Select device to delete.',
-			}),
+			'deviceId',
 		)
-	})
-
-	it('calls correct list endpoint', async () => {
-		await expect(DeviceDeleteCommand.run(['deviceId'])).resolves.not.toThrow()
-
-		const listFunction = selectFromListMock.mock.calls[0][2].listItems
-		await listFunction()
-
-		expect(listDevicesSpy).toBeCalledTimes(1)
 	})
 
 	it('deletes the device and logs success', async () => {
