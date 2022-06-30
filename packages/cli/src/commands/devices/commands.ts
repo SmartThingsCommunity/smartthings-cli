@@ -4,7 +4,7 @@ import { Command, Component, CapabilityReference, Device } from '@smartthings/co
 
 import { APICommand, commandLineInputProcessor, inputItem, inputProcessor, isIndexArgument, selectFromList } from '@smartthings/cli-lib'
 
-import { attributeType } from '../capabilities'
+import { attributeType } from '../../lib/commands/capabilities-util'
 
 
 const inputRegex = new RegExp(/^([a-zA-Z0-9]+:)?([a-zA-Z0-9]+:)?([a-zA-Z0-9]+(\(.*\))?)?$/)

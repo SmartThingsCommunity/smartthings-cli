@@ -14,7 +14,7 @@ import {
 
 import { APIOrganizationCommand, inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../capabilities'
+import { buildTableOutput } from '../../lib/commands/capabilities-util'
 
 
 const enum Type {
