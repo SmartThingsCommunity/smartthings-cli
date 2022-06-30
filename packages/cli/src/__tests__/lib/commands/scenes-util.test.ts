@@ -1,6 +1,6 @@
 import { selectFromList } from '@smartthings/cli-lib'
-import ScenesCommand from '../../../../commands/scenes'
-import { chooseScene } from '../../../../lib/commands/scenes/scenes-util'
+import ScenesCommand from '../../../commands/scenes'
+import { chooseScene } from '../../../lib/commands/scenes-util'
 import { ScenesEndpoint } from '@smartthings/core-sdk'
 import { Config } from '@oclif/core'
 
@@ -41,4 +41,3 @@ describe('chooseScene', () => {
 	})
 
 })
-

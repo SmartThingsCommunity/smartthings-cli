@@ -1,10 +1,10 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
 import { GenerateAppOAuthRequest, AppsEndpoint } from '@smartthings/core-sdk'
 import AppOauthGenerateCommand from '../../../../commands/apps/oauth/generate'
-import { chooseApp } from '../../../../lib/commands/apps/apps-util'
+import { chooseApp } from '../../../../lib/commands/apps-util'
 
 
-jest.mock('../../../../lib/commands/apps/apps-util')
+jest.mock('../../../../lib/commands/apps-util')
 
 describe('AppOauthGenerateCommand', () => {
 	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)

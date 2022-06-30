@@ -1,7 +1,7 @@
 import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 import { PreferenceLocalization } from '@smartthings/core-sdk'
-import { chooseDevicePreference } from '../../../lib/commands/devicepreferences/devicepreferences-util'
-import { tableFieldDefinitions } from '../../../lib/commands/devicepreferences/translations/translations-util'
+import { chooseDevicePreference } from '../../../lib/commands/devicepreferences-util'
+import { tableFieldDefinitions } from '../../../lib/commands/devicepreferences/translations-util'
 
 
 export default class DevicePreferencesTranslationsUpdateCommand extends APIOrganizationCommand<typeof DevicePreferencesTranslationsUpdateCommand.flags> {

@@ -4,7 +4,7 @@ import { RuleExecutionResponse } from '@smartthings/core-sdk'
 
 import { APICommand, formatAndWriteItem } from '@smartthings/cli-lib'
 
-import { buildExecuteResponseTableOutput, chooseRule, getRuleWithLocation } from '../../lib/commands/rules/rules-util'
+import { buildExecuteResponseTableOutput, chooseRule, getRuleWithLocation } from '../../lib/commands/rules-util'
 
 
 export default class RulesExecuteCommand extends APICommand<typeof RulesExecuteCommand.flags> {

@@ -1,10 +1,10 @@
 import { RulesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
 import RulesDeleteCommand from '../../../commands/rules/delete'
-import { chooseRule, getRuleWithLocation, RuleWithLocation } from '../../../lib/commands/rules/rules-util'
+import { chooseRule, getRuleWithLocation, RuleWithLocation } from '../../../lib/commands/rules-util'
 
 
-jest.mock('../../../lib/commands/rules/rules-util')
+jest.mock('../../../lib/commands/rules-util')
 
 describe('RulesDeleteCommand', () => {
 	const ruleWithLocation = { locationId: 'location-id' } as RuleWithLocation

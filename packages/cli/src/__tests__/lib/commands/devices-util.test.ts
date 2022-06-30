@@ -2,7 +2,7 @@ import { Device } from '@smartthings/core-sdk'
 
 import { summarizedText, Table, TableGenerator } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../../../../lib/commands/devices/devices-util'
+import { buildTableOutput } from '../../../lib/commands/devices-util'
 
 
 describe('devices-util', () => {

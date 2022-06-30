@@ -9,7 +9,7 @@ import {
 	outputListing,
 	withLocationsAndRooms,
 } from '@smartthings/cli-lib'
-import { buildTableOutput } from '../lib/commands/devices/devices-util'
+import { buildTableOutput } from '../lib/commands/devices-util'
 
 
 export default class VirtualDevicesCommand extends APICommand<typeof VirtualDevicesCommand.flags> {

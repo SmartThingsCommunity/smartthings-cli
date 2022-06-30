@@ -2,7 +2,7 @@ import { Device, DeviceIntegrationType, DeviceUpdate } from '@smartthings/core-s
 
 import { APICommand, chooseDevice, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../../lib/commands/devices/devices-util'
+import { buildTableOutput } from '../../lib/commands/devices-util'
 
 
 export default class VirtualDeviceUpdateCommand extends APICommand<typeof VirtualDeviceUpdateCommand.flags> {

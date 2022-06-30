@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core'
 import { APICommand } from '@smartthings/cli-lib'
-import { chooseRoom } from '../../../lib/commands/locations/rooms/rooms-util'
+import { chooseRoom } from '../../../lib/commands/locations/rooms-util'
 
 
 export default class RoomsDeleteCommand extends APICommand<typeof RoomsDeleteCommand.flags> {

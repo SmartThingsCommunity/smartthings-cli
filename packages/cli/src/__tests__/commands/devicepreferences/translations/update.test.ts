@@ -1,11 +1,11 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
 import { DevicePreferencesEndpoint, PreferenceLocalization } from '@smartthings/core-sdk'
 import DevicePreferencesTranslationsUpdateCommand from '../../../../commands/devicepreferences/translations/update'
-import { chooseDevicePreference } from '../../../../lib/commands/devicepreferences/devicepreferences-util'
-import { tableFieldDefinitions } from '../../../../lib/commands/devicepreferences/translations/translations-util'
+import { chooseDevicePreference } from '../../../../lib/commands/devicepreferences-util'
+import { tableFieldDefinitions } from '../../../../lib/commands/devicepreferences/translations-util'
 
 
-jest.mock('../../../../lib/commands/devicepreferences/devicepreferences-util')
+jest.mock('../../../../lib/commands/devicepreferences-util')
 
 
 const MOCK_PREFERENCE_L10N = {} as PreferenceLocalization

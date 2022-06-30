@@ -1,11 +1,11 @@
 import { outputListing } from '@smartthings/cli-lib'
 import { DevicePreferencesEndpoint } from '@smartthings/core-sdk'
 import DevicePreferencesTranslationsCommand from '../../../commands/devicepreferences/translations'
-import { chooseDevicePreference } from '../../../lib/commands/devicepreferences/devicepreferences-util'
-import { tableFieldDefinitions } from '../../../lib/commands/devicepreferences/translations/translations-util'
+import { chooseDevicePreference } from '../../../lib/commands/devicepreferences-util'
+import { tableFieldDefinitions } from '../../../lib/commands/devicepreferences/translations-util'
 
 
-jest.mock('../../../lib/commands/devicepreferences/devicepreferences-util')
+jest.mock('../../../lib/commands/devicepreferences-util')
 
 
 describe('DevicePreferencesTranslationsCommand', () => {

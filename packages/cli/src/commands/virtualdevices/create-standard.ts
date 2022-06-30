@@ -9,10 +9,10 @@ import {
 	inputAndOutputItem,
 	userInputProcessor,
 } from '@smartthings/cli-lib'
-import { buildTableOutput } from '../../lib/commands/devices/devices-util'
+import { buildTableOutput } from '../../lib/commands/devices-util'
 import { chooseLocation } from '../locations'
-import { chooseDeviceName, chooseDevicePrototype } from '../../lib/commands/virtualdevices/virtualdevices-util'
-import { chooseRoom } from '../../lib/commands/locations/rooms/rooms-util'
+import { chooseDeviceName, chooseDevicePrototype } from '../../lib/commands/virtualdevices-util'
+import { chooseRoom } from '../../lib/commands/locations/rooms-util'
 
 
 export default class VirtualDeviceCreateStandardCommand extends APICommand<typeof VirtualDeviceCreateStandardCommand.flags> {

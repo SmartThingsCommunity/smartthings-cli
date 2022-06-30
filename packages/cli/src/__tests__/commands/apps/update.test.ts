@@ -1,13 +1,13 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
 import { AppUpdateRequest, AppsEndpoint } from '@smartthings/core-sdk'
 import AppUpdateCommand from '../../../commands/apps/update'
-import { chooseApp, tableFieldDefinitions } from '../../../lib/commands/apps/apps-util'
+import { chooseApp, tableFieldDefinitions } from '../../../lib/commands/apps-util'
 import { addPermission } from '../../../lib/aws-utils'
 
 
 jest.mock('../../../lib/aws-utils')
 
-jest.mock('../../../lib/commands/apps/apps-util')
+jest.mock('../../../lib/commands/apps-util')
 
 describe('AppUpdateCommand', () => {
 	const appId = 'appId'

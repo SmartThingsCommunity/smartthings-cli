@@ -1,9 +1,9 @@
 import { RoomsEndpoint } from '@smartthings/core-sdk'
 import RoomsDeleteCommand from '../../../../commands/locations/rooms/delete'
-import { chooseRoom } from '../../../../lib/commands/locations/rooms/rooms-util'
+import { chooseRoom } from '../../../../lib/commands/locations/rooms-util'
 
 
-jest.mock('../../../../lib/commands/locations/rooms/rooms-util')
+jest.mock('../../../../lib/commands/locations/rooms-util')
 
 describe('RoomsDeleteCommand', () => {
 	const roomId = 'roomId'

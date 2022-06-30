@@ -2,7 +2,7 @@ import { inputAndOutputItem } from '@smartthings/cli-lib'
 import SchemaAppCreateCommand from '../../../commands/schema/create'
 import { addSchemaPermission } from '../../../lib/aws-utils'
 import { SchemaAppRequest, SchemaCreateResponse, SchemaEndpoint } from '@smartthings/core-sdk'
-import { SCHEMA_AWS_PRINCIPAL } from '../../../lib/commands/schema/schema-util'
+import { SCHEMA_AWS_PRINCIPAL } from '../../../lib/commands/schema-util'
 
 
 jest.mock('../../../lib/aws-utils')

@@ -1,10 +1,10 @@
 import { ActionFunction, chooseDevice, CustomCommonOutputProducer, DefaultTableGenerator, inputAndOutputItem } from '@smartthings/cli-lib'
 import { Device, DevicesEndpoint, DeviceUpdate } from '@smartthings/core-sdk'
 import DeviceUpdateCommand from '../../../commands/devices/update'
-import { buildTableOutput } from '../../../lib/commands/devices/devices-util'
+import { buildTableOutput } from '../../../lib/commands/devices-util'
 
 
-jest.mock('../../../lib/commands/devices/devices-util')
+jest.mock('../../../lib/commands/devices-util')
 
 describe('DeviceUpdateCommand', () => {
 	const chooseDeviceMock = jest.mocked(chooseDevice).mockResolvedValue('deviceId')

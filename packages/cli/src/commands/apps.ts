@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core'
 import { AppType, AppClassification, AppListOptions, PagedApp, AppResponse } from '@smartthings/core-sdk'
 import { APICommand, outputListing } from '@smartthings/cli-lib'
-import { tableFieldDefinitions } from '../lib/commands/apps/apps-util'
+import { tableFieldDefinitions } from '../lib/commands/apps-util'
 
 
 export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {

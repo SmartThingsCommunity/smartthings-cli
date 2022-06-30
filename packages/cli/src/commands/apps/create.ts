@@ -2,7 +2,7 @@ import { Flags, Errors } from '@oclif/core'
 import { AppCreateRequest, AppCreationResponse } from '@smartthings/core-sdk'
 import { APICommand, inputAndOutputItem, lambdaAuthFlags } from '@smartthings/cli-lib'
 import { addPermission } from '../../lib/aws-utils'
-import { tableFieldDefinitions } from '../../lib/commands/apps/apps-util'
+import { tableFieldDefinitions } from '../../lib/commands/apps-util'
 
 
 export default class AppCreateCommand extends APICommand<typeof AppCreateCommand.flags> {

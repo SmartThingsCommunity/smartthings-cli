@@ -1,6 +1,6 @@
 import { Location, LocationsEndpoint, NoOpAuthenticator, Room, RoomsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
-import { getRoomsByLocation, chooseRoom } from '../../../../../lib/commands/locations/rooms/rooms-util'
-import * as roomsUtil from '../../../../../lib/commands/locations/rooms/rooms-util'
+import { getRoomsByLocation, chooseRoom } from '../../../../lib/commands/locations/rooms-util'
+import * as roomsUtil from '../../../../lib/commands/locations/rooms-util'
 import { Config } from '@oclif/core'
 import { APICommand, selectFromList } from '@smartthings/cli-lib'
 
