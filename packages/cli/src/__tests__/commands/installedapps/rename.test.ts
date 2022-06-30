@@ -1,7 +1,7 @@
 import { formatAndWriteItem, selectFromList } from '@smartthings/cli-lib'
 import { InstalledApp, InstalledAppsEndpoint } from '@smartthings/core-sdk'
 import InstalledAppRenameCommand from '../../../commands/installedapps/rename'
-import { listTableFieldDefinitions, tableFieldDefinitions } from '../../../lib/commands/installedapps/installedapps-util'
+import { listTableFieldDefinitions, tableFieldDefinitions } from '../../../lib/commands/installedapps-util'
 
 
 jest.mock('inquirer')

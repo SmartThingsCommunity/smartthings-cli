@@ -2,11 +2,11 @@ import { Rule, RuleRequest, RulesEndpoint, SmartThingsClient } from '@smartthing
 
 import { inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { chooseRule, getRuleWithLocation, RuleWithLocation } from '../../../lib/commands/rules/rules-util'
+import { chooseRule, getRuleWithLocation, RuleWithLocation } from '../../../lib/commands/rules-util'
 import RulesUpdateCommand from '../../../commands/rules/update'
 
 
-jest.mock('../../../lib/commands/rules/rules-util', () => {
+jest.mock('../../../lib/commands/rules-util', () => {
 	return {
 		tableFieldDefinitions: ['field1'],
 		chooseRule: jest.fn(),

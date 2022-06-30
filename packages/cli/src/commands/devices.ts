@@ -4,7 +4,7 @@ import { Device, DeviceIntegrationType, DeviceListOptions } from '@smartthings/c
 
 import { APICommand, outputListing, withLocationsAndRooms } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../lib/commands/devices/devices-util'
+import { buildTableOutput } from '../lib/commands/devices-util'
 
 
 export default class DevicesCommand extends APICommand<typeof DevicesCommand.flags> {

@@ -4,10 +4,10 @@ import { CustomCommonOutputProducer, DefaultTableGenerator, formatAndWriteItem }
 
 import RulesExecuteCommand from '../../../commands/rules/execute'
 import { buildExecuteResponseTableOutput, chooseRule, getRuleWithLocation, RuleWithLocation }
-	from '../../../lib/commands/rules/rules-util'
+	from '../../../lib/commands/rules-util'
 
 
-jest.mock('../../../lib/commands/rules/rules-util')
+jest.mock('../../../lib/commands/rules-util')
 
 describe('RulesExecuteCommand', () => {
 	const ruleWithLocation = { locationId: 'location-id' } as RuleWithLocation

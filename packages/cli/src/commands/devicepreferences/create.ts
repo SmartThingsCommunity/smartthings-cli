@@ -2,7 +2,7 @@ import inquirer from 'inquirer'
 
 import { DevicePreferenceCreate, PreferenceType } from '@smartthings/core-sdk'
 import { APIOrganizationCommand, askForInteger, askForNumber, askForRequiredString, askForString, inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
-import { tableFieldDefinitions } from '../../lib/commands/devicepreferences/devicepreferences-util'
+import { tableFieldDefinitions } from '../../lib/commands/devicepreferences-util'
 
 
 export default class DevicePreferencesCreateCommand extends APIOrganizationCommand<typeof DevicePreferencesCreateCommand.flags> {

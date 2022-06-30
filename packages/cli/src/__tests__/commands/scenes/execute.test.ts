@@ -1,11 +1,11 @@
 import { Errors } from '@oclif/core'
 import { ScenesEndpoint, SuccessStatusValue } from '@smartthings/core-sdk'
-import { chooseScene } from '../../../lib/commands/scenes/scenes-util'
+import { chooseScene } from '../../../lib/commands/scenes-util'
 import ScenesExecuteCommand from '../../../commands/scenes/execute'
 
 
 jest.mock('../../../commands/scenes')
-jest.mock('../../../lib/commands/scenes/scenes-util')
+jest.mock('../../../lib/commands/scenes-util')
 
 describe('ScenesExecuteCommand', () => {
 	const chooseSceneMock = jest.mocked(chooseScene)

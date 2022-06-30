@@ -19,10 +19,10 @@ import {
 	chooseComponent,
 	chooseUnit,
 	chooseValue,
-} from '../../../lib/commands/virtualdevices/virtualdevices-util'
+} from '../../../lib/commands/virtualdevices-util'
 
 
-jest.mock('../../../lib/commands/virtualdevices/virtualdevices-util')
+jest.mock('../../../lib/commands/virtualdevices-util')
 
 describe('VirtualDeviceEventsCommand', () => {
 	const mockSelectFromList = jest.mocked(selectFromList)

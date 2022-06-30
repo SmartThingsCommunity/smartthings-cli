@@ -1,10 +1,10 @@
 import { CustomCommonOutputProducer, DefaultTableGenerator, outputItem } from '@smartthings/cli-lib'
 import { AppsEndpoint, AppSettingsResponse } from '@smartthings/core-sdk'
 import AppSettingsCommand from '../../../commands/apps/settings'
-import { buildTableOutput, chooseApp } from '../../../lib/commands/apps/apps-util'
+import { buildTableOutput, chooseApp } from '../../../lib/commands/apps-util'
 
 
-jest.mock('../../../lib/commands/apps/apps-util')
+jest.mock('../../../lib/commands/apps-util')
 
 describe('AppSettingsCommand', () => {
 	const appId = 'appId'

@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 
 import { APICommand, outputListing } from '@smartthings/cli-lib'
 
-import { getRulesByLocation, getRuleWithLocation, tableFieldDefinitions } from '../lib/commands/rules/rules-util'
+import { getRulesByLocation, getRuleWithLocation, tableFieldDefinitions } from '../lib/commands/rules-util'
 
 
 export default class RulesCommand extends APICommand<typeof RulesCommand.flags> {

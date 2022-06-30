@@ -1,5 +1,5 @@
 import { APICommand } from '@smartthings/cli-lib'
-import { chooseApp } from '../../lib/commands/apps/apps-util'
+import { chooseApp } from '../../lib/commands/apps-util'
 
 
 export default class AppDeleteCommand extends APICommand<typeof AppDeleteCommand.flags> {

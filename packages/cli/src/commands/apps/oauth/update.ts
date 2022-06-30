@@ -1,6 +1,6 @@
 import { AppOAuthRequest } from '@smartthings/core-sdk'
 import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
-import { chooseApp, oauthTableFieldDefinitions } from '../../../lib/commands/apps/apps-util'
+import { chooseApp, oauthTableFieldDefinitions } from '../../../lib/commands/apps-util'
 
 
 export default class AppOauthUpdateCommand extends APICommand<typeof AppOauthUpdateCommand.flags> {

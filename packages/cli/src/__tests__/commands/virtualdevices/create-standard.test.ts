@@ -5,13 +5,13 @@ import {
 } from '@smartthings/core-sdk'
 import VirtualDeviceCreateStandardCommand from '../../../commands/virtualdevices/create-standard'
 import { chooseLocation } from '../../../commands/locations'
-import { chooseRoom } from '../../../lib/commands/locations/rooms/rooms-util'
-import { chooseDeviceName, chooseDevicePrototype } from '../../../lib/commands/virtualdevices/virtualdevices-util'
+import { chooseRoom } from '../../../lib/commands/locations/rooms-util'
+import { chooseDeviceName, chooseDevicePrototype } from '../../../lib/commands/virtualdevices-util'
 
 
 jest.mock('../../../commands/locations')
-jest.mock('../../../lib/commands/locations/rooms/rooms-util')
-jest.mock('../../../lib/commands/virtualdevices/virtualdevices-util')
+jest.mock('../../../lib/commands/locations/rooms-util')
+jest.mock('../../../lib/commands/virtualdevices-util')
 
 describe('VirtualDeviceStandardCreateCommand', () => {
 	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)

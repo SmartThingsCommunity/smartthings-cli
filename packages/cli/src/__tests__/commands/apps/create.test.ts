@@ -1,7 +1,7 @@
 import { CustomCommonOutputProducer, DefaultTableGenerator, inputAndOutputItem } from '@smartthings/cli-lib'
 import { AppCreationResponse, AppCreateRequest, AppsEndpoint, AppResponse } from '@smartthings/core-sdk'
 import AppCreateCommand from '../../../commands/apps/create'
-import { tableFieldDefinitions } from '../../../lib/commands/apps/apps-util'
+import { tableFieldDefinitions } from '../../../lib/commands/apps-util'
 import { addPermission } from '../../../lib/aws-utils'
 
 

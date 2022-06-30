@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core'
 import { APICommand, ListingOutputConfig, outputListing } from '@smartthings/cli-lib'
 import { Room } from '@smartthings/core-sdk'
-import { getRoomsByLocation, RoomWithLocation, tableFieldDefinitions } from '../../lib/commands/locations/rooms/rooms-util'
+import { getRoomsByLocation, RoomWithLocation, tableFieldDefinitions } from '../../lib/commands/locations/rooms-util'
 
 
 export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> {

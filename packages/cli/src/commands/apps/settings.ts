@@ -1,6 +1,6 @@
 import { APICommand, CustomCommonOutputProducer, outputItem, outputListing } from '@smartthings/cli-lib'
 import { AppSettingsResponse } from '@smartthings/core-sdk'
-import { buildTableOutput, chooseApp } from '../../lib/commands/apps/apps-util'
+import { buildTableOutput, chooseApp } from '../../lib/commands/apps-util'
 
 
 export default class AppSettingsCommand extends APICommand<typeof AppSettingsCommand.flags> {

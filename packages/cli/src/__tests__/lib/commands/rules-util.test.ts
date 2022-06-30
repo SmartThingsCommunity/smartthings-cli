@@ -5,8 +5,8 @@ import { APICommand, selectFromList, TableGenerator } from '@smartthings/cli-lib
 import {
 	chooseRule, getRulesByLocation, getRuleWithLocation, RuleWithLocation,
 	tableFieldDefinitions,
-} from '../../../../lib/commands/rules/rules-util'
-import * as rulesUtil from '../../../../lib/commands/rules/rules-util'
+} from '../../../lib/commands/rules-util'
+import * as rulesUtil from '../../../lib/commands/rules-util'
 
 
 describe('rules-util', () => {

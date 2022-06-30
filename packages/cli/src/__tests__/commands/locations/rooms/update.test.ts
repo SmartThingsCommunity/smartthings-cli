@@ -1,10 +1,10 @@
 import { RoomRequest, RoomsEndpoint } from '@smartthings/core-sdk'
 import { inputAndOutputItem } from '@smartthings/cli-lib'
 import RoomsUpdateCommand from '../../../../commands/locations/rooms/update'
-import { chooseRoom } from '../../../../lib/commands/locations/rooms/rooms-util'
+import { chooseRoom } from '../../../../lib/commands/locations/rooms-util'
 
 
-jest.mock('../../../../lib/commands/locations/rooms/rooms-util')
+jest.mock('../../../../lib/commands/locations/rooms-util')
 
 describe('RoomsUpdateCommand', () => {
 	const roomId = 'roomId'

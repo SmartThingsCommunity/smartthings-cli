@@ -2,10 +2,10 @@ import { outputListing } from '@smartthings/cli-lib'
 import { SmartThingsClient } from '@smartthings/core-sdk'
 
 import RulesCommand from '../../commands/rules'
-import { getRulesByLocation, getRuleWithLocation, RuleWithLocation } from '../../lib/commands/rules/rules-util'
+import { getRulesByLocation, getRuleWithLocation, RuleWithLocation } from '../../lib/commands/rules-util'
 
 
-jest.mock('../../lib/commands/rules/rules-util')
+jest.mock('../../lib/commands/rules-util')
 
 describe('RulesCommand', () => {
 	const outputListingMock = jest.mocked(outputListing)

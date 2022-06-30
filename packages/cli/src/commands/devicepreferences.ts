@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core'
 import { DevicePreference } from '@smartthings/core-sdk'
 import { APIOrganizationCommand, outputListing, allOrganizationsFlags, forAllOrganizations } from '@smartthings/cli-lib'
-import { tableFieldDefinitions } from '../lib/commands/devicepreferences/devicepreferences-util'
+import { tableFieldDefinitions } from '../lib/commands/devicepreferences-util'
 
 
 export async function standardPreferences(command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>): Promise<DevicePreference[]> {

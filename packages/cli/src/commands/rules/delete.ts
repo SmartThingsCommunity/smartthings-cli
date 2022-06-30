@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 
 import { APICommand } from '@smartthings/cli-lib'
 
-import { chooseRule, getRuleWithLocation } from '../../lib/commands/rules/rules-util'
+import { chooseRule, getRuleWithLocation } from '../../lib/commands/rules-util'
 
 
 export default class RulesDeleteCommand extends APICommand<typeof RulesDeleteCommand.flags> {

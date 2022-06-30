@@ -4,7 +4,7 @@ import inquirer from 'inquirer'
 import { InstalledAppListOptions } from '@smartthings/core-sdk'
 
 import { APICommand, formatAndWriteItem, selectFromList, withLocations } from '@smartthings/cli-lib'
-import { listTableFieldDefinitions, tableFieldDefinitions } from '../../lib/commands/installedapps/installedapps-util'
+import { listTableFieldDefinitions, tableFieldDefinitions } from '../../lib/commands/installedapps-util'
 
 
 export default class InstalledAppRenameCommand extends APICommand<typeof InstalledAppRenameCommand.flags> {

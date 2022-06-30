@@ -7,10 +7,10 @@ import {
 
 import DevicesCommand from '../../commands/devices'
 
-import { buildTableOutput } from '../../lib/commands/devices/devices-util'
+import { buildTableOutput } from '../../lib/commands/devices-util'
 
 
-jest.mock('../../lib/commands/devices/devices-util')
+jest.mock('../../lib/commands/devices-util')
 
 describe('DevicesCommand', () => {
 	const outputListingMock = jest.mocked(outputListing)

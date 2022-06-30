@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 import { AppUpdateRequest, AppResponse } from '@smartthings/core-sdk'
 import { ActionFunction, APICommand, inputAndOutputItem, TableCommonOutputProducer, lambdaAuthFlags } from '@smartthings/cli-lib'
 import { addPermission } from '../../lib/aws-utils'
-import { chooseApp, tableFieldDefinitions } from '../../lib/commands/apps/apps-util'
+import { chooseApp, tableFieldDefinitions } from '../../lib/commands/apps-util'
 
 
 export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand.flags> {

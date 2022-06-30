@@ -3,7 +3,7 @@ import { Flags } from '@oclif/core'
 import { InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
 
 import { APICommand, outputListing, withLocations } from '@smartthings/cli-lib'
-import { InstalledAppWithLocation, listTableFieldDefinitions, tableFieldDefinitions } from '../lib/commands/installedapps/installedapps-util'
+import { InstalledAppWithLocation, listTableFieldDefinitions, tableFieldDefinitions } from '../lib/commands/installedapps-util'
 
 
 export default class InstalledAppsCommand extends APICommand<typeof InstalledAppsCommand.flags> {
