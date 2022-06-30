@@ -6,7 +6,7 @@ import { APIOrganizationCommand, ListingOutputConfig, outputListing, selectFromL
 	SelectingConfig, TableGenerator } from '@smartthings/cli-lib'
 
 import { CapabilityId, capabilityIdOrIndexInputArgs, CapabilitySummaryWithNamespace, getCustomByNamespace,
-	getIdFromUser, translateToId } from '../capabilities'
+	getIdFromUser, translateToId } from '../../lib/commands/capabilities-util'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, data: CapabilityLocalization): string {

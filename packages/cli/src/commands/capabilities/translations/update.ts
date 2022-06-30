@@ -3,7 +3,7 @@ import { CapabilityLocalization } from '@smartthings/core-sdk'
 import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../translations'
-import { capabilityIdInputArgs, chooseCapability } from '../../capabilities'
+import { capabilityIdInputArgs, chooseCapability } from '../../../lib/commands/capabilities-util'
 
 
 export default class CapabilityTranslationsUpdateCommand extends APIOrganizationCommand<typeof CapabilityTranslationsUpdateCommand.flags> {

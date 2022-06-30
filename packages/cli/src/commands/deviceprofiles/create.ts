@@ -12,7 +12,7 @@ import { APIOrganizationCommand, inputAndOutputItem, userInputProcessor } from '
 
 import { buildTableOutput } from '../deviceprofiles'
 import { DeviceDefinitionRequest } from './view'
-import { CapabilityId, chooseCapabilityFiltered } from '../capabilities'
+import { CapabilityId, chooseCapabilityFiltered } from '../../lib/commands/capabilities-util'
 
 
 const capabilitiesWithoutPresentations = ['healthCheck', 'execute']
