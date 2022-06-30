@@ -34,25 +34,8 @@ export const capabilityIdOrIndexInputArgs = [
 	},
 ]
 
-function joinEnums(enums: string[], width: number): string {
-	let result = ''
-	let lineWidth = 0
-	for (const item of enums) {
-		if (result) {
-			if (lineWidth + item.length + 2 <= width) {
-				result += ', '
-				lineWidth += item.length + 2
-			} else {
-				result += '\n'
-				lineWidth = 0
-			}
-		} else {
-			lineWidth += item.length + 2
-		}
-		result += item
-	}
-	return result
-}
+export const joinEnums = (enums: string[]): string =>
+	enums.length === 0 ? '' : ('\n  - ' + enums.join('\n  - '))
 
 export function attributeType(attr: CapabilityJSONSchema, multilineObjects = true): string {
 	if (attr.type === 'array') {
@@ -80,7 +63,7 @@ export function attributeType(attr: CapabilityJSONSchema, multilineObjects = tru
 		}
 	}
 	if (attr.enum) {
-		return `enum {${joinEnums(attr.enum, 50)}}`
+		return `enum${joinEnums(attr.enum)}`
 	}
 	return attr.type || 'undefined'
 }
@@ -95,7 +78,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, capability: Cap
 		const headers = type === SubItemTypes.ATTRIBUTES
 			? ['Name', 'Type', 'Setter']
 			: ['Name', 'Arguments']
-		const table = tableGenerator.newOutputTable({ head: headers })
+		const table = tableGenerator.newOutputTable({ head: headers, isList: true })
 		for (const name in capability[type]) {
 			if (type === SubItemTypes.ATTRIBUTES) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
