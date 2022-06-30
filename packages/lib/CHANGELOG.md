@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.0.0-beta.10
+
+### Patch Changes
+
+- [#339](https://github.com/SmartThingsCommunity/smartthings-cli/pull/339) [`0849c4e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/0849c4e36f81816cce8c6204c339424a8211c556) Thanks [@rossiam](https://github.com/rossiam)! - Update table output: - switch to table package which handles international characters properly - removed compact / expanded command line options - removed compactTableOutput configuration option - added group-rows and no-group-rows command line options - added groupTableOutputRows configuration option - (lib) completely isolated use of dependency to table-generator.ts
+
+* [#327](https://github.com/SmartThingsCommunity/smartthings-cli/pull/327) [`82652c9`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/82652c9a2fc144ee253e256718f034b47aeca7fc) Thanks [@bflorian](https://github.com/bflorian)! - Added commands to create virtual devices and generate events on their behalf
+
+- [#335](https://github.com/SmartThingsCommunity/smartthings-cli/pull/335) [`975c037`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/975c037c7983a1073eb6bf9f133e0f99599342df) Thanks [@john-u](https://github.com/john-u)! - update @smartthings/core-sdk to 5.0.0
+
 ## 1.0.0-beta.9
 
 ### Patch Changes
