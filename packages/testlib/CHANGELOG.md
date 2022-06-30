@@ -1,5 +1,18 @@
 # Change Log
 
+## 1.0.0-beta.6
+
+### Patch Changes
+
+- [#331](https://github.com/SmartThingsCommunity/smartthings-cli/pull/331) [`8b0a5b8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/8b0a5b8523c8bcc8a622359a501b064b813dca4c) Thanks [@john-u](https://github.com/john-u)! - mock withLocations by default
+
+* [#325](https://github.com/SmartThingsCommunity/smartthings-cli/pull/325) [`0681344`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/068134443d8a960b6565b2111b2a81b076b33bd7) Thanks [@john-u](https://github.com/john-u)! - mock inputItem by default
+
+- [#335](https://github.com/SmartThingsCommunity/smartthings-cli/pull/335) [`975c037`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/975c037c7983a1073eb6bf9f133e0f99599342df) Thanks [@john-u](https://github.com/john-u)! - update @smartthings/core-sdk to 5.0.0
+
+- Updated dependencies [[`0849c4e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/0849c4e36f81816cce8c6204c339424a8211c556), [`82652c9`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/82652c9a2fc144ee253e256718f034b47aeca7fc), [`975c037`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/975c037c7983a1073eb6bf9f133e0f99599342df)]:
+  - @smartthings/cli-lib@1.0.0-beta.10
+
 ## 1.0.0-beta.5
 
 ### Patch Changes
