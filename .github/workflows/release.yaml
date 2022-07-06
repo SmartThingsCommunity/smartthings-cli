@@ -16,6 +16,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    outputs:
+      cli-released: ${{ steps.cli-release.outputs.published }}
+      cli-version: ${{ steps.cli-metadata.outputs.version }}
+      cli-tag: ${{ steps.cli-metadata.outputs.tag }}
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -89,3 +94,59 @@ jobs:
             Created by https://github.com/mislav/bump-homebrew-formula-action
         env:
           COMMITTER_TOKEN: ${{ secrets.HOMEBREW_COMMITTER_TOKEN }}
+
+      - name: Upload .exe Artifact
+        if: steps.cli-package.outcome == 'success'
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-exe
+          path: packages/cli/dist_bin/win/smartthings.exe
+
+  windows-installer:
+    needs: release
+
+    if: needs.release.outputs.cli-released == 'true'
+
+    name: Release Windows Installer
+
+    # ensure WiX Toolset is installed on image before updating runner
+    # ex: https://github.com/actions/virtual-environments/blob/b87bdfb146bdd41a98f33fc9572a961e9a60e9dd/images/win/Windows2022-Readme.md
+    runs-on: windows-2022
+
+    steps:
+      # remove any pre-release labels since WiX doesn't support them
+      - name: Sanitize CLI Version String
+        id: safe-semver
+        run: echo "::set-output name=version::$('${{ needs.release.outputs.cli-version }}'.Split('-') | Select-Object -Index 0)"
+
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Download .exe Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-exe
+          path: packages\cli\wix
+
+      # https://github.community/t/set-path-for-wix-toolset-in-windows-runner/154708/2
+      # https://stackoverflow.com/a/71579543
+      - name: Add WiX Toolset to Path
+        run: Add-Content $env:GITHUB_PATH "C:\Program Files (x86)\WiX Toolset v3.11\bin"
+
+      - name: Compile WiX file
+        run: candle.exe smartthings.wxs -ext WixUIExtension
+        working-directory: packages\cli\wix
+        env:
+          SMARTTHINGS_SEMVER: ${{ steps.safe-semver.outputs.version }}
+          # must be absolute path or relative to .wxs file
+          SMARTTHINGS_BINARY_PATH: .\smartthings.exe
+
+      - name: Build .msi
+        run: light.exe -out smartthings.msi smartthings.wixobj -ext WixUIExtension
+        working-directory: packages\cli\wix
+
+      - name: Add .msi Artifact to Github Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.release.outputs.cli-tag }}
+          files: packages\cli\wix\smartthings.msi
