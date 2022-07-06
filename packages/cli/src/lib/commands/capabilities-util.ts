@@ -6,7 +6,7 @@ import {
 } from '@smartthings/core-sdk'
 
 import {
-	APIOrganizationCommand, ListDataFunction, selectFromList, sort, Sorting, TableGenerator,
+	APIOrganizationCommand, ListDataFunction, selectFromList, sort, Sorting, summarizedText, TableGenerator,
 } from '@smartthings/cli-lib'
 
 
@@ -35,27 +35,20 @@ export const capabilityIdOrIndexInputArgs = [
 export const joinEnums = (enums: string[]): string =>
 	enums.length === 0 ? '' : ('\n  - ' + enums.join('\n  - '))
 
-export const attributeType = (attr: CapabilityJSONSchema, multilineObjects = true): string => {
+export const attributeType = (attr: CapabilityJSONSchema): string => {
 	if (attr.type === 'array') {
 		if (Array.isArray(attr.items)) {
-			return 'array[' + attr.items.map(it => it.type).join(', ') + ']'
+			return 'array[' + attr.items.map(it => it.type ?? (it.enum ? 'enum' : 'unknown')).join(', ') + ']'
 		} else if (attr.items) {
 			return `array<${attr.items.type}>`
 		}
 	} else if (attr.type === 'object') {
 		if (attr.properties) {
 			const props = attr.properties
-			if (multilineObjects) {
-				return '{\n' + Object.keys(props).map(it => {
-					const item = props[it]
-					return `  ${it}: ${item ? item.type : 'undefined'}`
-				}).join('\n') + '\n}'
-			} else {
-				return '{' + Object.keys(props).map(it => {
-					const item = props[it]
-					return `${it}: ${item ? item.type : 'undefined'}`
-				}).join(', ') + '}'
-			}
+			return '{\n' + Object.keys(props).map(it => {
+				const item = props[it]
+				return `  ${it}: ${item ? item.type : 'undefined'}`
+			}).join('\n') + '\n}'
 		} else {
 			return attr.title || 'object'
 		}
@@ -106,7 +99,7 @@ export const buildTableOutput = (tableGenerator: TableGenerator, capability: Cap
 		output += '\n\nCommands: \n'
 		output += makeTable(capability, SubItemTypes.COMMANDS)
 	}
-	return output
+	return `${output}\n\n${summarizedText}`
 }
 
 export interface CapabilityId {
