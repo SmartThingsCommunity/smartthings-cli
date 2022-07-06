@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+	<!-- Version cannot include pre-release label extensions -->
+	<!-- https://github.com/kurtanr/WiXInstallerExamples/tree/main/00_HelloWorldInstaller#product -->
+	<Product
+			Id="*"
+			Language="1033"
+			Manufacturer="SmartThings"
+			Name="SmartThings CLI"
+			UpgradeCode="{AA0B7D9A-214A-4F22-9E4A-773E9FE7AE94}"
+			Version="$(env.SMARTTHINGS_SEMVER).0">
+
+		<Package
+				InstallScope="perMachine"
+				InstallerVersion="200"
+				Compressed="yes" />
+
+		<MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+
+		<!-- https://github.com/kurtanr/WiXInstallerExamples/tree/main/00_HelloWorldInstaller#mediatemplate -->
+		<MediaTemplate EmbedCab="yes" />
+
+		<!-- https://github.com/kurtanr/WiXInstallerExamples/tree/main/00_HelloWorldInstaller#directory -->
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLDIR" Name="SmartThings" />
+			</Directory>
+		</Directory>
+
+		<ComponentGroup Directory="INSTALLDIR" Id="ProductComponentGroup">
+			<!-- https://github.com/kurtanr/WiXInstallerExamples/tree/main/00_HelloWorldInstaller#component -->
+			<Component Id="ProductComponent">
+				<File KeyPath="yes" Source="$(env.SMARTTHINGS_BINARY_PATH)"></File>
+			</Component>
+		</ComponentGroup>
+
+		<!-- https://stackoverflow.com/a/46366291 -->
+		<DirectoryRef Id="TARGETDIR">
+			<Component Id="PathComponent" Guid="{B01A7C23-58B3-43C8-A61C-AF8D1649CC6F}">
+				<Environment
+						Id="PATH"
+						Name="PATH"
+						Value="[INSTALLDIR]"
+						Permanent="no"
+						Part="last"
+						Action="set"
+						System="no" />
+			</Component>
+		</DirectoryRef>
+
+		<!-- https://wixtoolset.org//documentation/manual/v3/wixui/dialog_reference/wixui_installdir.html -->
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+		<UIRef Id="WixUI_InstallDir" />
+
+		<Feature Id="SmartThingsFeature">
+			<ComponentRef Id="ProductComponent" />
+			<ComponentRef Id="PathComponent" />
+		</Feature>
+
+		<!-- https://stackoverflow.com/a/1116236 -->
+		<WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+	</Product>
+</Wix>

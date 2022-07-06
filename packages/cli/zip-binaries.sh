@@ -13,7 +13,8 @@ function zip_binary() {
 			tar -czf assets/smartthings-$os.tar.gz "smartthings$ext"
 		fi
 		zip assets/smartthings-$os.zip "smartthings$ext"
-		mv "smartthings$ext" "smartthings-$os$ext"
+		mkdir -p $os
+		mv "smartthings$ext" "$os"
 	)
 }
 
