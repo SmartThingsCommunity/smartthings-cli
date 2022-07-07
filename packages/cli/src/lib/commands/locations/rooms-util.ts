@@ -4,7 +4,7 @@ import { LocationItem, Room, SmartThingsClient } from '@smartthings/core-sdk'
 import * as roomsUtil from './rooms-util'
 
 
-export const tableFieldDefinitions = ['name', 'locationId', 'roomId']
+export const tableFieldDefinitions = ['name', 'roomId', 'locationId' ]
 
 export async function getRoomsByLocation(client: SmartThingsClient, locationId?: string): Promise<RoomWithLocation[]> {
 	let locations: LocationItem[] = []

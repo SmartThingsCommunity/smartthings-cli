@@ -1,4 +1,4 @@
-import { outputListing } from '@smartthings/cli-lib'
+import { outputListing, withLocations } from '@smartthings/cli-lib'
 import { RoomsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 import RoomsCommand from '../../../commands/locations/rooms'
 import { getRoomsByLocation, RoomWithLocation } from '../../../lib/commands/locations/rooms-util'
@@ -12,6 +12,7 @@ describe('RoomsCommand', () => {
 	const mockOutputListing = jest.mocked(outputListing)
 	const mockGetRoomsByLocation = jest.mocked(getRoomsByLocation)
 	const getSpy = jest.spyOn(RoomsEndpoint.prototype, 'get').mockImplementation()
+	const mockWithLocations = jest.mocked(withLocations)
 
 	beforeAll(() => {
 		mockGetRoomsByLocation.mockResolvedValue([])
@@ -120,5 +121,22 @@ describe('RoomsCommand', () => {
 
 		await expect(RoomsCommand.run([`-l=${locationId}`])).resolves.not.toThrow()
 		expect(mockGetRoomsByLocation).toBeCalledWith(expect.any(SmartThingsClient), locationId)
+	})
+
+	it('includes location name when verbose flag is used', async () => {
+		await expect(RoomsCommand.run(['--verbose'])).resolves.not.toThrow()
+
+		expect(mockOutputListing).toBeCalledWith(
+			expect.any(RoomsCommand),
+			expect.objectContaining({
+				primaryKeyName: 'roomId',
+				sortKeyName: 'name',
+				listTableFieldDefinitions: expect.arrayContaining(['location']),
+			}),
+			undefined,
+			expect.any(Function),
+			expect.any(Function),
+		)
+		expect(mockWithLocations).toBeCalled
 	})
 })
