@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.0.0-beta.10
+
+### Patch Changes
+
+- [#347](https://github.com/SmartThingsCommunity/smartthings-cli/pull/347) [`76ba4c5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/76ba4c50090abe4f330d269eccd041dd71c562df) Thanks [@john-u](https://github.com/john-u)! - Add Windows installer build
+
+* [#348](https://github.com/SmartThingsCommunity/smartthings-cli/pull/348) [`d1ee1c1`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d1ee1c1717720f3a55099dddd2b92bed9668bfc2) Thanks [@Sitlintac](https://github.com/Sitlintac)! - feat: add verbose ability to rooms command
+  - reorder columns in table output
+  - add test
+
 ## 1.0.0-beta.9
 
 ### Patch Changes
