@@ -41,6 +41,7 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 		type: Flags.string({
 			description: 'filter results by device type',
 			options: Object.values(DeviceIntegrationType),
+			multiple: true,
 		}),
 		verbose: Flags.boolean({
 			description: 'include location name in output',
@@ -70,7 +71,7 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 			locationId: this.flags['location-id'],
 			deviceId: this.flags['device-id'],
 			installedAppId: this.flags['installed-app-id'],
-			type: this.flags.type as DeviceIntegrationType | undefined,
+			type: this.flags.type as DeviceIntegrationType[] | undefined,
 		}
 
 		await outputListing(this, config, this.args.id,
