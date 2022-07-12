@@ -34,9 +34,9 @@ describe('SchemaAppCreateCommand', () => {
 		}
 		createSpy.mockResolvedValueOnce(schemaCreateResponse)
 
-		const schemaAppRequest: SchemaAppRequest = {
+		const schemaAppRequest = {
 			appName: 'schemaApp',
-		}
+		} as SchemaAppRequest
 
 		const actionFunction = inputAndOutputItemMock.mock.calls[0][2]
 
@@ -53,14 +53,14 @@ describe('SchemaAppCreateCommand', () => {
 		}
 		createSpy.mockResolvedValueOnce(schemaCreateResponse)
 
-		const schemaAppRequest: SchemaAppRequest = {
+		const schemaAppRequest = {
 			appName: 'schemaApp',
 			hostingType: 'lambda',
 			lambdaArn: 'lambdaArn',
 			lambdaArnCN: 'lambdaArnCN',
 			lambdaArnEU: 'lambdaArnEU',
 			lambdaArnAP: 'lambdaArnAP',
-		}
+		} as SchemaAppRequest
 
 		const actionFunction = inputAndOutputItemMock.mock.calls[0][2]
 
@@ -79,9 +79,9 @@ describe('SchemaAppCreateCommand', () => {
 
 		const actionFunction = inputAndOutputItemMock.mock.calls[0][2]
 
-		const schemaAppRequest: SchemaAppRequest = {
+		const schemaAppRequest = {
 			hostingType: 'webhook',
-		}
+		} as SchemaAppRequest
 
 		await expect(actionFunction(undefined, schemaAppRequest)).rejects.toThrow('Authorization is not applicable to WebHook schema connectors')
 		expect(createSpy).not.toBeCalled()
@@ -90,10 +90,10 @@ describe('SchemaAppCreateCommand', () => {
 	it('ignores authorize flag for lambda apps with no ARNs', async () => {
 		await expect(SchemaAppCreateCommand.run(['--authorize'])).resolves.not.toThrow()
 
-		const schemaAppRequest: SchemaAppRequest = {
+		const schemaAppRequest = {
 			appName: 'schemaApp',
 			hostingType: 'lambda',
-		}
+		} as SchemaAppRequest
 
 		const actionFunction = inputAndOutputItemMock.mock.calls[0][2]
 
@@ -107,11 +107,11 @@ describe('SchemaAppCreateCommand', () => {
 		const principal = 'principal'
 		await expect(SchemaAppCreateCommand.run(['--authorize', `--principal=${principal}`])).resolves.not.toThrow()
 
-		const schemaAppRequest: SchemaAppRequest = {
+		const schemaAppRequest = {
 			appName: 'schemaApp',
 			hostingType: 'lambda',
 			lambdaArn: 'lambdaArn',
-		}
+		} as SchemaAppRequest
 
 		const actionFunction = inputAndOutputItemMock.mock.calls[0][2]
 
@@ -124,11 +124,11 @@ describe('SchemaAppCreateCommand', () => {
 		const statementId = 'statementId'
 		await expect(SchemaAppCreateCommand.run(['--authorize', `--statement-id=${statementId}`])).resolves.not.toThrow()
 
-		const schemaAppRequest: SchemaAppRequest = {
+		const schemaAppRequest = {
 			appName: 'schemaApp',
 			hostingType: 'lambda',
 			lambdaArn: 'lambdaArn',
-		}
+		} as SchemaAppRequest
 
 		const actionFunction = inputAndOutputItemMock.mock.calls[0][2]
 

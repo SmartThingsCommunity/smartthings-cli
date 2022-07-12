@@ -12,13 +12,13 @@ describe('SchemaUpdateCommand', () => {
 	const listSpy = jest.spyOn(SchemaEndpoint.prototype, 'list')
 	const logSpy = jest.spyOn(SchemaUpdateCommand.prototype, 'log').mockImplementation()
 
-	const schemaAppRequest: SchemaAppRequest = { appName: 'schemaApp' }
+	const schemaAppRequest = { appName: 'schemaApp' } as SchemaAppRequest
 	const inputItemMock = jest.mocked(inputItem).mockResolvedValue([schemaAppRequest, IOFormat.JSON])
 	const addSchemaPermissionMock = jest.mocked(addSchemaPermission)
 	const selectFromListMock = jest.mocked(selectFromList).mockResolvedValue('schemaAppId')
 
 	it('prompts user to select schema app', async () => {
-		const schemaAppList: SchemaApp[] = [{ appName: 'schemaApp' }]
+		const schemaAppList = [{ appName: 'schemaApp' } as SchemaApp]
 		listSpy.mockResolvedValueOnce(schemaAppList)
 
 		await expect(SchemaUpdateCommand.run(['schemaAppId'])).resolves.not.toThrow()
@@ -63,14 +63,14 @@ describe('SchemaUpdateCommand', () => {
 	})
 
 	it('accepts authorize flag for lambda apps', async () => {
-		const schemaAppRequest: SchemaAppRequest = {
+		const schemaAppRequest = {
 			appName: 'schemaApp',
 			hostingType: 'lambda',
 			lambdaArn: 'lambdaArn',
 			lambdaArnCN: 'lambdaArnCN',
 			lambdaArnEU: 'lambdaArnEU',
 			lambdaArnAP: 'lambdaArnAP',
-		}
+		} as SchemaAppRequest
 
 		inputItemMock.mockResolvedValueOnce([schemaAppRequest, IOFormat.JSON])
 
@@ -84,10 +84,10 @@ describe('SchemaUpdateCommand', () => {
 	})
 
 	it('throws error if authorize flag is used on non-lambda app', async () => {
-		const webhookSchemaRequest: SchemaAppRequest = {
+		const webhookSchemaRequest = {
 			appName: 'webhookApp',
 			hostingType: 'webhook',
-		}
+		} as SchemaAppRequest
 
 		inputItemMock.mockResolvedValueOnce([webhookSchemaRequest, IOFormat.JSON])
 
@@ -96,10 +96,10 @@ describe('SchemaUpdateCommand', () => {
 	})
 
 	it('ignores authorize flag for lambda apps with no ARNs', async () => {
-		const noArnSchemaRequest: SchemaAppRequest = {
+		const noArnSchemaRequest = {
 			appName: 'schemaApp',
 			hostingType: 'lambda',
-		}
+		} as SchemaAppRequest
 
 		inputItemMock.mockResolvedValueOnce([noArnSchemaRequest, IOFormat.JSON])
 

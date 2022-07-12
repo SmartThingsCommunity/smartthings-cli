@@ -31,6 +31,7 @@ export default class SchemaCommand extends APICommand<typeof SchemaCommand.flags
 				{ prop: 'lambdaArnCN', skipEmpty: true },
 				{ prop: 'lambdaArnEU', skipEmpty: true },
 				{ prop: 'webhookUrl', skipEmpty: true },
+				{ prop: 'userEmail', skipEmpty: true },
 			],
 			primaryKeyName: 'endpointAppId',
 			sortKeyName: 'appName',
