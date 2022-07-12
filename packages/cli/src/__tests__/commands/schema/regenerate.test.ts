@@ -1,5 +1,5 @@
 import { outputItem, selectFromList } from '@smartthings/cli-lib'
-import { SchemaEndpoint, SchemaCreateResponse } from '@smartthings/core-sdk'
+import { SchemaEndpoint, SchemaCreateResponse, SchemaApp } from '@smartthings/core-sdk'
 import SchemaAppRegenerateCommand from '../../../commands/schema/regenerate'
 
 
@@ -29,7 +29,7 @@ describe('SchemaAppRegenerateCommand', () => {
 	})
 
 	it('calls correct list endpoint', async () => {
-		const list = [{ appName: 'schemaApp' }]
+		const list = [{ appName: 'schemaApp' } as SchemaApp]
 		listSpy.mockResolvedValueOnce(list)
 
 		await expect(SchemaAppRegenerateCommand.run(['schemaAppId'])).resolves.not.toThrow()

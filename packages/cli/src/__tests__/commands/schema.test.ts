@@ -24,6 +24,7 @@ describe('SchemaCommand', () => {
 					{ prop: 'lambdaArnCN', skipEmpty: true },
 					{ prop: 'lambdaArnEU', skipEmpty: true },
 					{ prop: 'webhookUrl', skipEmpty: true },
+					{ prop: 'userEmail', skipEmpty: true },
 				],
 				primaryKeyName: 'endpointAppId',
 				sortKeyName: 'appName',
@@ -50,23 +51,24 @@ describe('SchemaCommand', () => {
 	})
 
 	it('adds ARN/URL to return values for lambda and webhooks', async () => {
-		const lambda: SchemaApp = {
+		const lambda = {
 			endpointAppId: 'lambdaAppId',
 			hostingType: 'lambda',
 			lambdaArn: 'ARN',
-		}
-		const webhook: SchemaApp = {
+		} as SchemaApp
+		const webhook = {
 			endpointAppId: 'webhookAppId',
 			hostingType: 'webhook',
 			webhookUrl: 'URL',
-		}
+		} as SchemaApp
+
 		listSpy.mockResolvedValueOnce([lambda, webhook])
 
 		await expect(SchemaCommand.run([])).resolves.not.toThrow()
 
 		const listFunction = outputListingMock.mock.calls[0][3] as ListDataFunction<SchemaApp & { 'ARN/URL': string }>
 
-		const expected: SchemaApp & { 'ARN/URL': string }[] = [
+		const expected = [
 			{
 				...lambda,
 				'ARN/URL': 'ARN',
@@ -87,7 +89,7 @@ describe('SchemaCommand', () => {
 
 		const getFunction = outputListingMock.mock.calls[0][4]
 
-		const schemaApp: SchemaApp = { endpointAppId: 'schemaAppId' }
+		const schemaApp = { endpointAppId: 'schemaAppId' } as SchemaApp
 		getSpy.mockResolvedValueOnce(schemaApp)
 
 		await expect(getFunction('schemaAppId')).resolves.toStrictEqual(schemaApp)
