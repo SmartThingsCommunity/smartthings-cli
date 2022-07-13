@@ -14,7 +14,7 @@ needs to be updated again once the new command has been configured properly.
 
 https://www.npmjs.com/package/@oclif/dev-cli
 -->
-SmartThings Unified CLI
+SmartThings CLI
 =======================
 
 :warning: :construction: This CLI is currently in beta release. Please [open an issue](https://github.com/SmartThingsCommunity/smartthings-cli/issues/new/choose) to report a bug or ask a question.
@@ -29,13 +29,31 @@ SmartThings Unified CLI
 
 # Usage
 
-1. Download the appropriate binary from the
-   [releases](https://github.com/SmartThingsCommunity/smartthings-cli/releases)
-   tab of the github page.
-1. Install it on your path and rename it to "smartthings". It does not need
-   administrator privileges but will need to be executable.
-1. Run `smartthings --help` to make sure it's working.
-1. Run a specific command with `smartthings <command>`
+## Installation
+
+### Homebrew (macOS)
+
+```console
+brew install smartthingscommunity/smartthings/smartthings
+```
+
+### Windows
+
+Download and run the `smartthings.msi` installer from the [latest Release](https://github.com/SmartThingsCommunity/smartthings-cli/releases).
+
+### Standalone Installation (Linux and others)
+
+1. Download the appropriate zipped binary from the [latest Release](https://github.com/SmartThingsCommunity/smartthings-cli/releases).
+1. Extract and install it on your system path. It does not need administrator privileges but will need to be executable.
+
+## Verify Installation
+
+Run `smartthings --version` and verify the version matches the latest release.
+
+## Getting Started
+
+1. Run `smartthings --help` to get more information on each command.
+1. Run a specific command with `smartthings <command>`.
 
 ## Input and Output Considerations
 
@@ -4849,8 +4867,8 @@ list rooms or get information for a specific room
 
 ```
 USAGE
-  $ smartthings locations:rooms [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>] [-v]
-    [-j] [-y] [-o <value>]
+  $ smartthings locations:rooms [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>] [-j]
+    [-y] [-o <value>]
 
 ARGUMENTS
   IDORINDEX  room UUID or index
@@ -4862,7 +4880,6 @@ FLAGS
   -o, --output=<value>       specify output file
   -p, --profile=<value>      [default: default] configuration profile
   -t, --token=<value>        the auth token to use
-  -v, --verbose              include location name in output
   -y, --yaml                 use YAML format of input and/or output
   --language=<value>         ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
@@ -5437,8 +5454,8 @@ list rooms or get information for a specific room
 
 ```
 USAGE
-  $ smartthings rooms [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>] [-v]
-    [-j] [-y] [-o <value>]
+  $ smartthings rooms [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>] [-j]
+    [-y] [-o <value>]
 
 ARGUMENTS
   IDORINDEX  room UUID or index
@@ -5450,7 +5467,6 @@ FLAGS
   -o, --output=<value>       specify output file
   -p, --profile=<value>      [default: default] configuration profile
   -t, --token=<value>        the auth token to use
-  -v, --verbose              include location name in output
   -y, --yaml                 use YAML format of input and/or output
   --language=<value>         ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
