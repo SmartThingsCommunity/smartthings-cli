@@ -1,7 +1,7 @@
 {
 	"name": "@smartthings/cli",
 	"version": "1.0.0-beta.10",
-	"description": "SmartThings unified CLI",
+	"description": "Command Line Interface for the SmartThings APIs",
 	"author": "SmartThings, Inc.",
 	"bin": {
 		"smartthings": "bin/run"

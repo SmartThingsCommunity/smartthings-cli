@@ -14,7 +14,7 @@ needs to be updated again once the new command has been configured properly.
 
 https://www.npmjs.com/package/@oclif/dev-cli
 -->
-SmartThings Unified CLI
+SmartThings CLI
 =======================
 
 :warning: :construction: This CLI is currently in beta release. Please [open an issue](https://github.com/SmartThingsCommunity/smartthings-cli/issues/new/choose) to report a bug or ask a question.
@@ -29,13 +29,31 @@ SmartThings Unified CLI
 
 # Usage
 
-1. Download the appropriate binary from the
-   [releases](https://github.com/SmartThingsCommunity/smartthings-cli/releases)
-   tab of the github page.
-1. Install it on your path and rename it to "smartthings". It does not need
-   administrator privileges but will need to be executable.
-1. Run `smartthings --help` to make sure it's working.
-1. Run a specific command with `smartthings <command>`
+## Installation
+
+### Homebrew (macOS)
+
+```console
+brew install smartthingscommunity/smartthings/smartthings
+```
+
+### Windows
+
+Download and run the `smartthings.msi` installer from the [latest Release](https://github.com/SmartThingsCommunity/smartthings-cli/releases).
+
+### Standalone Installation (Linux and others)
+
+1. Download the appropriate zipped binary from the [latest Release](https://github.com/SmartThingsCommunity/smartthings-cli/releases).
+1. Extract and install it on your system path. It does not need administrator privileges but will need to be executable.
+
+## Verify Installation
+
+Run `smartthings --version` and verify the version matches the latest release.
+
+## Getting Started
+
+1. Run `smartthings --help` to get more information on each command.
+1. Run a specific command with `smartthings <command>`.
 
 ## Input and Output Considerations
 
@@ -992,7 +1010,7 @@ DESCRIPTION
   create a capability translation
 
 EXAMPLES
-  $ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml 
+  $ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml
 
   tag: en
 
@@ -1116,7 +1134,7 @@ DESCRIPTION
   update a capability translation
 
 EXAMPLES
-  $ smartthings capabilities:translations:update custom1.outputModulation 1 -i en.yaml 
+  $ smartthings capabilities:translations:update custom1.outputModulation 1 -i en.yaml
 
   tag: en
 
@@ -1240,7 +1258,7 @@ DESCRIPTION
   create or update a capability translation
 
 EXAMPLES
-  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml 
+  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml
 
   tag: en
 
@@ -4849,8 +4867,8 @@ list rooms or get information for a specific room
 
 ```
 USAGE
-  $ smartthings locations:rooms [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>] [-v]
-    [-j] [-y] [-o <value>]
+  $ smartthings locations:rooms [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>] [-j]
+    [-y] [-o <value>]
 
 ARGUMENTS
   IDORINDEX  room UUID or index
@@ -4862,7 +4880,6 @@ FLAGS
   -o, --output=<value>       specify output file
   -p, --profile=<value>      [default: default] configuration profile
   -t, --token=<value>        the auth token to use
-  -v, --verbose              include location name in output
   -y, --yaml                 use YAML format of input and/or output
   --language=<value>         ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
@@ -5111,7 +5128,7 @@ ALIASES
   $ smartthings plugins:add
 
 EXAMPLES
-  $ smartthings plugins:install myplugin 
+  $ smartthings plugins:install myplugin
 
   $ smartthings plugins:install https://github.com/someuser/someplugin
 
@@ -5173,7 +5190,7 @@ ALIASES
   $ smartthings plugins:add
 
 EXAMPLES
-  $ smartthings plugins:install myplugin 
+  $ smartthings plugins:install myplugin
 
   $ smartthings plugins:install https://github.com/someuser/someplugin
 
@@ -5437,8 +5454,8 @@ list rooms or get information for a specific room
 
 ```
 USAGE
-  $ smartthings rooms [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>] [-v]
-    [-j] [-y] [-o <value>]
+  $ smartthings rooms [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>] [-j]
+    [-y] [-o <value>]
 
 ARGUMENTS
   IDORINDEX  room UUID or index
@@ -5450,7 +5467,6 @@ FLAGS
   -o, --output=<value>       specify output file
   -p, --profile=<value>      [default: default] configuration profile
   -t, --token=<value>        the auth token to use
-  -v, --verbose              include location name in output
   -y, --yaml                 use YAML format of input and/or output
   --language=<value>         ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
@@ -6007,9 +6023,9 @@ EXAMPLES
   $ smartthings virtualdevices:create -N "My Device" -i data.yml # using file request body with "My Device" for the name
 
   $ smartthings virtualdevices:create \                          # using command line parameters for everything
-  >    --name="My Second Device" \ 
-  >    --device-profile-id=7633ef68-6433-47ab-89c3-deb04b8b0d61 \ 
-  >    --location-id=95bdd473-4498-42fc-b932-974d6e5c236e \ 
+  >    --name="My Second Device" \
+  >    --device-profile-id=7633ef68-6433-47ab-89c3-deb04b8b0d61 \
+  >    --location-id=95bdd473-4498-42fc-b932-974d6e5c236e \
   >    --room-id=c7266cb7-7dcc-4958-8bc4-4288f5b50e1b
 
   $ smartthings virtualdevices:create -f profile.yml             # using a device profile and prompting for the remaining values
@@ -6056,9 +6072,9 @@ EXAMPLES
   $ smartthings virtualdevices:create-standard -N "My Device" -i data.yml # using file request body with "My Device" for the name
 
   $ smartthings virtualdevices:create-standard \                          # using command line parameters for everything
-  >    --name="My Second Device" \ 
-  >    --prototype=VIRTUAL_SWITCH \ 
-  >    --location-id=95bdd473-4498-42fc-b932-974d6e5c236e \ 
+  >    --name="My Second Device" \
+  >    --prototype=VIRTUAL_SWITCH \
+  >    --location-id=95bdd473-4498-42fc-b932-974d6e5c236e \
   >    --room-id=c7266cb7-7dcc-4958-8bc4-4288f5b50e1b
 ```
 
