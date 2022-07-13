@@ -1010,7 +1010,7 @@ DESCRIPTION
   create a capability translation
 
 EXAMPLES
-  $ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml
+  $ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml 
 
   tag: en
 
@@ -1134,7 +1134,7 @@ DESCRIPTION
   update a capability translation
 
 EXAMPLES
-  $ smartthings capabilities:translations:update custom1.outputModulation 1 -i en.yaml
+  $ smartthings capabilities:translations:update custom1.outputModulation 1 -i en.yaml 
 
   tag: en
 
@@ -1258,7 +1258,7 @@ DESCRIPTION
   create or update a capability translation
 
 EXAMPLES
-  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml
+  $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml 
 
   tag: en
 
@@ -5128,7 +5128,7 @@ ALIASES
   $ smartthings plugins:add
 
 EXAMPLES
-  $ smartthings plugins:install myplugin
+  $ smartthings plugins:install myplugin 
 
   $ smartthings plugins:install https://github.com/someuser/someplugin
 
@@ -5190,7 +5190,7 @@ ALIASES
   $ smartthings plugins:add
 
 EXAMPLES
-  $ smartthings plugins:install myplugin
+  $ smartthings plugins:install myplugin 
 
   $ smartthings plugins:install https://github.com/someuser/someplugin
 
@@ -6023,9 +6023,9 @@ EXAMPLES
   $ smartthings virtualdevices:create -N "My Device" -i data.yml # using file request body with "My Device" for the name
 
   $ smartthings virtualdevices:create \                          # using command line parameters for everything
-  >    --name="My Second Device" \
-  >    --device-profile-id=7633ef68-6433-47ab-89c3-deb04b8b0d61 \
-  >    --location-id=95bdd473-4498-42fc-b932-974d6e5c236e \
+  >    --name="My Second Device" \ 
+  >    --device-profile-id=7633ef68-6433-47ab-89c3-deb04b8b0d61 \ 
+  >    --location-id=95bdd473-4498-42fc-b932-974d6e5c236e \ 
   >    --room-id=c7266cb7-7dcc-4958-8bc4-4288f5b50e1b
 
   $ smartthings virtualdevices:create -f profile.yml             # using a device profile and prompting for the remaining values
@@ -6072,9 +6072,9 @@ EXAMPLES
   $ smartthings virtualdevices:create-standard -N "My Device" -i data.yml # using file request body with "My Device" for the name
 
   $ smartthings virtualdevices:create-standard \                          # using command line parameters for everything
-  >    --name="My Second Device" \
-  >    --prototype=VIRTUAL_SWITCH \
-  >    --location-id=95bdd473-4498-42fc-b932-974d6e5c236e \
+  >    --name="My Second Device" \ 
+  >    --prototype=VIRTUAL_SWITCH \ 
+  >    --location-id=95bdd473-4498-42fc-b932-974d6e5c236e \ 
   >    --room-id=c7266cb7-7dcc-4958-8bc4-4288f5b50e1b
 ```
 
