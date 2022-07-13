@@ -56,7 +56,6 @@
 			"lib/**/*.js"
 		],
 		"assets": [
-			"../../node_modules/istextorbinary",
 			"../../node_modules/yarn"
 		],
 		"outputPath": "dist_bin",
