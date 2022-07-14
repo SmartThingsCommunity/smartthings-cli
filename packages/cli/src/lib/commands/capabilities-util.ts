@@ -57,7 +57,7 @@ export const attributeType = (attr: CapabilityJSONSchema): string => {
 			const props = attr.properties
 			return '{\n' + Object.keys(props).map(it => {
 				const item = props[it]
-				return `  ${it}: ${item ? item.type : 'undefined'}`
+				return `  ${it}: ${item.type ?? 'undefined'}`
 			}).join('\n') + '\n}'
 		} else {
 			return attr.title || 'object'
@@ -84,23 +84,21 @@ export const buildTableOutput = (tableGenerator: TableGenerator, capability: Cap
 			if (type === SubItemTypes.ATTRIBUTES) {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				const subItem = capability[SubItemTypes.ATTRIBUTES]![name]
-				//table.push([name, subItem.schema.properties.value.type, subItem.setter || ''])
 				table.push([name, attributeType(subItem.schema.properties.value), subItem.setter || ''])
 			} else {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				const subItem = capability[SubItemTypes.COMMANDS]![name]
 
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				table.push([name, subItem!.arguments!.map((it: CapabilityArgument) => it.optional ?
-					`${it.name}: ${it.schema?.type} (optional)` :
+				table.push([name, subItem.arguments?.map((it: CapabilityArgument) => it.optional ?
+					`${it.name}: ${attributeType(it.schema)} (optional)` :
 					`${it.name}: ${attributeType(it.schema)}`)
-					.join('\n')])
+					.join('\n') ?? ''])
 			}
 		}
 		return table.toString()
 	}
 
-	let output = `\n\nCapability: ${capability.id}\n`
+	let output = `Capability: ${capability.name} (${capability.id})\n`
 	if (capability.attributes && Object.keys(capability.attributes).length > 0) {
 		output += '\n\nAttributes: \n'
 		output += makeTable(capability, SubItemTypes.ATTRIBUTES)
@@ -154,42 +152,41 @@ export const getAllFiltered = async (client: SmartThingsClient, filter: string):
 	return list
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const getIdFromUser = async (fieldInfo: Sorting, list: CapabilitySummaryWithNamespace[], promptMessage?: string): Promise<CapabilityId> => {
-	const convertToId = (itemIdOrIndex: string): string | false => {
-		if (itemIdOrIndex.length === 0) {
-			return false
-		}
-		const matchingItem = list.find(item => itemIdOrIndex === item.id)
-		if (matchingItem) {
-			return itemIdOrIndex
-		}
-
-		const index = Number.parseInt(itemIdOrIndex)
-
-		if (!Number.isNaN(index) && index > 0 && index <= list.length) {
-			const id = list[index - 1].id
-			if (typeof id === 'string') {
-				return id
-			} else {
-				throw Error(`invalid type ${typeof id} for primary key` +
-					` id in ${JSON.stringify(list[index - 1])}`)
-			}
-		} else {
-			return false
-		}
+export const convertToId = (itemIdOrIndex: string, list: CapabilitySummaryWithNamespace[]): string | false => {
+	if (itemIdOrIndex.length === 0) {
+		return false
 	}
+	const matchingItem = list.find(item => itemIdOrIndex === item.id)
+	if (matchingItem) {
+		return itemIdOrIndex
+	}
+
+	const index = Number.parseInt(itemIdOrIndex)
+
+	if (!Number.isNaN(index) && index > 0 && index <= list.length) {
+		const id = list[index - 1].id
+		if (typeof id === 'string') {
+			return id
+		} else {
+			throw Error(`invalid type ${typeof id} for primary key` +
+				` id in ${JSON.stringify(list[index - 1])}`)
+		}
+	} else {
+		return false
+	}
+}
+export const getIdFromUser = async (fieldInfo: Sorting, list: CapabilitySummaryWithNamespace[], promptMessage?: string): Promise<CapabilityId> => {
 	const idOrIndex: string = (await inquirer.prompt({
 		type: 'input',
 		name: 'idOrIndex',
 		message: promptMessage ?? 'Enter id or index',
 		validate: input => {
-			return convertToId(input)
+			return convertToId(input, list)
 				? true
 				: `Invalid id or index ${input}. Please enter an index or valid id.`
 		},
 	})).idOrIndex
-	const inputId = convertToId(idOrIndex)
+	const inputId = convertToId(idOrIndex, list)
 	if (inputId === false) {
 		throw Error(`unable to convert ${idOrIndex} to id`)
 	}
