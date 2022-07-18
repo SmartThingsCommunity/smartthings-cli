@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.0.0-beta.11
+
+### Patch Changes
+
+- [#356](https://github.com/SmartThingsCommunity/smartthings-cli/pull/356) [`97f5c32`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/97f5c32db1be3b96ed7fc637ade3c1e209300ff5) Thanks [@john-u](https://github.com/john-u)! - bump log4js to resolve vulnerability
+
+* [#351](https://github.com/SmartThingsCommunity/smartthings-cli/pull/351) [`e8852ab`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e8852ababae0b14d664737cd9e818dbd73b64dd0) Thanks [@Sitlintac](https://github.com/Sitlintac)! - enable multiple types when filtering devices
+
+* Updated dependencies [[`97f5c32`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/97f5c32db1be3b96ed7fc637ade3c1e209300ff5)]:
+  - @smartthings/cli-lib@1.0.0-beta.11
+
 ## 1.0.0-beta.10
 
 ### Patch Changes
