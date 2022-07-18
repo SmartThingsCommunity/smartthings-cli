@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.0-beta.11
+
+### Patch Changes
+
+- [#356](https://github.com/SmartThingsCommunity/smartthings-cli/pull/356) [`97f5c32`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/97f5c32db1be3b96ed7fc637ade3c1e209300ff5) Thanks [@john-u](https://github.com/john-u)! - - use unknown in sse-io interfaces instead of any
+  - document sse-io utilities
+  - bump deps
+
 ## 1.0.0-beta.10
 
 ### Patch Changes
