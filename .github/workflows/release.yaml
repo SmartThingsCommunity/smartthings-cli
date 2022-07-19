@@ -80,27 +80,39 @@ jobs:
           prerelease: true
           files: packages/cli/dist_bin/assets/*
 
-      - name: Bump Homebrew Formula
-        if: steps.gh-release.outcome == 'success'
-        uses: mislav/bump-homebrew-formula-action@v2
-        with:
-          formula-name: smartthings
-          tag-name: ${{ steps.cli-metadata.outputs.tag }}
-          download-url: https://github.com/SmartThingsCommunity/smartthings-cli/releases/download/${{ steps.cli-metadata.outputs.tag }}/smartthings-macos.tar.gz
-          homebrew-tap: SmartThingsCommunity/homebrew-smartthings
-          commit-message: |
-            chore: bump {{formulaName}} {{version}}
-
-            Created by https://github.com/mislav/bump-homebrew-formula-action
-        env:
-          COMMITTER_TOKEN: ${{ secrets.HOMEBREW_COMMITTER_TOKEN }}
-
       - name: Upload .exe Artifact
         if: steps.cli-package.outcome == 'success'
         uses: actions/upload-artifact@v3
         with:
           name: windows-exe
           path: packages/cli/dist_bin/win/smartthings.exe
+
+  homebrew-formula:
+    needs: release
+
+    if: needs.release.outputs.cli-released == 'true'
+
+    name: Bump Homebrew Formula
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+
+    - name: Configure Git Identity
+      uses: Homebrew/actions/git-user-config@master
+      with:
+        username: smartthingspi
+
+    - name: Tap Formula Repo
+      run: brew tap smartthingscommunity/smartthings
+
+    - name: Bump Formula
+      uses: Homebrew/actions/bump-formulae@master
+      with:
+        token: ${{ secrets.HOMEBREW_COMMITTER_TOKEN }}
+        formulae: smartthingscommunity/smartthings/smartthings
 
   windows-installer:
     needs: release
