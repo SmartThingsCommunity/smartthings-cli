@@ -55,8 +55,8 @@ Command line flags always override configuration options.
 
 | option | description |
 | -- | -- |
-| `--expanded` | Expanded table output with lines between rows. |
-| `--compact` | Compact table output without lines between rows. |
+| `--group-rows` | Separate groups of four rows by a line to make long rows easier to follow across the screen. |
+| `--no-group-rows` | Do not separate groups of four rows by a line to make long rows easier to follow across the screen. |
 | `--indent=<value>` | Indent level for JSON or YAML output. |
 
 ## Logging
