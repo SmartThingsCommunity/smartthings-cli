@@ -1,6 +1,11 @@
 import { Flags } from '@oclif/core'
+
+import { HttpClientHeaders } from '@smartthings/core-sdk'
+
 import { APICommand } from './api-command'
 
+
+const ORGANIZATION_HEADER = 'X-ST-Organization'
 
 /**
  * Base class for commands that need to use Rest API commands via the
@@ -11,7 +16,22 @@ export abstract class APIOrganizationCommand<T extends typeof APIOrganizationCom
 		...APICommand.flags,
 		organization: Flags.string({
 			char: 'O',
-			description: 'The organization ID to use for this command',
+			description: 'the organization ID to use for this command',
 		}),
+	}
+
+	async initHeaders(): Promise<HttpClientHeaders> {
+		const headers = await super.initHeaders()
+
+		if (this.flags.organization) {
+			headers[ORGANIZATION_HEADER] = this.flags.organization
+		} else {
+			const configOrganization = this.stringConfigValue('organization')
+			if (configOrganization) {
+				headers[ORGANIZATION_HEADER] = configOrganization
+			}
+		}
+
+		return headers
 	}
 }
