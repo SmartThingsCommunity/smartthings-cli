@@ -1,25 +1,19 @@
+import log4js from '@log4js-node/log4js-api'
 import { Flags } from '@oclif/core'
 import osLocale from 'os-locale'
+
 import { Authenticator, BearerTokenAuthenticator, HttpClientHeaders, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
+
 import { ClientIdProvider, defaultClientIdProvider, LoginAuthenticator } from './login-authenticator'
 import { SmartThingsCommand } from './smartthings-command'
-import log4js from '@log4js-node/log4js-api'
-import { APIOrganizationCommand } from './api-organization-command'
 
 
 const LANGUAGE_HEADER = 'Accept-Language'
-const ORGANIZATION_HEADER = 'X-ST-Organization'
-
-/**
- * The command being parsed will not always have {@link APIOrganizationCommand.flags}.
- * Therefore, we make them all optional to be safely accessible in init below.
- */
-type InputFlags = typeof APICommand.flags & Partial<typeof APIOrganizationCommand.flags>
 
 /**
  * Base class for commands that need to use Rest API via the SmartThings Core SDK.
  */
-export abstract class APICommand<T extends InputFlags> extends SmartThingsCommand<T> {
+export abstract class APICommand<T extends typeof APICommand.flags> extends SmartThingsCommand<T> {
 	static flags = {
 		...SmartThingsCommand.flags,
 		token: Flags.string({
@@ -36,7 +30,6 @@ export abstract class APICommand<T extends InputFlags> extends SmartThingsComman
 	protected token?: string
 	private _authenticator!: Authenticator
 	private _client!: SmartThingsClient
-	private _headers!: HttpClientHeaders
 
 	get authenticator(): Authenticator {
 		return this._authenticator
@@ -46,12 +39,23 @@ export abstract class APICommand<T extends InputFlags> extends SmartThingsComman
 		return this._client
 	}
 
-	protected get headers(): HttpClientHeaders {
-		return this._headers
-	}
-
 	get userAgent(): string {
 		return this.config.userAgent ?? '@smartthings/cli'
+	}
+
+	async initHeaders(): Promise<HttpClientHeaders> {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		const headers: HttpClientHeaders = { 'User-Agent': this.userAgent }
+
+		if (this.flags.language) {
+			if (this.flags.language !== 'NONE') {
+				headers[LANGUAGE_HEADER] = this.flags.language
+			}
+		} else {
+			headers[LANGUAGE_HEADER] = await osLocale()
+		}
+
+		return headers
 	}
 
 	async init(): Promise<void> {
@@ -77,25 +81,7 @@ export abstract class APICommand<T extends InputFlags> extends SmartThingsComman
 
 		const logger = log4js.getLogger('rest-client')
 
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		this._headers = { 'User-Agent': this.userAgent }
-
-		if (this.flags.language) {
-			if (this.flags.language !== 'NONE') {
-				this._headers[LANGUAGE_HEADER] = this.flags.language
-			}
-		} else {
-			this._headers[LANGUAGE_HEADER] = await osLocale()
-		}
-
-		if (this.flags.organization) {
-			this._headers[ORGANIZATION_HEADER] = this.flags.organization
-		} else {
-			const configOrganization = this.stringConfigValue('organization')
-			if (configOrganization) {
-				this._headers[ORGANIZATION_HEADER] = configOrganization
-			}
-		}
+		const headers = await this.initHeaders()
 
 		this._authenticator = this.token
 			? new BearerTokenAuthenticator(this.token)
@@ -109,6 +95,6 @@ export abstract class APICommand<T extends InputFlags> extends SmartThingsComman
 			this.warn(message)
 		}
 		this._client = new SmartThingsClient(this._authenticator,
-			{ urlProvider: this.clientIdProvider, logger, headers: this.headers, warningLogger })
+			{ urlProvider: this.clientIdProvider, logger, headers, warningLogger })
 	}
 }

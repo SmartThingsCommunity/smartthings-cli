@@ -91,28 +91,6 @@ describe('api-command', () => {
 			expect(configUsed?.headers).toContainEntry(['Accept-Language', 'es-US'])
 		})
 
-		it('passes organization flag on to client', async () => {
-			parseSpy.mockResolvedValueOnce({ args: {}, flags: { organization: 'organization-id-from-flag' } } as ParserOutputType)
-			await apiCommand.init()
-
-			expect(stClientSpy).toHaveBeenCalledTimes(1)
-
-			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed?.headers).toContainEntry(['X-ST-Organization', 'organization-id-from-flag'])
-		})
-
-		it('passes organization config on to client', async () => {
-			const profile: Profile = { organization: 'organization-id-from-config' }
-			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-
-			await apiCommand.init()
-
-			expect(stClientSpy).toHaveBeenCalledTimes(1)
-
-			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed?.headers).toContainEntry(['X-ST-Organization', 'organization-id-from-config'])
-		})
-
 		it('returns oclif config User-Agent and default if undefined', () => {
 			expect(apiCommand.userAgent).toBe('@smartthings/cli')
 
@@ -144,19 +122,6 @@ describe('api-command', () => {
 
 			// sets User-Agent
 			expect(LoginAuthenticator).toBeCalledWith(expect.anything(), expect.anything(), expect.any(String))
-		})
-
-		it('prefers organization flag over config', async () => {
-			const profile: Profile = { organization: 'organization-id-from-config' }
-			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-			parseSpy.mockResolvedValueOnce({ args: {}, flags: { organization: 'organization-id-from-flag' } } as ParserOutputType)
-
-			await apiCommand.init()
-
-			expect(stClientSpy).toHaveBeenCalledTimes(1)
-
-			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed?.headers).toContainEntry(['X-ST-Organization', 'organization-id-from-flag'])
 		})
 
 		describe('warningLogger', () => {
