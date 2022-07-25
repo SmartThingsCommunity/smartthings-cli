@@ -77,6 +77,7 @@ export abstract class APICommand<T extends InputFlags> extends SmartThingsComman
 
 		const logger = log4js.getLogger('rest-client')
 
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		this._headers = { 'User-Agent': this.userAgent }
 
 		if (this.flags.language) {

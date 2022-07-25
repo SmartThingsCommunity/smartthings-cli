@@ -13,6 +13,7 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 	static flags = {
 		...APICommand.flags,
 		...outputListing.flags,
+		/* eslint-disable @typescript-eslint/naming-convention */
 		'location-id': Flags.string({
 			char: 'l',
 			description: 'filter results by location',
@@ -38,6 +39,7 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 			char: 'a',
 			description: 'filter results by installed app that created the device',
 		}),
+		/* eslint-enable @typescript-eslint/naming-convention */
 		type: Flags.string({
 			description: 'filter results by device type',
 			options: Object.values(DeviceIntegrationType),

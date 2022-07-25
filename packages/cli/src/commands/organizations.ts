@@ -6,15 +6,15 @@ export const tableFieldDefinitions = [
 	'name', 'label', 'organizationId', 'developerGroupId', 'adminGroupId', 'warehouseGroupId',
 	{
 		prop: 'isDefaultUserOrg',
-		value: (i: OrganizationResponse) => i.isDefaultUserOrg?.toString(),
+		value: (i: OrganizationResponse): string | undefined => i.isDefaultUserOrg?.toString(),
 	},
 	{
 		prop: 'manufacturerName',
-		include: (i: OrganizationResponse) => i.manufacturerName !== undefined,
+		include: (i: OrganizationResponse): boolean => i.manufacturerName !== undefined,
 	},
 	{
 		prop: 'mnid',
-		include: (i: OrganizationResponse) => i.mnid !== undefined,
+		include: (i: OrganizationResponse): boolean => i.mnid !== undefined,
 	},
 ]
 

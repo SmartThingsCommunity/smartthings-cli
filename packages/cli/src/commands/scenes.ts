@@ -12,6 +12,7 @@ export default class ScenesCommand extends APICommand<typeof ScenesCommand.flags
 	static flags = {
 		...APICommand.flags,
 		...outputListing.flags,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'location-id': Flags.string({
 			char: 'l',
 			description: 'a specific location to query',

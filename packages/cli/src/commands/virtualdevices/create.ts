@@ -42,6 +42,7 @@ export default class VirtualDeviceCreateCommand extends APIOrganizationCommand<t
 			char: 'N',
 			description: 'name of the device to be created',
 		}),
+		/* eslint-disable @typescript-eslint/naming-convention */
 		'location-id': Flags.string({
 			char: 'l',
 			description: 'location into which device should be created',
@@ -58,6 +59,7 @@ export default class VirtualDeviceCreateCommand extends APIOrganizationCommand<t
 			char: 'f',
 			description: 'a file containing the device profile definition',
 		}),
+		/* eslint-enable @typescript-eslint/naming-convention */
 	}
 
 	async run(): Promise<void> {

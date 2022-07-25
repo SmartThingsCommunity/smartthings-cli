@@ -39,7 +39,7 @@ describe('SmartThingsCommand', () => {
 	const loadConfigMock = jest.mocked(loadConfig)
 	const parseSpy = jest.spyOn(TestCommand.prototype, 'parse')
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	type parserOutputType = Interfaces.ParserOutput<any, any>
+	type ParserOutputType = Interfaces.ParserOutput<any, any>
 
 	beforeEach(() => {
 		smartThingsCommand = new TestCommand([], testConfig)
@@ -53,7 +53,7 @@ describe('SmartThingsCommand', () => {
 
 	it('should set profile name via flags when passed during setup', async () => {
 		const profileName = 'notDefault'
-		const parserOutput = { args: {}, flags: { profile: profileName } } as parserOutputType
+		const parserOutput = { args: {}, flags: { profile: profileName } } as ParserOutputType
 		parseSpy.mockResolvedValueOnce(parserOutput)
 		await smartThingsCommand.init()
 
@@ -87,7 +87,8 @@ describe('SmartThingsCommand', () => {
 
 		loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
-		parseSpy.mockResolvedValueOnce({ args: {}, flags: { 'no-group-rows': true } } as parserOutputType)
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		parseSpy.mockResolvedValueOnce({ args: {}, flags: { 'no-group-rows': true } } as ParserOutputType)
 		await smartThingsCommand.init()
 
 		expect(smartThingsCommand.tableGenerator).toBeInstanceOf(DefaultTableGenerator)
@@ -102,7 +103,8 @@ describe('SmartThingsCommand', () => {
 		loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
 
 		const groupRows = true
-		parseSpy.mockResolvedValueOnce({ args: {}, flags: { 'group-rows': groupRows } } as parserOutputType)
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		parseSpy.mockResolvedValueOnce({ args: {}, flags: { 'group-rows': groupRows } } as ParserOutputType)
 		await smartThingsCommand.init()
 
 		expect(smartThingsCommand.tableGenerator).toBeInstanceOf(DefaultTableGenerator)

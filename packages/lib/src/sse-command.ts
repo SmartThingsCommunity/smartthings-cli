@@ -19,6 +19,7 @@ export abstract class SseCommand<T extends typeof SseCommand.flags> extends APIC
 	}
 
 	async initSource(url: string, sourceInitDict?: EventSource.EventSourceInitDict): Promise<void> {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const headers: HttpClientHeaders = { 'User-Agent': this.userAgent }
 
 		// assume auth is taken care of if passing an initDict

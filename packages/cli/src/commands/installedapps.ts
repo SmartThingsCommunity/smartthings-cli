@@ -12,6 +12,7 @@ export default class InstalledAppsCommand extends APICommand<typeof InstalledApp
 	static flags = {
 		...APICommand.flags,
 		...outputListing.flags,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'location-id': Flags.string({
 			char: 'l',
 			description: 'filter results by location',

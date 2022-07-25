@@ -76,6 +76,7 @@ export async function forAllOrganizations<T>(
 		query: (orgClient: SmartThingsClient, org: OrganizationResponse) => Promise<T[]>): Promise<(T & WithOrganization)[]> {
 	const organizations = await client.organizations.list()
 	const nestedItems = await Promise.all(organizations.map(async (org) => {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const orgClient = client.clone({ 'X-ST-Organization': org.organizationId })
 		const items = await query(orgClient, org)
 		return items.map(item => ({ ...item, organization: org.name }))

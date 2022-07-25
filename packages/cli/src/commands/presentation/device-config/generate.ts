@@ -16,6 +16,7 @@ export default class GeneratePresentationCommand extends APICommand<typeof Gener
 		dth: Flags.boolean({
 			description: 'generate from legacy DTH id instead of a profile id',
 		}),
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'type-shard-id': Flags.string({
 			description: 'data management shard Id where the device type resides, ' +
 				'only useful for legacy DTH type integrations',

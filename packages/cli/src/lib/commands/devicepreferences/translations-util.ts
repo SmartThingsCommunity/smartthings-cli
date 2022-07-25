@@ -12,7 +12,7 @@ export const tableFieldDefinitions: TableFieldDefinition<PreferenceLocalization>
 		prop: 'options',
 		include: preferenceLocalization => !!preferenceLocalization.options,
 		skipEmpty: true,
-		value: preferenceLocalization => {
+		value: (preferenceLocalization: PreferenceLocalization): string | undefined => {
 			return preferenceLocalization.options ?
 				Object.entries(preferenceLocalization.options).map(([option, translation]) => `${option}: ${translation.label}`).join('\n') :
 				undefined

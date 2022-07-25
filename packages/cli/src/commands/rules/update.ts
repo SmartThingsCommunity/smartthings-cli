@@ -13,6 +13,7 @@ export default class RulesUpdateCommand extends APICommand<typeof RulesUpdateCom
 	static flags = {
 		...APICommand.flags,
 		...inputAndOutputItem.flags,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'location-id': Flags.string({
 			char: 'l',
 			description: 'a specific location to query',

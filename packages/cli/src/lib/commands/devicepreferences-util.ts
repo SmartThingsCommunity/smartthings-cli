@@ -13,7 +13,7 @@ export const tableFieldDefinitions: TableFieldDefinition<DevicePreference>[] = [
 	{
 		prop: 'definition.options',
 		skipEmpty: true,
-		value: (pref: DevicePreference) => {
+		value: (pref: DevicePreference): string | undefined => {
 			if (pref.preferenceType !== 'enumeration') {
 				return undefined
 			}

@@ -31,7 +31,7 @@ describe('SseCommand', () => {
 	const handleSignalsSpy = jest.spyOn(sseUtil, 'handleSignals')
 	const parseSpy = jest.spyOn(TestCommand.prototype, 'parse')
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	type parserOutputType = Interfaces.ParserOutput<any, any>
+	type ParserOutputType = Interfaces.ParserOutput<any, any>
 
 	beforeEach(() => {
 		sseCommand = new TestCommand([], testConfig)
@@ -44,7 +44,7 @@ describe('SseCommand', () => {
 	})
 
 	it('does not throw Error when source properly setup', async () => {
-		parseSpy.mockResolvedValueOnce({ args: {}, flags } as parserOutputType)
+		parseSpy.mockResolvedValueOnce({ args: {}, flags } as ParserOutputType)
 		await sseCommand.init()
 		await sseCommand.initSource('localhost')
 
@@ -52,7 +52,7 @@ describe('SseCommand', () => {
 	})
 
 	it('adds auth header with token to eventsource by default', async () => {
-		parseSpy.mockResolvedValueOnce({ args: {}, flags } as parserOutputType)
+		parseSpy.mockResolvedValueOnce({ args: {}, flags } as ParserOutputType)
 		await sseCommand.init()
 		await sseCommand.initSource('localhost')
 
@@ -63,7 +63,7 @@ describe('SseCommand', () => {
 	})
 
 	it('accepts source init dict and merges it with defaults', async () => {
-		parseSpy.mockResolvedValueOnce({ args: {}, flags } as parserOutputType)
+		parseSpy.mockResolvedValueOnce({ args: {}, flags } as ParserOutputType)
 		await sseCommand.init()
 
 		const initDict = { headers: { 'Cookie': 'test=test' } }
@@ -71,19 +71,20 @@ describe('SseCommand', () => {
 
 		expect(EventSource).toBeCalledWith(
 			'localhost',
+			// eslint-disable-next-line @typescript-eslint/naming-convention
 			{ headers: { 'User-Agent': expect.any(String), ...initDict.headers } },
 		)
 	})
 
 	it('registers signal handler on initialization', async () => {
-		parseSpy.mockResolvedValueOnce({ args: {}, flags } as parserOutputType)
+		parseSpy.mockResolvedValueOnce({ args: {}, flags } as ParserOutputType)
 		await sseCommand.init()
 
 		expect(handleSignalsSpy).toBeCalled()
 	})
 
 	it('sets default error handler', async () => {
-		parseSpy.mockResolvedValueOnce({ args: {}, flags } as parserOutputType)
+		parseSpy.mockResolvedValueOnce({ args: {}, flags } as ParserOutputType)
 		await sseCommand.init()
 		await sseCommand.initSource('localhost')
 
