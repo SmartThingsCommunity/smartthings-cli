@@ -175,7 +175,7 @@ export default class DeviceProfileCreateCommand extends APIOrganizationCommand<t
 	}
 
 	// TODO - update once capability versions are supported
-	protected async capabilityDefined(idStr:string): Promise<boolean> {
+	protected async capabilityDefined(idStr: string): Promise<boolean> {
 		try {
 			const capability = await this.client.capabilities.get(idStr, 1)
 			return !!capability

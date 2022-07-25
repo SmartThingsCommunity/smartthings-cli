@@ -98,7 +98,7 @@ outputList.flags = buildOutputFormatter.flags
  * specified and the first one to return data is used.
  */
 export async function inputAndOutputItem<I, O>(command: SmartThingsCommandInterface, config: CommonOutputProducer<O>,
-		executeAction: ActionFunction<void, I, O>, ...alternateInputProcessors: InputProcessor<I>[]) : Promise<void> {
+		executeAction: ActionFunction<void, I, O>, ...alternateInputProcessors: InputProcessor<I>[]): Promise<void> {
 	const [itemIn, defaultIOFormat] = await inputItem<I>(command, ...alternateInputProcessors)
 	if (command.flags['dry-run']) {
 		const outputFormatter = buildOutputFormatter(command, defaultIOFormat)

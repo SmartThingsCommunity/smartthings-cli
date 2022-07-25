@@ -90,6 +90,7 @@ module.exports = {
 		'@typescript-eslint/object-curly-spacing': ['error', 'always'],
 		'comma-spacing': 'off',
 		'@typescript-eslint/comma-spacing': ['error'],
+		'@typescript-eslint/type-annotation-spacing': 'error',
 
 		// disallow non-import statements appearing before import statements
 		'import/first': 'error',
