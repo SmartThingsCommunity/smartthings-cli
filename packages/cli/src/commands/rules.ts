@@ -11,6 +11,7 @@ export default class RulesCommand extends APICommand<typeof RulesCommand.flags> 
 	static flags = {
 		...APICommand.flags,
 		...outputListing.flags,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'location-id': Flags.string({
 			char: 'l',
 			description: 'a specific location to query',

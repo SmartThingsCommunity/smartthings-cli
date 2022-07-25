@@ -9,6 +9,7 @@ export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> 
 
 	static flags = {
 		...APICommand.flags,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'location-id': Flags.string({
 			char: 'l',
 			description: 'a specific location to query',

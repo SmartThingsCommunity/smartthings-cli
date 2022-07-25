@@ -40,6 +40,7 @@ export default class VirtualDeviceCreateStandardCommand extends APICommand<typeo
 			char: 'N',
 			description: 'name of the device to be created',
 		}),
+		/* eslint-disable @typescript-eslint/naming-convention */
 		'location-id': Flags.string({
 			char: 'l',
 			description: 'location into which device should be created',
@@ -48,6 +49,7 @@ export default class VirtualDeviceCreateStandardCommand extends APICommand<typeo
 			char: 'R',
 			description: 'the room to put the device into',
 		}),
+		/* eslint-enable @typescript-eslint/naming-convention */
 		prototype: Flags.string({
 			char: 'T',
 			description: 'standard device prototype, e.g. VIRTUAL_SWITCH or VIRTUAL_DIMMER_SWITCH',

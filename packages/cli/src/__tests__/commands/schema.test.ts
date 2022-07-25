@@ -64,6 +64,7 @@ describe('SchemaCommand', () => {
 
 		await expect(SchemaCommand.run([])).resolves.not.toThrow()
 
+		/* eslint-disable @typescript-eslint/naming-convention */
 		const listFunction = outputListingMock.mock.calls[0][3] as ListDataFunction<SchemaApp & { 'ARN/URL': string }>
 
 		const expected: SchemaApp & { 'ARN/URL': string }[] = [
@@ -76,6 +77,7 @@ describe('SchemaCommand', () => {
 				'ARN/URL': 'URL',
 			},
 		]
+		/* eslint-enable @typescript-eslint/naming-convention */
 
 		await expect(listFunction()).resolves.toEqual(
 			expect.arrayContaining(expected),

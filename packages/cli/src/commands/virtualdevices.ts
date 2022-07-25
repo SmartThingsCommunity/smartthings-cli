@@ -18,6 +18,7 @@ export default class VirtualDevicesCommand extends APICommand<typeof VirtualDevi
 	static flags = {
 		...APICommand.flags,
 		...outputListing.flags,
+		/* eslint-disable @typescript-eslint/naming-convention */
 		'location-id': Flags.string({
 			char: 'l',
 			description: 'filter results by location',
@@ -27,6 +28,7 @@ export default class VirtualDevicesCommand extends APICommand<typeof VirtualDevi
 			char: 'a',
 			description: 'filter results by installed app that created the device',
 		}),
+		/* eslint-enable @typescript-eslint/naming-convention */
 		verbose: Flags.boolean({
 			description: 'include location name in output',
 			char: 'v',

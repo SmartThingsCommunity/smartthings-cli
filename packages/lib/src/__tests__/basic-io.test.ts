@@ -180,6 +180,7 @@ describe('basic-io', () => {
 				...command,
 				flags: {
 					...command.flags,
+					// eslint-disable-next-line @typescript-eslint/naming-convention
 					'dry-run': true,
 				},
 			}

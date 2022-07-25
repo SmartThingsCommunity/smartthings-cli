@@ -63,7 +63,7 @@ describe('api-command', () => {
 		const loadConfigMock = jest.mocked(loadConfig)
 		const parseSpy = jest.spyOn(TestCommand.prototype, 'parse')
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		type parserOutputType = Interfaces.ParserOutput<any, any>
+		type ParserOutputType = Interfaces.ParserOutput<any, any>
 
 		let apiCommand: TestCommand
 
@@ -74,7 +74,7 @@ describe('api-command', () => {
 
 		it('should set token when passed via flags during setup', async () => {
 			const token = 'token-from-cmd-line'
-			parseSpy.mockResolvedValueOnce({ args: {}, flags: { token } } as parserOutputType)
+			parseSpy.mockResolvedValueOnce({ args: {}, flags: { token } } as ParserOutputType)
 			await apiCommand.init()
 
 			expect(apiCommand.getToken()).toBe(token)
@@ -82,7 +82,7 @@ describe('api-command', () => {
 		})
 
 		it('should pass language header on to client', async () => {
-			parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'es-US' } } as parserOutputType)
+			parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'es-US' } } as ParserOutputType)
 			await apiCommand.init()
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
@@ -92,7 +92,7 @@ describe('api-command', () => {
 		})
 
 		it('passes organization flag on to client', async () => {
-			parseSpy.mockResolvedValueOnce({ args: {}, flags: { organization: 'organization-id-from-flag' } } as parserOutputType)
+			parseSpy.mockResolvedValueOnce({ args: {}, flags: { organization: 'organization-id-from-flag' } } as ParserOutputType)
 			await apiCommand.init()
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)
@@ -131,7 +131,7 @@ describe('api-command', () => {
 		})
 
 		it('uses BearerTokenAuthenticator in client if token is provided', async () => {
-			parseSpy.mockResolvedValueOnce({ args: {}, flags: { token: 'token' } } as parserOutputType)
+			parseSpy.mockResolvedValueOnce({ args: {}, flags: { token: 'token' } } as ParserOutputType)
 			await apiCommand.init()
 
 			expect(stClientSpy).toBeCalledWith(expect.any(BearerTokenAuthenticator), expect.anything())
@@ -149,7 +149,7 @@ describe('api-command', () => {
 		it('prefers organization flag over config', async () => {
 			const profile: Profile = { organization: 'organization-id-from-config' }
 			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-			parseSpy.mockResolvedValueOnce({ args: {}, flags: { organization: 'organization-id-from-flag' } } as parserOutputType)
+			parseSpy.mockResolvedValueOnce({ args: {}, flags: { organization: 'organization-id-from-flag' } } as ParserOutputType)
 
 			await apiCommand.init()
 
@@ -161,7 +161,7 @@ describe('api-command', () => {
 
 		describe('warningLogger', () => {
 			it('uses string as-is', async () => {
-				parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'es-US' } } as parserOutputType)
+				parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'es-US' } } as ParserOutputType)
 				await apiCommand.init()
 
 				expect(stClientSpy).toHaveBeenCalledTimes(1)
@@ -179,7 +179,7 @@ describe('api-command', () => {
 			})
 
 			it('uses builds table out of list of warnings', async () => {
-				parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'es-US' } } as parserOutputType)
+				parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'es-US' } } as ParserOutputType)
 				await apiCommand.init()
 
 				expect(stClientSpy).toHaveBeenCalledTimes(1)
@@ -204,7 +204,7 @@ describe('api-command', () => {
 		})
 
 		it('should skip language header when "NONE" specified', async () => {
-			parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'NONE' } } as parserOutputType)
+			parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'NONE' } } as ParserOutputType)
 			await apiCommand.init()
 
 			expect(stClientSpy).toHaveBeenCalledTimes(1)

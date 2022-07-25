@@ -63,6 +63,7 @@ describe('LoginAuthenticator', () => {
 		},
 		categories: {
 			default: { appenders: ['main'], level: 'ERROR' },
+			// eslint-disable-next-line @typescript-eslint/naming-convention
 			'login-authenticator': { appenders: ['main'], level: 'TRACE' },
 		},
 	}
@@ -96,21 +97,25 @@ describe('LoginAuthenticator', () => {
 	}
 	const codeVerifierRegex = /\bcode_verifier=[\w|-]+\b/
 	interface AuthTokenResponse {
+		/* eslint-disable @typescript-eslint/naming-convention */
 		access_token: string
 		refresh_token: string
 		expires_in: number
 		scope: string
 		installed_app_id: string
 		device_id: string
+		/* eslint-enable @typescript-eslint/naming-convention */
 	}
 	const tokenResponse: AxiosResponse<AuthTokenResponse> = {
 		data: {
+			/* eslint-disable @typescript-eslint/naming-convention */
 			access_token: 'access token',
 			refresh_token: 'refresh token',
 			expires_in: 24 * 3600,
 			scope: 'scope list',
 			installed_app_id: 'installed app id',
 			device_id: 'device id',
+			/* eslint-enable @typescript-eslint/naming-convention */
 		},
 		status: 200,
 		statusText: 'OK',
@@ -325,6 +330,7 @@ describe('LoginAuthenticator', () => {
 			const mockFinishRequest = {
 				query: {
 					error: 'could not get code',
+					// eslint-disable-next-line @typescript-eslint/naming-convention
 					error_description: 'because of reasons',
 				},
 			}

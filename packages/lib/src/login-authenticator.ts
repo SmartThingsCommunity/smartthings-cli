@@ -89,8 +89,10 @@ export class LoginAuthenticator implements Authenticator {
 
 		this.postConfig = {
 			headers: {
+				/* eslint-disable @typescript-eslint/naming-convention */
 				'Content-Type': 'application/x-www-form-urlencoded',
 				'User-Agent': userAgent,
+				/* eslint-enable @typescript-eslint/naming-convention */
 			},
 		}
 	}
@@ -149,6 +151,7 @@ export class LoginAuthenticator implements Authenticator {
 		app.get('/start', (_req, res) => {
 			const authorizeURL = new URL(`${baseOAuthInURL}/authorize`)
 			authorizeURL.search = new URLSearchParams({
+				/* eslint-disable @typescript-eslint/naming-convention */
 				scope: scopes.join('+'),
 				response_type: 'code',
 				client_id: this.clientId,
@@ -156,6 +159,7 @@ export class LoginAuthenticator implements Authenticator {
 				code_challenge_method: 'S256',
 				redirect_uri: finishURL,
 				client_type: 'USER_LEVEL',
+				/* eslint-enable @typescript-eslint/naming-convention */
 			}).toString()
 
 			this.logger.debug('redirecting to', `${authorizeURL.origin}${authorizeURL.pathname}`)
@@ -175,11 +179,13 @@ export class LoginAuthenticator implements Authenticator {
 			}
 
 			const requestBody = {
+				/* eslint-disable @typescript-eslint/naming-convention */
 				'grant_type': 'authorization_code',
 				'client_id': this.clientId,
 				'code_verifier': verifier,
 				'code': req.query.code,
 				'redirect_uri': finishURL,
+				/* eslint-enable @typescript-eslint/naming-convention */
 			}
 
 			this.logger.debug(`making axios request: ${baseOAuthInURL}/token`)
@@ -249,9 +255,11 @@ export class LoginAuthenticator implements Authenticator {
 		this.logger.debug('refreshing token')
 		const oauthAuthTokenRefreshURL = this.clientIdProvider.oauthAuthTokenRefreshURL
 		const requestBody = {
+			/* eslint-disable @typescript-eslint/naming-convention */
 			'grant_type': 'refresh_token',
 			'client_id': this.clientId,
 			'refresh_token': this.authenticationInfo?.refreshToken,
+			/* eslint-enable @typescript-eslint/naming-convention */
 		}
 
 		this.logger.debug(`making axios request: ${oauthAuthTokenRefreshURL}`)

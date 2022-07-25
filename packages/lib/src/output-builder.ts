@@ -25,6 +25,7 @@ export const outputFlags = {
 		char: 'o',
 		description: 'specify output file',
 	}),
+	/* eslint-disable @typescript-eslint/naming-convention */
 	'group-rows': Flags.boolean({
 		description: 'separate groups of four rows by a line to make long rows easier to follow across the screen',
 		hidden: true,
@@ -33,6 +34,7 @@ export const outputFlags = {
 		description: 'do not separate groups of four rows by a line to make long rows easier to follow across the screen',
 		hidden: true,
 	}),
+	/* eslint-enable @typescript-eslint/naming-convention */
 }
 
 buildOutputFormatter.flags = {

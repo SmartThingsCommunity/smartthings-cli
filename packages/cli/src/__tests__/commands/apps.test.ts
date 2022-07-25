@@ -143,6 +143,7 @@ describe('AppsCommand', () => {
 		await expect(AppsCommand.run(['--verbose'])).resolves.not.toThrow()
 
 		const listApps = mockOutputListing.mock.calls[0][3]
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const verboseApp = (await listApps()).pop() as AppResponse & { 'ARN/URL'?: string }
 
 		expect(getSpy).toBeCalledTimes(1)

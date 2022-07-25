@@ -46,6 +46,7 @@ export default class SchemaCommand extends APICommand<typeof SchemaCommand.flags
 				return schemaApps.map(app => {
 					return {
 						...app,
+						// eslint-disable-next-line @typescript-eslint/naming-convention
 						'ARN/URL': app.hostingType === 'lambda' ? app.lambdaArn : app.webhookUrl,
 					}
 				})

@@ -12,6 +12,7 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand<typeof I
 
 	static flags = {
 		...APICommand.flags,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'location-id': Flags.string({
 			char: 'l',
 			description: 'filter results by location',

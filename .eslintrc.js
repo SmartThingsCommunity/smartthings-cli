@@ -73,6 +73,7 @@ module.exports = {
 		'@typescript-eslint/explicit-function-return-type': ['error', {
 			allowExpressions: true,
 		}],
+		'@typescript-eslint/explicit-module-boundary-types': 'error',
 		'@typescript-eslint/no-explicit-any': 'error',
 		'@typescript-eslint/no-non-null-assertion': 'error',
 		'no-use-before-define': 'off',
@@ -81,8 +82,7 @@ module.exports = {
 			{ functions: false, classes: false, enums: false, variables: true },
 		],
 		'@typescript-eslint/no-var-requires': 'error',
-		'@typescript-eslint/ban-ts-ignore': 0,
-		'@typescript-eslint/explicit-module-boundary-types': 'off',
+		'@typescript-eslint/ban-ts-comment': 'error',
 		'@typescript-eslint/no-floating-promises': 'error',
 		'space-infix-ops': 'off',
 		'@typescript-eslint/space-infix-ops': 'error',
@@ -110,5 +110,37 @@ module.exports = {
 		'import/no-self-import': 'error',
 		// Require modules with a single export to use a default export
 		'import/prefer-default-export': 'off', // we want everything to be named
+		'@typescript-eslint/naming-convention': [
+			'error',
+			{
+				selector: 'default',
+				format: ['camelCase'],
+				leadingUnderscore: 'allow',
+				trailingUnderscore: 'allow',
+				// interfaces on the Hub are snake_case
+				filter: {
+					regex: '^(driver_id|driver_name|log_level|driver_id|driver_name|archive_hash)$',
+					match: false,
+				},
+			},
+			{
+				selector: 'variable',
+				format: ['camelCase', 'UPPER_CASE'],
+				leadingUnderscore: 'allow',
+				trailingUnderscore: 'allow',
+			},
+			{
+				selector: 'typeLike',
+				format: ['PascalCase'],
+			},
+			{
+				selector: 'objectLiteralProperty',
+				format: ['camelCase', 'PascalCase'],
+			},
+			{
+				selector: 'enumMember',
+				format: ['PascalCase', 'UPPER_CASE'],
+			},
+		],
 	},
 }

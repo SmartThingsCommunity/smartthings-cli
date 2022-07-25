@@ -58,6 +58,7 @@ export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
 						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 						return this.client.apps.get(app.appId!)
 					})
+					// eslint-disable-next-line @typescript-eslint/naming-convention
 					return Promise.all(apps).then((list: (AppResponse & { 'ARN/URL'?: string })[]) => {
 						for (const app of list) {
 							const uri = (app.webhookSmartApp ?

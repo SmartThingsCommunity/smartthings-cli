@@ -111,6 +111,7 @@ export async function inputAndOutputItem<I, O>(command: SmartThingsCommandInterf
 inputAndOutputItem.flags = {
 	...buildInputProcessor.flags,
 	...buildOutputFormatter.flags,
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	'dry-run': Flags.boolean({
 		char: 'd',
 		description: "produce JSON but don't actually submit",

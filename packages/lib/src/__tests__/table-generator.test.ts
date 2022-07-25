@@ -17,6 +17,7 @@ jest.mock('@log4js-node/log4js-api', () => ({
 jest.mock('lodash.at', () => {
 	const actualAt = jest.requireActual('lodash.at')
 	return {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		__esModule: true,
 		default: jest.fn(actualAt),
 	}

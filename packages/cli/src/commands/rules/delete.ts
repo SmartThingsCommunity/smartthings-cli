@@ -10,6 +10,7 @@ export default class RulesDeleteCommand extends APICommand<typeof RulesDeleteCom
 
 	static flags = {
 		...APICommand.flags,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'location-id': Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
