@@ -1,80 +1,17 @@
 import { Flags } from '@oclif/core'
 
-import { DeviceProfile, LocaleReference } from '@smartthings/core-sdk'
+import { DeviceProfile } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, ChooseOptions, WithOrganization, allOrganizationsFlags,
-	chooseOptionsWithDefaults, outputListing, forAllOrganizations, selectFromList,
-	stringTranslateToId, summarizedText, Table, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
+import {
+	APIOrganizationCommand,
+	WithOrganization,
+	allOrganizationsFlags,
+	outputListing,
+	forAllOrganizations,
+	TableFieldDefinition,
+} from '@smartthings/cli-lib'
+import { buildTableOutput } from '../lib/commands/deviceprofiles-util'
 
-
-export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfile,
-		basicTableHook?: (table: Table) => void): string {
-	const table = tableGenerator.newOutputTable()
-	table.push(['Name', data.name])
-	for (const comp of data.components) {
-		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
-	}
-	table.push(['Id', data.id])
-	table.push(['Device Type', data.metadata?.deviceType ?? ''])
-	table.push(['OCF Device Type', data.metadata?.ocfDeviceType ?? ''])
-	table.push(['Manufacturer Name', data.metadata?.mnmn ?? ''])
-	table.push(['Presentation ID', data.metadata?.vid ?? ''])
-	table.push(['Status', data.status])
-	if (basicTableHook) {
-		basicTableHook(table)
-	}
-
-	let preferencesInfo = 'No preferences'
-	if (data.preferences?.length) {
-		preferencesInfo = 'Device Preferences\n' + tableGenerator.buildTableFromList(data.preferences,
-			['preferenceId', 'title', 'preferenceType', 'definition.default'])
-	}
-	return `Basic Information\n${table.toString()}\n\n` +
-		`${preferencesInfo}\n\n` +
-		summarizedText
-}
-
-export async function chooseDeviceProfile(command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>, deviceProfileFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
-	const opts = chooseOptionsWithDefaults(options)
-	const config = {
-		itemName: 'device profile',
-		primaryKeyName: 'id',
-		sortKeyName: 'name',
-		listTableFieldDefinitions: ['name', 'status', 'id'],
-	}
-	if (opts.verbose) {
-		config.listTableFieldDefinitions.splice(3, 0, 'locales')
-	}
-
-	const listItems = async (): Promise<DeviceProfile[]> => {
-		const deviceProfiles = await command.client.deviceProfiles.list()
-		if (opts.verbose) {
-			const ops = deviceProfiles.map(async (it) => {
-				try {
-					return await command.client.deviceProfiles.listLocales(it.id)
-				} catch (error) {
-					if ('message' in error && error.message.includes('status code 404')) {
-						return []
-					} else {
-						throw error
-					}
-				}
-			})
-
-			const locales = await Promise.all(ops)
-
-			return deviceProfiles.map((deviceProfile, index) => {
-				return { ...deviceProfile, locales: locales[index].map((it: LocaleReference) => it.tag).sort().join(', ') }
-			})
-		}
-		return deviceProfiles
-	}
-
-	const preselectedId = opts.allowIndex
-		? await stringTranslateToId(config, deviceProfileFromArg, listItems)
-		: deviceProfileFromArg
-	return selectFromList(command, config, { preselectedId, listItems })
-}
 
 export default class DeviceProfilesCommand extends APIOrganizationCommand<typeof DeviceProfilesCommand.flags> {
 	static description = 'list all device profiles available in a user account or retrieve a single profile'

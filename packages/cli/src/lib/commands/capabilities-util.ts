@@ -1,12 +1,22 @@
 import inquirer from 'inquirer'
 
 import {
-	Capability, CapabilityArgument, CapabilitySummary, CapabilityJSONSchema, CapabilityNamespace,
+	Capability,
+	CapabilityArgument,
+	CapabilitySummary,
+	CapabilityJSONSchema,
+	CapabilityNamespace,
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
 import {
-	APIOrganizationCommand, ListDataFunction, selectFromList, sort, Sorting, summarizedText, TableGenerator,
+	APICommand,
+	ListDataFunction,
+	selectFromList,
+	sort,
+	Sorting,
+	summarizedText,
+	TableGenerator,
 } from '@smartthings/cli-lib'
 
 
@@ -216,7 +226,7 @@ export const translateToId = async (sortKeyName: string, idOrIndex: string | Cap
 	return { id: matchingItem.id, version: matchingItem.version }
 }
 
-export const chooseCapability = async (command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>, idFromArgs?: string,
+export const chooseCapability = async (command: APICommand<typeof APICommand.flags>, idFromArgs?: string,
 		versionFromArgs?: number, promptMessage?: string): Promise<CapabilityId> => {
 	const preselectedId: CapabilityId | undefined = idFromArgs
 		? { id: idFromArgs, version: versionFromArgs ?? 1 }
@@ -235,7 +245,7 @@ export const chooseCapability = async (command: APIOrganizationCommand<typeof AP
 	})
 }
 
-export const chooseCapabilityFiltered = async (command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>,
+export const chooseCapabilityFiltered = async (command: APICommand<typeof APICommand.flags>,
 		promptMessage: string, filter: string): Promise<CapabilityId> => {
 	const config = {
 		itemName: 'capability',

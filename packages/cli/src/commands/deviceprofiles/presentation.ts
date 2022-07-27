@@ -3,7 +3,7 @@ import { Errors } from '@oclif/core'
 import { APIOrganizationCommand, formatAndWriteItem } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../presentation'
-import { chooseDeviceProfile } from '../deviceprofiles'
+import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
 
 
 export default class DeviceProfilePresentationCommand extends APIOrganizationCommand<typeof DeviceProfilePresentationCommand.flags> {

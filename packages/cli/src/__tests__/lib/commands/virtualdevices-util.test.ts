@@ -15,11 +15,11 @@ import {
 	chooseUnit,
 	chooseValue,
 } from '../../../lib/commands/virtualdevices-util'
-import { chooseDeviceProfile } from '../../../commands/deviceprofiles'
+import { chooseDeviceProfile } from '../../../lib/commands/deviceprofiles-util'
 import { Device, DeviceIntegrationType, DeviceProfile, DeviceProfileStatus } from '@smartthings/core-sdk'
 
 
-jest.mock('../../../commands/deviceprofiles')
+jest.mock('../../../lib/commands/deviceprofiles-util')
 
 describe('virtualdevices-util', () => {
 	describe('chooseDeviceName function', () => {
