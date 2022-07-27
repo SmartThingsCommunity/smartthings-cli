@@ -1,25 +1,11 @@
 import { Flags } from '@oclif/core'
 
-import { DeviceProfile, DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
+import { DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, ListingOutputConfig, outputListing, TableGenerator } from '@smartthings/cli-lib'
-import { chooseDeviceProfile } from '../deviceprofiles'
+import { APIOrganizationCommand, ListingOutputConfig, outputListing } from '@smartthings/cli-lib'
+import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
+import { buildTableOutput } from '../../lib/commands/deviceprofiles/translations-util'
 
-
-export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceProfileTranslations): string {
-	let result = `Tag: ${data.tag}`
-	if (data.components) {
-		const table = tableGenerator.newOutputTable({ head: ['Component', 'Label', 'Description'] })
-		for (const name of Object.keys(data.components)) {
-			const component = data.components[name]
-			table.push([name, component.label, component.description || ''])
-		}
-		result += '\n' + table.toString()
-	}
-	return result
-}
-
-export type DeviceProfileWithLocales = DeviceProfile & { locales?: string }
 
 export default class DeviceProfileTranslationsCommand extends APIOrganizationCommand<typeof DeviceProfileTranslationsCommand.flags> {
 	static description = 'Get list of locales supported by the device profiles'

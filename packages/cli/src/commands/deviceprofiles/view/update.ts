@@ -1,9 +1,14 @@
 import { ActionFunction, APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { generateDefaultConfig } from '../create'
-import { cleanupRequest } from '../update'
-import { augmentPresentationValues, buildTableOutput, DeviceDefinition, DeviceDefinitionRequest, prunePresentationValues } from '../view'
-import { chooseDeviceProfile } from '../../deviceprofiles'
+import { generateDefaultConfig } from '../../../lib/commands/deviceprofiles/create-util'
+import {
+	augmentPresentationValues,
+	buildTableOutput,
+	DeviceDefinition,
+	DeviceDefinitionRequest,
+	prunePresentationValues,
+} from '../../../lib/commands/deviceprofiles/view-util'
+import { chooseDeviceProfile, cleanupDeviceProfileRequest } from '../../../lib/commands/deviceprofiles-util'
 
 
 export default class DeviceProfilesViewUpdateCommand extends APIOrganizationCommand<typeof DeviceProfilesViewUpdateCommand.flags> {
@@ -69,7 +74,7 @@ export default class DeviceProfilesViewUpdateCommand extends APIOrganizationComm
 			}
 			profileData.metadata.vid = presentation.presentationId
 			profileData.metadata.mnmn = presentation.manufacturerName
-			const profile = await this.client.deviceProfiles.update(id, cleanupRequest(profileData))
+			const profile = await this.client.deviceProfiles.update(id, cleanupDeviceProfileRequest(profileData))
 
 			return { ...profile, presentation: prunePresentationValues(presentation) }
 		}

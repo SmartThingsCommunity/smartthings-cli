@@ -1,6 +1,6 @@
 import { APIOrganizationCommand } from '@smartthings/cli-lib'
 
-import { chooseDeviceProfile } from '../deviceprofiles'
+import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
 
 
 export default class DeviceProfileDeleteCommand extends APIOrganizationCommand<typeof DeviceProfileDeleteCommand.flags> {

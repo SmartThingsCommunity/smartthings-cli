@@ -2,8 +2,8 @@ import { DeviceProfileTranslations } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../translations'
-import { chooseDeviceProfile } from '../../deviceprofiles'
+import { buildTableOutput } from '../../../lib/commands/deviceprofiles/translations-util'
+import { chooseDeviceProfile } from '../../../lib/commands/deviceprofiles-util'
 
 
 export default class DeviceProfileTranslationsUpsertCommand extends APIOrganizationCommand<typeof DeviceProfileTranslationsUpsertCommand.flags> {

@@ -12,7 +12,8 @@ import {
 	APICommand, APIOrganizationCommand, FileInputProcessor,
 	selectFromList,
 } from '@smartthings/cli-lib'
-import { chooseDeviceProfile } from '../../commands/deviceprofiles'
+
+import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
 
 
 export const locallyExecutingPrototypes = [
