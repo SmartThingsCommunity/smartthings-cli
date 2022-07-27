@@ -1,4 +1,4 @@
-name: Release
+name: CD
 
 on:
   push:
@@ -59,33 +59,123 @@ jobs:
           echo "::set-output name=tag::$(echo $PUBLISHED_PACKAGE | jq --raw-output '.name + "@" + .version')"
           echo "::set-output name=version::$(echo $PUBLISHED_PACKAGE | jq --raw-output '.version')"
 
+  package:
+    name: Package CLI
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - run: npm ci
+      - run: npm run build
+
       - name: Package CLI
-        id: cli-package
-        if: steps.cli-metadata.outcome == 'success'
         run: pwd && ls -l . packages/cli packages/cli/lib && echo 'packaging' && npm run package && echo 'done packaging' && pwd && ls -l . packages/cli packages/cli/lib packages/cli/dist_bin
+
+      # maintain executable file permissions
+      # see https://github.com/actions/upload-artifact/issues/38
+      - name: Tar files
+        run: tar -cvf dist_bin.tar packages/cli/dist_bin/
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist_bin
+          path: dist_bin.tar
+
+  functional-test:
+    needs: package
+
+    name: Functional Tests
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist_bin
+
+      - name: Extract Artifacts
+        run: tar -xvf dist_bin.tar
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+
+      # make sure 'smartthings' is available to child processes
+      - name: Set Windows Path
+        if: runner.os == 'Windows'
+        run: Add-Content $env:GITHUB_PATH "${{ github.workspace }}\packages\cli\dist_bin\win"
+      - name: Set macOS Path
+        if: runner.os == 'macOS'
+        run: echo "$GITHUB_WORKSPACE/packages/cli/dist_bin/macos" >> $GITHUB_PATH
+      - name: Set Linux Path
+        if: runner.os == 'Linux'
+        run: echo "$GITHUB_WORKSPACE/packages/cli/dist_bin/linux" >> $GITHUB_PATH
+
+      - name: Install Dependencies and Run Tests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pytest
+        working-directory: packages/cli/functional-tests
+
+  github-release:
+    needs: [release, package]
+
+    if: needs.release.outputs.cli-released == 'true'
+
+    name: Create Github Release
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist_bin
+
+      - name: Extract Artifacts
+        run: tar -xvf dist_bin.tar
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - run: npm ci
 
       # hack since Github auto generated notes aren't working right now
       - name: Generate Github Release Notes
-        if: steps.cli-package.outcome == 'success'
-        run: node generate-release-notes.mjs ${{ steps.cli-metadata.outputs.version }}
+        run: node generate-release-notes.mjs ${{ needs.release.outputs.cli-version }}
 
       - name: Create Github Release
-        id: gh-release
-        if: steps.cli-package.outcome == 'success'
         uses: softprops/action-gh-release@v1
         with:
-          name: ${{ steps.cli-metadata.outputs.version }}
+          name: ${{ needs.release.outputs.cli-version }}
           body_path: ${{ github.workspace }}/RELEASE_NOTES.txt
-          tag_name: ${{ steps.cli-metadata.outputs.tag }}
+          tag_name: ${{ needs.release.outputs.cli-tag }}
           prerelease: true
           files: packages/cli/dist_bin/assets/*
-
-      - name: Upload .exe Artifact
-        if: steps.cli-package.outcome == 'success'
-        uses: actions/upload-artifact@v3
-        with:
-          name: windows-exe
-          path: packages/cli/dist_bin/win/smartthings.exe
 
   homebrew-formula:
     needs: release
@@ -115,7 +205,7 @@ jobs:
         formulae: smartthingscommunity/smartthings/smartthings
 
   windows-installer:
-    needs: release
+    needs: [release, package]
 
     if: needs.release.outputs.cli-released == 'true'
 
@@ -134,11 +224,15 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Download .exe Artifact
+      - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
-          name: windows-exe
-          path: packages\cli\wix
+          name: dist_bin
+
+      - name: Extract Artifacts
+        run: tar -xvf dist_bin.tar
+
+      - run: mv packages\cli\dist_bin\win\smartthings.exe packages\cli\wix
 
       # https://github.community/t/set-path-for-wix-toolset-in-windows-runner/154708/2
       # https://stackoverflow.com/a/71579543

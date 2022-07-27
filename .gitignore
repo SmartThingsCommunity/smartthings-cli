@@ -17,3 +17,7 @@ smartthings-*.zip
 
 # the Typescript outDir that oclif prefers
 packages/cli/lib
+
+# functional tests
+.pytest_cache
+__pycache__
