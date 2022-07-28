@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.0.0-beta.7
+
+### Patch Changes
+
+- [#360](https://github.com/SmartThingsCommunity/smartthings-cli/pull/360) [`47b27d2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/47b27d2e2d74324a199302f6709ef698599a984c) Thanks [@rossiam](https://github.com/rossiam)! - refactor handling of headers on initialization
+
+- Updated dependencies [[`688082f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/688082fe6d0e12e0e510b5c238de61b46bfddc08), [`47b27d2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/47b27d2e2d74324a199302f6709ef698599a984c), [`22b9a78`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/22b9a78570d44e4df8adfd265c95148c2e29256b)]:
+  - @smartthings/cli-lib@1.0.0-beta.12
+
 ## 1.0.0-beta.6
 
 ### Patch Changes
