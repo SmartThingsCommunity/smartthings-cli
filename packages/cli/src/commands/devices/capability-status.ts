@@ -3,7 +3,7 @@ import { CapabilityReference, CapabilityStatus } from '@smartthings/core-sdk'
 import { APICommand, chooseComponent, chooseDevice, formatAndWriteItem, selectFromList, stringTranslateToId,
 	TableGenerator } from '@smartthings/cli-lib'
 
-import { prettyPrintAttribute } from './status'
+import { prettyPrintAttribute } from '../../lib/commands/devices-util'
 
 
 function buildTableOutput(tableGenerator: TableGenerator, capability: CapabilityStatus): string {
