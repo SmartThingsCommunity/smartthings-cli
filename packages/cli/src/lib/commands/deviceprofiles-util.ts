@@ -1,4 +1,4 @@
-import { DeviceProfile, DeviceProfileRequest, LocaleReference } from '@smartthings/core-sdk'
+import { DeviceProfile, DeviceProfileRequest, LocaleReference, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
 
 import {
 	APIOrganizationCommand,
@@ -7,52 +7,83 @@ import {
 	selectFromList,
 	stringTranslateToId,
 	summarizedText,
-	Table,
 	TableGenerator,
 } from '@smartthings/cli-lib'
 
 
-export const buildTableOutput = (tableGenerator: TableGenerator, data: DeviceProfile,
-		basicTableHook?: (table: Table) => void): string => {
-	const table = tableGenerator.newOutputTable()
-	table.push(['Name', data.name])
-	for (const comp of data.components) {
-		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
+export interface DeviceView {
+	dashboard?: {
+		states: PresentationDeviceConfigEntry[]
+		actions: PresentationDeviceConfigEntry[]
 	}
-	table.push(['Id', data.id])
-	table.push(['Device Type', data.metadata?.deviceType ?? ''])
-	table.push(['OCF Device Type', data.metadata?.ocfDeviceType ?? ''])
-	table.push(['Manufacturer Name', data.metadata?.mnmn ?? ''])
-	table.push(['Presentation ID', data.metadata?.vid ?? ''])
-	table.push(['Status', data.status])
-	if (basicTableHook) {
-		basicTableHook(table)
+	detailView?: PresentationDeviceConfigEntry[]
+	automation?: {
+		conditions: PresentationDeviceConfigEntry[]
+		actions: PresentationDeviceConfigEntry[]
 	}
-
-	let preferencesInfo = 'No preferences'
-	if (data.preferences?.length) {
-		preferencesInfo = 'Device Preferences\n' + tableGenerator.buildTableFromList(data.preferences,
-			['preferenceId', 'title', 'preferenceType', 'definition.default'])
-	}
-	return `Basic Information\n${table.toString()}\n\n` +
-		`${preferencesInfo}\n\n` +
-		summarizedText
 }
 
-// TODO: merge with buildTableOutput above
-export function buildTableOutputWithoutPreferences(tableGenerator: TableGenerator, data: DeviceProfile): string {
+export interface DeviceDefinition extends DeviceProfile {
+	view?: DeviceView
+}
+
+export interface DeviceDefinitionRequest extends DeviceProfileRequest {
+	view?: DeviceView
+}
+
+export const entryValues = (entries: PresentationDeviceConfigEntry[]): string =>
+	entries.map(entry => entry.component ? `${entry.component}/${entry.capability}` : `${entry.capability}`).join('\n')
+
+export interface TableOutputOptions {
+	includePreferences?: boolean
+	includeViewInfo?: boolean
+}
+
+export const buildTableOutput = (tableGenerator: TableGenerator, data: DeviceProfile | DeviceDefinition,
+		options?: TableOutputOptions): string => {
 	const table = tableGenerator.newOutputTable()
 	table.push(['Name', data.name])
 	for (const comp of data.components) {
-		table.push([`${comp.id} component`,  comp.capabilities ? comp.capabilities.map(it => it.id).join('\n') : ''])
+		table.push([`${comp.id} component`, comp.capabilities?.map(it => it.id).join('\n') ?? ''])
 	}
 	table.push(['Id', data.id])
 	table.push(['Device Type', data.metadata?.deviceType ?? ''])
 	table.push(['OCF Device Type', data.metadata?.ocfDeviceType ?? ''])
 	table.push(['Manufacturer Name', data.metadata?.mnmn ?? ''])
-	table.push(['Presentation ID', data.metadata?.vid ?? ''])
+	table.push(['Presentation Id', data.metadata?.vid ?? ''])
 	table.push(['Status', data.status])
-	return table.toString()
+	if (options?.includeViewInfo && 'view' in data && data.view) {
+		if (data.view.dashboard) {
+			if (data.view.dashboard.states) {
+				table.push(['Dashboard states', entryValues(data.view.dashboard.states)])
+			}
+			if (data.view.dashboard.actions) {
+				table.push(['Dashboard actions', entryValues(data.view.dashboard.actions)])
+			}
+		}
+		if (data.view.detailView) {
+			table.push(['Detail view', entryValues(data.view.detailView)])
+		}
+		if (data.view.automation) {
+			if (data.view.automation.conditions) {
+				table.push(['Automation conditions', entryValues(data.view.automation.conditions)])
+			}
+			if (data.view.automation.actions) {
+				table.push(['Automation actions', entryValues(data.view.automation.actions)])
+			}
+		}
+	}
+
+	if (options?.includePreferences) {
+		const preferencesInfo = data.preferences?.length
+			? 'Device Preferences\n' + tableGenerator.buildTableFromList(data.preferences,
+				['preferenceId', 'title', 'preferenceType', 'definition.default'])
+			: 'No preferences'
+		return `Basic Information\n${table.toString()}\n\n` +
+			`${preferencesInfo}\n\n` +
+			summarizedText
+	}
+	return `${table.toString()}\n\n${summarizedText}`
 }
 
 export const chooseDeviceProfile = async (command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>,

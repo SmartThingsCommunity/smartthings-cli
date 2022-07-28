@@ -2,7 +2,8 @@ import { DeviceProfile } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, ListingOutputConfig, outputListing } from '@smartthings/cli-lib'
 
-import { buildTableOutput, DeviceDefinition, prunePresentationValues } from '../../lib/commands/deviceprofiles/view-util'
+import { buildTableOutput, DeviceDefinition } from '../../lib/commands/deviceprofiles-util'
+import { prunePresentationValues } from '../../lib/commands/deviceprofiles/view-util'
 
 
 export default class DeviceProfilesViewCommand extends APIOrganizationCommand<typeof DeviceProfilesViewCommand.flags> {

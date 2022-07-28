@@ -12,7 +12,7 @@ import {
 import { APICommand } from '@smartthings/cli-lib'
 
 import { CapabilityId, chooseCapabilityFiltered } from '../capabilities-util'
-import { DeviceDefinitionRequest } from './view-util'
+import { DeviceDefinitionRequest } from '../deviceprofiles-util'
 
 
 const capabilitiesWithoutPresentations = ['healthCheck', 'execute']

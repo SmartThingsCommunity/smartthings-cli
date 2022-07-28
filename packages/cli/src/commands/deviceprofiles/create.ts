@@ -2,8 +2,7 @@ import { DeviceProfile } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, inputAndOutputItem, inputProcessor } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../../lib/commands/deviceprofiles-util'
-import { DeviceDefinitionRequest } from '../../lib/commands/deviceprofiles/view-util'
+import { buildTableOutput, DeviceDefinitionRequest } from '../../lib/commands/deviceprofiles-util'
 import { cleanupRequest, createWithDefaultConfig, getInputFromUser } from '../../lib/commands/deviceprofiles/create-util'
 
 
