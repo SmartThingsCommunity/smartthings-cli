@@ -1,5 +1,18 @@
 # Change Log
 
+## 1.0.0-beta.12
+
+### Patch Changes
+
+- [#355](https://github.com/SmartThingsCommunity/smartthings-cli/pull/355) [`a7bf89d`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a7bf89d606d71b2e7494555a2e4c078b539df50f) Thanks [@rossiam](https://github.com/rossiam)! - minor cleanup of capabilities table output
+
+* [#361](https://github.com/SmartThingsCommunity/smartthings-cli/pull/361) [`688082f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/688082fe6d0e12e0e510b5c238de61b46bfddc08) Thanks [@bflorian](https://github.com/bflorian)! - Add userEmail field to ST Schema apps
+
+- [#367](https://github.com/SmartThingsCommunity/smartthings-cli/pull/367) [`22b9a78`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/22b9a78570d44e4df8adfd265c95148c2e29256b) Thanks [@john-u](https://github.com/john-u)! - pin dependency to resolve timeout error
+
+- Updated dependencies [[`688082f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/688082fe6d0e12e0e510b5c238de61b46bfddc08), [`47b27d2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/47b27d2e2d74324a199302f6709ef698599a984c), [`22b9a78`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/22b9a78570d44e4df8adfd265c95148c2e29256b)]:
+  - @smartthings/cli-lib@1.0.0-beta.12
+
 ## 1.0.0-beta.11
 
 ### Patch Changes
