@@ -4,8 +4,12 @@ import { DeviceProfile } from '@smartthings/core-sdk'
 
 import { ActionFunction, APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { buildTableOutputWithoutPreferences, chooseDeviceProfile, cleanupDeviceProfileRequest } from '../../lib/commands/deviceprofiles-util'
-import { DeviceDefinitionRequest } from '../../lib/commands/deviceprofiles/view-util'
+import {
+	buildTableOutput,
+	chooseDeviceProfile,
+	cleanupDeviceProfileRequest,
+	DeviceDefinitionRequest,
+} from '../../lib/commands/deviceprofiles-util'
 
 
 export default class DeviceProfileUpdateCommand extends APIOrganizationCommand<typeof DeviceProfileUpdateCommand.flags> {
@@ -32,6 +36,8 @@ export default class DeviceProfileUpdateCommand extends APIOrganizationCommand<t
 
 			return this.client.deviceProfiles.update(id, cleanupDeviceProfileRequest(data))
 		}
-		await inputAndOutputItem(this, { buildTableOutput: data => buildTableOutputWithoutPreferences(this.tableGenerator, data) }, executeUpdate)
+		await inputAndOutputItem(this, {
+			buildTableOutput: data => buildTableOutput(this.tableGenerator, data, { includePreferences: true }),
+		}, executeUpdate)
 	}
 }

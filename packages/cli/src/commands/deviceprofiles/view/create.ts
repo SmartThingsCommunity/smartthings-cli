@@ -1,12 +1,10 @@
 import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { cleanupRequest, createWithDefaultConfig } from '../../../lib/commands/deviceprofiles/create-util'
+import { buildTableOutput, DeviceDefinition, DeviceDefinitionRequest } from '../../../lib/commands/deviceprofiles-util'
 import {
-	buildTableOutput,
 	prunePresentationValues,
 	augmentPresentationValues,
-	DeviceDefinition,
-	DeviceDefinitionRequest,
 } from '../../../lib/commands/deviceprofiles/view-util'
 
 
@@ -78,7 +76,7 @@ export default class DeviceDefCreateCommand extends APIOrganizationCommand<typeo
 			return { ...profileAndConfig.deviceProfile, view: prunePresentationValues(profileAndConfig.deviceConfig) }
 		}
 		await inputAndOutputItem(this,
-			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },
+			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data, { includeViewInfo: true }) },
 			createDeviceDefinition)
 	}
 }

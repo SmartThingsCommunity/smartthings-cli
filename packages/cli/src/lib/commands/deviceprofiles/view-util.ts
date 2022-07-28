@@ -1,58 +1,7 @@
-import { DeviceProfile, DeviceProfileRequest, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
+import { PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
 
-import { TableGenerator } from '@smartthings/cli-lib'
+import { DeviceView } from '../deviceprofiles-util'
 
-import { buildTableOutput as deviceProfileBuildTableOutput } from '../deviceprofiles-util'
-
-
-export interface DeviceView {
-	dashboard?: {
-		states: PresentationDeviceConfigEntry[]
-		actions: PresentationDeviceConfigEntry[]
-	}
-	detailView?: PresentationDeviceConfigEntry[]
-	automation?: {
-		conditions: PresentationDeviceConfigEntry[]
-		actions: PresentationDeviceConfigEntry[]
-	}
-}
-
-export interface DeviceDefinition extends DeviceProfile {
-	view?: DeviceView
-}
-
-export interface DeviceDefinitionRequest extends DeviceProfileRequest {
-	view?: DeviceView
-}
-
-export const entryValues = (entries: PresentationDeviceConfigEntry[]): string =>
-	entries.map(entry => entry.component ? `${entry.component}/${entry.capability}` : `${entry.capability}`).join('\n')
-
-export const buildTableOutput = (tableGenerator: TableGenerator, data: DeviceDefinition): string => {
-	return deviceProfileBuildTableOutput(tableGenerator, data, table => {
-		if (data.view) {
-			if (data.view.dashboard) {
-				if (data.view.dashboard.states) {
-					table.push(['Dashboard states', entryValues(data.view.dashboard.states)])
-				}
-				if (data.view.dashboard.actions) {
-					table.push(['Dashboard actions', entryValues(data.view.dashboard.actions)])
-				}
-			}
-			if (data.view.detailView) {
-				table.push(['Detail view', entryValues(data.view.detailView)])
-			}
-			if (data.view.automation) {
-				if (data.view.automation.conditions) {
-					table.push(['Automation conditions', entryValues(data.view.automation.conditions)])
-				}
-				if (data.view.automation.actions) {
-					table.push(['Automation actions', entryValues(data.view.automation.actions)])
-				}
-			}
-		}
-	})
-}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const prunePresentation = (view: { [key: string]: any }): void => {
