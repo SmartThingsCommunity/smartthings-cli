@@ -39,6 +39,8 @@ describe('ScenesExecuteCommand', () => {
 		chooseSceneMock.mockResolvedValueOnce('chosen-scene-id')
 		executeSpy.mockResolvedValueOnce({ status: 'failure' })
 
-		await expect(ScenesExecuteCommand.run([])).rejects.toThrow(Errors.CLIError)
+		const expected = new Errors.CLIError('error failure executing chosen-scene-id')
+
+		await expect(ScenesExecuteCommand.run([])).rejects.toThrow(expected)
 	})
 })
