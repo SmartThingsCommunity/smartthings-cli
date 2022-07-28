@@ -84,6 +84,22 @@ describe('DevicesCommand', () => {
 			expect(withLocationsAndRoomsMock).toHaveBeenCalledTimes(0)
 		})
 
+		it('adds health status with health flag', async () => {
+			await expect(DevicesCommand.run(['--health'])).resolves.not.toThrow()
+
+			expect(outputListingMock).toHaveBeenCalledTimes(1)
+			expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
+				.toEqual(['label', 'name', 'type', { label: 'Health', prop: 'healthState.state' }, 'deviceId'])
+
+			const listDevices = outputListingMock.mock.calls[0][3]
+
+			expect(await listDevices()).toBe(devices)
+
+			expect(listSpy).toHaveBeenCalledTimes(1)
+			expect(listSpy).toHaveBeenCalledWith(expect.objectContaining({ capability: undefined }))
+			expect(withLocationsAndRoomsMock).toHaveBeenCalledTimes(0)
+		})
+
 		it('adds locations with verbose flag', async () => {
 			await expect(DevicesCommand.run(['--verbose'])).resolves.not.toThrow()
 
@@ -185,7 +201,7 @@ describe('DevicesCommand', () => {
 	})
 
 	it('uses devices.get to get device', async () => {
-		await expect(DevicesCommand.run(['--capability', 'cmd-line-capability'])).resolves.not.toThrow()
+		await expect(DevicesCommand.run([])).resolves.not.toThrow()
 
 		expect(outputListingMock).toHaveBeenCalledTimes(1)
 		expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
@@ -198,6 +214,65 @@ describe('DevicesCommand', () => {
 		expect(await getDevice('chosen-device-id')).toBe(device)
 
 		expect(getSpy).toHaveBeenCalledTimes(1)
-		expect(getSpy).toHaveBeenCalledWith('chosen-device-id')
+		expect(getSpy).toHaveBeenCalledWith('chosen-device-id', { includeStatus: undefined })
+	})
+
+	it('uses UUID from the command line', async () => {
+		const deviceId = 'device-id'
+		const getSpy = jest.spyOn(DevicesEndpoint.prototype, 'get').mockImplementation()
+
+		outputListingMock.mockImplementationOnce(async (_command, _config, _id, _listFunction, getFunction) => {
+			await getFunction(deviceId)
+		})
+
+		await expect(DevicesCommand.run([deviceId])).resolves.not.toThrow()
+		expect(outputListing).toBeCalledWith(
+			expect.anything(),
+			expect.anything(),
+			deviceId,
+			expect.anything(),
+			expect.anything(),
+		)
+		expect(getSpy).toBeCalledWith(deviceId, { includeStatus: undefined })
+	})
+
+	it('includes attribute values when status flag is set', async () => {
+		const deviceId = 'device-id'
+		const getSpy = jest.spyOn(DevicesEndpoint.prototype, 'get').mockImplementation()
+
+		outputListingMock.mockImplementationOnce(async (_command, _config, _id, _listFunction, getFunction) => {
+			await getFunction(deviceId)
+		})
+
+		await expect(DevicesCommand.run([deviceId, '--status'])).resolves.not.toThrow()
+		expect(outputListing).toBeCalledWith(
+			expect.anything(),
+			expect.anything(),
+			deviceId,
+			expect.anything(),
+			expect.anything(),
+		)
+		expect(getSpy).toBeCalledWith(deviceId, { includeStatus: true })
+	})
+
+	it('includes health status when health flag is set', async () => {
+		const deviceId = 'device-id'
+		const getSpy = jest.spyOn(DevicesEndpoint.prototype, 'get').mockImplementation()
+		const getHealthSpy = jest.spyOn(DevicesEndpoint.prototype, 'getHealth').mockImplementation()
+
+		outputListingMock.mockImplementationOnce(async (_command, _config, _id, _listFunction, getFunction) => {
+			await getFunction(deviceId)
+		})
+
+		await expect(DevicesCommand.run([deviceId, '--health'])).resolves.not.toThrow()
+		expect(outputListing).toBeCalledWith(
+			expect.anything(),
+			expect.anything(),
+			deviceId,
+			expect.anything(),
+			expect.anything(),
+		)
+		expect(getSpy).toBeCalledWith(deviceId, { includeStatus: undefined })
+		expect(getHealthSpy).toBeCalledWith(deviceId)
 	})
 })

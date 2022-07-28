@@ -1,43 +1,7 @@
-import { DeviceStatus } from '@smartthings/core-sdk'
+import { APICommand, chooseDevice, formatAndWriteItem } from '@smartthings/cli-lib'
 
-import { APICommand, chooseDevice, formatAndWriteItem, TableGenerator } from '@smartthings/cli-lib'
+import { buildStatusTableOutput } from '../../lib/commands/devices-util'
 
-
-export function prettyPrintAttribute(value: unknown): string {
-	let result = JSON.stringify(value)
-	if (result.length > 50) {
-		result = JSON.stringify(value, null, 2)
-	}
-	return result
-}
-
-export function buildTableOutput(tableGenerator: TableGenerator, data: DeviceStatus): string {
-	let output = ''
-	if (data.components) {
-		const componentIds = Object.keys(data.components)
-		for (const componentId of componentIds) {
-			const table = tableGenerator.newOutputTable({ head: ['Capability', 'Attribute', 'Value'] })
-			if (componentIds.length > 1) {
-				output += `\n${componentId} component\n`
-			}
-			const component = data.components[componentId]
-			for (const capabilityName of Object.keys(component)) {
-				const capability = component[capabilityName]
-				for (const attributeName of Object.keys(capability)) {
-					const attribute = capability[attributeName]
-					table.push([
-						capabilityName,
-						attributeName,
-						attribute.value !== null ?
-							`${prettyPrintAttribute(attribute.value)}${attribute.unit ? ' ' + attribute.unit : ''}` : ''])
-				}
-			}
-			output += table.toString()
-			output += '\n'
-		}
-	}
-	return output
-}
 
 export default class DeviceStatusCommand extends APICommand<typeof DeviceStatusCommand.flags> {
 	static description = "get the current status of all of a device's component's attributes"
@@ -55,6 +19,7 @@ export default class DeviceStatusCommand extends APICommand<typeof DeviceStatusC
 	async run(): Promise<void> {
 		const deviceId = await chooseDevice(this, this.args.id, { allowIndex: true })
 		const presentation = await this.client.devices.getStatus(deviceId)
-		await formatAndWriteItem(this, { buildTableOutput: data => buildTableOutput(this.tableGenerator, data) }, presentation)
+		await formatAndWriteItem(this, { buildTableOutput: data =>
+			buildStatusTableOutput(this.tableGenerator, data) }, presentation)
 	}
 }

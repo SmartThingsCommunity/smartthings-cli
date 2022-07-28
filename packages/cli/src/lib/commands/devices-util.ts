@@ -1,26 +1,101 @@
-import { Device } from '@smartthings/core-sdk'
+import { Device, DeviceHealth, DeviceStatus } from '@smartthings/core-sdk'
 
 import { summarizedText, TableGenerator } from '@smartthings/cli-lib'
 
 
 export type DeviceWithLocation = Device & { location?: string }
 
-export const buildTableOutput = (tableGenerator: TableGenerator, device: Device & { profileId?: string }): string => {
+export const prettyPrintAttribute = (value: unknown): string => {
+	let result = JSON.stringify(value)
+	if (result.length > 50) {
+		result = JSON.stringify(value, null, 2)
+	}
+	return result
+}
+
+export const buildStatusTableOutput = (tableGenerator: TableGenerator, data: DeviceStatus): string => {
+	let output = ''
+	if (data.components) {
+		const componentIds = Object.keys(data.components)
+		for (const componentId of componentIds) {
+			const table = tableGenerator.newOutputTable({ head: ['Capability', 'Attribute', 'Value'] })
+			if (componentIds.length > 1) {
+				output += `\n${componentId} component\n`
+			}
+			const component = data.components[componentId]
+			for (const capabilityName of Object.keys(component)) {
+				const capability = component[capabilityName]
+				for (const attributeName of Object.keys(capability)) {
+					const attribute = capability[attributeName]
+					table.push([
+						capabilityName,
+						attributeName,
+						attribute.value !== null ?
+							`${prettyPrintAttribute(attribute.value)}${attribute.unit ? ' ' + attribute.unit : ''}` : ''])
+				}
+			}
+			output += table.toString()
+			output += '\n'
+		}
+	}
+	return output
+}
+
+export const buildEmbeddedStatusTableOutput = (tableGenerator: TableGenerator, data: Device): string => {
+	let output = ''
+	let hasStatus = false
+	if (data.components) {
+		for (const component of data.components) {
+			const table = tableGenerator.newOutputTable({ head: ['Capability', 'Attribute', 'Value'] })
+			if (data.components.length > 1) {
+				output += `\n${component.id} component\n`
+			}
+
+			for (const capability of component.capabilities) {
+				if (capability.status) {
+					hasStatus = true
+					for (const attributeName of Object.keys(capability.status)) {
+						const attribute = capability.status[attributeName]
+						table.push([
+							capability.id,
+							attributeName,
+							attribute.value !== null ?
+								`${prettyPrintAttribute(attribute.value)}${attribute.unit ? ' ' + attribute.unit : ''}` : ''])
+					}
+				}
+			}
+			output += table.toString()
+			output += '\n'
+		}
+	}
+	return hasStatus ? output : ''
+}
+
+export const buildTableOutput = (tableGenerator: TableGenerator, device: Device & { profileId?: string; healthState?: DeviceHealth }): string => {
 	const table = tableGenerator.newOutputTable()
-	table.push(['Name', device.name])
-	table.push(['Type', device.type])
-	table.push(['Id', device.deviceId])
 	table.push(['Label', device.label])
+	table.push(['Name', device.name])
+	table.push(['Id', device.deviceId])
+	table.push(['Type', device.type])
 	table.push(['Manufacturer Code', device.deviceManufacturerCode ?? ''])
 	table.push(['Location Id', device.locationId ?? ''])
 	table.push(['Room Id', device.roomId ?? ''])
-	for (const comp of device.components ?? []) {
-		table.push([`${comp.id} component`,  comp.capabilities.map(capability => capability.id).join('\n')])
-	}
-	table.push(['Child Devices',  device.childDevices?.map(child => child.id).join('\n') ?? ''])
 	table.push(['Profile Id', device.profile?.id ?? (device.profileId ?? '')])
+	for (const comp of device.components ?? []) {
+		const label = comp.id === 'main' ? 'Capabilities' : `Capabilities (${comp.id})`
+		table.push([label,  comp.capabilities.map(capability => capability.id).join('\n')])
+	}
+	if (device.childDevices) {
+		table.push(['Child Devices',  device.childDevices?.map(child => child.id).join('\n') ?? ''])
+	}
+	if (device.healthState) {
+		table.push(['Device Health', device.healthState.state])
+		table.push(['Last Updated', device.healthState.lastUpdatedDate])
+	}
 
 	const mainInfo = table.toString()
+
+	const statusInfo = buildEmbeddedStatusTableOutput(tableGenerator, device)
 
 	let deviceIntegrationInfo = 'None'
 	let infoFrom
@@ -77,6 +152,7 @@ export const buildTableOutput = (tableGenerator: TableGenerator, device: Device 
 	}
 
 	return `Main Info\n${mainInfo}\n\n` +
+		(statusInfo ? `Device Status\n${statusInfo}\n` : '') +
 		(infoFrom ? `Device Integration Info (from ${infoFrom})\n${deviceIntegrationInfo}\n\n` : '') +
 		summarizedText
 }

@@ -1,8 +1,8 @@
 import { Flags } from '@oclif/core'
 
-import { Device, DeviceIntegrationType, DeviceListOptions } from '@smartthings/core-sdk'
+import { Device, DeviceIntegrationType, DeviceGetOptions, DeviceListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing, withLocationsAndRooms } from '@smartthings/cli-lib'
+import { APICommand, outputListing, TableFieldDefinition, withLocationsAndRooms } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../lib/commands/devices-util'
 
@@ -39,6 +39,14 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 			char: 'a',
 			description: 'filter results by installed app that created the device',
 		}),
+		'status': Flags.boolean({
+			char: 's',
+			description: 'include attribute values in the response',
+		}),
+		'health': Flags.boolean({
+			char: 'H',
+			description: 'include device health in response',
+		}),
 		/* eslint-enable @typescript-eslint/naming-convention */
 		type: Flags.string({
 			description: 'filter results by device type',
@@ -57,14 +65,28 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 	}]
 
 	async run(): Promise<void> {
+		const listTableFieldDefinitions: TableFieldDefinition<Device>[] = ['label', 'name', 'type', 'deviceId']
+
+		if (this.flags.verbose) {
+			listTableFieldDefinitions.splice(3, 0, 'location', 'room')
+		}
+
+		if (this.flags.health) {
+			listTableFieldDefinitions.splice(3, 0, {
+				prop: 'healthState.state',
+				label: 'Health',
+			})
+		}
+
 		const config = {
 			primaryKeyName: 'deviceId',
 			sortKeyName: 'label',
-			listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
+			listTableFieldDefinitions,
 			buildTableOutput: (data: Device) => buildTableOutput(this.tableGenerator, data),
 		}
-		if (this.flags.verbose) {
-			config.listTableFieldDefinitions.splice(3, 0, 'location', 'room')
+
+		const deviceGetOptions: DeviceGetOptions = {
+			includeStatus: this.flags.status,
 		}
 
 		const deviceListOptions: DeviceListOptions = {
@@ -74,6 +96,8 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 			deviceId: this.flags['device-id'],
 			installedAppId: this.flags['installed-app-id'],
 			type: this.flags.type as DeviceIntegrationType[] | undefined,
+			includeHealth: this.flags.health,
+			...deviceGetOptions,
 		}
 
 		await outputListing(this, config, this.args.id,
@@ -84,7 +108,18 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 				}
 				return devices
 			},
-			id => this.client.devices.get(id),
+			async (id) => {
+				// Note -- we have to do this explicitly because the API does not honor the includeHealth parameter
+				// for individual devices
+				if (this.flags.health) {
+					const [device, healthState] = await Promise.all([
+						this.client.devices.get(id, deviceGetOptions),
+						this.client.devices.getHealth(id),
+					])
+					return { ...device, healthState }
+				}
+				return this.client.devices.get(id, deviceGetOptions)
+			},
 		)
 	}
 }
