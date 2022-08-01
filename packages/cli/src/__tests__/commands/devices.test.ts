@@ -13,6 +13,8 @@ import { buildTableOutput } from '../../lib/commands/devices-util'
 jest.mock('../../lib/commands/devices-util')
 
 describe('DevicesCommand', () => {
+	const deviceId = 'device-id'
+	const getSpy = jest.spyOn(DevicesEndpoint.prototype, 'get').mockImplementation()
 	const outputListingMock = jest.mocked(outputListing)
 
 	it('passes undefined for location id when not specified', async () => {
@@ -218,9 +220,6 @@ describe('DevicesCommand', () => {
 	})
 
 	it('uses UUID from the command line', async () => {
-		const deviceId = 'device-id'
-		const getSpy = jest.spyOn(DevicesEndpoint.prototype, 'get').mockImplementation()
-
 		outputListingMock.mockImplementationOnce(async (_command, _config, _id, _listFunction, getFunction) => {
 			await getFunction(deviceId)
 		})
@@ -237,9 +236,6 @@ describe('DevicesCommand', () => {
 	})
 
 	it('includes attribute values when status flag is set', async () => {
-		const deviceId = 'device-id'
-		const getSpy = jest.spyOn(DevicesEndpoint.prototype, 'get').mockImplementation()
-
 		outputListingMock.mockImplementationOnce(async (_command, _config, _id, _listFunction, getFunction) => {
 			await getFunction(deviceId)
 		})
@@ -256,8 +252,6 @@ describe('DevicesCommand', () => {
 	})
 
 	it('includes health status when health flag is set', async () => {
-		const deviceId = 'device-id'
-		const getSpy = jest.spyOn(DevicesEndpoint.prototype, 'get').mockImplementation()
 		const getHealthSpy = jest.spyOn(DevicesEndpoint.prototype, 'getHealth').mockImplementation()
 
 		outputListingMock.mockImplementationOnce(async (_command, _config, _id, _listFunction, getFunction) => {
