@@ -11,6 +11,21 @@ import {
 
 
 describe('devices-util', () => {
+	const tablePushMock: jest.Mock<number, [(string | undefined)[]]> = jest.fn()
+	const tableToStringMock = jest.fn()
+	const tableMock = {
+		push: tablePushMock,
+		toString: tableToStringMock,
+	} as unknown as Table
+	const newOutputTableMock = jest.fn().mockReturnValue(tableMock)
+	const buildTableFromItemMock = jest.fn()
+	const buildTableFromListMock = jest.fn()
+
+	const tableGeneratorMock: TableGenerator = {
+		newOutputTable: newOutputTableMock,
+		buildTableFromItem: buildTableFromItemMock,
+		buildTableFromList: buildTableFromListMock,
+	}
 
 	describe('prettyPrintAttribute', () => {
 		it ('handles integer value', () => {
@@ -43,19 +58,6 @@ describe('devices-util', () => {
 	})
 
 	describe('buildStatusTableOutput', () => {
-		const tablePushMock: jest.Mock<number, [(string | undefined)[]]> = jest.fn()
-		const tableToStringMock = jest.fn()
-		const tableMock = {
-			push: tablePushMock,
-			toString: tableToStringMock,
-		} as unknown as Table
-		const newOutputTableMock = jest.fn().mockReturnValue(tableMock)
-
-		const tableGeneratorMock: TableGenerator = {
-			newOutputTable: newOutputTableMock,
-			buildTableFromItem: jest.fn(),
-			buildTableFromList: jest.fn(),
-		} as TableGenerator
 
 		it('handles a single component', () => {
 			const deviceStatus: DeviceStatus = {
@@ -112,19 +114,6 @@ describe('devices-util', () => {
 	})
 
 	describe('buildEmbeddedStatusTableOutput', () => {
-		const tablePushMock: jest.Mock<number, [(string | undefined)[]]> = jest.fn()
-		const tableToStringMock = jest.fn()
-		const tableMock = {
-			push: tablePushMock,
-			toString: tableToStringMock,
-		} as unknown as Table
-		const newOutputTableMock = jest.fn().mockReturnValue(tableMock)
-
-		const tableGeneratorMock: TableGenerator = {
-			newOutputTable: newOutputTableMock,
-			buildTableFromItem: jest.fn(),
-			buildTableFromList: jest.fn(),
-		} as TableGenerator
 
 		it('handles a single component', () => {
 			const device = {
@@ -199,21 +188,6 @@ describe('devices-util', () => {
 	})
 
 	describe('buildTableOutput', () => {
-		const tablePushMock: jest.Mock<number, [(string | undefined)[]]> = jest.fn()
-		const tableToStringMock = jest.fn()
-		const tableMock = {
-			push: tablePushMock,
-			toString: tableToStringMock,
-		} as unknown as Table
-		const newOutputTableMock = jest.fn().mockReturnValue(tableMock)
-		const buildTableFromItemMock = jest.fn()
-		const buildTableFromListMock = jest.fn()
-
-		const tableGeneratorMock: TableGenerator = {
-			newOutputTable: newOutputTableMock,
-			buildTableFromItem: buildTableFromItemMock,
-			buildTableFromList: buildTableFromListMock,
-		}
 
 		it('includes all main fields', () => {
 			const device = {
