@@ -7,7 +7,7 @@ import { ActionFunction, APIOrganizationCommand, inputAndOutputItem } from '@sma
 import {
 	buildTableOutput,
 	chooseDeviceProfile,
-	cleanupDeviceProfileRequest,
+	cleanupForUpdate,
 	DeviceDefinitionRequest,
 } from '../../lib/commands/deviceprofiles-util'
 
@@ -34,7 +34,7 @@ export default class DeviceProfileUpdateCommand extends APIOrganizationCommand<t
 				throw new Errors.CLIError('Input contains "view" property. Use deviceprofiles:view:update instead.')
 			}
 
-			return this.client.deviceProfiles.update(id, cleanupDeviceProfileRequest(data))
+			return this.client.deviceProfiles.update(id, cleanupForUpdate(data))
 		}
 		await inputAndOutputItem(this, {
 			buildTableOutput: data => buildTableOutput(this.tableGenerator, data, { includePreferences: true }),

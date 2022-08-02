@@ -2,12 +2,12 @@ import { DeviceProfile } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, inputAndOutputItem, inputProcessor } from '@smartthings/cli-lib'
 
-import { buildTableOutput, DeviceDefinitionRequest } from '../../lib/commands/deviceprofiles-util'
-import { cleanupRequest, createWithDefaultConfig, getInputFromUser } from '../../lib/commands/deviceprofiles/create-util'
+import { buildTableOutput, cleanupForCreate, DeviceDefinitionRequest } from '../../lib/commands/deviceprofiles-util'
+import { createWithDefaultConfig, getInputFromUser } from '../../lib/commands/deviceprofiles/create-util'
 
 
 export default class DeviceProfileCreateCommand extends APIOrganizationCommand<typeof DeviceProfileCreateCommand.flags> {
-	static description = 'Create a new device profile\n' +
+	static description = 'create a new device profile\n' +
 		'Creates a new device profile. If a vid field is not present in the meta\n' +
 		'then a default device presentation will be created for this profile and the\n' +
 		'vid set to reference it.'
@@ -36,7 +36,7 @@ export default class DeviceProfileCreateCommand extends APIOrganizationCommand<t
 				return profileAndConfig.deviceProfile
 			}
 
-			return await this.client.deviceProfiles.create(cleanupRequest(data))
+			return await this.client.deviceProfiles.create(cleanupForCreate(data))
 		}
 		await inputAndOutputItem(this,
 			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data) },

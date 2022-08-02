@@ -12,7 +12,7 @@ import {
 import { APICommand } from '@smartthings/cli-lib'
 
 import { CapabilityId, chooseCapabilityFiltered } from '../capabilities-util'
-import { DeviceDefinitionRequest } from '../deviceprofiles-util'
+import { cleanupForCreate, cleanupForUpdate, DeviceDefinitionRequest } from '../deviceprofiles-util'
 
 
 const capabilitiesWithoutPresentations = ['healthCheck', 'execute']
@@ -92,46 +92,27 @@ export interface DeviceProfileAndConfig {
 	deviceConfig: PresentationDeviceConfig
 }
 
-// Cleanup is done so that the result of a device profile get can be modified and
-// used in an update operation without having to delete the status, owner, and
-// component name fields, which aren't accepted in the update API call.
-export const cleanupRequest = (deviceProfileRequest: Partial<DeviceProfile & { restrictions: unknown }>): DeviceProfileRequest => {
-	delete deviceProfileRequest.id
-	delete deviceProfileRequest.status
-	delete deviceProfileRequest.restrictions
-	if (deviceProfileRequest.components) {
-		for (const component of deviceProfileRequest.components) {
-			delete component.label
-		}
-	}
-	return deviceProfileRequest
-}
-
 export const createWithDefaultConfig = async (client: SmartThingsClient, data: DeviceDefinitionRequest): Promise<DeviceProfileAndConfig> => {
 	// Create the profile
-	let deviceProfile = await client.deviceProfiles.create(cleanupRequest(data))
+	const newProfile = await client.deviceProfiles.create(cleanupForCreate(data))
 
 	// Generate the default config
-	const deviceConfigData = await generateDefaultConfig(client, deviceProfile.id, deviceProfile)
+	const deviceConfigData = await generateDefaultConfig(client, newProfile.id, newProfile)
 
 	// Create the config using the default
 	const deviceConfig = await client.presentation.create(deviceConfigData)
 
 	// Update the profile to use the vid from the config
-	const profileId = deviceProfile.id
-	cleanupRequest(deviceProfile)
-	// TODO: I'm guessing name should be optional in PresentationDeviceConfigEntry
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
-	delete deviceProfile.name
-	if (!deviceProfile.metadata) {
-		deviceProfile.metadata = {}
+	const profileId = newProfile.id
+	const update = cleanupForUpdate(newProfile)
+	if (!update.metadata) {
+		update.metadata = {}
 	}
-	deviceProfile.metadata.vid = deviceConfig.presentationId
-	deviceProfile.metadata.mnmn = deviceConfig.manufacturerName
+	update.metadata.vid = deviceConfig.presentationId
+	update.metadata.mnmn = deviceConfig.manufacturerName
 
 	// Update the profile with the vid and mnmn
-	deviceProfile = await client.deviceProfiles.update(profileId, deviceProfile)
+	const deviceProfile = await client.deviceProfiles.update(profileId, update)
 
 	// Return the composite object
 	return { deviceProfile, deviceConfig }

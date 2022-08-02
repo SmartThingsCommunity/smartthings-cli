@@ -1,7 +1,7 @@
 import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { cleanupRequest, createWithDefaultConfig } from '../../../lib/commands/deviceprofiles/create-util'
-import { buildTableOutput, DeviceDefinition, DeviceDefinitionRequest } from '../../../lib/commands/deviceprofiles-util'
+import { createWithDefaultConfig } from '../../../lib/commands/deviceprofiles/create-util'
+import { buildTableOutput, cleanupForCreate, DeviceDefinition, DeviceDefinitionRequest } from '../../../lib/commands/deviceprofiles-util'
 import {
 	prunePresentationValues,
 	augmentPresentationValues,
@@ -61,7 +61,7 @@ export default class DeviceDefCreateCommand extends APIOrganizationCommand<typeo
 		delete data.view
 
 		// Create the profile
-		const profile = await this.client.deviceProfiles.create(cleanupRequest(data))
+		const profile = await this.client.deviceProfiles.create(cleanupForCreate(data))
 
 		// Return the composite object
 		return { ...profile, view: prunePresentationValues(deviceConfig) }
