@@ -8,7 +8,7 @@ import { buildTableOutput } from '../../lib/commands/deviceprofiles/translations
 
 
 export default class DeviceProfileTranslationsCommand extends APIOrganizationCommand<typeof DeviceProfileTranslationsCommand.flags> {
-	static description = 'Get list of locales supported by the device profiles'
+	static description = 'get list of locales supported by the device profiles'
 
 	static flags = {
 		...APIOrganizationCommand.flags,

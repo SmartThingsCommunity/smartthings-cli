@@ -6,7 +6,7 @@ import {
 	augmentPresentationValues,
 	prunePresentationValues,
 } from '../../../lib/commands/deviceprofiles/view-util'
-import { chooseDeviceProfile, cleanupDeviceProfileRequest } from '../../../lib/commands/deviceprofiles-util'
+import { chooseDeviceProfile, cleanupForUpdate } from '../../../lib/commands/deviceprofiles-util'
 
 
 export default class DeviceProfilesViewUpdateCommand extends APIOrganizationCommand<typeof DeviceProfilesViewUpdateCommand.flags> {
@@ -72,7 +72,7 @@ export default class DeviceProfilesViewUpdateCommand extends APIOrganizationComm
 			}
 			profileData.metadata.vid = presentation.presentationId
 			profileData.metadata.mnmn = presentation.manufacturerName
-			const profile = await this.client.deviceProfiles.update(id, cleanupDeviceProfileRequest(profileData))
+			const profile = await this.client.deviceProfiles.update(id, cleanupForUpdate(profileData))
 
 			return { ...profile, presentation: prunePresentationValues(presentation) }
 		}

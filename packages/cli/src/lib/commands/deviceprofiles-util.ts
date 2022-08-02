@@ -1,4 +1,11 @@
-import { DeviceProfile, DeviceProfileRequest, LocaleReference, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
+import {
+	DeviceProfile,
+	DeviceProfileCreateRequest,
+	DeviceProfileRequest,
+	DeviceProfileUpdateRequest,
+	LocaleReference,
+	PresentationDeviceConfigEntry,
+} from '@smartthings/core-sdk'
 
 import {
 	APIOrganizationCommand,
@@ -129,19 +136,29 @@ export const chooseDeviceProfile = async (command: APIOrganizationCommand<typeof
 	return selectFromList(command, config, { preselectedId, listItems })
 }
 
-// Cleanup is done so that the result of a device profile get can be modified and
-// used in an update operation without having to delete the status, owner, and
-// component name fields, which aren't accepted in the update API call.
-export const cleanupDeviceProfileRequest = (deviceProfileRequest: Partial<DeviceProfile & { restrictions: unknown }>): DeviceProfileRequest => {
-	delete deviceProfileRequest.id
-	delete deviceProfileRequest.status
-	delete deviceProfileRequest.name
-	if (deviceProfileRequest.components) {
-		for (const component of deviceProfileRequest.components) {
-			delete component.label
-		}
-	}
-	delete deviceProfileRequest.restrictions
+/**
+ * Convert the `DeviceProfile` to a `DeviceProfileCreateRequest` by removing fields which can't
+ * be included in an create request.
+ */
+export const cleanupForCreate = (deviceProfile: Partial<DeviceProfile & { restrictions: unknown }>): DeviceProfileCreateRequest => {
+	const components = deviceProfile.components?.map(component => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { label, ...withoutLabel } = component
+		return withoutLabel
+	})
+	const createRequest = { ...deviceProfile, components }
+	delete createRequest.id
+	delete createRequest.status
+	delete createRequest.restrictions
+	return createRequest
+}
 
-	return deviceProfileRequest
+/**
+ * Convert the `DeviceProfile` to a `DeviceProfileUpdateRequest` by removing fields which can't
+ * be included in an update request.
+ */
+export const cleanupForUpdate = (deviceProfile: Partial<DeviceProfile & { restrictions: unknown }>): DeviceProfileUpdateRequest => {
+	const updateRequest = cleanupForCreate(deviceProfile)
+	delete updateRequest.name
+	return updateRequest
 }
