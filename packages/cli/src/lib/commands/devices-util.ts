@@ -70,6 +70,10 @@ export const buildTableOutput = (tableGenerator: TableGenerator, device: Device 
 		infoFrom = 'viper'
 		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.viper,
 			['uniqueIdentifier', 'manufacturerName', 'modelName', 'swVersion', 'hwVersion'])
+	} else if ('virtual' in device) {
+		infoFrom = 'virtual'
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.virtual,
+			['name', { prop: 'hubId', skipEmpty: true }, { prop: 'driverId', skipEmpty: true }])
 	}
 
 	return `Main Info\n${mainInfo}\n\n` +

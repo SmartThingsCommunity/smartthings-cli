@@ -249,6 +249,21 @@ describe('devices-util', () => {
 				['uniqueIdentifier', 'manufacturerName', 'modelName', 'swVersion', 'hwVersion'])
 		})
 
+		it('includes virtual device info', () => {
+			const virtual = { name: 'Virtual Device' }
+			const device = { virtual } as unknown as Device
+			tableToStringMock.mockReturnValueOnce('main table')
+			buildTableFromItemMock.mockReturnValue('virtual device info')
+
+			expect(buildTableOutput(tableGeneratorMock, device))
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from virtual)\nvirtual device info\n\n' + summarizedText)
+
+			expect(tablePushMock).toHaveBeenCalledTimes(9)
+			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
+			expect(buildTableFromItemMock).toHaveBeenCalledWith(virtual,
+				['name', { prop: 'hubId', skipEmpty: true }, { prop: 'driverId', skipEmpty: true }])
+		})
+
 		it.todo('adds multiple components')
 		it.todo('joins multiple component capabilities with newlines')
 		it.todo('joins multiple children with newlines')
