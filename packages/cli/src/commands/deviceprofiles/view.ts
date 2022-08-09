@@ -3,7 +3,7 @@ import { DeviceProfile } from '@smartthings/core-sdk'
 import { APIOrganizationCommand, ListingOutputConfig, outputListing } from '@smartthings/cli-lib'
 
 import { buildTableOutput, DeviceDefinition } from '../../lib/commands/deviceprofiles-util'
-import { prunePresentationValues } from '../../lib/commands/deviceprofiles/view-util'
+import { prunePresentation } from '../../lib/commands/deviceprofiles/view-util'
 
 
 export default class DeviceProfilesViewCommand extends APIOrganizationCommand<typeof DeviceProfilesViewCommand.flags> {
@@ -33,16 +33,15 @@ export default class DeviceProfilesViewCommand extends APIOrganizationCommand<ty
 			if (profile.metadata) {
 				try {
 					const view = await this.client.presentation.get(profile.metadata.vid, profile.metadata.mnmn)
-					prunePresentationValues(view)
-					return { ...profile, view }
+					return { ...profile, view: prunePresentation(view) }
 				} catch (error) {
 					this.logger.warn(error)
 					return profile
 				}
-			} else {
-				return profile
 			}
+			return profile
 		}
+
 		await outputListing(this, config, this.args.id,
 			() => this.client.deviceProfiles.list(),
 			getDeviceProfileAndConfig)

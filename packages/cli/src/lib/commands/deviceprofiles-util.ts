@@ -18,15 +18,17 @@ import {
 } from '@smartthings/cli-lib'
 
 
+export type ViewPresentationDeviceConfigEntry =
+	Omit<PresentationDeviceConfigEntry, 'component'> & Partial<Pick<PresentationDeviceConfigEntry, 'component'>>
 export interface DeviceView {
 	dashboard?: {
-		states: PresentationDeviceConfigEntry[]
-		actions: PresentationDeviceConfigEntry[]
+		states: ViewPresentationDeviceConfigEntry[]
+		actions: ViewPresentationDeviceConfigEntry[]
 	}
-	detailView?: PresentationDeviceConfigEntry[]
+	detailView?: ViewPresentationDeviceConfigEntry[]
 	automation?: {
-		conditions: PresentationDeviceConfigEntry[]
-		actions: PresentationDeviceConfigEntry[]
+		conditions: ViewPresentationDeviceConfigEntry[]
+		actions: ViewPresentationDeviceConfigEntry[]
 	}
 }
 
@@ -38,7 +40,7 @@ export interface DeviceDefinitionRequest extends DeviceProfileRequest {
 	view?: DeviceView
 }
 
-export const entryValues = (entries: PresentationDeviceConfigEntry[]): string =>
+export const entryValues = (entries: ViewPresentationDeviceConfigEntry[]): string =>
 	entries.map(entry => entry.component ? `${entry.component}/${entry.capability}` : `${entry.capability}`).join('\n')
 
 export interface TableOutputOptions {

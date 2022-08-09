@@ -3,8 +3,8 @@ import { ActionFunction, APIOrganizationCommand, inputAndOutputItem } from '@sma
 import { generateDefaultConfig } from '../../../lib/commands/deviceprofiles/create-util'
 import { buildTableOutput, DeviceDefinition, DeviceDefinitionRequest } from '../../../lib/commands/deviceprofiles-util'
 import {
-	augmentPresentationValues,
-	prunePresentationValues,
+	augmentPresentation,
+	prunePresentation,
 } from '../../../lib/commands/deviceprofiles/view-util'
 import { chooseDeviceProfile, cleanupForUpdate } from '../../../lib/commands/deviceprofiles-util'
 
@@ -57,14 +57,11 @@ export default class DeviceProfilesViewUpdateCommand extends APIOrganizationComm
 		const id = await chooseDeviceProfile(this, this.args.id)
 		const executeUpdate: ActionFunction<void, DeviceDefinitionRequest, DeviceDefinition> = async (_, data) => {
 			const profileData = { ...data }
-			let presentationData = data.view
 			delete profileData.view
 
-			if (presentationData) {
-				presentationData = augmentPresentationValues(presentationData)
-			} else {
-				presentationData = await generateDefaultConfig(this.client, id, profileData)
-			}
+			const presentationData = data.view
+				? augmentPresentation(data.view)
+				: await generateDefaultConfig(this.client, id, profileData)
 
 			const presentation = await this.client.presentation.create(presentationData)
 			if (!profileData.metadata) {
@@ -74,7 +71,7 @@ export default class DeviceProfilesViewUpdateCommand extends APIOrganizationComm
 			profileData.metadata.mnmn = presentation.manufacturerName
 			const profile = await this.client.deviceProfiles.update(id, cleanupForUpdate(profileData))
 
-			return { ...profile, presentation: prunePresentationValues(presentation) }
+			return { ...profile, presentation: prunePresentation(presentation) }
 		}
 		await inputAndOutputItem(this, {
 			buildTableOutput: data => buildTableOutput(this.tableGenerator, data, { includeViewInfo: true }),

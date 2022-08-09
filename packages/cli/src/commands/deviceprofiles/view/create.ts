@@ -3,8 +3,8 @@ import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib
 import { createWithDefaultConfig } from '../../../lib/commands/deviceprofiles/create-util'
 import { buildTableOutput, cleanupForCreate, DeviceDefinition, DeviceDefinitionRequest } from '../../../lib/commands/deviceprofiles-util'
 import {
-	prunePresentationValues,
-	augmentPresentationValues,
+	prunePresentation,
+	augmentPresentation,
 } from '../../../lib/commands/deviceprofiles/view-util'
 
 
@@ -50,7 +50,7 @@ export default class DeviceDefCreateCommand extends APIOrganizationCommand<typeo
 		}
 
 		// create the device config from the view data
-		const deviceConfig = await this.client.presentation.create(augmentPresentationValues(data.view))
+		const deviceConfig = await this.client.presentation.create(augmentPresentation(data.view))
 
 		// Set the vid and mnmn from the config
 		if (!data.metadata) {
@@ -64,7 +64,7 @@ export default class DeviceDefCreateCommand extends APIOrganizationCommand<typeo
 		const profile = await this.client.deviceProfiles.create(cleanupForCreate(data))
 
 		// Return the composite object
-		return { ...profile, view: prunePresentationValues(deviceConfig) }
+		return { ...profile, view: prunePresentation(deviceConfig) }
 	}
 
 	async run(): Promise<void> {
@@ -73,7 +73,7 @@ export default class DeviceDefCreateCommand extends APIOrganizationCommand<typeo
 				return this.createWithCustomConfig(data)
 			}
 			const profileAndConfig = await createWithDefaultConfig(this.client, data)
-			return { ...profileAndConfig.deviceProfile, view: prunePresentationValues(profileAndConfig.deviceConfig) }
+			return { ...profileAndConfig.deviceProfile, view: prunePresentation(profileAndConfig.deviceConfig) }
 		}
 		await inputAndOutputItem(this,
 			{ buildTableOutput: data => buildTableOutput(this.tableGenerator, data, { includeViewInfo: true }) },
