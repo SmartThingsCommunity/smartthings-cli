@@ -75,7 +75,6 @@ export default class VirtualDeviceCreateCommand extends APIOrganizationCommand<t
 	}
 
 	private mergeCreateFlagValues(flags: InferredFlagsType<typeof VirtualDeviceCreateCommand.flags>, data: VirtualDeviceCreateRequest): VirtualDeviceCreateRequest {
-
 		if (flags.name) {
 			data.name = flags.name
 		}
