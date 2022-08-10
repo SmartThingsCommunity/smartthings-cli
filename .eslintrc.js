@@ -142,5 +142,6 @@ module.exports = {
 				format: ['PascalCase', 'UPPER_CASE'],
 			},
 		],
+		"no-console": "off",
 	},
 }

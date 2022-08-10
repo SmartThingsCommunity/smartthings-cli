@@ -61,8 +61,11 @@
 		],
 		"outputPath": "dist_bin",
 		"targets": [
-			"node16-linux-x64",
 			"node16-macos-x64",
+			"node16-macos-arm64",
+			"node16-linux-x64",
+			"node16-linux-arm64",
+			"node16-linuxstatic-armv7",
 			"node16-win-x64"
 		]
 	},
@@ -88,6 +91,7 @@
 		"@types/node": "^16.11.44",
 		"@typescript-eslint/eslint-plugin": "^5.30.6",
 		"@typescript-eslint/parser": "^5.30.6",
+		"archiver": "^5.3.1",
 		"eslint": "^8.19.0",
 		"eslint-plugin-eslint-comments": "^3.2.0",
 		"eslint-plugin-import": "^2.26.0",
@@ -117,7 +121,7 @@
 		"prepack": "tsc -b && oclif manifest && oclif readme",
 		"version": "oclif readme && git add README.md",
 		"package": "pkg package.json && npm run zip-binaries",
-		"zip-binaries": "./zip-binaries.sh"
+		"zip-binaries": "node zip-binaries.mjs"
 	},
 	"directories": {
 		"doc": "doc"
