@@ -65,6 +65,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install and Setup QEMU
+        run: |
+          sudo apt-get update
+          sudo apt-get install qemu binfmt-support qemu-user-static
+
+      # see https://github.com/vercel/pkg/issues/1251#issuecomment-1024832725
+      - name: Download and Install ldid Codesign Utility
+        run: |
+          wget https://github.com/jesec/ldid-static/releases/download/v2.1.4/ldid-amd64
+          chmod +x ldid-amd64
+          sudo mv ldid-amd64 /usr/local/bin/ldid
+
       - name: Checkout Repo
         uses: actions/checkout@v3
 
@@ -121,13 +133,13 @@ jobs:
       # make sure 'smartthings' is available to child processes
       - name: Set Windows Path
         if: runner.os == 'Windows'
-        run: Add-Content $env:GITHUB_PATH "${{ github.workspace }}\packages\cli\dist_bin\win"
+        run: Add-Content $env:GITHUB_PATH "${{ github.workspace }}\packages\cli\dist_bin\win\x64"
       - name: Set macOS Path
         if: runner.os == 'macOS'
-        run: echo "$GITHUB_WORKSPACE/packages/cli/dist_bin/macos" >> $GITHUB_PATH
+        run: echo "$GITHUB_WORKSPACE/packages/cli/dist_bin/macos/x64" >> $GITHUB_PATH
       - name: Set Linux Path
         if: runner.os == 'Linux'
-        run: echo "$GITHUB_WORKSPACE/packages/cli/dist_bin/linux" >> $GITHUB_PATH
+        run: echo "$GITHUB_WORKSPACE/packages/cli/dist_bin/linux/x64" >> $GITHUB_PATH
 
       - name: Install Dependencies and Run Tests
         run: |
@@ -175,7 +187,7 @@ jobs:
           body_path: ${{ github.workspace }}/RELEASE_NOTES.txt
           tag_name: ${{ needs.release.outputs.cli-tag }}
           prerelease: true
-          files: packages/cli/dist_bin/assets/*
+          files: packages/cli/dist_bin/**/*.tar.gz
 
   homebrew-formula:
     needs: [release, github-release]
@@ -232,7 +244,7 @@ jobs:
       - name: Extract Artifacts
         run: tar -xvf dist_bin.tar
 
-      - run: mv packages\cli\dist_bin\win\smartthings.exe packages\cli\wix
+      - run: mv packages\cli\dist_bin\win\x64\smartthings.exe packages\cli\wix
 
       # https://github.community/t/set-path-for-wix-toolset-in-windows-runner/154708/2
       # https://stackoverflow.com/a/71579543
