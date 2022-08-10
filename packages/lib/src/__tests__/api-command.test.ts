@@ -49,7 +49,7 @@ describe('api-command', () => {
 			}
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-			async parse(options?: Interfaces.Input<any>, argv?: string[]): Promise<Interfaces.ParserOutput<any, any>> {
+			async parse(options?: Interfaces.Input<any, any>, argv?: string[]): Promise<Interfaces.ParserOutput<any, any, any>> {
 				return {
 					flags: {},
 					args: {},

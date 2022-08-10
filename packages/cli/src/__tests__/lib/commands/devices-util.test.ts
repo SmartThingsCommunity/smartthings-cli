@@ -494,7 +494,7 @@ describe('devices-util', () => {
 			expect(buildTableOutput(tableGeneratorMock, device))
 				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from virtual)\nvirtual device info\n\n' + summarizedText)
 
-			expect(tablePushMock).toHaveBeenCalledTimes(9)
+			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
 			expect(buildTableFromItemMock).toHaveBeenCalledWith(virtual,
 				['name', { prop: 'hubId', skipEmpty: true }, { prop: 'driverId', skipEmpty: true }])

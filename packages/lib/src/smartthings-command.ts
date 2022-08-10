@@ -1,5 +1,6 @@
 import log4js from '@log4js-node/log4js-api'
 import { Command, Flags, Interfaces } from '@oclif/core'
+import { Input } from '@oclif/core/lib/interfaces'
 import { CLIConfig, loadConfig, Profile } from './cli-config'
 import { outputFlags } from './output-builder'
 import { DefaultTableGenerator, TableGenerator } from './table-generator'
@@ -63,6 +64,7 @@ export interface SmartThingsCommandInterface extends Loggable {
 
 /**
  * This is needed to get type safety working in derived classes.
+ * See https://github.com/oclif/oclif.github.io/pull/142
  */
 export type InferredFlagsType<T> = T extends Interfaces.FlagInput<infer F>
 	? F & {
@@ -182,10 +184,10 @@ export abstract class SmartThingsCommand<T extends InputFlags> extends Command i
 
 		this._logger = log4js.getLogger(`cli.${this.ctor.name}`)
 
-		const { args, argv, flags } = await this.parse(this.ctor)
+		const { args, argv, flags } = await this.parse(this.ctor as Input<T, typeof SmartThingsCommand.globalFlags>)
 		this._args = args
 		this._argv = argv
-		this._flags = flags
+		this._flags = flags as unknown as InferredFlagsType<T>
 
 		this._profileName = this.flags.profile || 'default'
 
