@@ -1,8 +1,4 @@
 import {
-	inputAndOutputItem,
-	selectFromList,
-} from '@smartthings/cli-lib'
-import {
 	Capability,
 	CapabilitiesEndpoint,
 	Component,
@@ -10,7 +6,14 @@ import {
 	DeviceEvent,
 	DevicesEndpoint,
 	VirtualDevicesEndpoint,
+	DeviceIntegrationType,
 } from '@smartthings/core-sdk'
+
+import {
+	chooseDevice,
+	inputAndOutputItem,
+} from '@smartthings/cli-lib'
+
 import VirtualDeviceEventsCommand from '../../../commands/virtualdevices/events'
 import {
 	CapabilityAttributeItem,
@@ -25,7 +28,7 @@ import {
 jest.mock('../../../lib/commands/virtualdevices-util')
 
 describe('VirtualDeviceEventsCommand', () => {
-	const mockSelectFromList = jest.mocked(selectFromList)
+	const mockChooseDevice = jest.mocked(chooseDevice)
 
 	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)
 	const createEventsSpy = jest.spyOn(VirtualDevicesEndpoint.prototype, 'createEvents').mockImplementation()
@@ -46,7 +49,7 @@ describe('VirtualDeviceEventsCommand', () => {
 			await actionFunction(undefined, createRequest)
 		})
 
-		mockSelectFromList.mockResolvedValueOnce('device-id')
+		mockChooseDevice.mockResolvedValueOnce('device-id')
 
 		await expect(VirtualDeviceEventsCommand.run(['device-id'])).resolves.not.toThrow()
 
@@ -57,16 +60,11 @@ describe('VirtualDeviceEventsCommand', () => {
 			expect.anything(),
 		)
 
-		expect(mockSelectFromList).toHaveBeenCalledTimes(1)
-		expect(mockSelectFromList).toBeCalledWith(
+		expect(mockChooseDevice).toHaveBeenCalledTimes(1)
+		expect(mockChooseDevice).toBeCalledWith(
 			expect.any(VirtualDeviceEventsCommand),
-			expect.objectContaining({
-				primaryKeyName: 'deviceId',
-				sortKeyName: 'label',
-			}),
-			expect.objectContaining({
-				preselectedId: 'device-id',
-			}),
+			'device-id',
+			{ deviceListOptions: { type: DeviceIntegrationType.VIRTUAL } },
 		)
 		expect(createEventsSpy).toHaveBeenCalledTimes(1)
 		expect(createEventsSpy).toBeCalledWith('device-id', createRequest)
@@ -87,7 +85,7 @@ describe('VirtualDeviceEventsCommand', () => {
 			await actionFunction(undefined, data)
 		})
 
-		mockSelectFromList.mockResolvedValueOnce('device-id')
+		mockChooseDevice.mockResolvedValueOnce('device-id')
 		const capability = {
 			attributes: {
 				switch: {
@@ -124,7 +122,7 @@ describe('VirtualDeviceEventsCommand', () => {
 			await actionFunction(undefined, data)
 		})
 
-		mockSelectFromList.mockResolvedValueOnce('device-id')
+		mockChooseDevice.mockResolvedValueOnce('device-id')
 		const capability = {
 			attributes: {
 				level: {
@@ -162,7 +160,7 @@ describe('VirtualDeviceEventsCommand', () => {
 			await actionFunction(undefined, data)
 		})
 
-		mockSelectFromList.mockResolvedValueOnce('device-id')
+		mockChooseDevice.mockResolvedValueOnce('device-id')
 		const capability = {
 			attributes: {
 				temperature: {
@@ -207,7 +205,7 @@ describe('VirtualDeviceEventsCommand', () => {
 
 		getDeviceSpy.mockResolvedValueOnce({} as Device)
 		getCapabilitySpy.mockResolvedValueOnce({} as Capability)
-		mockSelectFromList.mockResolvedValueOnce('device-id')
+		mockChooseDevice.mockResolvedValueOnce('device-id')
 		mockChooseComponent.mockResolvedValueOnce({ id: 'main' } as Component)
 		mockChooseCapability.mockResolvedValueOnce({ id: 'temperatureMeasurement' })
 		mockChooseAttribute.mockResolvedValueOnce(({
