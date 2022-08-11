@@ -1,4 +1,4 @@
-import { outputListing } from '@smartthings/cli-lib'
+import { outputItemOrList } from '@smartthings/cli-lib'
 import { DevicePreferencesEndpoint } from '@smartthings/core-sdk'
 import DevicePreferencesTranslationsCommand from '../../../commands/devicepreferences/translations'
 import { chooseDevicePreference } from '../../../lib/commands/devicepreferences-util'
@@ -10,7 +10,7 @@ jest.mock('../../../lib/commands/devicepreferences-util')
 
 describe('DevicePreferencesTranslationsCommand', () => {
 	const mockChooseDevicePreference = jest.mocked(chooseDevicePreference)
-	const mockOutputListing = jest.mocked(outputListing)
+	const mockOutputListing = jest.mocked(outputItemOrList)
 	const getTranslationsSpy = jest.spyOn(DevicePreferencesEndpoint.prototype, 'getTranslations').mockImplementation()
 	const listTranslationsSpy = jest.spyOn(DevicePreferencesEndpoint.prototype, 'listTranslations').mockImplementation()
 
@@ -30,7 +30,7 @@ describe('DevicePreferencesTranslationsCommand', () => {
 		)
 	})
 
-	it('calls outputListing with correct config', async () => {
+	it('calls outputItemOrList with correct config', async () => {
 		await expect(DevicePreferencesTranslationsCommand.run([preferenceId, localeTag])).resolves.not.toThrow()
 
 		expect(chooseDevicePreference).toBeCalledWith(

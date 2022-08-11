@@ -1,6 +1,6 @@
 import { Flags, Errors } from '@oclif/core'
 
-import { formatAndWriteItem, formatAndWriteList, CommonListOutputProducer, CommonOutputProducer } from './format'
+import { formatAndWriteItem, formatAndWriteList, FormatAndWriteItemConfig, FormatAndWriteListConfig } from './format'
 import { InputProcessor } from './input'
 import { buildInputProcessor } from './input-builder'
 import { IOFormat } from './io-util'
@@ -9,12 +9,12 @@ import { buildOutputFormatter } from './output-builder'
 import { SmartThingsCommandInterface } from './smartthings-command'
 
 
-export type GetDataFunction<O> = () => Promise<O>
-export type ListDataFunction<L> = () => Promise<L[]>
-export type LookupDataFunction<ID, O> = (id: ID) => Promise<O>
-export type ActionFunction<ID, I, O> = (id: ID, input: I) => Promise<O>
-export type IdTranslationFunction<ID, L> = (idOrIndex: ID | string, listFunction: ListDataFunction<L>) => Promise<ID>
-export type IdRetrievalFunction<ID, L> = (fieldInfo: Sorting, list: L[], promptMessage?: string) => Promise<ID>
+export type GetDataFunction<O extends object> = () => Promise<O>
+export type ListDataFunction<L extends object> = () => Promise<L[]>
+export type LookupDataFunction<ID, O extends object> = (id: ID) => Promise<O>
+export type ActionFunction<ID, I extends object, O extends object> = (id: ID, input: I) => Promise<O>
+export type IdTranslationFunction<ID, L extends object> = (idOrIndex: ID | string, listFunction: ListDataFunction<L>) => Promise<ID>
+export type IdRetrievalFunction<ID, L extends object> = (fieldInfo: Sorting<L>, list: L[], promptMessage?: string) => Promise<ID>
 
 
 /**
@@ -26,16 +26,16 @@ export type IdRetrievalFunction<ID, L> = (fieldInfo: Sorting, list: L[], promptM
  * results in a consistent order. If the user specifies an index into that list when querying
  * a single location, the sort key specified here is used again to ensure the same ordering.
  */
-export interface Sorting {
+export interface Sorting<L extends object> {
 	/**
 	 * The primary key used to uniquely identify this object.
 	 */
-	primaryKeyName: string
+	primaryKeyName: Extract<keyof L, string>
 
 	/**
 	 * The field you want to sort by when presenting a list of items.
 	 */
-	sortKeyName?: string
+	sortKeyName?: Extract<keyof L, string>
 }
 
 /**
@@ -68,7 +68,8 @@ export async function inputItem<I>(command: SmartThingsCommandInterface,
 }
 inputItem.flags = buildInputProcessor.flags
 
-export async function outputItem<O>(command: SmartThingsCommandInterface, config: CommonOutputProducer<O>,
+export type OutputItemConfig<O> = FormatAndWriteItemConfig<O>
+export async function outputItem<O extends object>(command: SmartThingsCommandInterface, config: OutputItemConfig<O>,
 		getData: GetDataFunction<O>): Promise<O> {
 	const data = await getData()
 
@@ -77,7 +78,8 @@ export async function outputItem<O>(command: SmartThingsCommandInterface, config
 }
 outputItem.flags = buildOutputFormatter.flags
 
-export async function outputList<L>(command: SmartThingsCommandInterface, config: CommonListOutputProducer<L> & Sorting,
+export type OutputListConfig<L extends object> = FormatAndWriteListConfig<L> & Sorting<L>
+export async function outputList<L extends object>(command: SmartThingsCommandInterface, config: OutputListConfig<L>,
 		getData: GetDataFunction<L[]>, includeIndex = false, forUserQuery = false): Promise<L[]> {
 	const list = config.sortKeyName ? sort(await getData(), config.sortKeyName) : await getData()
 	await formatAndWriteList(command, config, list, includeIndex, forUserQuery)
@@ -86,6 +88,7 @@ export async function outputList<L>(command: SmartThingsCommandInterface, config
 outputList.flags = buildOutputFormatter.flags
 
 
+export type InputAndOutputItemConfig<O> = FormatAndWriteItemConfig<O>
 /**
  * This is the main function used in most create and update commands. It parses input and passes it
  * on to the executeAction function parameter.
@@ -97,7 +100,7 @@ outputList.flags = buildOutputFormatter.flags
  * input from command line flags or arguments. Input processors are called in the order they are
  * specified and the first one to return data is used.
  */
-export async function inputAndOutputItem<I, O>(command: SmartThingsCommandInterface, config: CommonOutputProducer<O>,
+export async function inputAndOutputItem<I extends object, O extends object>(command: SmartThingsCommandInterface, config: InputAndOutputItemConfig<O>,
 		executeAction: ActionFunction<void, I, O>, ...alternateInputProcessors: InputProcessor<I>[]): Promise<void> {
 	const [itemIn, defaultIOFormat] = await inputItem<I>(command, ...alternateInputProcessors)
 	if (command.flags['dry-run']) {

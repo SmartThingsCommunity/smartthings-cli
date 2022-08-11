@@ -9,12 +9,20 @@ import {
 } from '@smartthings/core-sdk'
 
 import {
-	APICommand, APIOrganizationCommand, FileInputProcessor,
+	APICommand,
+	APIOrganizationCommand,
+	FileInputProcessor,
 	selectFromList,
+	SelectFromListConfig,
 } from '@smartthings/cli-lib'
 
 import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
 
+
+export interface DevicePrototype {
+	name: string
+	id: string
+}
 
 export const locallyExecutingPrototypes = [
 	{ name: 'Switch', id: 'VIRTUAL_SWITCH' },
@@ -85,7 +93,7 @@ export async function chooseDeviceProfileDefinition(command: APIOrganizationComm
 }
 
 export async function chooseDevicePrototype(command: APICommand<typeof APICommand.flags>, preselectedId?: string): Promise<string> {
-	const config = {
+	const config: SelectFromListConfig<DevicePrototype> = {
 		itemName: 'device prototype',
 		primaryKeyName: 'id',
 		listTableFieldDefinitions: ['name', 'id'],
@@ -108,7 +116,7 @@ export const chooseComponent = async (command: APICommand<typeof APICommand.flag
 	let component
 	if (device.components) {
 
-		const config = {
+		const config: SelectFromListConfig<Component> = {
 			itemName: 'component',
 			primaryKeyName: 'id',
 			sortKeyName: 'id',
@@ -129,7 +137,7 @@ export const chooseComponent = async (command: APICommand<typeof APICommand.flag
 }
 
 export const chooseCapability = async (command: APICommand<typeof APICommand.flags>, component: Component): Promise<CapabilityReference> => {
-	const config = {
+	const config: SelectFromListConfig<CapabilityReference> = {
 		itemName: 'capability',
 		primaryKeyName: 'id',
 		sortKeyName: 'id',
@@ -151,7 +159,7 @@ export const chooseCapability = async (command: APICommand<typeof APICommand.fla
 export const chooseAttribute = async (command: APICommand<typeof APICommand.flags>, cap: CapabilityReference): Promise<CapabilityAttributeItem> => {
 	let attributeName
 	let attribute
-	const config = {
+	const config: SelectFromListConfig<CapabilityAttributeItem> = {
 		itemName: 'attribute',
 		primaryKeyName: 'attributeName',
 		sortKeyName: 'attributeName',
@@ -181,7 +189,7 @@ export const chooseUnit = async (command: APICommand<typeof APICommand.flags>, a
 	let unit
 	const units = attribute.schema.properties.unit?.enum
 	if (units) {
-		const config = {
+		const config: SelectFromListConfig<CapabilityUnitItem> = {
 			itemName: 'unit',
 			primaryKeyName: 'unit',
 			sortKeyName: 'unit',
@@ -202,7 +210,7 @@ export const chooseValue = async (command: APICommand<typeof APICommand.flags>, 
 	let value
 	const values = attribute.schema.properties.value.enum
 	if (values) {
-		const config = {
+		const config: SelectFromListConfig<CapabilityValueItem> = {
 			itemName: 'value',
 			primaryKeyName: 'value',
 			sortKeyName: 'value',

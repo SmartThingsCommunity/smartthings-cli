@@ -1,24 +1,38 @@
-import { outputListing } from '@smartthings/cli-lib'
+import { outputItemOrList } from '@smartthings/cli-lib'
 
 import DeviceProfilesCommand from '../../commands/deviceprofiles'
 
 
 describe('DevicesProfilesCommand', () => {
-	const outputListingMock = jest.mocked(outputListing)
+	const outputItemOrListMock = jest.mocked(outputItemOrList)
 
 	it('uses simple fields by default', async () => {
 		await expect(DeviceProfilesCommand.run([])).resolves.not.toThrow()
 
-		expect(outputListingMock).toHaveBeenCalledTimes(1)
-		expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-			.toEqual(['name', 'status', 'id'])
+		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+		expect(outputItemOrListMock).toHaveBeenCalledWith(
+			expect.any(DeviceProfilesCommand),
+			expect.objectContaining({
+				listTableFieldDefinitions: ['name', 'status', 'id'],
+			}),
+			undefined,
+			expect.any(Function),
+			expect.any(Function),
+		)
 	})
 
 	it('includes organization with all-organizations flag', async () => {
 		await expect(DeviceProfilesCommand.run(['--all-organizations'])).resolves.not.toThrow()
 
-		expect(outputListingMock).toHaveBeenCalledTimes(1)
-		expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-			.toEqual(['name', 'status', 'id', 'organization'])
+		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+		expect(outputItemOrListMock).toHaveBeenCalledWith(
+			expect.any(DeviceProfilesCommand),
+			expect.objectContaining({
+				listTableFieldDefinitions: ['name', 'status', 'id', 'organization'],
+			}),
+			undefined,
+			expect.any(Function),
+			expect.any(Function),
+		)
 	})
 })

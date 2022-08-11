@@ -2,7 +2,7 @@ import { Component, Device, DeviceListOptions } from '@smartthings/core-sdk'
 
 import { APICommand } from './api-command'
 import { ChooseOptions, chooseOptionsDefaults, stringTranslateToId } from './command-util'
-import { selectFromList, SelectingConfig } from './select'
+import { selectFromList, SelectFromListConfig } from './select'
 import { SmartThingsCommandInterface } from './smartthings-command'
 
 
@@ -14,7 +14,7 @@ export interface ChooseDeviceOptions extends ChooseOptions {
 export const chooseDevice = async (command: APICommand<typeof APICommand.flags>, deviceFromArg?: string,
 		options?: Partial<ChooseDeviceOptions>): Promise<string> => {
 	const opts = { ...chooseOptionsDefaults, ...options }
-	const config = {
+	const config: SelectFromListConfig<Device> = {
 		itemName: 'device',
 		primaryKeyName: 'deviceId',
 		sortKeyName: 'label',
@@ -34,7 +34,7 @@ export const chooseComponent = async (command: SmartThingsCommandInterface, comp
 		return 'main'
 	}
 
-	const config: SelectingConfig<Component> = {
+	const config: SelectFromListConfig<Component> = {
 		itemName: 'component',
 		primaryKeyName: 'id',
 		sortKeyName: 'id',

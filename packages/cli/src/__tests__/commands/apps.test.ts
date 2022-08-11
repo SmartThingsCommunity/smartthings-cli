@@ -1,4 +1,4 @@
-import { outputListing } from '@smartthings/cli-lib'
+import { outputItemOrList } from '@smartthings/cli-lib'
 import { AppResponse, AppClassification, AppsEndpoint, AppType, PagedApp } from '@smartthings/core-sdk'
 import AppsCommand from '../../commands/apps'
 
@@ -7,7 +7,7 @@ describe('AppsCommand', () => {
 	const appId = 'appId'
 	const app = { appId: appId, webhookSmartApp: { targetUrl: 'targetUrl' } } as AppResponse
 	const appList = [{ appId: appId }] as PagedApp[]
-	const mockOutputListing = jest.mocked(outputListing)
+	const mockOutputListing = jest.mocked(outputItemOrList)
 	const getSpy = jest.spyOn(AppsEndpoint.prototype, 'get').mockImplementation()
 	const listSpy = jest.spyOn(AppsEndpoint.prototype, 'list').mockImplementation()
 
@@ -17,10 +17,10 @@ describe('AppsCommand', () => {
 		})
 	})
 
-	it('calls outputListing with correct config', async () => {
+	it('calls outputItemOrList with correct config', async () => {
 		await expect(AppsCommand.run([])).resolves.not.toThrow()
 
-		expect(outputListing).toBeCalledWith(
+		expect(outputItemOrList).toBeCalledWith(
 			expect.any(AppsCommand),
 			expect.objectContaining({
 				primaryKeyName: 'appId',
@@ -39,7 +39,7 @@ describe('AppsCommand', () => {
 		})
 
 		await expect(AppsCommand.run([appId])).resolves.not.toThrow()
-		expect(outputListing).toBeCalledWith(
+		expect(outputItemOrList).toBeCalledWith(
 			expect.anything(),
 			expect.anything(),
 			appId,
@@ -124,7 +124,7 @@ describe('AppsCommand', () => {
 		mockOutputListing.mockResolvedValueOnce(undefined)
 
 		await expect(AppsCommand.run(['--verbose'])).resolves.not.toThrow()
-		expect(outputListing).toBeCalledWith(
+		expect(outputItemOrList).toBeCalledWith(
 			expect.anything(),
 			expect.objectContaining({
 				listTableFieldDefinitions: expect.arrayContaining(['ARN/URL']),

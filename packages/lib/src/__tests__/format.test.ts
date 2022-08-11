@@ -1,4 +1,5 @@
-import { formatAndWriteItem, formatAndWriteList } from '../format'
+import { Naming } from '../basic-io'
+import { CommonListOutputProducer, formatAndWriteItem, formatAndWriteList } from '../format'
 import { IOFormat } from '../io-util'
 import * as output from '../output'
 import * as outputBuilder from '../output-builder'
@@ -220,7 +221,7 @@ describe('format', () => {
 		})
 
 		it('uses Sorting fields as a fallback', async () => {
-			const config = {
+			const config: CommonListOutputProducer<SimpleType> & Naming = {
 				primaryKeyName: 'num',
 				sortKeyName: 'str',
 			}

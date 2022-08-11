@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core'
 import { AppType, AppClassification, AppListOptions, PagedApp, AppResponse } from '@smartthings/core-sdk'
-import { APICommand, outputListing } from '@smartthings/cli-lib'
+import { APICommand, outputItemOrList, OutputItemOrListConfig } from '@smartthings/cli-lib'
 import { tableFieldDefinitions } from '../lib/commands/apps-util'
 
 
@@ -9,7 +9,7 @@ export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
 
 	static flags = {
 		...APICommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 		type: Flags.string({
 			description: 'filter results by appType, WEBHOOK_SMART_APP, LAMBDA_SMART_APP, API_ONLY',
 			multiple: false,
@@ -30,10 +30,10 @@ export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
 	}]
 
 	async run(): Promise<void> {
-		const config = {
+		const config: OutputItemOrListConfig<AppResponse, PagedApp> = {
 			primaryKeyName: 'appId',
 			sortKeyName: 'displayName',
-			tableFieldDefinitions: tableFieldDefinitions,
+			tableFieldDefinitions,
 			listTableFieldDefinitions: ['displayName', 'appType', 'appId'],
 		}
 
@@ -53,11 +53,7 @@ export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
 
 			if (this.flags.verbose) {
 				return this.client.apps.list(appListOptions).then(list => {
-					const apps = list.map(app => {
-						// TODO remove assertion when https://github.com/SmartThingsCommunity/smartthings-core-sdk/issues/89 is resolved
-						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-						return this.client.apps.get(app.appId!)
-					})
+					const apps = list.map(app => this.client.apps.get(app.appId))
 					// eslint-disable-next-line @typescript-eslint/naming-convention
 					return Promise.all(apps).then((list: (AppResponse & { 'ARN/URL'?: string })[]) => {
 						for (const app of list) {
@@ -76,6 +72,6 @@ export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
 			return this.client.apps.list(appListOptions)
 		}
 
-		await outputListing(this, config, this.args.id, listApps, id => this.client.apps.get(id))
+		await outputItemOrList(this, config, this.args.id, listApps, id => this.client.apps.get(id))
 	}
 }

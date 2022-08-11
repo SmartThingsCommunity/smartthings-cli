@@ -2,7 +2,7 @@ import { Errors } from '@oclif/core'
 
 import { ActionExecutionResult, LocationItem, Rule, RuleExecutionResponse, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, selectFromList, summarizedText, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, selectFromList, SelectFromListConfig, summarizedText, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions: TableFieldDefinition<Rule>[] = ['name', 'id',
@@ -55,7 +55,7 @@ export const getRuleWithLocation = async (client: SmartThingsClient, id: string,
 
 export const chooseRule = async (command: APICommand<typeof APICommand.flags>, promptMessage: string, locationId?: string,
 		preselectedId?: string): Promise<string> => {
-	const config = {
+	const config: SelectFromListConfig<RuleWithLocation> = {
 		primaryKeyName: 'id',
 		sortKeyName: 'name',
 		listTableFieldDefinitions: ['name', 'id', 'locationId', 'locationName'],

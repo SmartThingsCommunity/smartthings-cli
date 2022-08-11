@@ -20,8 +20,9 @@ export interface TableCommonListOutputProducer<L> {
 export interface CustomCommonListOutputProducer<L> {
 	buildListTableOutput(data: L[]): string
 }
-export type CommonListOutputProducer<L> = TableCommonListOutputProducer<L> | CustomCommonListOutputProducer<L> | Sorting
+export type CommonListOutputProducer<L extends object> = TableCommonListOutputProducer<L> | CustomCommonListOutputProducer<L> | Sorting<L>
 
+export type FormatAndWriteItemConfig<O> = CommonOutputProducer<O>
 /**
  * Format and output the given item.
  *
@@ -34,7 +35,7 @@ export type CommonListOutputProducer<L> = TableCommonListOutputProducer<L> | Cus
  *   input so the output can default to the input format.
  */
 export async function formatAndWriteItem<O>(command: SmartThingsCommandInterface,
-		config: CommonOutputProducer<O>, item: O, defaultIOFormat?: IOFormat): Promise<void> {
+		config: FormatAndWriteItemConfig<O>, item: O, defaultIOFormat?: IOFormat): Promise<void> {
 	const commonFormatter = 'buildTableOutput' in config
 		? (data: O) => config.buildTableOutput(data)
 		: itemTableFormatter<O>(command.tableGenerator, config.tableFieldDefinitions)
@@ -43,6 +44,7 @@ export async function formatAndWriteItem<O>(command: SmartThingsCommandInterface
 }
 formatAndWriteItem.flags = buildOutputFormatter.flags
 
+export type FormatAndWriteListConfig<L extends object> = CommonListOutputProducer<L> & Naming
 /**
  * Format and output the given list.
  *
@@ -55,8 +57,8 @@ formatAndWriteItem.flags = buildOutputFormatter.flags
  * @param forUserQuery Set this to true if you're displaying this to the user for a question. This
  *   will force output to stdout and skip the JSON/YAML formatters.
  */
-export async function formatAndWriteList<L>(command: SmartThingsCommandInterface,
-		config: CommonListOutputProducer<L> & Naming, list: L[], includeIndex = false,
+export async function formatAndWriteList<L extends object>(command: SmartThingsCommandInterface,
+		config: FormatAndWriteListConfig<L>, list: L[], includeIndex = false,
 		forUserQuery = false): Promise<void> {
 	let commonFormatter: OutputFormatter<L[]>
 	if (list.length === 0) {

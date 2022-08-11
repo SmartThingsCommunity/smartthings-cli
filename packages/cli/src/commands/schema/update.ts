@@ -1,8 +1,8 @@
 import { Flags, Errors } from '@oclif/core'
 
-import { SchemaAppRequest } from '@smartthings/core-sdk'
+import { SchemaApp, SchemaAppRequest } from '@smartthings/core-sdk'
 
-import { APICommand, inputItem, selectFromList, lambdaAuthFlags } from '@smartthings/cli-lib'
+import { APICommand, inputItem, selectFromList, lambdaAuthFlags, SelectFromListConfig } from '@smartthings/cli-lib'
 
 import { addSchemaPermission } from '../../lib/aws-utils'
 
@@ -25,7 +25,7 @@ export default class SchemaUpdateCommand extends APICommand<typeof SchemaUpdateC
 	}]
 
 	async run(): Promise<void> {
-		const config = {
+		const config: SelectFromListConfig<SchemaApp> = {
 			primaryKeyName: 'endpointAppId',
 			sortKeyName: 'appName',
 			listTableFieldDefinitions: ['appName', 'endpointAppId', 'hostingType'],

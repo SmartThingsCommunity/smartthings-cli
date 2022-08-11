@@ -13,7 +13,7 @@ jest.mock('@smartthings/cli-lib', () => {
 		chooseOptionsWithDefaults: jest.fn(() => chooseOptionsDefaults),
 		stringTranslateToId: jest.fn(),
 		selectFromList: jest.fn(),
-		outputListing: jest.fn(),
+		outputItemOrList: jest.fn(),
 		inputAndOutputItem: jest.fn(),
 		inputItem: jest.fn(),
 		outputItem: jest.fn(),

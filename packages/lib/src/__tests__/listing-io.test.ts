@@ -1,6 +1,6 @@
 import * as basicIO from '../basic-io'
 import * as commandUtil from '../command-util'
-import { outputGenericListing, outputListing } from '../listing-io'
+import { OutputItemOrListConfig, outputItemOrListGeneric, outputItemOrList } from '../listing-io'
 import { buildMockCommand } from './test-lib/mock-command'
 import { SimpleType } from './test-lib/simple-type'
 
@@ -14,7 +14,7 @@ describe('listing-io', () => {
 			output: 'output.yaml',
 		},
 	}
-	const config = {
+	const config: OutputItemOrListConfig<SimpleType, SimpleType> = {
 		tableFieldDefinitions: [],
 		primaryKeyName: 'str',
 		sortKeyName: 'num',
@@ -26,11 +26,11 @@ describe('listing-io', () => {
 	const outputListSpy = jest.spyOn(basicIO, 'outputList')
 	const translateToId = jest.fn().mockResolvedValue('translated id')
 
-	describe('outputGenericListing', () => {
+	describe('outputItemOrListGeneric', () => {
 		it('calls outputItem when given idOrIndex', async () => {
 			outputItemSpy.mockResolvedValue(item)
 
-			await outputGenericListing<string, SimpleType, SimpleType>(command, config, 'id or index',
+			await outputItemOrListGeneric<string, SimpleType, SimpleType>(command, config, 'id or index',
 				listFunction, getFunction, translateToId, false)
 
 			expect(translateToId).toHaveBeenCalledTimes(1)
@@ -53,7 +53,7 @@ describe('listing-io', () => {
 		it('calls outputList when not given idOrIndex', async () => {
 			outputListSpy.mockResolvedValue(list)
 
-			await outputGenericListing<string, SimpleType, SimpleType>(command, config, undefined,
+			await outputItemOrListGeneric<string, SimpleType, SimpleType>(command, config, undefined,
 				listFunction, getFunction, translateToId)
 
 			expect(outputListSpy).toHaveBeenCalledTimes(1)
@@ -66,13 +66,13 @@ describe('listing-io', () => {
 		})
 	})
 
-	describe('outputListing', () => {
+	describe('outputItemOrList', () => {
 		const translateToIdSpy = jest.spyOn(commandUtil, 'stringTranslateToId').mockResolvedValue('id or index')
 
 		it('calls outputItem when given an id', async () => {
 			outputItemSpy.mockResolvedValue(item)
 
-			await outputListing(command, config, 'id or index', listFunction, getFunction)
+			await outputItemOrList(command, config, 'id or index', listFunction, getFunction)
 
 			expect(translateToIdSpy).toHaveBeenCalledTimes(1)
 			expect(translateToIdSpy).toHaveBeenCalledWith(config, 'id or index', listFunction)
@@ -93,7 +93,7 @@ describe('listing-io', () => {
 		it('calls outputList when not given idOrIndex', async () => {
 			outputListSpy.mockResolvedValue(list)
 
-			await outputListing(command, config, undefined, listFunction, getFunction, true)
+			await outputItemOrList(command, config, undefined, listFunction, getFunction, true)
 
 			expect(outputListSpy).toHaveBeenCalledTimes(1)
 			expect(outputListSpy).toHaveBeenCalledWith(command, config, listFunction, true)

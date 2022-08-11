@@ -1,9 +1,9 @@
 import { Flags } from '@oclif/core'
 import inquirer from 'inquirer'
 
-import { InstalledAppListOptions } from '@smartthings/core-sdk'
+import { InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, formatAndWriteItem, selectFromList, withLocations } from '@smartthings/cli-lib'
+import { APICommand, formatAndWriteItem, FormatAndWriteItemConfig, selectFromList, SelectFromListConfig, withLocations } from '@smartthings/cli-lib'
 import { listTableFieldDefinitions, tableFieldDefinitions } from '../../lib/commands/installedapps-util'
 
 
@@ -37,7 +37,7 @@ export default class InstalledAppRenameCommand extends APICommand<typeof Install
 	]
 
 	async run(): Promise<void> {
-		const config = {
+		const config: SelectFromListConfig<InstalledApp> & FormatAndWriteItemConfig<InstalledApp> = {
 			itemName: 'installed app',
 			primaryKeyName: 'installedAppId',
 			sortKeyName: 'displayName',

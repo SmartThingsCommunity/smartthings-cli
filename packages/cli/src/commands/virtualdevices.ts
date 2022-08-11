@@ -1,14 +1,18 @@
 import { Flags } from '@oclif/core'
+
 import {
 	Device,
 	DeviceIntegrationType,
 	DeviceListOptions,
 } from '@smartthings/core-sdk'
+
 import {
 	APICommand,
-	outputListing,
+	outputItemOrList,
+	OutputItemOrListConfig,
 	withLocationsAndRooms,
 } from '@smartthings/cli-lib'
+
 import { buildTableOutput } from '../lib/commands/devices-util'
 
 
@@ -17,7 +21,7 @@ export default class VirtualDevicesCommand extends APICommand<typeof VirtualDevi
 
 	static flags = {
 		...APICommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 		/* eslint-disable @typescript-eslint/naming-convention */
 		'location-id': Flags.string({
 			char: 'l',
@@ -41,7 +45,7 @@ export default class VirtualDevicesCommand extends APICommand<typeof VirtualDevi
 	}]
 
 	async run(): Promise<void> {
-		const config = {
+		const config: OutputItemOrListConfig<Device> = {
 			primaryKeyName: 'deviceId',
 			sortKeyName: 'label',
 			listTableFieldDefinitions: ['label', 'deviceId'],
@@ -57,7 +61,7 @@ export default class VirtualDevicesCommand extends APICommand<typeof VirtualDevi
 			type: DeviceIntegrationType.VIRTUAL,
 		}
 
-		await outputListing(this, config, this.args.id,
+		await outputItemOrList(this, config, this.args.id,
 			async () => {
 				const devices = await this.client.devices.list(deviceListOptions)
 				if (this.flags.verbose) {

@@ -1,16 +1,13 @@
-import { IdTranslationFunction, ListDataFunction, LookupDataFunction, outputItem, outputList, Sorting } from './basic-io'
+import { IdTranslationFunction, ListDataFunction, LookupDataFunction, outputItem, OutputItemConfig, outputList, OutputListConfig } from './basic-io'
 import { stringTranslateToId } from './command-util'
-import { CommonOutputProducer } from './format'
 import { SmartThingsCommandInterface } from './smartthings-command'
-import { TableFieldDefinition } from './table-generator'
 
 
-export type ListingOutputConfig<O, L> = Sorting & CommonOutputProducer<O> & {
-	listTableFieldDefinitions?: TableFieldDefinition<L>[]
-}
-// TODO: rename both of these to something like outputItemOrList
-export async function outputGenericListing<ID, O, L>(command: SmartThingsCommandInterface,
-		config: ListingOutputConfig<O, L>, idOrIndex: ID | string | undefined,
+export type OutputItemOrListConfig<O extends object, L extends object = O> = OutputItemConfig<O> & OutputListConfig<L>
+
+// TODO: can probably combine these and use default type of string for ID if we put it last, similar to as was done for selectFromList
+export async function outputItemOrListGeneric<ID, O extends object, L extends object = O>(command: SmartThingsCommandInterface,
+		config: OutputItemOrListConfig<O, L>, idOrIndex: ID | string | undefined,
 		listFunction: ListDataFunction<L>, getFunction: LookupDataFunction<ID, O>,
 		translateToId: IdTranslationFunction<ID, L>, includeIndex = true): Promise<void> {
 	if (idOrIndex) {
@@ -20,13 +17,13 @@ export async function outputGenericListing<ID, O, L>(command: SmartThingsCommand
 		await outputList<L>(command, config, listFunction, includeIndex)
 	}
 }
-outputGenericListing.flags = outputList.flags
+outputItemOrListGeneric.flags = outputList.flags
 
-export async function outputListing<O, L>(command: SmartThingsCommandInterface,
-		config: ListingOutputConfig<O, L>,
+export async function outputItemOrList<O extends object, L extends object = O>(command: SmartThingsCommandInterface,
+		config: OutputItemOrListConfig<O, L>,
 		idOrIndex: string | undefined, listFunction: ListDataFunction<L>,
 		getFunction: LookupDataFunction<string, O>, includeIndex = true): Promise<void> {
-	return outputGenericListing<string, O, L>(command, config, idOrIndex, listFunction, getFunction,
+	return outputItemOrListGeneric<string, O, L>(command, config, idOrIndex, listFunction, getFunction,
 		(idOrIndex, listFunction) => stringTranslateToId(config, idOrIndex, listFunction), includeIndex)
 }
-outputListing.flags = outputGenericListing.flags
+outputItemOrList.flags = outputItemOrListGeneric.flags

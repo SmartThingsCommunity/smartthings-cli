@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 
 import { Device, DeviceIntegrationType, DeviceGetOptions, DeviceListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing, TableFieldDefinition, withLocationsAndRooms } from '@smartthings/cli-lib'
+import { APICommand, outputItemOrList, OutputItemOrListConfig, TableFieldDefinition, withLocationsAndRooms } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../lib/commands/devices-util'
 
@@ -12,7 +12,7 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 
 	static flags = {
 		...APICommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 		/* eslint-disable @typescript-eslint/naming-convention */
 		'location-id': Flags.string({
 			char: 'l',
@@ -39,11 +39,11 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 			char: 'a',
 			description: 'filter results by installed app that created the device',
 		}),
-		'status': Flags.boolean({
+		status: Flags.boolean({
 			char: 's',
 			description: 'include attribute values in the response',
 		}),
-		'health': Flags.boolean({
+		health: Flags.boolean({
 			char: 'H',
 			description: 'include device health in response',
 		}),
@@ -78,7 +78,7 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 			})
 		}
 
-		const config = {
+		const config: OutputItemOrListConfig<Device> = {
 			primaryKeyName: 'deviceId',
 			sortKeyName: 'label',
 			listTableFieldDefinitions,
@@ -100,7 +100,7 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 			...deviceGetOptions,
 		}
 
-		await outputListing(this, config, this.args.id,
+		await outputItemOrList(this, config, this.args.id,
 			async () => {
 				const devices = await this.client.devices.list(deviceListOptions)
 				if (this.flags.verbose) {

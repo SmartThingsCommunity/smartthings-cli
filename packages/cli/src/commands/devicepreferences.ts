@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core'
 import { DevicePreference } from '@smartthings/core-sdk'
-import { APIOrganizationCommand, outputListing, allOrganizationsFlags, forAllOrganizations } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, outputItemOrList, allOrganizationsFlags, forAllOrganizations, OutputItemOrListConfig } from '@smartthings/cli-lib'
 import { tableFieldDefinitions } from '../lib/commands/devicepreferences-util'
 
 
@@ -30,7 +30,7 @@ export default class DevicePreferencesCommand extends APIOrganizationCommand<typ
 
 	static flags = {
 		...APIOrganizationCommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 		...allOrganizationsFlags,
 		namespace: Flags.string({
 			char: 'n',
@@ -57,16 +57,16 @@ export default class DevicePreferencesCommand extends APIOrganizationCommand<typ
 	]
 
 	async run(): Promise<void> {
-		const config = {
+		const listTableFieldDefinitions = ['preferenceId', 'title', 'name', 'description', 'required', 'preferenceType']
+		const config: OutputItemOrListConfig<DevicePreference> = {
 			itemName: 'device preference',
 			primaryKeyName: 'preferenceId',
 			sortKeyName: 'preferenceId',
 			tableFieldDefinitions,
-			listTableFieldDefinitions: ['preferenceId', 'title', 'name', 'description',
-				'required', 'preferenceType'],
+			listTableFieldDefinitions,
 		}
 
-		await outputListing(this, config, this.args.idOrIndex,
+		await outputItemOrList(this, config, this.args.idOrIndex,
 			async () => {
 				if (this.flags.standard) {
 					return standardPreferences(this)
@@ -74,7 +74,7 @@ export default class DevicePreferencesCommand extends APIOrganizationCommand<typ
 					return this.client.devicePreferences.list(this.flags.namespace)
 				}
 				else if (this.flags['all-organizations']) {
-					config.listTableFieldDefinitions.push('organization')
+					listTableFieldDefinitions.push('organization')
 					return preferencesForAllOrganizations(this)
 				}
 				return customPreferences(this)

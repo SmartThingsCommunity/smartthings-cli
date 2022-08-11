@@ -1,5 +1,6 @@
-import { APICommand, selectFromList, TableFieldDefinition } from '@smartthings/cli-lib'
 import { DevicePreference } from '@smartthings/core-sdk'
+
+import { APICommand, selectFromList, SelectFromListConfig, TableFieldDefinition } from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions: TableFieldDefinition<DevicePreference>[] = [
@@ -23,7 +24,7 @@ export const tableFieldDefinitions: TableFieldDefinition<DevicePreference>[] = [
 ]
 
 export async function chooseDevicePreference(command: APICommand<typeof APICommand.flags>, preselectedId?: string): Promise<string> {
-	const config = {
+	const config: SelectFromListConfig<DevicePreference> = {
 		itemName: 'device preference',
 		primaryKeyName: 'preferenceId',
 		sortKeyName: 'preferenceId',

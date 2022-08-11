@@ -2,8 +2,8 @@ import { Flags } from '@oclif/core'
 
 import { CapabilityLocalization, DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, ListingOutputConfig, outputListing, selectFromList,
-	SelectingConfig, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, OutputItemOrListConfig, outputItemOrList, selectFromList,
+	SelectFromListConfig, TableGenerator } from '@smartthings/cli-lib'
 
 import { CapabilityId, capabilityIdOrIndexInputArgs, CapabilitySummaryWithNamespace, getCustomByNamespace,
 	getIdFromUser, translateToId } from '../../lib/commands/capabilities-util'
@@ -50,7 +50,7 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 
 	static flags = {
 		...APIOrganizationCommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 		namespace: Flags.string({
 			char: 'n',
 			description: 'a specific namespace to query; will use all by default',
@@ -133,7 +133,7 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 	]
 
 	async run(): Promise<void> {
-		const capConfig: SelectingConfig<CapabilitySummaryWithNamespace> = {
+		const capConfig: SelectFromListConfig<CapabilitySummaryWithNamespace> = {
 			primaryKeyName: 'id',
 			sortKeyName: 'id',
 			listTableFieldDefinitions: ['id', 'version', 'status'],
@@ -180,14 +180,14 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 			promptMessage: 'Select a capability.',
 		})
 
-		const config: ListingOutputConfig<DeviceProfileTranslations, LocaleReference> = {
+		const config: OutputItemOrListConfig<DeviceProfileTranslations, LocaleReference> = {
 			primaryKeyName: 'tag',
 			sortKeyName: 'tag',
 			listTableFieldDefinitions: ['tag'],
 			buildTableOutput: data => buildTableOutput(this.tableGenerator, data),
 		}
 
-		await outputListing(this, config, preselectedTag,
+		await outputItemOrList(this, config, preselectedTag,
 			() => this.client.capabilities.listLocales(capabilityId.id, capabilityId.version),
 			tag => this.client.capabilities.getTranslations(capabilityId.id, capabilityId.version, tag),
 			true)

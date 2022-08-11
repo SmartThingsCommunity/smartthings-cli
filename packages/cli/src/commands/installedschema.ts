@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 
 import { InstalledSchemaApp, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing, TableFieldDefinition, withLocations } from '@smartthings/cli-lib'
+import { APICommand, OutputItemOrListConfig, outputItemOrList, TableFieldDefinition, withLocations } from '@smartthings/cli-lib'
 
 
 export type InstalledSchemaAppWithLocation = InstalledSchemaApp & { location?: string }
@@ -37,7 +37,7 @@ export default class InstalledSchemaAppsCommand extends APICommand<typeof Instal
 
 	static flags = {
 		...APICommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'location-id': Flags.string({
 			char: 'l',
@@ -56,7 +56,7 @@ export default class InstalledSchemaAppsCommand extends APICommand<typeof Instal
 	}]
 
 	async run(): Promise<void> {
-		const config = {
+		const config: OutputItemOrListConfig<InstalledSchemaApp, InstalledSchemaAppWithLocation> = {
 			primaryKeyName: 'isaId',
 			sortKeyName: 'appName',
 			listTableFieldDefinitions,
@@ -66,7 +66,7 @@ export default class InstalledSchemaAppsCommand extends APICommand<typeof Instal
 			config.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 
-		await outputListing(this, config, this.args.id,
+		await outputItemOrList(this, config, this.args.id,
 			() => installedSchemaInstances(this.client, this.flags['location-id'], this.flags.verbose),
 			id => this.client.schema.getInstalledApp(id),
 		)

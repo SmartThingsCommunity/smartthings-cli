@@ -1,4 +1,4 @@
-import { APICommand, outputListing } from '@smartthings/cli-lib'
+import { APICommand, outputItemOrList, OutputItemOrListConfig } from '@smartthings/cli-lib'
 import { OrganizationResponse } from '@smartthings/core-sdk'
 
 
@@ -23,7 +23,7 @@ export default class OrganizationsCommand extends APICommand<typeof Organization
 
 	static flags = {
 		...APICommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 	}
 
 	static args = [{
@@ -32,14 +32,14 @@ export default class OrganizationsCommand extends APICommand<typeof Organization
 	}]
 
 	async run(): Promise<void> {
-		const config = {
+		const config: OutputItemOrListConfig<OrganizationResponse> = {
 			tableFieldDefinitions,
 			primaryKeyName: 'organizationId',
 			sortKeyName: 'name',
 			listTableFieldDefinitions: ['name', 'label', 'organizationId', 'isDefaultUserOrg'],
 		}
 
-		await outputListing(this, config, this.args.id,
+		await outputItemOrList(this, config, this.args.id,
 			() => this.client.organizations.list(),
 			id => this.client.organizations.get(id),
 		)

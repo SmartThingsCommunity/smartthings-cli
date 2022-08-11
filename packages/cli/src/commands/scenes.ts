@@ -2,7 +2,8 @@ import { Flags } from '@oclif/core'
 
 import { SceneSummary, SceneListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing } from '@smartthings/cli-lib'
+import { APICommand, outputItemOrList, OutputItemOrListConfig } from '@smartthings/cli-lib'
+
 import { tableFieldDefinitions } from '../lib/commands/scenes-util'
 
 
@@ -11,7 +12,7 @@ export default class ScenesCommand extends APICommand<typeof ScenesCommand.flags
 
 	static flags = {
 		...APICommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'location-id': Flags.string({
 			char: 'l',
@@ -26,7 +27,7 @@ export default class ScenesCommand extends APICommand<typeof ScenesCommand.flags
 	}]
 
 	async run(): Promise<void> {
-		const config = {
+		const config: OutputItemOrListConfig<SceneSummary> = {
 			primaryKeyName: 'sceneId',
 			sortKeyName: 'sceneName',
 			tableFieldDefinitions,
@@ -35,7 +36,7 @@ export default class ScenesCommand extends APICommand<typeof ScenesCommand.flags
 			locationId: this.flags['location-id'],
 		}
 
-		await outputListing<SceneSummary, SceneSummary>(this, config, this.args.idOrIndex,
+		await outputItemOrList<SceneSummary, SceneSummary>(this, config, this.args.idOrIndex,
 			() => this.client.scenes.list(options),
 			id => this.client.scenes.get(id))
 	}

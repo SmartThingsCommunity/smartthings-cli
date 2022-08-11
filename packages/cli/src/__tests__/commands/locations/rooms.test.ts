@@ -1,4 +1,4 @@
-import { outputListing, withLocations } from '@smartthings/cli-lib'
+import { outputItemOrList, withLocations } from '@smartthings/cli-lib'
 import { RoomsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 import RoomsCommand from '../../../commands/locations/rooms'
 import { getRoomsByLocation, RoomWithLocation } from '../../../lib/commands/locations/rooms-util'
@@ -9,7 +9,7 @@ jest.mock('../../../lib/commands/locations/rooms-util')
 describe('RoomsCommand', () => {
 	const roomId = 'roomId'
 	const locationId = 'locationId'
-	const mockOutputListing = jest.mocked(outputListing)
+	const mockOutputListing = jest.mocked(outputItemOrList)
 	const mockGetRoomsByLocation = jest.mocked(getRoomsByLocation)
 	const getSpy = jest.spyOn(RoomsEndpoint.prototype, 'get').mockImplementation()
 	const mockWithLocations = jest.mocked(withLocations)
@@ -18,7 +18,7 @@ describe('RoomsCommand', () => {
 		mockGetRoomsByLocation.mockResolvedValue([])
 	})
 
-	it('calls outputListing correctly', async () => {
+	it('calls outputItemOrList correctly', async () => {
 		await expect(RoomsCommand.run([])).resolves.not.toThrow()
 
 		expect(mockOutputListing).toBeCalledWith(

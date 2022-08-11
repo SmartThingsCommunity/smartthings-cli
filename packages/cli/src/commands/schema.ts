@@ -1,6 +1,8 @@
 import { Flags } from '@oclif/core'
 
-import { APICommand, outputListing } from '@smartthings/cli-lib'
+import { SchemaApp } from '@smartthings/core-sdk'
+
+import { APICommand, outputItemOrList, OutputItemOrListConfig } from '@smartthings/cli-lib'
 
 
 export default class SchemaCommand extends APICommand<typeof SchemaCommand.flags> {
@@ -8,7 +10,7 @@ export default class SchemaCommand extends APICommand<typeof SchemaCommand.flags
 
 	static flags = {
 		...APICommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 		verbose: Flags.boolean({
 			description: 'include ARN in output',
 			char: 'v',
@@ -21,7 +23,7 @@ export default class SchemaCommand extends APICommand<typeof SchemaCommand.flags
 	}]
 
 	async run(): Promise<void> {
-		const config = {
+		const config: OutputItemOrListConfig<SchemaApp> = {
 			tableFieldDefinitions: [
 				'appName', 'partnerName', 'endpointAppId', 'schemaType', 'hostingType',
 				'stClientId', 'oAuthAuthorizationUrl', 'oAuthTokenUrl', 'oAuthClientId',
@@ -41,7 +43,7 @@ export default class SchemaCommand extends APICommand<typeof SchemaCommand.flags
 			config.listTableFieldDefinitions.push('ARN/URL')
 		}
 
-		await outputListing(this, config, this.args.id,
+		await outputItemOrList(this, config, this.args.id,
 			async () => {
 				const schemaApps = await this.client.schema.list()
 				return schemaApps.map(app => {

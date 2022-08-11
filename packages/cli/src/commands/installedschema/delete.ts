@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 
 import { InstalledSchemaApp } from '@smartthings/core-sdk'
 
-import { APICommand, selectFromList } from '@smartthings/cli-lib'
+import { APICommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
 
 import { installedSchemaInstances } from '../installedschema'
 
@@ -29,7 +29,7 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand<typeof I
 	}]
 
 	async run(): Promise<void> {
-		const config = {
+		const config: SelectFromListConfig<InstalledSchemaApp> = {
 			primaryKeyName: 'isaId',
 			sortKeyName: 'appName',
 			listTableFieldDefinitions: ['appName', 'partnerName', 'partnerSTConnection', 'isaId'],

@@ -1,4 +1,4 @@
-import { outputListing } from '@smartthings/cli-lib'
+import { outputItemOrList } from '@smartthings/cli-lib'
 import ScenesCommand from '../../commands/scenes'
 import { ScenesEndpoint } from '@smartthings/core-sdk'
 
@@ -6,16 +6,16 @@ import { ScenesEndpoint } from '@smartthings/core-sdk'
 const listSpy = jest.spyOn(ScenesEndpoint.prototype, 'list').mockImplementation()
 
 describe('ScenesCommand', () => {
-	const mockListing = jest.mocked(outputListing)
+	const mockListing = jest.mocked(outputItemOrList)
 
-	it('calls outputListing when no id is provided', async () => {
+	it('calls outputItemOrList when no id is provided', async () => {
 		await expect(ScenesCommand.run([])).resolves.not.toThrow()
 
 		expect(mockListing).toBeCalledTimes(1)
 		expect(mockListing.mock.calls[0][2]).toBeUndefined()
 	})
 
-	it('calls outputListing when id is provided', async () => {
+	it('calls outputItemOrList when id is provided', async () => {
 		const sceneId = 'sceneId'
 		await expect(ScenesCommand.run([sceneId])).resolves.not.toThrow()
 

@@ -1,5 +1,5 @@
 import { AppType, PagedApp } from '@smartthings/core-sdk'
-import { APICommand, selectFromList, SelectingConfig } from '@smartthings/cli-lib'
+import { APICommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
 import { inspect } from 'util'
 
 
@@ -14,7 +14,7 @@ export default class AppRegisterCommand extends APICommand<typeof AppRegisterCom
 	}]
 
 	async run(): Promise<void> {
-		const config: SelectingConfig<PagedApp> = {
+		const config: SelectFromListConfig<PagedApp> = {
 			primaryKeyName: 'appId',
 			sortKeyName: 'displayName',
 			listTableFieldDefinitions: ['displayName', 'appType', 'appId'],

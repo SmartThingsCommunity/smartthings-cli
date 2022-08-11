@@ -1,14 +1,13 @@
 import { CliUx } from '@oclif/core'
 import inquirer from 'inquirer'
 
-import { IdRetrievalFunction, ListDataFunction, Naming, outputList, Sorting } from './basic-io'
+import { IdRetrievalFunction, ListDataFunction, Naming, outputList, OutputListConfig, Sorting } from './basic-io'
 import { setConfigKey } from './cli-config'
 import { stringGetIdFromUser } from './command-util'
-import { CommonListOutputProducer } from './format'
 import { SmartThingsCommandInterface } from './smartthings-command'
 
 
-export type SelectingConfig<L> = Sorting & Naming & CommonListOutputProducer<L>
+export type SelectFromListConfig<L extends object> = Sorting<L> & Naming & OutputListConfig<L>
 
 export const indefiniteArticleFor = (name: string): string => name.match(/^[aeio]/i) ? 'an' : 'a'
 
@@ -16,7 +15,7 @@ function promptFromNaming(config: Naming): string | undefined {
 	return config.itemName ? `Select ${indefiniteArticleFor(config.itemName)} ${config.itemName}.` : undefined
 }
 
-export interface PromptUserOptions<L, ID = string> {
+export interface PromptUserOptions<L extends object, ID = string> {
 	/**
 	 * A function that returns the list of items to display.
 	 */
@@ -58,13 +57,11 @@ export interface PromptUserOptions<L, ID = string> {
  * @param options More parameters bundled in an object for readability.
  * @returns Selected id if one was chosen. Logs message if no items are found and exits.
  */
-export async function promptUser<L, ID = string>(command: SmartThingsCommandInterface,
-		config: SelectingConfig<L>, options: PromptUserOptions<L, ID>): Promise<ID> {
+export async function promptUser<L extends object, ID = string>(command: SmartThingsCommandInterface,
+		config: SelectFromListConfig<L>, options: PromptUserOptions<L, ID>): Promise<ID> {
 	const items = await options.listItems()
 	if (options.autoChoose && items.length === 1) {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore Typescript can't check that run-time variable `config.primaryKeyName` exists.
-		return items[0][config.primaryKeyName] as ID
+		return items[0][config.primaryKeyName] as unknown as ID
 	}
 	const list = await outputList(command, config, async () => items, true, true)
 	if (list.length === 0) {
@@ -76,7 +73,7 @@ export async function promptUser<L, ID = string>(command: SmartThingsCommandInte
 	return await getIdFromUser(config, list, options.promptMessage ?? promptFromNaming(config))
 }
 
-export interface SelectOptions<L, ID = string> extends PromptUserOptions<L, ID> {
+export interface SelectOptions<L extends object, ID = string> extends PromptUserOptions<L, ID> {
 	/**
 	 * If the value passed here is truthy, it is simply returned and no further processing is done.
 	 */
@@ -98,8 +95,8 @@ export interface SelectOptions<L, ID = string> extends PromptUserOptions<L, ID> 
  * @param options More parameters bundled in an object for readability.
  * @returns Selected id if one was chosen. Logs message if no items are found and exits.
  */
-export async function selectFromList<L, ID = string>(command: SmartThingsCommandInterface,
-		config: SelectingConfig<L>, options: SelectOptions<L, ID>): Promise<ID> {
+export async function selectFromList<L extends object, ID = string>(command: SmartThingsCommandInterface,
+		config: SelectFromListConfig<L>, options: SelectOptions<L, ID>): Promise<ID> {
 	if (options.preselectedId) {
 		return options.preselectedId
 	}
