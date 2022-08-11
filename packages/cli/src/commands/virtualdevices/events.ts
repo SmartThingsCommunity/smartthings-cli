@@ -1,16 +1,18 @@
 import {
 	DeviceEvent,
 	DeviceIntegrationType,
+	VirtualDeviceEventsResponse,
 } from '@smartthings/core-sdk'
+
 import {
 	APICommand,
+	chooseDevice,
 	inputAndOutputItem,
 	inputProcessor,
-	selectFromList,
 	stringFromUnknown,
 	TableGenerator,
 } from '@smartthings/cli-lib'
-import { VirtualDeviceEventsResponse } from '@smartthings/core-sdk/dist/endpoint/virtualdevices'
+
 import {
 	chooseAttribute,
 	chooseCapability,
@@ -75,16 +77,7 @@ export default class VirtualDeviceEventsCommand extends APICommand<typeof Virtua
 	]
 
 	async run(): Promise<void> {
-		const config = {
-			primaryKeyName: 'deviceId',
-			sortKeyName: 'label',
-			listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
-		}
-
-		const deviceId = await selectFromList(this, config, {
-			preselectedId: this.args.id,
-			listItems: () => this.client.devices.list({ type: DeviceIntegrationType.VIRTUAL }),
-		})
+		const deviceId = await chooseDevice(this, this.args.id, { deviceListOptions: { type: DeviceIntegrationType.VIRTUAL } })
 
 		const createEvents = async (_: void, input: DeviceEvent[]): Promise<EventInputOutput> => {
 			const output = await this.client.virtualDevices.createEvents(deviceId, input)

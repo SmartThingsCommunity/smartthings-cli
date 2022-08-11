@@ -1,8 +1,11 @@
-import { CapabilitiesEndpoint, Capability, Command, Device, DevicesEndpoint } from '@smartthings/core-sdk'
-import DeviceCommandsCommand from '../../../commands/devices/commands'
-import { selectFromList, StdinInputProcessor } from '@smartthings/cli-lib'
-import inquirer from 'inquirer'
 import { ExitError } from '@oclif/core/lib/errors'
+import inquirer from 'inquirer'
+
+import { CapabilitiesEndpoint, Capability, Command, Device, DevicesEndpoint } from '@smartthings/core-sdk'
+
+import { chooseDevice, StdinInputProcessor } from '@smartthings/cli-lib'
+
+import DeviceCommandsCommand from '../../../commands/devices/commands'
 
 
 // restore inputItem implementation for testing this command
@@ -11,7 +14,7 @@ jest.mock('@smartthings/cli-lib', () => {
 
 	return {
 		...originalLib,
-		selectFromList: jest.fn(),
+		chooseDevice: jest.fn(),
 	}
 })
 
@@ -43,7 +46,7 @@ describe('DeviceCommandsCommand', () => {
 	jest.spyOn(DeviceCommandsCommand.prototype, 'log').mockImplementation()
 	jest.spyOn(StdinInputProcessor.prototype, 'hasInput').mockReturnValue(false)
 
-	const selectFromListMock = jest.mocked(selectFromList).mockResolvedValue('deviceId')
+	const chooseDeviceMock = jest.mocked(chooseDevice).mockResolvedValue('deviceId')
 
 	it('only executes commands once', async () => {
 		const commandString = 'switch:on()'
@@ -58,18 +61,7 @@ describe('DeviceCommandsCommand', () => {
 
 		await expect(DeviceCommandsCommand.run(['deviceId', commandString])).resolves.not.toThrow()
 
-		expect(selectFromListMock).toBeCalledWith(
-			expect.any(DeviceCommandsCommand),
-			expect.objectContaining({
-				primaryKeyName: 'deviceId',
-				sortKeyName: 'label',
-				listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
-			}),
-			expect.objectContaining({
-				preselectedId: 'deviceId',
-				listItems: expect.any(Function),
-			}),
-		)
+		expect(chooseDeviceMock).toBeCalledWith(expect.any(DeviceCommandsCommand), 'deviceId')
 	})
 
 	describe('command parsing', () => {

@@ -2,7 +2,7 @@ import inquirer from 'inquirer'
 
 import { Command, Component, CapabilityReference, Device } from '@smartthings/core-sdk'
 
-import { APICommand, commandLineInputProcessor, inputItem, inputProcessor, isIndexArgument, selectFromList } from '@smartthings/cli-lib'
+import { APICommand, chooseDevice, commandLineInputProcessor, inputItem, inputProcessor, isIndexArgument } from '@smartthings/cli-lib'
 
 import { attributeType } from '../../lib/commands/capabilities-util'
 
@@ -247,7 +247,6 @@ $ smartthings devices:commands 00000000-0000-0000-0000-000000000000 'switchLevel
 				const cap = component.capabilities.find(it => it.id === cmd.capability)
 				if (cap) {
 					cmd = await this.getCommandFromUser(cap, cmd)
-
 				} else {
 					throw new Error(`Capability '${cmd.capability}' of component '${cmd.component}' not found`)
 				}
@@ -257,16 +256,7 @@ $ smartthings devices:commands 00000000-0000-0000-0000-000000000000 'switchLevel
 	}
 
 	async run(): Promise<void> {
-		const config = {
-			primaryKeyName: 'deviceId',
-			sortKeyName: 'label',
-			listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
-		}
-
-		const deviceId = await selectFromList(this, config, {
-			preselectedId: this.args.id,
-			listItems: () => this.client.devices.list(),
-		})
+		const deviceId = await chooseDevice(this, this.args.id)
 
 		const [commands] = await inputItem<Command[]>(this, commandLineInputProcessor(this),
 			inputProcessor(() => true, () => this.getInputFromUser(deviceId)))
