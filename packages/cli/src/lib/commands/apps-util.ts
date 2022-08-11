@@ -1,5 +1,15 @@
-import { APICommand, ChooseOptions, chooseOptionsWithDefaults, selectFromList, SelectingConfig, stringTranslateToId, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
 import { AppResponse, AppSettingsResponse, PagedApp } from '@smartthings/core-sdk'
+
+import {
+	APICommand,
+	ChooseOptions,
+	chooseOptionsWithDefaults,
+	selectFromList,
+	SelectFromListConfig,
+	stringTranslateToId,
+	TableFieldDefinition,
+	TableGenerator,
+} from '@smartthings/cli-lib'
 
 
 const isWebhookSmartApp = (app: AppResponse): boolean => !!app.webhookSmartApp
@@ -37,7 +47,7 @@ export const oauthTableFieldDefinitions = ['clientName', 'scope', 'redirectUris'
 
 export async function chooseApp(command: APICommand<typeof APICommand.flags>, appFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
 	const opts = chooseOptionsWithDefaults(options)
-	const config: SelectingConfig<AppResponse> = {
+	const config: SelectFromListConfig<PagedApp> = {
 		itemName: 'app',
 		primaryKeyName: 'appId',
 		sortKeyName: 'displayName',

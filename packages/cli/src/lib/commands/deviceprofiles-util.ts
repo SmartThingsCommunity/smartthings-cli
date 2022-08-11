@@ -12,6 +12,7 @@ import {
 	ChooseOptions,
 	chooseOptionsWithDefaults,
 	selectFromList,
+	SelectFromListConfig,
 	stringTranslateToId,
 	summarizedText,
 	TableGenerator,
@@ -98,7 +99,7 @@ export const buildTableOutput = (tableGenerator: TableGenerator, data: DevicePro
 export const chooseDeviceProfile = async (command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>,
 		deviceProfileFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> => {
 	const opts = chooseOptionsWithDefaults(options)
-	const config = {
+	const config: SelectFromListConfig<DeviceProfile> = {
 		itemName: 'device profile',
 		primaryKeyName: 'id',
 		sortKeyName: 'name',

@@ -1,6 +1,6 @@
 import { CapabilityReference, CapabilityStatus } from '@smartthings/core-sdk'
 
-import { APICommand, chooseComponent, chooseDevice, formatAndWriteItem, selectFromList, stringTranslateToId,
+import { APICommand, chooseComponent, chooseDevice, formatAndWriteItem, selectFromList, SelectFromListConfig, stringTranslateToId,
 	TableGenerator } from '@smartthings/cli-lib'
 
 import { prettyPrintAttribute } from '../../lib/commands/devices-util'
@@ -54,7 +54,7 @@ export default class DeviceCapabilityStatusCommand extends APICommand<typeof Dev
 			this.error(`no capabilities found for component ${componentName} of device ${deviceId}`)
 		}
 
-		const config = {
+		const config: SelectFromListConfig<CapabilityReference> = {
 			itemName: 'capability',
 			primaryKeyName: 'id',
 			sortKeyName: 'id',

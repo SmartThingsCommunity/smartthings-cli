@@ -6,10 +6,12 @@ import {
 	APIOrganizationCommand,
 	WithOrganization,
 	allOrganizationsFlags,
-	outputListing,
+	outputItemOrList,
 	forAllOrganizations,
 	TableFieldDefinition,
+	OutputItemOrListConfig,
 } from '@smartthings/cli-lib'
+
 import { buildTableOutput } from '../lib/commands/deviceprofiles-util'
 
 
@@ -18,7 +20,7 @@ export default class DeviceProfilesCommand extends APIOrganizationCommand<typeof
 
 	static flags = {
 		...APIOrganizationCommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 		...allOrganizationsFlags,
 		verbose: Flags.boolean({
 			description: 'include presentationId and manufacturerName in list output',
@@ -43,7 +45,7 @@ export default class DeviceProfilesCommand extends APIOrganizationCommand<typeof
 	static aliases = ['device-profiles']
 
 	async run(): Promise<void> {
-		const config = {
+		const config: OutputItemOrListConfig<DeviceProfile> = {
 			primaryKeyName: 'id',
 			sortKeyName: 'name',
 			listTableFieldDefinitions: ['name', 'status', 'id'] as TableFieldDefinition<DeviceProfile & WithOrganization>[],
@@ -59,7 +61,7 @@ export default class DeviceProfilesCommand extends APIOrganizationCommand<typeof
 			config.listTableFieldDefinitions.push({ label: 'Manufacturer Name', value: item => item.metadata?.mnmn ?? '' })
 		}
 
-		await outputListing(this, config, this.args.id,
+		await outputItemOrList(this, config, this.args.id,
 			() => this.flags['all-organizations']
 				? forAllOrganizations(this.client, (orgClient) => orgClient.deviceProfiles.list())
 				: this.client.deviceProfiles.list(),

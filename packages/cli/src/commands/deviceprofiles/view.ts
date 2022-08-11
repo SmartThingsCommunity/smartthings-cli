@@ -1,6 +1,6 @@
 import { DeviceProfile } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, ListingOutputConfig, outputListing } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, OutputItemOrListConfig, outputItemOrList } from '@smartthings/cli-lib'
 
 import { buildTableOutput, DeviceDefinition } from '../../lib/commands/deviceprofiles-util'
 import { prunePresentation } from '../../lib/commands/deviceprofiles/view-util'
@@ -11,7 +11,7 @@ export default class DeviceProfilesViewCommand extends APIOrganizationCommand<ty
 
 	static flags = {
 		...APIOrganizationCommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 	}
 
 	static args = [{
@@ -22,7 +22,7 @@ export default class DeviceProfilesViewCommand extends APIOrganizationCommand<ty
 	static aliases = ['device-profiles:view']
 
 	async run(): Promise<void> {
-		const config: ListingOutputConfig<DeviceDefinition, DeviceProfile> = {
+		const config: OutputItemOrListConfig<DeviceDefinition, DeviceProfile> = {
 			primaryKeyName: 'id',
 			sortKeyName: 'name',
 			buildTableOutput: data => buildTableOutput(this.tableGenerator, data),
@@ -42,7 +42,7 @@ export default class DeviceProfilesViewCommand extends APIOrganizationCommand<ty
 			return profile
 		}
 
-		await outputListing(this, config, this.args.id,
+		await outputItemOrList(this, config, this.args.id,
 			() => this.client.deviceProfiles.list(),
 			getDeviceProfileAndConfig)
 	}

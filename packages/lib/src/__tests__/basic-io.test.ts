@@ -1,6 +1,6 @@
 import { Errors } from '@oclif/core'
 
-import { inputAndOutputItem, inputItem, outputItem, outputList } from '../basic-io'
+import { inputAndOutputItem, inputItem, outputItem, outputList, OutputListConfig } from '../basic-io'
 import * as format from '../format'
 import { InputProcessor } from '../input'
 import * as inputBuilder from '../input-builder'
@@ -85,13 +85,13 @@ describe('basic-io', () => {
 	})
 
 	describe('outputList', () => {
-		it('gets data and calls formatAndWriteList', async () => {
-			const config = {
-				listTableFieldDefinitions: [],
-				primaryKeyName: 'num',
-				sortKeyName: 'str',
-			}
+		const config: OutputListConfig<SimpleType> = {
+			listTableFieldDefinitions: [],
+			primaryKeyName: 'num',
+			sortKeyName: 'str',
+		}
 
+		it('gets data and calls formatAndWriteList', async () => {
 			const getDataMock = jest.fn().mockResolvedValue(list)
 
 			const result = await outputList<SimpleType>(command, config, getDataMock)
@@ -102,12 +102,6 @@ describe('basic-io', () => {
 		})
 
 		it('passes includeIndex value on to formatAndWriteList', async () => {
-			const config = {
-				listTableFieldDefinitions: [],
-				primaryKeyName: 'num',
-				sortKeyName: 'str',
-			}
-
 			const getDataMock = jest.fn().mockResolvedValue(list)
 
 			const result = await outputList<SimpleType>(command, config, getDataMock, true)
@@ -118,12 +112,6 @@ describe('basic-io', () => {
 		})
 
 		it('passes forUserQuery value on to formatAndWriteList', async () => {
-			const config = {
-				listTableFieldDefinitions: [],
-				primaryKeyName: 'num',
-				sortKeyName: 'str',
-			}
-
 			const getDataMock = jest.fn().mockResolvedValue(list)
 
 			const result = await outputList<SimpleType>(command, config, getDataMock, false, true)

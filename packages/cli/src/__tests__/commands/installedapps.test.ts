@@ -1,4 +1,4 @@
-import { outputListing, withLocations, WithNamedLocation } from '@smartthings/cli-lib'
+import { outputItemOrList, withLocations, WithNamedLocation } from '@smartthings/cli-lib'
 import { InstalledApp, InstalledAppsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 import InstalledAppsCommand from '../../commands/installedapps'
 import { listTableFieldDefinitions, tableFieldDefinitions } from '../../lib/commands/installedapps-util'
@@ -15,13 +15,13 @@ describe('InstalledAppsCommand', () => {
 	const getSpy = jest.spyOn(InstalledAppsEndpoint.prototype, 'get').mockImplementation()
 	const listSpy = jest.spyOn(InstalledAppsEndpoint.prototype, 'list').mockImplementation()
 
-	const outputListingMock = jest.mocked(outputListing)
+	const outputItemOrListMock = jest.mocked(outputItemOrList)
 	const withLocationsMock = jest.mocked(withLocations)
 
-	it('calls outputListing with correct config', async () => {
+	it('calls outputItemOrList with correct config', async () => {
 		await expect(InstalledAppsCommand.run(['installedAppId'])).resolves.not.toThrow()
 
-		expect(outputListingMock).toBeCalledWith(
+		expect(outputItemOrListMock).toBeCalledWith(
 			expect.any(InstalledAppsCommand),
 			expect.objectContaining({
 				primaryKeyName: 'installedAppId',
@@ -40,7 +40,7 @@ describe('InstalledAppsCommand', () => {
 
 		getSpy.mockResolvedValueOnce(MOCK_INSTALLED_APP)
 
-		const getFunction = outputListingMock.mock.calls[0][4]
+		const getFunction = outputItemOrListMock.mock.calls[0][4]
 
 		await expect(getFunction('installedAppId')).resolves.toStrictEqual(MOCK_INSTALLED_APP)
 		expect(getSpy).toBeCalledWith('installedAppId')
@@ -51,7 +51,7 @@ describe('InstalledAppsCommand', () => {
 
 		listSpy.mockResolvedValueOnce(MOCK_INSTALLED_APP_LIST)
 
-		const listFunction = outputListingMock.mock.calls[0][3]
+		const listFunction = outputItemOrListMock.mock.calls[0][3]
 
 		await expect(listFunction()).resolves.toEqual(MOCK_INSTALLED_APP_LIST)
 		expect(listSpy).toBeCalledWith({ locationId: undefined })
@@ -60,17 +60,17 @@ describe('InstalledAppsCommand', () => {
 	it('accepts location-id flag to filter list', async () => {
 		await expect(InstalledAppsCommand.run(['--location-id=locationId'])).resolves.not.toThrow()
 
-		let listFunction = outputListingMock.mock.calls[0][3]
+		let listFunction = outputItemOrListMock.mock.calls[0][3]
 		await listFunction()
 
 		expect(listSpy).toBeCalledWith({ locationId: ['locationId'] })
 
-		outputListingMock.mockClear()
+		outputItemOrListMock.mockClear()
 		listSpy.mockClear()
 
 		await expect(InstalledAppsCommand.run(['-l=locationId', '-l=anotherLocationId'])).resolves.not.toThrow()
 
-		listFunction = outputListingMock.mock.calls[0][3]
+		listFunction = outputItemOrListMock.mock.calls[0][3]
 		await listFunction()
 
 		expect(listSpy).toBeCalledWith({ locationId: ['locationId', 'anotherLocationId'] })
@@ -79,7 +79,7 @@ describe('InstalledAppsCommand', () => {
 	it('includes location name when verbose flag is used', async () => {
 		await expect(InstalledAppsCommand.run(['--verbose'])).resolves.not.toThrow()
 
-		expect(outputListingMock).toBeCalledWith(
+		expect(outputItemOrListMock).toBeCalledWith(
 			expect.anything(),
 			expect.objectContaining({
 				listTableFieldDefinitions: expect.arrayContaining(['location']),
@@ -93,7 +93,7 @@ describe('InstalledAppsCommand', () => {
 
 		listSpy.mockResolvedValueOnce(MOCK_INSTALLED_APP_LIST)
 		withLocationsMock.mockResolvedValueOnce(expectedList)
-		const listFunction = outputListingMock.mock.calls[0][3]
+		const listFunction = outputItemOrListMock.mock.calls[0][3]
 
 		await expect(listFunction()).resolves.toStrictEqual(expectedList)
 

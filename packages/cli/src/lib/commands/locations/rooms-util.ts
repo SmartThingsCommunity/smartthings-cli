@@ -1,6 +1,9 @@
 import { Errors } from '@oclif/core'
-import { APICommand, selectFromList } from '@smartthings/cli-lib'
+
 import { LocationItem, Room, SmartThingsClient } from '@smartthings/core-sdk'
+
+import { APICommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
+
 import * as roomsUtil from './rooms-util'
 
 
@@ -33,7 +36,7 @@ export type RoomWithLocation = Room & {
 
 export async function chooseRoom(command: APICommand<typeof APICommand.flags>, locationId?: string, preselectedId?: string, autoChoose?: boolean): Promise<[string, string]> {
 	const rooms = await roomsUtil.getRoomsByLocation(command.client, locationId)
-	const config = {
+	const config: SelectFromListConfig<Room> = {
 		itemName: 'room',
 		primaryKeyName: 'roomId',
 		sortKeyName: 'name',

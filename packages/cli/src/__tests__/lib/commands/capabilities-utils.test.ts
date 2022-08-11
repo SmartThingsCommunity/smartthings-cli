@@ -402,7 +402,7 @@ describe('convertToId', () => {
 describe('getIdFromUser', () => {
 	const promptMock = jest.mocked(inquirer.prompt)
 	const convertToIdSpy = jest.spyOn(capabilitiesUtil, 'convertToId')
-	const fieldInfo = {} as Sorting
+	const fieldInfo = {} as Sorting<CapabilitySummaryWithNamespace>
 
 	it('returns selected id with version', async () => {
 		promptMock.mockResolvedValueOnce({ idOrIndex: 'chosen-id' })
@@ -483,7 +483,7 @@ describe('translateToId', () => {
 	it('returns input if it is a `CapabilityId`', async () => {
 		const capabilityId = { id: 'capability-id', version: 1 }
 
-		expect(await translateToId('', capabilityId, listMock)).toBe(capabilityId)
+		expect(await translateToId('id', capabilityId, listMock)).toBe(capabilityId)
 
 		expect(listMock).toHaveBeenCalledTimes(0)
 	})
@@ -491,21 +491,21 @@ describe('translateToId', () => {
 	it('returns `CapabilityId` with input as id if input is a string', async () => {
 		const capabilityId = { id: 'capability-id', version: 1 }
 
-		expect(await translateToId('', capabilityId.id, listMock)).toStrictEqual(capabilityId)
+		expect(await translateToId('id', capabilityId.id, listMock)).toStrictEqual(capabilityId)
 
 		expect(listMock).toHaveBeenCalledTimes(0)
 	})
 
 	it('returns id when input is integer (index) and is in range', async () => {
-		expect(await translateToId('', '2', listMock)).toStrictEqual({ id: 'button', version: 1 })
+		expect(await translateToId('id', '2', listMock)).toStrictEqual({ id: 'button', version: 1 })
 
 		expect(listMock).toHaveBeenCalledTimes(1)
 		expect(listMock).toHaveBeenCalledWith()
 	})
 
 	it('throws error is out-of-range integer', async () => {
-		await expect(translateToId('', '0', listMock)).rejects.toThrow()
-		await expect(translateToId('', '7', listMock)).rejects.toThrow()
+		await expect(translateToId('id', '0', listMock)).rejects.toThrow()
+		await expect(translateToId('id', '7', listMock)).rejects.toThrow()
 	})
 })
 

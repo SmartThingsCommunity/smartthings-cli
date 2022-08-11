@@ -1,7 +1,7 @@
 import { Device, DevicesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
 import {
-	CustomCommonOutputProducer, DefaultTableGenerator, outputListing,
+	CustomCommonOutputProducer, DefaultTableGenerator, outputItemOrList,
 	withLocationsAndRooms, WithNamedRoom,
 } from '@smartthings/cli-lib'
 
@@ -15,48 +15,69 @@ jest.mock('../../lib/commands/devices-util')
 describe('DevicesCommand', () => {
 	const deviceId = 'device-id'
 	const getSpy = jest.spyOn(DevicesEndpoint.prototype, 'get').mockImplementation()
-	const outputListingMock = jest.mocked(outputListing)
+	const outputItemOrListMock = jest.mocked(outputItemOrList)
 
 	it('passes undefined for location id when not specified', async () => {
 		await expect(DevicesCommand.run([])).resolves.not.toThrow()
 
-		expect(outputListingMock).toHaveBeenCalledTimes(1)
-		expect(outputListingMock.mock.calls[0][2]).toBeUndefined()
+		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+		expect(outputItemOrListMock.mock.calls[0][2]).toBeUndefined()
 	})
 
 	it('passes argument as location id', async () => {
 		await expect(DevicesCommand.run(['location-id'])).resolves.not.toThrow()
 
-		expect(outputListingMock).toHaveBeenCalledTimes(1)
-		expect(outputListingMock.mock.calls[0][2]).toBe('location-id')
+		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+		expect(outputItemOrListMock.mock.calls[0][2]).toBe('location-id')
 	})
 
 	it('uses simple fields by default', async () => {
 		await expect(DevicesCommand.run([])).resolves.not.toThrow()
 
-		expect(outputListingMock).toHaveBeenCalledTimes(1)
-		expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-			.toEqual(['label', 'name', 'type', 'deviceId'])
+		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+		expect(outputItemOrListMock).toHaveBeenCalledWith(
+			expect.any(DevicesCommand),
+			expect.objectContaining({
+				listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
+			}),
+			undefined,
+			expect.any(Function),
+			expect.any(Function),
+		)
 	})
 
 	it('includes location and room with verbose flag', async () => {
 		await expect(DevicesCommand.run(['--verbose'])).resolves.not.toThrow()
 
-		expect(outputListingMock).toHaveBeenCalledTimes(1)
-		expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-			.toEqual(['label', 'name', 'type', 'location', 'room', 'deviceId'])
+		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+		expect(outputItemOrListMock).toHaveBeenCalledWith(
+			expect.any(DevicesCommand),
+			expect.objectContaining({
+				listTableFieldDefinitions: ['label', 'name', 'type', 'location', 'room', 'deviceId'],
+			}),
+			undefined,
+			expect.any(Function),
+			expect.any(Function),
+		)
 	})
 
 	it('uses buildTableOutput from devices-util', async () => {
 		await expect(DevicesCommand.run([])).resolves.not.toThrow()
 
-		expect(outputListingMock).toHaveBeenCalledTimes(1)
-		expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-			.toEqual(['label', 'name', 'type', 'deviceId'])
+		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+		expect(outputItemOrListMock).toHaveBeenCalledWith(
+			expect.any(DevicesCommand),
+			expect.objectContaining({
+				listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
+			}),
+			undefined,
+			expect.any(Function),
+			expect.any(Function),
+		)
 
 		const device = { deviceId: 'device-id' } as Device
 		const buildTableOutputMock = jest.mocked(buildTableOutput)
-		const config = outputListingMock.mock.calls[0][1] as CustomCommonOutputProducer<Device>
+		const config = outputItemOrListMock.mock.calls[0][1] as CustomCommonOutputProducer<Device>
 		buildTableOutputMock.mockReturnValueOnce('table output')
 
 		expect(config.buildTableOutput(device)).toBe('table output')
@@ -73,11 +94,18 @@ describe('DevicesCommand', () => {
 		it('uses devices.list without verbose flag', async () => {
 			await expect(DevicesCommand.run([])).resolves.not.toThrow()
 
-			expect(outputListingMock).toHaveBeenCalledTimes(1)
-			expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-				.toEqual(['label', 'name', 'type', 'deviceId'])
+			expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+			expect(outputItemOrListMock).toHaveBeenCalledWith(
+				expect.any(DevicesCommand),
+				expect.objectContaining({
+					listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
+				}),
+				undefined,
+				expect.any(Function),
+				expect.any(Function),
+			)
 
-			const listDevices = outputListingMock.mock.calls[0][3]
+			const listDevices = outputItemOrListMock.mock.calls[0][3]
 
 			expect(await listDevices()).toBe(devices)
 
@@ -89,11 +117,18 @@ describe('DevicesCommand', () => {
 		it('adds health status with health flag', async () => {
 			await expect(DevicesCommand.run(['--health'])).resolves.not.toThrow()
 
-			expect(outputListingMock).toHaveBeenCalledTimes(1)
-			expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-				.toEqual(['label', 'name', 'type', { label: 'Health', prop: 'healthState.state' }, 'deviceId'])
+			expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+			expect(outputItemOrListMock).toHaveBeenCalledWith(
+				expect.any(DevicesCommand),
+				expect.objectContaining({
+					listTableFieldDefinitions: ['label', 'name', 'type', { label: 'Health', prop: 'healthState.state' }, 'deviceId'],
+				}),
+				undefined,
+				expect.any(Function),
+				expect.any(Function),
+			)
 
-			const listDevices = outputListingMock.mock.calls[0][3]
+			const listDevices = outputItemOrListMock.mock.calls[0][3]
 
 			expect(await listDevices()).toBe(devices)
 
@@ -105,11 +140,18 @@ describe('DevicesCommand', () => {
 		it('adds locations with verbose flag', async () => {
 			await expect(DevicesCommand.run(['--verbose'])).resolves.not.toThrow()
 
-			expect(outputListingMock).toHaveBeenCalledTimes(1)
-			expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-				.toEqual(['label', 'name', 'type', 'location', 'room', 'deviceId'])
+			expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+			expect(outputItemOrListMock).toHaveBeenCalledWith(
+				expect.any(DevicesCommand),
+				expect.objectContaining({
+					listTableFieldDefinitions: ['label', 'name', 'type', 'location', 'room', 'deviceId'],
+				}),
+				undefined,
+				expect.any(Function),
+				expect.any(Function),
+			)
 
-			const listDevices = outputListingMock.mock.calls[0][3]
+			const listDevices = outputItemOrListMock.mock.calls[0][3]
 
 			const verboseDevices = [
 				{ deviceId: 'device-id', location: 'location name', room: 'room name' },
@@ -127,11 +169,18 @@ describe('DevicesCommand', () => {
 		it('uses capability flag in devices.list', async () => {
 			await expect(DevicesCommand.run(['--capability', 'cmd-line-capability'])).resolves.not.toThrow()
 
-			expect(outputListingMock).toHaveBeenCalledTimes(1)
-			expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-				.toEqual(['label', 'name', 'type', 'deviceId'])
+			expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+			expect(outputItemOrListMock).toHaveBeenCalledWith(
+				expect.any(DevicesCommand),
+				expect.objectContaining({
+					listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
+				}),
+				undefined,
+				expect.any(Function),
+				expect.any(Function),
+			)
 
-			const listDevices = outputListingMock.mock.calls[0][3]
+			const listDevices = outputItemOrListMock.mock.calls[0][3]
 
 			expect(await listDevices()).toBe(devices)
 
@@ -147,11 +196,18 @@ describe('DevicesCommand', () => {
 				'--capabilities-mode', 'or',
 			])).resolves.not.toThrow()
 
-			expect(outputListingMock).toHaveBeenCalledTimes(1)
-			expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-				.toEqual(['label', 'name', 'type', 'deviceId'])
+			expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+			expect(outputItemOrListMock).toHaveBeenCalledWith(
+				expect.any(DevicesCommand),
+				expect.objectContaining({
+					listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
+				}),
+				undefined,
+				expect.any(Function),
+				expect.any(Function),
+			)
 
-			const listDevices = outputListingMock.mock.calls[0][3]
+			const listDevices = outputItemOrListMock.mock.calls[0][3]
 
 			expect(await listDevices()).toBe(devices)
 
@@ -166,11 +222,18 @@ describe('DevicesCommand', () => {
 		it('uses type flag in devices.list', async () => {
 			await expect(DevicesCommand.run(['--type', 'VIRTUAL'])).resolves.not.toThrow()
 
-			expect(outputListingMock).toHaveBeenCalledTimes(1)
-			expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-				.toEqual(['label', 'name', 'type', 'deviceId'])
+			expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+			expect(outputItemOrListMock).toHaveBeenCalledWith(
+				expect.any(DevicesCommand),
+				expect.objectContaining({
+					listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
+				}),
+				undefined,
+				expect.any(Function),
+				expect.any(Function),
+			)
 
-			const listDevices = outputListingMock.mock.calls[0][3]
+			const listDevices = outputItemOrListMock.mock.calls[0][3]
 
 			expect(await listDevices()).toBe(devices)
 
@@ -186,11 +249,18 @@ describe('DevicesCommand', () => {
 				'--type', 'ZWAVE',
 			])).resolves.not.toThrow()
 
-			expect(outputListingMock).toHaveBeenCalledTimes(1)
-			expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-				.toEqual(['label', 'name', 'type', 'deviceId'])
+			expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+			expect(outputItemOrListMock).toHaveBeenCalledWith(
+				expect.any(DevicesCommand),
+				expect.objectContaining({
+					listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
+				}),
+				undefined,
+				expect.any(Function),
+				expect.any(Function),
+			)
 
-			const listDevices = outputListingMock.mock.calls[0][3]
+			const listDevices = outputItemOrListMock.mock.calls[0][3]
 
 			expect(await listDevices()).toBe(devices)
 
@@ -205,13 +275,20 @@ describe('DevicesCommand', () => {
 	it('uses devices.get to get device', async () => {
 		await expect(DevicesCommand.run([])).resolves.not.toThrow()
 
-		expect(outputListingMock).toHaveBeenCalledTimes(1)
-		expect(outputListingMock.mock.calls[0][1].listTableFieldDefinitions)
-			.toEqual(['label', 'name', 'type', 'deviceId'])
+		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+		expect(outputItemOrListMock).toHaveBeenCalledWith(
+			expect.any(DevicesCommand),
+			expect.objectContaining({
+				listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
+			}),
+			undefined,
+			expect.any(Function),
+			expect.any(Function),
+		)
 
 		const device = { deviceId: 'device-id' } as Device
 		const getSpy = jest.spyOn(DevicesEndpoint.prototype, 'get').mockResolvedValue(device)
-		const getDevice = outputListingMock.mock.calls[0][4]
+		const getDevice = outputItemOrListMock.mock.calls[0][4]
 
 		expect(await getDevice('chosen-device-id')).toBe(device)
 
@@ -220,12 +297,12 @@ describe('DevicesCommand', () => {
 	})
 
 	it('uses UUID from the command line', async () => {
-		outputListingMock.mockImplementationOnce(async (_command, _config, _id, _listFunction, getFunction) => {
+		outputItemOrListMock.mockImplementationOnce(async (_command, _config, _id, _listFunction, getFunction) => {
 			await getFunction(deviceId)
 		})
 
 		await expect(DevicesCommand.run([deviceId])).resolves.not.toThrow()
-		expect(outputListing).toBeCalledWith(
+		expect(outputItemOrListMock).toBeCalledWith(
 			expect.anything(),
 			expect.anything(),
 			deviceId,
@@ -236,12 +313,12 @@ describe('DevicesCommand', () => {
 	})
 
 	it('includes attribute values when status flag is set', async () => {
-		outputListingMock.mockImplementationOnce(async (_command, _config, _id, _listFunction, getFunction) => {
+		outputItemOrListMock.mockImplementationOnce(async (_command, _config, _id, _listFunction, getFunction) => {
 			await getFunction(deviceId)
 		})
 
 		await expect(DevicesCommand.run([deviceId, '--status'])).resolves.not.toThrow()
-		expect(outputListing).toBeCalledWith(
+		expect(outputItemOrListMock).toBeCalledWith(
 			expect.anything(),
 			expect.anything(),
 			deviceId,
@@ -254,12 +331,12 @@ describe('DevicesCommand', () => {
 	it('includes health status when health flag is set', async () => {
 		const getHealthSpy = jest.spyOn(DevicesEndpoint.prototype, 'getHealth').mockImplementation()
 
-		outputListingMock.mockImplementationOnce(async (_command, _config, _id, _listFunction, getFunction) => {
+		outputItemOrListMock.mockImplementationOnce(async (_command, _config, _id, _listFunction, getFunction) => {
 			await getFunction(deviceId)
 		})
 
 		await expect(DevicesCommand.run([deviceId, '--health'])).resolves.not.toThrow()
-		expect(outputListing).toBeCalledWith(
+		expect(outputItemOrListMock).toBeCalledWith(
 			expect.anything(),
 			expect.anything(),
 			deviceId,

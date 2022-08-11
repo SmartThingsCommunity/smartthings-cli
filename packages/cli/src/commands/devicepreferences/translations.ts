@@ -1,4 +1,4 @@
-import { APIOrganizationCommand, ListingOutputConfig, outputListing } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, OutputItemOrListConfig, outputItemOrList } from '@smartthings/cli-lib'
 import { LocaleReference, PreferenceLocalization } from '@smartthings/core-sdk'
 import { chooseDevicePreference } from '../../lib/commands/devicepreferences-util'
 import { tableFieldDefinitions } from '../../lib/commands/devicepreferences/translations-util'
@@ -9,7 +9,7 @@ export default class DevicePreferencesTranslationsCommand extends APIOrganizatio
 
 	static flags = {
 		...APIOrganizationCommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 	}
 
 	static args = [
@@ -31,14 +31,14 @@ $ smartthings devicepreferences:translations motionSensitivity ko`,
 	async run(): Promise<void> {
 		const preferenceId = await chooseDevicePreference(this, this.args.preferenceId)
 
-		const config: ListingOutputConfig<PreferenceLocalization, LocaleReference> = {
+		const config: OutputItemOrListConfig<PreferenceLocalization, LocaleReference> = {
 			primaryKeyName: 'tag',
 			sortKeyName: 'tag',
 			listTableFieldDefinitions: ['tag'],
 			tableFieldDefinitions,
 		}
 
-		await outputListing<PreferenceLocalization, LocaleReference>(this, config, this.args.tag,
+		await outputItemOrList<PreferenceLocalization, LocaleReference>(this, config, this.args.tag,
 			() => this.client.devicePreferences.listTranslations(preferenceId),
 			tag => this.client.devicePreferences.getTranslations(preferenceId, tag))
 	}

@@ -1,4 +1,4 @@
-import { outputListing, selectFromList } from '@smartthings/cli-lib'
+import { outputItemOrList, selectFromList } from '@smartthings/cli-lib'
 import LocationsCommand, { chooseLocation } from '../../commands/locations'
 import { LocationsEndpoint } from '@smartthings/core-sdk'
 import { Config } from '@oclif/core'
@@ -34,16 +34,16 @@ describe('chooseLocation', () => {
 })
 
 describe('LocationsCommand', () => {
-	const mockListing = jest.mocked(outputListing)
+	const mockListing = jest.mocked(outputItemOrList)
 
-	it('calls outputListing when no id is provided', async () => {
+	it('calls outputItemOrList when no id is provided', async () => {
 		await expect(LocationsCommand.run([])).resolves.not.toThrow()
 
 		expect(mockListing).toBeCalledTimes(1)
 		expect(mockListing.mock.calls[0][2]).toBeUndefined()
 	})
 
-	it('calls outputListing when id is provided', async () => {
+	it('calls outputItemOrList when id is provided', async () => {
 		const locationId = 'locationId'
 		await expect(LocationsCommand.run([locationId])).resolves.not.toThrow()
 

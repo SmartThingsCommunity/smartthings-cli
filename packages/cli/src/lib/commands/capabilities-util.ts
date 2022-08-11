@@ -13,6 +13,7 @@ import {
 	APICommand,
 	ListDataFunction,
 	selectFromList,
+	SelectFromListConfig,
 	sort,
 	Sorting,
 	summarizedText,
@@ -175,7 +176,7 @@ export const convertToId = (itemIdOrIndex: string, list: CapabilitySummaryWithNa
 		return false
 	}
 }
-export const getIdFromUser = async (fieldInfo: Sorting, list: CapabilitySummaryWithNamespace[], promptMessage?: string): Promise<CapabilityId> => {
+export const getIdFromUser = async (fieldInfo: Sorting<CapabilitySummaryWithNamespace>, list: CapabilitySummaryWithNamespace[], promptMessage?: string): Promise<CapabilityId> => {
 	const idOrIndex: string = (await inquirer.prompt({
 		type: 'input',
 		name: 'idOrIndex',
@@ -198,10 +199,10 @@ export const getIdFromUser = async (fieldInfo: Sorting, list: CapabilitySummaryW
 	//    - if not, use the one there is
 	//    - if so, ask the user which one
 
-	return { 'id': inputId, 'version': 1 }
+	return { id: inputId, version: 1 }
 }
 
-export const translateToId = async (sortKeyName: string, idOrIndex: string | CapabilityId,
+export const translateToId = async (sortKeyName: Extract<keyof CapabilitySummaryWithNamespace, string>, idOrIndex: string | CapabilityId,
 		listFunction: ListDataFunction<CapabilitySummaryWithNamespace>): Promise<CapabilityId> => {
 	if (typeof idOrIndex !== 'string') {
 		return idOrIndex
@@ -228,7 +229,7 @@ export const chooseCapability = async (command: APICommand<typeof APICommand.fla
 	const preselectedId: CapabilityId | undefined = idFromArgs
 		? { id: idFromArgs, version: versionFromArgs ?? 1 }
 		: undefined
-	const config = {
+	const config: SelectFromListConfig<CapabilitySummaryWithNamespace> = {
 		itemName: 'capability',
 		primaryKeyName: 'id',
 		sortKeyName: 'id',
@@ -244,7 +245,7 @@ export const chooseCapability = async (command: APICommand<typeof APICommand.fla
 
 export const chooseCapabilityFiltered = async (command: APICommand<typeof APICommand.flags>,
 		promptMessage: string, filter: string): Promise<CapabilityId> => {
-	const config = {
+	const config: SelectFromListConfig<CapabilitySummaryWithNamespace> = {
 		itemName: 'capability',
 		primaryKeyName: 'id',
 		sortKeyName: 'id',

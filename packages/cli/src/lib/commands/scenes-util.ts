@@ -1,4 +1,6 @@
-import { APICommand, selectFromList } from '@smartthings/cli-lib'
+import { SceneSummary } from '@smartthings/core-sdk'
+
+import { APICommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions = [
@@ -6,7 +8,7 @@ export const tableFieldDefinitions = [
 ]
 
 export async function chooseScene(command: APICommand<typeof APICommand.flags>, preselectedId?: string): Promise<string> {
-	const config = {
+	const config: SelectFromListConfig<SceneSummary> = {
 		itemName: 'scene',
 		primaryKeyName: 'sceneId',
 		sortKeyName: 'sceneName',
@@ -16,4 +18,3 @@ export async function chooseScene(command: APICommand<typeof APICommand.flags>, 
 		listItems: () => command.client.scenes.list(),
 	})
 }
-

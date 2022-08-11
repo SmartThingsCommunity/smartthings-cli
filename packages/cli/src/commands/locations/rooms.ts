@@ -1,5 +1,5 @@
 import { Flags } from '@oclif/core'
-import { APICommand, ListingOutputConfig, outputListing, withLocations } from '@smartthings/cli-lib'
+import { APICommand, OutputItemOrListConfig, outputItemOrList, withLocations } from '@smartthings/cli-lib'
 import { Room } from '@smartthings/core-sdk'
 import { getRoomsByLocation, RoomWithLocation, tableFieldDefinitions } from '../../lib/commands/locations/rooms-util'
 
@@ -18,7 +18,7 @@ export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> 
 			description: 'include location name in output',
 			char: 'v',
 		}),
-		...outputListing.flags,
+		...outputItemOrList.flags,
 	}
 
 	static args = [{
@@ -29,7 +29,7 @@ export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> 
 	static aliases = ['rooms']
 
 	async run(): Promise<void> {
-		const config: ListingOutputConfig<Room, RoomWithLocation> = {
+		const config: OutputItemOrListConfig<Room, RoomWithLocation> = {
 			primaryKeyName: 'roomId',
 			sortKeyName: 'name',
 			listTableFieldDefinitions: tableFieldDefinitions,
@@ -39,7 +39,7 @@ export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> 
 			config.listTableFieldDefinitions?.push('location')
 		}
 		const rooms = await getRoomsByLocation(this.client, this.flags['location-id'])
-		await outputListing(this, config, this.args.idOrIndex,
+		await outputItemOrList(this, config, this.args.idOrIndex,
 			async () => {
 				if (this.flags.verbose) {
 					return await withLocations(this.client, rooms)

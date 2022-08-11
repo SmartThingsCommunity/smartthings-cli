@@ -1,4 +1,6 @@
-import { APIOrganizationCommand, selectFromList } from '@smartthings/cli-lib'
+import { LocaleReference } from '@smartthings/core-sdk'
+
+import { APIOrganizationCommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
 
 import { chooseDeviceProfile } from '../../../lib/commands/deviceprofiles-util'
 
@@ -46,7 +48,7 @@ export default class DeviceProfileTranslationsDeleteCommand extends APIOrganizat
 	async run(): Promise<void> {
 		const deviceProfileId = await chooseDeviceProfile(this, this.args.id)
 
-		const localeTagSelectConfig = {
+		const localeTagSelectConfig: SelectFromListConfig<LocaleReference> = {
 			primaryKeyName: 'tag',
 			sortKeyName: 'tag',
 			listTableFieldDefinitions: ['tag'],

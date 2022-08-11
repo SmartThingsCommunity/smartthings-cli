@@ -1,4 +1,4 @@
-import { APICommand, outputItem, outputListing } from '@smartthings/cli-lib'
+import { APICommand, outputItem, outputItemOrList } from '@smartthings/cli-lib'
 import { chooseApp, oauthTableFieldDefinitions } from '../../lib/commands/apps-util'
 
 
@@ -7,7 +7,7 @@ export default class AppOauthCommand extends APICommand<typeof AppOauthCommand.f
 
 	static flags = {
 		...APICommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 	}
 
 	static args = [{

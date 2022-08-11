@@ -1,9 +1,19 @@
 import yaml from 'js-yaml'
 import { Flags } from '@oclif/core'
 
-import { buildOutputFormatter, calculateOutputFormat, IOFormat, outputItem, outputList,
-	outputListing, SmartThingsCommand, stringTranslateToId, TableFieldDefinition,
-	writeOutput } from '@smartthings/cli-lib'
+import {
+	buildOutputFormatter,
+	calculateOutputFormat,
+	IOFormat,
+	outputItem,
+	outputList,
+	outputItemOrList,
+	SmartThingsCommand,
+	stringTranslateToId,
+	TableFieldDefinition,
+	writeOutput,
+	OutputListConfig,
+} from '@smartthings/cli-lib'
 
 
 function reservedKey(key: string): boolean {
@@ -36,7 +46,7 @@ export default class ConfigCommand extends SmartThingsCommand<typeof ConfigComma
 
 	static flags = {
 		...SmartThingsCommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 		verbose: Flags.boolean({
 			description: 'Include additional data in table output',
 			char: 'v',
@@ -58,7 +68,7 @@ export default class ConfigCommand extends SmartThingsCommand<typeof ConfigComma
 			{ label: 'Definition', value: (item) => yaml.dump(item.data) },
 		]
 
-		const outputListConfig = {
+		const outputListConfig: OutputListConfig<ConfigItem> = {
 			primaryKeyName: 'name',
 			sortKeyName: 'name',
 			listTableFieldDefinitions,

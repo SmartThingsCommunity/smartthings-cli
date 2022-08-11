@@ -17,9 +17,9 @@ export function pluralItemName(command: Naming): string {
 	return command.pluralItemName ?? (command.itemName ? `${command.itemName}s` : 'items')
 }
 
-export async function stringTranslateToId<L>(config: Sorting & Naming, idOrIndex: string, listFunction: ListDataFunction<L>): Promise<string>
-export async function stringTranslateToId<L>(config: Sorting & Naming, idOrIndex: string | undefined, listFunction: ListDataFunction<L>): Promise<string | undefined>
-export async function stringTranslateToId<L>(config: Sorting & Naming, idOrIndex: string | undefined, listFunction: ListDataFunction<L>): Promise<string | undefined> {
+export async function stringTranslateToId<L extends object>(config: Sorting<L> & Naming, idOrIndex: string, listFunction: ListDataFunction<L>): Promise<string>
+export async function stringTranslateToId<L extends object>(config: Sorting<L> & Naming, idOrIndex: string | undefined, listFunction: ListDataFunction<L>): Promise<string | undefined>
+export async function stringTranslateToId<L extends object>(config: Sorting<L> & Naming, idOrIndex: string | undefined, listFunction: ListDataFunction<L>): Promise<string | undefined> {
 	if (!idOrIndex) {
 		return undefined
 	}
@@ -40,26 +40,21 @@ export async function stringTranslateToId<L>(config: Sorting & Naming, idOrIndex
 	if (!(primaryKeyName in matchingItem)) {
 		throw Error(`did not find key ${primaryKeyName} in data`)
 	}
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore
 	const pk = matchingItem[primaryKeyName]
 	if (typeof pk === 'string') {
 		return pk
 	}
-
 	throw Error(`invalid type ${typeof pk} for primary key` +
 		` ${primaryKeyName} in ${JSON.stringify(matchingItem)}`)
 }
 
-
-export function convertToId<L>(itemIdOrIndex: string, primaryKeyName: string, sortedList: L[]): string | false {
+export function convertToId<L>(itemIdOrIndex: string, primaryKeyName: Extract<keyof L, string>, sortedList: L[]): string | false {
 	if (itemIdOrIndex.length === 0) {
 		return false
 	}
 	const matchingItem = sortedList.find(item => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		return (primaryKeyName in item) && itemIdOrIndex === item[primaryKeyName]
+		const pk = item[primaryKeyName]
+		return typeof pk === 'string' && itemIdOrIndex === pk
 	})
 	if (matchingItem) {
 		return itemIdOrIndex
@@ -72,8 +67,6 @@ export function convertToId<L>(itemIdOrIndex: string, primaryKeyName: string, so
 	const index = Number.parseInt(itemIdOrIndex)
 
 	if (!Number.isNaN(index) && index > 0 && index <= sortedList.length) {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		const pk = sortedList[index - 1][primaryKeyName]
 		if (typeof pk === 'string') {
 			return pk
@@ -84,7 +77,7 @@ export function convertToId<L>(itemIdOrIndex: string, primaryKeyName: string, so
 	return false
 }
 
-export async function stringGetIdFromUser<L>(fieldInfo: Sorting, list: L[], prompt?: string): Promise<string> {
+export async function stringGetIdFromUser<L extends object>(fieldInfo: Sorting<L>, list: L[], prompt?: string): Promise<string> {
 	const primaryKeyName = fieldInfo.primaryKeyName
 
 	const itemIdOrIndex: string = (await inquirer.prompt({

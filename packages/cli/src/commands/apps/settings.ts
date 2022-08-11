@@ -1,4 +1,4 @@
-import { APICommand, CustomCommonOutputProducer, outputItem, outputListing } from '@smartthings/cli-lib'
+import { APICommand, CustomCommonOutputProducer, outputItem, outputItemOrList } from '@smartthings/cli-lib'
 import { AppSettingsResponse } from '@smartthings/core-sdk'
 import { buildTableOutput, chooseApp } from '../../lib/commands/apps-util'
 
@@ -8,7 +8,7 @@ export default class AppSettingsCommand extends APICommand<typeof AppSettingsCom
 
 	static flags = {
 		...APICommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 	}
 
 	static args = [{

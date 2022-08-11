@@ -2,9 +2,9 @@ import { Flags } from '@oclif/core'
 
 import { CapabilityPresentation } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, outputGenericListing, summarizedText, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, OutputItemOrListConfig, outputItemOrListGeneric, summarizedText, TableGenerator } from '@smartthings/cli-lib'
 
-import { CapabilityId, capabilityIdOrIndexInputArgs, getCustomByNamespace, translateToId } from '../../lib/commands/capabilities-util'
+import { CapabilityId, capabilityIdOrIndexInputArgs, CapabilitySummaryWithNamespace, getCustomByNamespace, translateToId } from '../../lib/commands/capabilities-util'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, presentation: CapabilityPresentation): string {
@@ -72,7 +72,7 @@ export default class PresentationsCommand extends APIOrganizationCommand<typeof 
 
 	static flags = {
 		...APIOrganizationCommand.flags,
-		...outputGenericListing.flags,
+		...outputItemOrListGeneric.flags,
 		namespace: Flags.string({
 			char: 'n',
 			description: 'a specific namespace to query; will use all by default',
@@ -85,15 +85,16 @@ export default class PresentationsCommand extends APIOrganizationCommand<typeof 
 		const idOrIndex = this.args.version
 			? { id: this.args.id, version: this.args.version }
 			: this.args.id
-		const config = {
+		const sortKeyName = 'id'
+		const config: OutputItemOrListConfig<CapabilityPresentation, CapabilitySummaryWithNamespace> = {
 			primaryKeyName: 'id',
-			sortKeyName: 'id',
+			sortKeyName,
 			listTableFieldDefinitions: ['id', 'version', 'status'],
 			buildTableOutput: (data: CapabilityPresentation) => buildTableOutput(this.tableGenerator, data),
 		}
-		await outputGenericListing(this, config, idOrIndex,
+		await outputItemOrListGeneric(this, config, idOrIndex,
 			() => getCustomByNamespace(this.client, this.flags.namespace),
 			(id: CapabilityId) =>  this.client.capabilities.getPresentation(id.id, id.version),
-			(idOrIndex, listFunction) => translateToId(config.sortKeyName, idOrIndex, listFunction))
+			(idOrIndex, listFunction) => translateToId(sortKeyName, idOrIndex, listFunction))
 	}
 }

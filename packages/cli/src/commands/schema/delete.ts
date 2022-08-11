@@ -1,4 +1,6 @@
-import { APICommand, selectFromList } from '@smartthings/cli-lib'
+import { SchemaApp } from '@smartthings/core-sdk'
+
+import { APICommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
 
 
 export default class SchemaAppDeleteCommand extends APICommand<typeof SchemaAppDeleteCommand.flags> {
@@ -12,7 +14,7 @@ export default class SchemaAppDeleteCommand extends APICommand<typeof SchemaAppD
 	}]
 
 	async run(): Promise<void> {
-		const config = {
+		const config: SelectFromListConfig<SchemaApp> = {
 			primaryKeyName: 'endpointAppId',
 			sortKeyName: 'appName',
 		}

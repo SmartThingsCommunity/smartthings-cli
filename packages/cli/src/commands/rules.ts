@@ -1,8 +1,8 @@
 import { Flags } from '@oclif/core'
 
-import { APICommand, outputListing } from '@smartthings/cli-lib'
+import { APICommand, outputItemOrList, OutputItemOrListConfig } from '@smartthings/cli-lib'
 
-import { getRulesByLocation, getRuleWithLocation, tableFieldDefinitions } from '../lib/commands/rules-util'
+import { getRulesByLocation, getRuleWithLocation, RuleWithLocation, tableFieldDefinitions } from '../lib/commands/rules-util'
 
 
 export default class RulesCommand extends APICommand<typeof RulesCommand.flags> {
@@ -10,7 +10,7 @@ export default class RulesCommand extends APICommand<typeof RulesCommand.flags> 
 
 	static flags = {
 		...APICommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'location-id': Flags.string({
 			char: 'l',
@@ -24,13 +24,13 @@ export default class RulesCommand extends APICommand<typeof RulesCommand.flags> 
 	}]
 
 	async run(): Promise<void> {
-		const config = {
+		const config: OutputItemOrListConfig<RuleWithLocation> = {
 			primaryKeyName: 'id',
 			sortKeyName: 'name',
 			listTableFieldDefinitions: ['name', 'id', 'locationId', 'locationName'],
 			tableFieldDefinitions,
 		}
-		await outputListing(this, config, this.args.idOrIndex,
+		await outputItemOrList(this, config, this.args.idOrIndex,
 			() => getRulesByLocation(this.client, this.flags['location-id']),
 			id => getRuleWithLocation(this.client, id, this.flags['location-id']),
 		)

@@ -1,4 +1,4 @@
-import { outputListing } from '@smartthings/cli-lib'
+import { outputItemOrList } from '@smartthings/cli-lib'
 import OrganizationsCommand from '../../commands/organizations'
 import { OrganizationsEndpoint } from '@smartthings/core-sdk'
 
@@ -7,16 +7,16 @@ const listSpy = jest.spyOn(OrganizationsEndpoint.prototype, 'list').mockImplemen
 
 describe('OrganizationsCommand', () => {
 	const organizationId = 'organizationId'
-	const mockOutputListing = jest.mocked(outputListing)
+	const mockOutputListing = jest.mocked(outputItemOrList)
 
-	it('calls outputListing when no id is provided', async () => {
+	it('calls outputItemOrList when no id is provided', async () => {
 		await expect(OrganizationsCommand.run([])).resolves.not.toThrow()
 
 		expect(mockOutputListing).toBeCalledTimes(1)
 		expect(mockOutputListing.mock.calls[0][2]).toBeUndefined()
 	})
 
-	it('calls outputListing when id is provided', async () => {
+	it('calls outputItemOrList when id is provided', async () => {
 		await expect(OrganizationsCommand.run([organizationId])).resolves.not.toThrow()
 
 		expect(mockOutputListing).toBeCalledTimes(1)

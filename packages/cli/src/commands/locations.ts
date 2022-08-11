@@ -1,6 +1,6 @@
 import { Location, LocationItem } from '@smartthings/core-sdk'
 
-import { APICommand, outputListing, selectFromList, stringTranslateToId } from '@smartthings/cli-lib'
+import { APICommand, outputItemOrList, OutputItemOrListConfig, selectFromList, SelectFromListConfig, stringTranslateToId } from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions = [
@@ -13,8 +13,7 @@ export async function chooseLocation(
 		locationFromArg?: string,
 		autoChoose?: boolean,
 		allowIndex?: boolean): Promise<string> {
-
-	const config = {
+	const config: SelectFromListConfig<LocationItem> = {
 		itemName: 'location',
 		primaryKeyName: 'locationId',
 		sortKeyName: 'name',
@@ -38,7 +37,7 @@ export default class LocationsCommand extends APICommand<typeof LocationsCommand
 
 	static flags = {
 		...APICommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 	}
 
 	static args = [{
@@ -47,12 +46,12 @@ export default class LocationsCommand extends APICommand<typeof LocationsCommand
 	}]
 
 	async run(): Promise<void> {
-		const config = {
+		const config: OutputItemOrListConfig<Location, LocationItem> = {
 			primaryKeyName: 'locationId',
 			sortKeyName: 'name',
 			tableFieldDefinitions,
 		}
-		await outputListing<Location, LocationItem>(this, config, this.args.idOrIndex,
+		await outputItemOrList<Location, LocationItem>(this, config, this.args.idOrIndex,
 			() => this.client.locations.list(),
 			id => this.client.locations.get(id))
 	}

@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 
 import { DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, ListingOutputConfig, outputListing } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, OutputItemOrListConfig, outputItemOrList } from '@smartthings/cli-lib'
 import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
 import { buildTableOutput } from '../../lib/commands/deviceprofiles/translations-util'
 
@@ -12,7 +12,7 @@ export default class DeviceProfileTranslationsCommand extends APIOrganizationCom
 
 	static flags = {
 		...APIOrganizationCommand.flags,
-		...outputListing.flags,
+		...outputItemOrList.flags,
 		verbose: Flags.boolean({
 			description: 'include list of locales in table output',
 			char: 'v',
@@ -88,13 +88,13 @@ export default class DeviceProfileTranslationsCommand extends APIOrganizationCom
 	async run(): Promise<void> {
 		const deviceProfileId = await chooseDeviceProfile(this, this.args.id, { verbose: this.flags.verbose, allowIndex: true })
 
-		const config: ListingOutputConfig<DeviceProfileTranslations, LocaleReference> = {
+		const config: OutputItemOrListConfig<DeviceProfileTranslations, LocaleReference> = {
 			primaryKeyName: 'tag',
 			sortKeyName: 'tag',
 			buildTableOutput: data => buildTableOutput(this.tableGenerator, data),
 			listTableFieldDefinitions: ['tag'],
 		}
-		await outputListing(this, config, this.args.tag,
+		await outputItemOrList(this, config, this.args.tag,
 			() => this.client.deviceProfiles.listLocales(deviceProfileId),
 			tag =>  this.client.deviceProfiles.getTranslations(deviceProfileId, tag))
 	}

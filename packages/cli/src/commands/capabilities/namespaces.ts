@@ -1,4 +1,6 @@
-import { APIOrganizationCommand, outputList } from '@smartthings/cli-lib'
+import { CapabilityNamespace } from '@smartthings/core-sdk'
+
+import { APIOrganizationCommand, outputList, OutputListConfig } from '@smartthings/cli-lib'
 
 
 export default class CapabilitiesListNamespacesCommand extends APIOrganizationCommand<typeof CapabilitiesListNamespacesCommand.flags> {
@@ -10,12 +12,11 @@ export default class CapabilitiesListNamespacesCommand extends APIOrganizationCo
 	}
 
 	async run(): Promise<void> {
-		const config = {
+		const config: OutputListConfig<CapabilityNamespace> = {
 			sortKeyName: 'name',
 			primaryKeyName: 'name',
 			listTableFieldDefinitions: ['name', 'ownerType', 'ownerId'],
 		}
-		await outputList(this, config,
-			() => this.client.capabilities.listNamespaces())
+		await outputList(this, config, () => this.client.capabilities.listNamespaces())
 	}
 }

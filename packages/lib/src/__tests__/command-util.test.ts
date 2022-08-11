@@ -1,10 +1,12 @@
 import inquirer from 'inquirer'
+import { Sorting } from '../basic-io'
 import {
 	ChooseOptions, chooseOptionsDefaults, chooseOptionsWithDefaults, convertToId,
 	isIndexArgument, itemName, pluralItemName, stringGetIdFromUser,
 	stringTranslateToId,
 } from '../command-util'
 import * as output from '../output'
+import { SimpleType } from './test-lib/simple-type'
 
 
 describe('command-util', () => {
@@ -43,11 +45,11 @@ describe('command-util', () => {
 		})
 	})
 
-	const item1 = { str: 'string-id-a', num: 5 }
-	const item2 = { str: 'string-id-b', num: 6 }
-	const item3 = { str: 'string-id-c', num: 7 }
+	const item1: SimpleType = { str: 'string-id-a', num: 5 }
+	const item2: SimpleType = { str: 'string-id-b', num: 6 }
+	const item3: SimpleType = { str: 'string-id-c', num: 7 }
 	const list = [item1, item2, item3]
-	const command = {
+	const config: Sorting<SimpleType> = {
 		primaryKeyName: 'str',
 		sortKeyName: 'num',
 	}
@@ -58,7 +60,7 @@ describe('command-util', () => {
 		it('simply returns undefined given undefined idOrIndex', async () => {
 			const listFunction = jest.fn()
 
-			const computedId = await stringTranslateToId(command, undefined, listFunction)
+			const computedId = await stringTranslateToId(config, undefined, listFunction)
 
 			expect(computedId).toBeUndefined()
 			expect(listFunction).toHaveBeenCalledTimes(0)
@@ -67,7 +69,7 @@ describe('command-util', () => {
 		it('simply returns id when not matching index argument', async () => {
 			const listFunction = jest.fn()
 
-			const computedId = await stringTranslateToId(command, 'id-not-index', listFunction)
+			const computedId = await stringTranslateToId(config, 'id-not-index', listFunction)
 
 			expect(computedId).toBe('id-not-index')
 			expect(listFunction).toHaveBeenCalledTimes(0)
@@ -78,7 +80,7 @@ describe('command-util', () => {
 			const sortSpy = jest.spyOn(output, 'sort')
 			sortSpy.mockReturnValue(list)
 
-			const computedId = await stringTranslateToId(command, '1', listFunction)
+			const computedId = await stringTranslateToId(config, '1', listFunction)
 
 			expect(computedId).toBe('string-id-a')
 
@@ -92,7 +94,7 @@ describe('command-util', () => {
 			const sortSpy = jest.spyOn(output, 'sort')
 			sortSpy.mockReturnValue(list)
 
-			await expect(stringTranslateToId(command, '4', listFunction))
+			await expect(stringTranslateToId(config, '4', listFunction))
 				.rejects.toThrow('invalid index 4 (enter an id or index between 1 and 3 inclusive)')
 
 			expect(listFunction).toHaveBeenCalledTimes(1)
@@ -105,7 +107,7 @@ describe('command-util', () => {
 			const sortSpy = jest.spyOn(output, 'sort')
 			sortSpy.mockReturnValue([{ num: 5 }])
 
-			await expect(stringTranslateToId(command, '1', listFunction))
+			await expect(stringTranslateToId(config, '1', listFunction))
 				.rejects.toThrow('did not find key str in data')
 
 			expect(listFunction).toHaveBeenCalledTimes(1)
@@ -118,7 +120,7 @@ describe('command-util', () => {
 			const sortSpy = jest.spyOn(output, 'sort')
 			sortSpy.mockReturnValue([{ str: 3, num: 5 }])
 
-			await expect(stringTranslateToId(command, '1', listFunction))
+			await expect(stringTranslateToId(config, '1', listFunction))
 				.rejects.toThrow('invalid type number for primary key str in {"str":3,"num":5}')
 
 			expect(listFunction).toHaveBeenCalledTimes(1)
@@ -156,7 +158,7 @@ describe('command-util', () => {
 		it('accepts id input from user', async () => {
 			promptSpy.mockResolvedValue({ itemIdOrIndex: 'string-id-a' })
 
-			const chosenId = await stringGetIdFromUser(command, list)
+			const chosenId = await stringGetIdFromUser(config, list)
 
 			expect(chosenId).toBe('string-id-a')
 
@@ -173,7 +175,7 @@ describe('command-util', () => {
 		it('validation returns error when unable to convert', async () => {
 			promptSpy.mockResolvedValue({ itemIdOrIndex: 'string-id-a' })
 
-			const chosenId = await stringGetIdFromUser(command, list)
+			const chosenId = await stringGetIdFromUser(config, list)
 
 			expect(chosenId).toBe('string-id-a')
 
@@ -190,13 +192,13 @@ describe('command-util', () => {
 		it('throws error when unable to convert entered value to a valid id', async () => {
 			promptSpy.mockResolvedValue({ itemIdOrIndex: 'invalid-id' })
 
-			await expect(stringGetIdFromUser(command, list)).rejects.toThrow('unable to convert invalid-id to id')
+			await expect(stringGetIdFromUser(config, list)).rejects.toThrow('unable to convert invalid-id to id')
 		})
 
 		it('handles non-default prompt', async () => {
 			promptSpy.mockResolvedValue({ itemIdOrIndex: 'string-id-a' })
 
-			const chosenId = await stringGetIdFromUser(command, list, 'give me an id')
+			const chosenId = await stringGetIdFromUser(config, list, 'give me an id')
 
 			expect(chosenId).toBe('string-id-a')
 
