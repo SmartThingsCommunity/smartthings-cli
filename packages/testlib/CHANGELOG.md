@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.0.0-beta.8
+
+### Patch Changes
+
+- [#374](https://github.com/SmartThingsCommunity/smartthings-cli/pull/374) [`aeb8b28`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/aeb8b2892ca4de80fd4335a7ed1e8af2ed5153c4) Thanks [@bflorian](https://github.com/bflorian)! - feat: added device and location history commands
+
+- Updated dependencies [[`3523e38`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/3523e38aa4b47f0a411b7969fb1771bbb7c50900)]:
+  - @smartthings/cli-lib@1.0.0-beta.13
+
 ## 1.0.0-beta.7
 
 ### Patch Changes
