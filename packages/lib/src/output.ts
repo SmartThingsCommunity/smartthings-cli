@@ -5,17 +5,13 @@ import { SmartThingsCommandInterface } from './smartthings-command'
 import { TableFieldDefinition, TableGenerator } from './table-generator'
 
 
-export function sort<L>(list: L[], keyName?: string): L[] {
+export function sort<L extends object>(list: L[], keyName?: Extract<keyof L, string>): L[] {
 	if (!keyName) {
 		return list
 	}
 	return list.sort((a, b) => {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const av = a[keyName].toLowerCase()
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const bv = b[keyName].toLowerCase()
+		const av = (a[keyName] as unknown as string).toLowerCase()
+		const bv = (b[keyName] as unknown as string).toLowerCase()
 		return av === bv ? 0 : av < bv ? -1 : 1
 	})
 }
