@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.13
+
+### Patch Changes
+
+- [#375](https://github.com/SmartThingsCommunity/smartthings-cli/pull/375) [`3523e38`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/3523e38aa4b47f0a411b7969fb1771bbb7c50900) Thanks [@john-u](https://github.com/john-u)! - bump @smartthings/plugin-cli-edge to support newer oclif/core version
+
 ## 1.0.0-beta.12
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # Change Log
 
+## 1.0.0-beta.13
+
+### Patch Changes
+
+- [#374](https://github.com/SmartThingsCommunity/smartthings-cli/pull/374) [`aeb8b28`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/aeb8b2892ca4de80fd4335a7ed1e8af2ed5153c4) Thanks [@bflorian](https://github.com/bflorian)! - feat: added device and location history commands
+
+* [#369](https://github.com/SmartThingsCommunity/smartthings-cli/pull/369) [`d62c051`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d62c0517d6947db55cd0c701e3c8ba194efaf201) Thanks [@bflorian](https://github.com/bflorian)! - feat: Refactored devices command and added health and status flags.
+
+- [#371](https://github.com/SmartThingsCommunity/smartthings-cli/pull/371) [`b2ea4c0`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b2ea4c04c626e2991b9f6a400656ab764f700f93) Thanks [@rossiam](https://github.com/rossiam)! - include virtual device info in device output
+
+* [#375](https://github.com/SmartThingsCommunity/smartthings-cli/pull/375) [`3523e38`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/3523e38aa4b47f0a411b7969fb1771bbb7c50900) Thanks [@john-u](https://github.com/john-u)! - bump @smartthings/plugin-cli-edge to support newer oclif/core version
+
+* Updated dependencies [[`3523e38`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/3523e38aa4b47f0a411b7969fb1771bbb7c50900)]:
+  - @smartthings/cli-lib@1.0.0-beta.13
+
 ## 1.0.0-beta.12
 
 ### Patch Changes
