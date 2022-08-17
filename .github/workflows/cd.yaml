@@ -178,7 +178,7 @@ jobs:
           files: packages/cli/dist_bin/assets/*
 
   homebrew-formula:
-    needs: release
+    needs: [release, github-release]
 
     if: needs.release.outputs.cli-released == 'true'
 
@@ -205,7 +205,7 @@ jobs:
         formulae: smartthingscommunity/smartthings/smartthings
 
   windows-installer:
-    needs: [release, package]
+    needs: [release, package, github-release]
 
     if: needs.release.outputs.cli-released == 'true'
 
