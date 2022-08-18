@@ -1,5 +1,17 @@
 # Change Log
 
+## 1.0.0-beta.14
+
+### Patch Changes
+
+- [#377](https://github.com/SmartThingsCommunity/smartthings-cli/pull/377) [`ea04f1e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/ea04f1ed890201608f921979c0c3b3a647ce6e59) Thanks [@rossiam](https://github.com/rossiam)! - clean-up refactor of command helper functions (functions we use to do most of the work for most of our commands like `selectFromList` and `formatAndWriteItem`)
+
+  - made the `Sorting` interface generic, dependent on the type of the object being sorted
+  - changed type of `primaryKeyName` and `sortingKeyName` for `Sorting` interface to constrain them to string keys from the object being sorted
+  - added `extends object` constraint to objects handled by command helper functions
+  - rename `outputListing` to `outputItemOrList` and `outputListingGeneric` to `outputItemOrListGeneric`
+  - update/add config types for command helper functions with consistent naming (`InputAndOutputItemConfig` for `inputAndOutputItem`, `FormatAndWriteItemConfig` for `formatAndWriteItem`, etc.)
+
 ## 1.0.0-beta.13
 
 ### Patch Changes
