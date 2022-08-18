@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.0.0-beta.14
+
+### Patch Changes
+
+- [#381](https://github.com/SmartThingsCommunity/smartthings-cli/pull/381) [`852cdd7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/852cdd748497f66628c6ef810a312594731efe48) Thanks [@john-u](https://github.com/john-u)! - resolve logcat command bug that was ignoring all messages from the hub
+
+- Updated dependencies [[`ea04f1e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/ea04f1ed890201608f921979c0c3b3a647ce6e59)]:
+  - @smartthings/cli-lib@1.0.0-beta.14
+
 ## 1.0.0-beta.13
 
 ### Patch Changes
