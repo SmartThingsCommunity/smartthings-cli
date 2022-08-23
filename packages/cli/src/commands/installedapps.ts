@@ -2,8 +2,8 @@ import { Flags } from '@oclif/core'
 
 import { InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, outputItemOrList, OutputItemOrListConfig, withLocations } from '@smartthings/cli-lib'
-import { InstalledAppWithLocation, listTableFieldDefinitions, tableFieldDefinitions } from '../lib/commands/installedapps-util'
+import { APICommand, outputItemOrList, OutputItemOrListConfig, withLocations, WithNamedLocation } from '@smartthings/cli-lib'
+import { listTableFieldDefinitions, tableFieldDefinitions } from '../lib/commands/installedapps-util'
 
 
 export default class InstalledAppsCommand extends APICommand<typeof InstalledAppsCommand.flags> {
@@ -30,7 +30,7 @@ export default class InstalledAppsCommand extends APICommand<typeof InstalledApp
 	}]
 
 	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<InstalledApp, InstalledAppWithLocation> = {
+		const config: OutputItemOrListConfig<InstalledApp & WithNamedLocation> = {
 			primaryKeyName: 'installedAppId',
 			sortKeyName: 'displayName',
 			listTableFieldDefinitions,
@@ -44,7 +44,7 @@ export default class InstalledAppsCommand extends APICommand<typeof InstalledApp
 			locationId: this.flags['location-id'],
 		}
 
-		await outputItemOrList<InstalledApp, InstalledAppWithLocation>(this, config, this.args.id,
+		await outputItemOrList(this, config, this.args.id,
 			async () => {
 				const apps = await this.client.installedApps.list(listOptions)
 				if (this.flags.verbose) {

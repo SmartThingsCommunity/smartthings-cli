@@ -1,8 +1,10 @@
 import { Flags } from '@oclif/core'
 
-import { APICommand, outputItemOrList, OutputItemOrListConfig } from '@smartthings/cli-lib'
+import { Rule } from '@smartthings/core-sdk'
 
-import { getRulesByLocation, getRuleWithLocation, RuleWithLocation, tableFieldDefinitions } from '../lib/commands/rules-util'
+import { APICommand, outputItemOrList, OutputItemOrListConfig, WithNamedLocation } from '@smartthings/cli-lib'
+
+import { getRulesByLocation, getRuleWithLocation, tableFieldDefinitions } from '../lib/commands/rules-util'
 
 
 export default class RulesCommand extends APICommand<typeof RulesCommand.flags> {
@@ -24,10 +26,10 @@ export default class RulesCommand extends APICommand<typeof RulesCommand.flags> 
 	}]
 
 	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<RuleWithLocation> = {
+		const config: OutputItemOrListConfig<Rule & WithNamedLocation> = {
 			primaryKeyName: 'id',
 			sortKeyName: 'name',
-			listTableFieldDefinitions: ['name', 'id', 'locationId', 'locationName'],
+			listTableFieldDefinitions: ['name', 'id', 'locationId', 'location'],
 			tableFieldDefinitions,
 		}
 		await outputItemOrList(this, config, this.args.idOrIndex,

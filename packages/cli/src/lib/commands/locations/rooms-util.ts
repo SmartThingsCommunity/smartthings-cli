@@ -2,14 +2,14 @@ import { Errors } from '@oclif/core'
 
 import { LocationItem, Room, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
-
 import * as roomsUtil from './rooms-util'
+import { APICommand, selectFromList, SelectFromListConfig, WithNamedLocation } from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions = ['name', 'roomId', 'locationId' ]
+export const tableFieldDefinitionsWithLocationName = ['name', 'roomId', 'location', 'locationId' ]
 
-export async function getRoomsByLocation(client: SmartThingsClient, locationId?: string): Promise<RoomWithLocation[]> {
+export async function getRoomsByLocation(client: SmartThingsClient, locationId?: string): Promise<(Room & WithNamedLocation)[]> {
 	let locations: LocationItem[] = []
 	if (locationId) {
 		locations = [await client.locations.get(locationId)]
@@ -22,16 +22,12 @@ export async function getRoomsByLocation(client: SmartThingsClient, locationId?:
 			"you haven't created any locations yet.")
 	}
 
-	let rooms: RoomWithLocation[] = []
+	let rooms: (Room & WithNamedLocation)[] = []
 	for (const location of locations) {
 		const locationRooms = await client.rooms.list(location.locationId)
-		rooms = rooms.concat(locationRooms.map(room => { return { ...room, locationName: location.name } }))
+		rooms = rooms.concat(locationRooms.map(room => { return { ...room, location: location.name } }))
 	}
 	return rooms
-}
-
-export type RoomWithLocation = Room & {
-	locationName?: string
 }
 
 export async function chooseRoom(command: APICommand<typeof APICommand.flags>, locationId?: string, preselectedId?: string, autoChoose?: boolean): Promise<[string, string]> {
@@ -40,7 +36,7 @@ export async function chooseRoom(command: APICommand<typeof APICommand.flags>, l
 		itemName: 'room',
 		primaryKeyName: 'roomId',
 		sortKeyName: 'name',
-		listTableFieldDefinitions: tableFieldDefinitions,
+		listTableFieldDefinitions: tableFieldDefinitionsWithLocationName,
 	}
 	const roomId = await selectFromList(command, config, {
 		preselectedId,

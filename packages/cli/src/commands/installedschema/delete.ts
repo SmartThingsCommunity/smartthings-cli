@@ -4,7 +4,7 @@ import { InstalledSchemaApp } from '@smartthings/core-sdk'
 
 import { APICommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
 
-import { installedSchemaInstances } from '../installedschema'
+import { installedSchemaInstances } from '../../lib/commands/installedschema-util'
 
 
 export default class InstalledSchemaAppDeleteCommand extends APICommand<typeof InstalledSchemaAppDeleteCommand.flags> {
@@ -40,6 +40,7 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand<typeof I
 
 		const id = await selectFromList<InstalledSchemaApp>(this, config, {
 			preselectedId: this.args.id,
+			// TODO: test if this.flags['location-id'] is an empty array or undefined if no location ids passed on command line
 			listItems: () => installedSchemaInstances(this.client, this.flags['location-id'], this.flags.verbose),
 			promptMessage: 'Select an installed schema app to delete.',
 		})

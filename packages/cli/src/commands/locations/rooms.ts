@@ -1,7 +1,10 @@
 import { Flags } from '@oclif/core'
-import { APICommand, OutputItemOrListConfig, outputItemOrList, withLocations } from '@smartthings/cli-lib'
+
 import { Room } from '@smartthings/core-sdk'
-import { getRoomsByLocation, RoomWithLocation, tableFieldDefinitions } from '../../lib/commands/locations/rooms-util'
+
+import { APICommand, OutputItemOrListConfig, outputItemOrList, withLocation, WithNamedLocation } from '@smartthings/cli-lib'
+
+import { getRoomsByLocation, tableFieldDefinitions, tableFieldDefinitionsWithLocationName } from '../../lib/commands/locations/rooms-util'
 
 
 export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> {
@@ -29,23 +32,19 @@ export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> 
 	static aliases = ['rooms']
 
 	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<Room, RoomWithLocation> = {
+		const config: OutputItemOrListConfig<Room, Room & WithNamedLocation> = {
 			primaryKeyName: 'roomId',
 			sortKeyName: 'name',
 			listTableFieldDefinitions: tableFieldDefinitions,
-			tableFieldDefinitions,
+			tableFieldDefinitions: tableFieldDefinitions,
 		}
 		if (this.flags.verbose) {
-			config.listTableFieldDefinitions?.push('location')
+			config.listTableFieldDefinitions = tableFieldDefinitionsWithLocationName
+			config.tableFieldDefinitions = tableFieldDefinitionsWithLocationName
 		}
 		const rooms = await getRoomsByLocation(this.client, this.flags['location-id'])
 		await outputItemOrList(this, config, this.args.idOrIndex,
-			async () => {
-				if (this.flags.verbose) {
-					return await withLocations(this.client, rooms)
-				}
-				return rooms
-			},
+			async () => rooms,
 			async id => {
 				const room = rooms.find(room => room.roomId === id)
 				if (!room) {
@@ -53,7 +52,7 @@ export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> 
 				}
 				const chosenRoom = await this.client.rooms.get(id, room.locationId)
 				if (this.flags.verbose) {
-					return await withLocations(this.client, [chosenRoom]) as Room
+					return await withLocation(this.client, chosenRoom)
 				}
 				return chosenRoom
 			})

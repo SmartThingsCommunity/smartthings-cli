@@ -1,9 +1,11 @@
 import { Rule, RuleAction, RuleExecutionResponse, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, selectFromList, TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, selectFromList, TableGenerator, WithNamedLocation } from '@smartthings/cli-lib'
 
 import {
-	chooseRule, getRulesByLocation, getRuleWithLocation, RuleWithLocation,
+	chooseRule,
+	getRulesByLocation,
+	getRuleWithLocation,
 	tableFieldDefinitions,
 } from '../../../lib/commands/rules-util'
 import * as rulesUtil from '../../../lib/commands/rules-util'
@@ -14,8 +16,8 @@ describe('rules-util', () => {
 	const location2 = { locationId: 'location-id-2', name: 'location-name-2' }
 	const rule1 = { id: 'rule-id-1', name: 'rule-name-1' }
 	const rule2 = { id: 'rule-id-2', name: 'rule-name-2' }
-	const rule1WithLocation = { ...rule1, locationId: 'location-id-1', locationName: 'location-name-1' } as RuleWithLocation
-	const rule2WithLocation = { ...rule2, locationId: 'location-id-2', locationName: 'location-name-2' } as RuleWithLocation
+	const rule1WithLocation = { ...rule1, locationId: 'location-id-1', location: 'location-name-1' } as Rule & WithNamedLocation
+	const rule2WithLocation = { ...rule2, locationId: 'location-id-2', location: 'location-name-2' } as Rule & WithNamedLocation
 
 	const locations = {
 		get: jest.fn(),
@@ -150,11 +152,11 @@ describe('rules-util', () => {
 			}),
 		)
 
-		const ruleWithLocation = { locationId: 'location-id' } as RuleWithLocation
+		const ruleWithLocation = { locationId: 'location-id' } as Rule & WithNamedLocation
 		const rulesList = [ruleWithLocation]
 		const listItems = selectFromListMock.mock.calls[0][2].listItems
 		const getRulesByLocationMock = (getRulesByLocation as
-			jest.Mock<Promise<RuleWithLocation[]>, [SmartThingsClient, string | undefined]>)
+			jest.Mock<Promise<(Rule & WithNamedLocation)[]>, [SmartThingsClient, string | undefined]>)
 			.mockResolvedValue(rulesList)
 
 		expect(await listItems()).toBe(rulesList)

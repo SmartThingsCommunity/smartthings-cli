@@ -1,15 +1,15 @@
-import { outputItemOrList } from '@smartthings/cli-lib'
-import { SmartThingsClient } from '@smartthings/core-sdk'
+import { outputItemOrList, WithNamedLocation } from '@smartthings/cli-lib'
+import { Rule, SmartThingsClient } from '@smartthings/core-sdk'
 
 import RulesCommand from '../../commands/rules'
-import { getRulesByLocation, getRuleWithLocation, RuleWithLocation } from '../../lib/commands/rules-util'
+import { getRulesByLocation, getRuleWithLocation } from '../../lib/commands/rules-util'
 
 
 jest.mock('../../lib/commands/rules-util')
 
 describe('RulesCommand', () => {
 	const outputItemOrListMock = jest.mocked(outputItemOrList)
-	const ruleWithLocation = { id: 'rule-id' } as RuleWithLocation
+	const ruleWithLocation = { id: 'rule-id' } as Rule & WithNamedLocation
 	const rulesList = [ruleWithLocation]
 	const getRulesByLocationMock = jest.mocked(getRulesByLocation).mockResolvedValue(rulesList)
 	const getRuleWithLocationMock = jest.mocked(getRuleWithLocation).mockResolvedValue(ruleWithLocation)
@@ -21,7 +21,7 @@ describe('RulesCommand', () => {
 		expect(outputItemOrListMock).toHaveBeenCalledWith(expect.any(RulesCommand),
 			expect.objectContaining({
 				primaryKeyName: 'id',
-				listTableFieldDefinitions: expect.arrayContaining(['name', 'id', 'locationId', 'locationName']),
+				listTableFieldDefinitions: expect.arrayContaining(['name', 'id', 'locationId', 'location']),
 			}),
 			undefined, expect.any(Function), expect.any(Function))
 
@@ -38,7 +38,7 @@ describe('RulesCommand', () => {
 		expect(outputItemOrListMock).toHaveBeenCalledWith(expect.any(RulesCommand),
 			expect.objectContaining({
 				primaryKeyName: 'id',
-				listTableFieldDefinitions: expect.arrayContaining(['name', 'id', 'locationId', 'locationName']),
+				listTableFieldDefinitions: expect.arrayContaining(['name', 'id', 'locationId', 'location']),
 			}),
 			'cmd-line-rule-id', expect.any(Function), expect.any(Function))
 
@@ -56,7 +56,7 @@ describe('RulesCommand', () => {
 		expect(outputItemOrListMock).toHaveBeenCalledWith(expect.any(RulesCommand),
 			expect.objectContaining({
 				primaryKeyName: 'id',
-				listTableFieldDefinitions: expect.arrayContaining(['name', 'id', 'locationId', 'locationName']),
+				listTableFieldDefinitions: expect.arrayContaining(['name', 'id', 'locationId', 'location']),
 			}),
 			undefined, expect.any(Function), expect.any(Function))
 
