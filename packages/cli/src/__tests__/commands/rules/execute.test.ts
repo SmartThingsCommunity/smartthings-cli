@@ -1,16 +1,16 @@
-import { RulesEndpoint, RuleExecutionResponse, SmartThingsClient } from '@smartthings/core-sdk'
+import { RulesEndpoint, RuleExecutionResponse, SmartThingsClient, Rule } from '@smartthings/core-sdk'
 
-import { CustomCommonOutputProducer, DefaultTableGenerator, formatAndWriteItem } from '@smartthings/cli-lib'
+import { CustomCommonOutputProducer, DefaultTableGenerator, formatAndWriteItem, WithNamedLocation } from '@smartthings/cli-lib'
 
 import RulesExecuteCommand from '../../../commands/rules/execute'
-import { buildExecuteResponseTableOutput, chooseRule, getRuleWithLocation, RuleWithLocation }
+import { buildExecuteResponseTableOutput, chooseRule, getRuleWithLocation }
 	from '../../../lib/commands/rules-util'
 
 
 jest.mock('../../../lib/commands/rules-util')
 
 describe('RulesExecuteCommand', () => {
-	const ruleWithLocation = { locationId: 'location-id' } as RuleWithLocation
+	const ruleWithLocation = { locationId: 'location-id' } as Rule & WithNamedLocation
 	const chooseRuleMock = jest.mocked(chooseRule)
 	const getRuleWithLocationMock = jest.mocked(getRuleWithLocation).mockResolvedValue(ruleWithLocation)
 	const buildExecuteResponseTableOutputMock = jest.mocked(buildExecuteResponseTableOutput)

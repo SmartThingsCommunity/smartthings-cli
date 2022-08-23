@@ -1,13 +1,15 @@
-import { RulesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
+import { Rule, RulesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
+
+import { WithNamedLocation } from '@smartthings/cli-lib'
 
 import RulesDeleteCommand from '../../../commands/rules/delete'
-import { chooseRule, getRuleWithLocation, RuleWithLocation } from '../../../lib/commands/rules-util'
+import { chooseRule, getRuleWithLocation } from '../../../lib/commands/rules-util'
 
 
 jest.mock('../../../lib/commands/rules-util')
 
 describe('RulesDeleteCommand', () => {
-	const ruleWithLocation = { locationId: 'location-id' } as RuleWithLocation
+	const ruleWithLocation = { locationId: 'location-id' } as Rule & WithNamedLocation
 	const chooseRuleMock = jest.mocked(chooseRule)
 	const getRuleWithLocationMock = jest.mocked(getRuleWithLocation).mockResolvedValue(ruleWithLocation)
 
