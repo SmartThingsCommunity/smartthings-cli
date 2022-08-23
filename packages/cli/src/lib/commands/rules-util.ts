@@ -2,19 +2,14 @@ import { Errors } from '@oclif/core'
 
 import { ActionExecutionResult, LocationItem, Rule, RuleExecutionResponse, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, selectFromList, SelectFromListConfig, summarizedText, TableFieldDefinition, TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, selectFromList, SelectFromListConfig, summarizedText, TableFieldDefinition, TableGenerator, WithNamedLocation } from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions: TableFieldDefinition<Rule>[] = ['name', 'id',
 	{ label: 'Num Actions', value: rule => rule.actions.length.toString() },
 	'timeZoneId']
 
-export type RuleWithLocation = Rule & {
-	locationId?: string
-	locationName?: string
-}
-
-export const getRulesByLocation = async (client: SmartThingsClient, locationId?: string): Promise<RuleWithLocation[]> => {
+export const getRulesByLocation = async (client: SmartThingsClient, locationId?: string): Promise<(Rule & WithNamedLocation)[]> => {
 	let locations: LocationItem[] = []
 	if (locationId) {
 		locations = [await client.locations.get(locationId)]
@@ -27,23 +22,23 @@ export const getRulesByLocation = async (client: SmartThingsClient, locationId?:
 			"you haven't created any locations yet.")
 	}
 
-	let rules: RuleWithLocation[] = []
+	let rules: (Rule & WithNamedLocation)[] = []
 	for (const location of locations) {
 		const locationRules = await client.rules.list(location.locationId)
 		rules = rules.concat(locationRules?.map(rule => ({
 			...rule,
 			locationId: location.locationId,
-			locationName: location.name,
+			location: location.name,
 		})) ?? [])
 	}
 	return rules
 }
 
-export const getRuleWithLocation = async (client: SmartThingsClient, id: string, locationId?: string): Promise<RuleWithLocation> => {
+export const getRuleWithLocation = async (client: SmartThingsClient, id: string, locationId?: string): Promise<Rule & WithNamedLocation> => {
 	if (locationId) {
 		const location = await client.locations.get(locationId)
 		const rule = await client.rules.get(id, locationId)
-		return { ...rule, locationId, locationName: location.name }
+		return { ...rule, locationId, location: location.name }
 	}
 	const allRules = await getRulesByLocation(client, locationId)
 	const rule = allRules.find(rule => rule.id === id)
@@ -55,10 +50,10 @@ export const getRuleWithLocation = async (client: SmartThingsClient, id: string,
 
 export const chooseRule = async (command: APICommand<typeof APICommand.flags>, promptMessage: string, locationId?: string,
 		preselectedId?: string): Promise<string> => {
-	const config: SelectFromListConfig<RuleWithLocation> = {
+	const config: SelectFromListConfig<Rule & WithNamedLocation> = {
 		primaryKeyName: 'id',
 		sortKeyName: 'name',
-		listTableFieldDefinitions: ['name', 'id', 'locationId', 'locationName'],
+		listTableFieldDefinitions: ['name', 'id', 'locationId', 'location'],
 	}
 	return selectFromList(command, config, {
 		preselectedId,

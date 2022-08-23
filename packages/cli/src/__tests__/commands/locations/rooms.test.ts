@@ -1,10 +1,18 @@
-import { outputItemOrList, withLocations } from '@smartthings/cli-lib'
-import { RoomsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
+import { Room, RoomsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
+
+import { outputItemOrList, withLocations, WithNamedLocation } from '@smartthings/cli-lib'
+
 import RoomsCommand from '../../../commands/locations/rooms'
-import { getRoomsByLocation, RoomWithLocation } from '../../../lib/commands/locations/rooms-util'
+import { getRoomsByLocation } from '../../../lib/commands/locations/rooms-util'
 
 
-jest.mock('../../../lib/commands/locations/rooms-util')
+jest.mock('../../../lib/commands/locations/rooms-util', () => {
+	const originalLib = jest.requireActual('../../../lib/commands/locations/rooms-util')
+	return {
+		...originalLib,
+		getRoomsByLocation: jest.fn(),
+	}
+})
 
 describe('RoomsCommand', () => {
 	const roomId = 'roomId'
@@ -35,11 +43,11 @@ describe('RoomsCommand', () => {
 	})
 
 	it('returns rooms in list function', async () => {
-		const roomList: RoomWithLocation[] = [
+		const roomList: (Room & WithNamedLocation)[] = [
 			{
 				locationId: locationId,
 				roomId: roomId,
-				locationName: 'test',
+				location: 'test',
 			},
 		]
 		mockGetRoomsByLocation.mockResolvedValueOnce(roomList)
@@ -53,11 +61,11 @@ describe('RoomsCommand', () => {
 	})
 
 	it('calls correct get endpoint when room id is found', async () => {
-		const roomList: RoomWithLocation[] = [
+		const roomList: (Room & WithNamedLocation)[] = [
 			{
 				locationId: locationId,
 				roomId: roomId,
-				locationName: 'test',
+				location: 'test',
 			},
 		]
 		mockGetRoomsByLocation.mockResolvedValueOnce(roomList)
@@ -84,11 +92,11 @@ describe('RoomsCommand', () => {
 	})
 
 	it('throws error when room id is not found', async () => {
-		const roomList: RoomWithLocation[] = [
+		const roomList: (Room & WithNamedLocation)[] = [
 			{
 				locationId: locationId,
 				roomId: 'notFound',
-				locationName: 'test',
+				location: 'test',
 			},
 		]
 		mockGetRoomsByLocation.mockResolvedValueOnce(roomList)

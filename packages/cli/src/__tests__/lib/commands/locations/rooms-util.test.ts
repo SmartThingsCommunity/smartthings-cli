@@ -1,8 +1,11 @@
+import { Config } from '@oclif/core'
+
 import { Location, LocationsEndpoint, NoOpAuthenticator, Room, RoomsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
+
+import { APICommand, selectFromList } from '@smartthings/cli-lib'
+
 import { getRoomsByLocation, chooseRoom } from '../../../../lib/commands/locations/rooms-util'
 import * as roomsUtil from '../../../../lib/commands/locations/rooms-util'
-import { Config } from '@oclif/core'
-import { APICommand, selectFromList } from '@smartthings/cli-lib'
 
 
 describe('rooms-util', () => {
@@ -24,9 +27,9 @@ describe('rooms-util', () => {
 			await expect(getRoomsByLocation(testClient, locationId)).rejects.toThrow(forbiddenError)
 		})
 
-		it('returns rooms with locationName added', async () => {
+		it('returns rooms with location added', async () => {
 			const location: Location = {
-				locationId: locationId,
+				locationId,
 				name: 'test',
 				timeZoneId: '',
 				backgroundImage: '',
@@ -35,8 +38,8 @@ describe('rooms-util', () => {
 			}
 			const rooms: Room[] = [
 				{
-					locationId: locationId,
-					roomId: roomId,
+					locationId,
+					roomId,
 				},
 			]
 
@@ -46,7 +49,7 @@ describe('rooms-util', () => {
 			const roomsWithLocations = await getRoomsByLocation(testClient, locationId)
 
 			expect(roomsWithLocations[0]).toEqual(expect.objectContaining(rooms[0]))
-			expect(roomsWithLocations[0].locationName).toBe(location.name)
+			expect(roomsWithLocations[0].location).toBe(location.name)
 		})
 	})
 
