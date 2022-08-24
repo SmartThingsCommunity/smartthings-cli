@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.15
+
+### Patch Changes
+
+- [#382](https://github.com/SmartThingsCommunity/smartthings-cli/pull/382) [`3bda890`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/3bda89049474fe4137bfc75c4d7c6edd6ff79f02) Thanks [@rossiam](https://github.com/rossiam)! - fix broken edge commands
+
 ## 1.0.0-beta.14
 
 ### Patch Changes
