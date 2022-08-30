@@ -67,68 +67,63 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 	]
 
 	static examples = [
-		'$ smartthings capabilities:translations',
-		'┌───┬─────────────────────────────┬─────────┬──────────┐',
-		'│ # │ Id                          │ Version │ Status   │',
-		'├───┼─────────────────────────────┼─────────┼──────────┤',
-		'│ 1 │ custom1.outputModulation    │ 1       │ proposed │',
-		'│ 2 │ custom1.outputVoltage       │ 1       │ proposed │',
+		'$ smartthings capabilities:translations\n' +
+		'┌───┬─────────────────────────────┬─────────┬──────────┐\n' +
+		'│ # │ Id                          │ Version │ Status   │\n' +
+		'├───┼─────────────────────────────┼─────────┼──────────┤\n' +
+		'│ 1 │ custom1.outputModulation    │ 1       │ proposed │\n' +
+		'│ 2 │ custom1.outputVoltage       │ 1       │ proposed │\n' +
 		'└───┴─────────────────────────────┴─────────┴──────────┘',
-		'? Select a capability. 1',
-		'┌───┬─────┐',
-		'│ # │ Tag │',
-		'├───┼─────┤',
-		'│ 1 │ en  │',
-		'│ 2 │ ko  │',
+		'? Select a capability. 1\n' +
+		'┌───┬─────┐\n' +
+		'│ # │ Tag │\n' +
+		'├───┼─────┤\n' +
+		'│ 1 │ en  │\n' +
+		'│ 2 │ ko  │\n' +
 		'└───┴─────┘',
-		'',
-		'outputModulation (master)$ st capabilities:translations -v',
-		'┌───┬─────────────────────────────┬─────────┬──────────┬────────────┐',
-		'│ # │ Id                          │ Version │ Status   │ Locales    │',
-		'├───┼─────────────────────────────┼─────────┼──────────┼────────────┤',
-		'│ 1 │ custom1.outputModulation    │ 1       │ proposed │ ko, en, es │',
-		'│ 2 │ custom1.outputVoltage       │ 1       │ proposed │ en         │',
+		'outputModulation (master)$ st capabilities:translations -v\n' +
+		'┌───┬─────────────────────────────┬─────────┬──────────┬────────────┐\n' +
+		'│ # │ Id                          │ Version │ Status   │ Locales    │\n' +
+		'├───┼─────────────────────────────┼─────────┼──────────┼────────────┤\n' +
+		'│ 1 │ custom1.outputModulation    │ 1       │ proposed │ ko, en, es │\n' +
+		'│ 2 │ custom1.outputVoltage       │ 1       │ proposed │ en         │\n' +
 		'└───┴─────────────────────────────┴─────────┴──────────┴────────────┘',
-		'? Select a capability. 1',
-		'┌───┬─────┐',
-		'│ # │ Tag │',
-		'├───┼─────┤',
-		'│ 1 │ en  │',
-		'│ 1 │ es  │',
-		'│ 2 │ ko  │',
+		'? Select a capability. 1\n' +
+		'┌───┬─────┐\n' +
+		'│ # │ Tag │\n' +
+		'├───┼─────┤\n' +
+		'│ 1 │ en  │\n' +
+		'│ 1 │ es  │\n' +
+		'│ 2 │ ko  │\n' +
 		'└───┴─────┘',
-		'',
-		'$ smartthings capabilities:translations 1',
-		'$ smartthings capabilities:translations custom1.outputModulation',
-		'┌───┬─────┐',
-		'│ # │ Tag │',
-		'├───┼─────┤',
-		'│ 1 │ en  │',
-		'│ 2 │ ko  │',
+		'$ smartthings capabilities:translations 1\n' +
+		'$ smartthings capabilities:translations custom1.outputModulation\n' +
+		'┌───┬─────┐\n' +
+		'│ # │ Tag │\n' +
+		'├───┼─────┤\n' +
+		'│ 1 │ en  │\n' +
+		'│ 2 │ ko  │\n' +
 		'└───┴─────┘',
-		'',
-		'$ smartthings capabilities:translations 1 1',
-		'$ smartthings capabilities:translations 1 en',
-		'$ smartthings capabilities:translations custom1.outputModulation 1 1',
-		'$ smartthings capabilities:translations custom1.outputModulation 1 en',
+		'$ smartthings capabilities:translations 1 1\n' +
+		'$ smartthings capabilities:translations 1 en\n' +
+		'$ smartthings capabilities:translations custom1.outputModulation 1 1\n' +
+		'$ smartthings capabilities:translations custom1.outputModulation 1 en\n' +
 		'$ smartthings capabilities:translations custom1.outputModulation en',
 		'Tag: en',
-		'',
-		'Attributes:',
-		'┌────────────────────────┬───────────────────┬────────────────────────────────┬────────────────────────────────────────────────────┐',
-		'│ Name                   │ Label             │ Description                    │ Template                                           │',
-		'├────────────────────────┼───────────────────┼────────────────────────────────┼────────────────────────────────────────────────────┤',
-		'│ outputModulation       │ Output Modulation │ Power supply output modulation │ The {{attribute}} of {{device.label}} is {{value}} │',
-		'│ outputModulation.50hz  │ 50 Hz             │                                │                                                    │',
-		'│ outputModulation.60hz  │ 60 Hz             │                                │                                                    │',
+		'Attributes:\n' +
+		'┌────────────────────────┬───────────────────┬────────────────────────────────┬────────────────────────────────────────────────────┐\n' +
+		'│ Name                   │ Label             │ Description                    │ Template                                           │\n' +
+		'├────────────────────────┼───────────────────┼────────────────────────────────┼────────────────────────────────────────────────────┤\n' +
+		'│ outputModulation       │ Output Modulation │ Power supply output modulation │ The {{attribute}} of {{device.label}} is {{value}} │\n' +
+		'│ outputModulation.50hz  │ 50 Hz             │                                │                                                    │\n' +
+		'│ outputModulation.60hz  │ 60 Hz             │                                │                                                    │\n' +
 		'└────────────────────────┴───────────────────┴────────────────────────────────┴────────────────────────────────────────────────────┘',
-		'',
-		'Commands:',
-		'┌──────────────────────────────────────┬───────────────────────┬──────────────────────────────────────────────────┐',
-		'│ Name                                 │ Label                 │ Description                                      │',
-		'├──────────────────────────────────────┼───────────────────────┼──────────────────────────────────────────────────┤',
-		'│ setOutputModulation                  │ Set Output Modulation │ Set the output modulation to the specified value │',
-		'│ setOutputModulation.outputModulation │ Output Modulation     │ The desired output modulation                    │',
+		'Commands\n' +
+		'┌──────────────────────────────────────┬───────────────────────┬──────────────────────────────────────────────────┐\n' +
+		'│ Name                                 │ Label                 │ Description                                      │\n' +
+		'├──────────────────────────────────────┼───────────────────────┼──────────────────────────────────────────────────┤\n' +
+		'│ setOutputModulation                  │ Set Output Modulation │ Set the output modulation to the specified value │\n' +
+		'│ setOutputModulation.outputModulation │ Output Modulation     │ The desired output modulation                    │\n' +
 		'└──────────────────────────────────────┴───────────────────────┴──────────────────────────────────────────────────┘',
 	]
 
@@ -155,11 +150,11 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 
 		let preselectedId: CapabilityId | undefined = undefined
 		let preselectedTag: string | undefined = undefined
-		if (this.argv.length === 3) {
+		if (this.args.tag) {
 			// capabilityId, capabilityVersion, tag
 			preselectedId = { id: this.args.id, version: this.args.version }
 			preselectedTag = this.args.tag
-		} else if (this.argv.length === 2) {
+		} else if (this.args.version) {
 			if (isNaN(this.args.id) && !isNaN(this.args.version)) {
 				// capabilityId, capabilityVersion, no tag specified
 				preselectedId = { id: this.args.id, version: this.args.version }

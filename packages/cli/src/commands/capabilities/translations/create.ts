@@ -18,50 +18,49 @@ export default class CapabilityTranslationsCreateCommand extends APIOrganization
 
 	static examples = [
 		'$ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml ',
-		'tag: en',
-		'label: Output Modulation',
-		'attributes:',
-		'  outputModulation:',
-		'    label: Output Modulation',
-		'    displayTemplate: \'The {{attribute}} of {{device.label}} is {{value}}\'',
-		'    i18n:',
-		'      value:',
-		'        50hz:',
-		'          label: 50 Hz',
-		'        60hz:',
-		'          label: 60 Hz',
-		'commands:',
-		'  setOutputModulation:',
-		'    label: Set Output Modulation',
-		'    arguments:',
-		'      outputModulation:',
+		'tag: en\n' +
+		'label: Output Modulation\n' +
+		'attributes:\n' +
+		'  outputModulation:\n' +
+		'    label: Output Modulation\n' +
+		'    displayTemplate: \'The {{attribute}} of {{device.label}} is {{value}}\'\n' +
+		'    i18n:\n' +
+		'      value:\n' +
+		'        50hz:\n' +
+		'          label: 50 Hz\n' +
+		'        60hz:\n' +
+		'          label: 60 Hz\n' +
+		'commands:\n' +
+		'  setOutputModulation:\n' +
+		'    label: Set Output Modulation\n' +
+		'    arguments:\n' +
+		'      outputModulation:\n' +
 		'        label: Output Modulation',
-		'',
 		'$ smartthings capabilities:translations:create -i en.yaml',
-		'┌───┬─────────────────────────────┬─────────┬──────────┐',
-		'│ # │ Id                          │ Version │ Status   │',
-		'├───┼─────────────────────────────┼─────────┼──────────┤',
-		'│ 1 │ custom1.outputModulation    │ 1       │ proposed │',
-		'│ 2 │ custom1.outputVoltage       │ 1       │ proposed │',
+		'┌───┬─────────────────────────────┬─────────┬──────────┐\n' +
+		'│ # │ Id                          │ Version │ Status   │\n' +
+		'├───┼─────────────────────────────┼─────────┼──────────┤\n' +
+		'│ 1 │ custom1.outputModulation    │ 1       │ proposed │\n' +
+		'│ 2 │ custom1.outputVoltage       │ 1       │ proposed │\n' +
 		'└───┴─────────────────────────────┴─────────┴──────────┘',
 		'? Enter id or index 1',
-		'tag: en',
-		'label: Output Modulation',
-		'attributes:',
-		'  outputModulation:',
-		'    label: Output Modulation',
-		'    displayTemplate: \'The {{attribute}} of {{device.label}} is {{value}}\'',
-		'    i18n:',
-		'      value:',
-		'        50hz:',
-		'          label: 50 Hz',
-		'        60hz:',
-		'          label: 60 Hz',
-		'commands:',
-		'  setOutputModulation:',
-		'    label: Set Output Modulation',
-		'    arguments:',
-		'      outputModulation:',
+		'tag: en\n' +
+		'label: Output Modulation\n' +
+		'attributes:\n' +
+		'  outputModulation:\n' +
+		'    label: Output Modulation\n' +
+		'    displayTemplate: \'The {{attribute}} of {{device.label}} is {{value}}\'\n' +
+		'    i18n:\n' +
+		'      value:\n' +
+		'        50hz:\n' +
+		'          label: 50 Hz\n' +
+		'        60hz:\n' +
+		'          label: 60 Hz\n' +
+		'commands:\n' +
+		'  setOutputModulation:\n' +
+		'    label: Set Output Modulation\n' +
+		'    arguments:\n' +
+		'      outputModulation:\n' +
 		'        label: Output Modulation',
 	]
 
