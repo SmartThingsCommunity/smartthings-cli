@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.16
+
+### Patch Changes
+
+- [#386](https://github.com/SmartThingsCommunity/smartthings-cli/pull/386) [`34b91ab`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/34b91ab734e7db8d27344ba4f95ab65091b1f161) Thanks [@bflorian](https://github.com/bflorian)! - fix - fixed bug in capability translation output
+
 ## 1.0.0-beta.15
 
 ### Patch Changes
