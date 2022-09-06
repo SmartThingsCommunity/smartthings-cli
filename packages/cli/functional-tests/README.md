@@ -14,6 +14,10 @@ This collection of functional tests depends on a mixture of [Pexpect](https://gi
 
 ## Usage
 
+A good way to ensure the modules needed here don't interfere with other python projects you might
+have (and vice versa) is to use a virtual python environment for running tests. You can do this
+using the [venv module](https://docs.python.org/3/tutorial/venv.html).
+
 1. `cd smartthings-cli/packages/cli/functional-tests`
 2. `python -m pip install --upgrade pip`
 3. `pip install -r requirements.txt`
