@@ -1,4 +1,6 @@
 import {
+	CapabilitiesEndpoint,
+	CapabilityNamespace,
 	LocationsEndpoint,
 	NoOpAuthenticator,
 	Room,
@@ -6,7 +8,9 @@ import {
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { forAllOrganizations, withLocations, withLocationsAndRooms } from '../api-helpers'
+import { forAllNamespaces, forAllOrganizations, withLocation, withLocations, withLocationsAndRooms } from '../api-helpers'
+import * as apiHelpers from '../api-helpers'
+import { SimpleType } from './test-lib/simple-type'
 
 
 describe('api-helpers', () => {
@@ -44,7 +48,7 @@ describe('api-helpers', () => {
 	})
 
 	describe('withLocations', () => {
-		it('updates simple object', async function () {
+		it('updates simple object', async () => {
 			const thing = [
 				{ locationId: 'uno', other: 'field' },
 			]
@@ -57,7 +61,7 @@ describe('api-helpers', () => {
 			expect(updated).toEqual([{ ...thing[0], location: 'main location' }])
 		})
 
-		it('succeeds even with no locationId', async function () {
+		it('succeeds even with no locationId', async () => {
 			const things = [
 				{ locationId: 'uno', other: 'field' },
 				{ another: 'value' },
@@ -74,7 +78,7 @@ describe('api-helpers', () => {
 			])
 		})
 
-		it('notes bad locationId', async function () {
+		it('notes bad locationId', async () => {
 			// The API shouldn't allow bad location ids so this shouldn't happen.
 			const things = [
 				{ locationId: 'uno', other: 'field' },
@@ -93,8 +97,28 @@ describe('api-helpers', () => {
 		})
 	})
 
+	describe('withLocation', () => {
+		const withLocationsSpy = jest.spyOn(apiHelpers, 'withLocations')
+
+		it('proxies to withLocations and indexes return', async () => {
+			const item: SimpleType & apiHelpers.WithLocation = {
+				num: 1,
+				str: 'string',
+				locationId: 'location-id',
+			}
+			const itemWithLocation = { ...item, location: 'Location Name' }
+
+			withLocationsSpy.mockResolvedValueOnce([itemWithLocation])
+
+			expect(await withLocation(client, item)).toBe(itemWithLocation)
+
+			expect(withLocationsSpy).toHaveBeenCalledTimes(1)
+			expect(withLocationsSpy).toHaveBeenCalledWith(client, [item])
+		})
+	})
+
 	describe('withLocationsAndRooms', () => {
-		it('updates simple object', async function () {
+		it('updates simple object', async () => {
 			const thing = [
 				{ locationId: 'uno', roomId: 'twelve', other: 'field' },
 			]
@@ -108,7 +132,7 @@ describe('api-helpers', () => {
 			expect(updated).toEqual([{ ...thing[0], location: 'main location', room: 'garage' }])
 		})
 
-		it('succeeds even with no locationId', async function () {
+		it('succeeds even with no locationId', async () => {
 			const things = [
 				{ locationId: 'uno', roomId: 'twelve', other: 'field' },
 				{ another: 'value', roomId: 'twelve' },
@@ -126,7 +150,7 @@ describe('api-helpers', () => {
 			])
 		})
 
-		it('fails with bad locationId', async function () {
+		it('fails with bad locationId', async () => {
 			// The API shouldn't allow bad location ids so this shouldn't happen.
 			const things = [
 				{ locationId: 'uno', roomId: 'twelve', other: 'field' },
@@ -140,7 +164,7 @@ describe('api-helpers', () => {
 			expect(client.rooms.list).toHaveBeenCalledTimes(2)
 		})
 
-		it('succeeds even with no roomId', async function () {
+		it('succeeds even with no roomId', async () => {
 			const things = [
 				{ locationId: 'uno', roomId: 'twelve', other: 'field' },
 				{ another: 'value', locationId: 'dos' },
@@ -158,7 +182,7 @@ describe('api-helpers', () => {
 			])
 		})
 
-		it('handles room with no id', async function () {
+		it('handles room with no id', async () => {
 			// This seems odd but the roomId field is not required in the API.
 			const thing = [
 				{ locationId: 'uno', other: 'field' },
@@ -173,7 +197,7 @@ describe('api-helpers', () => {
 			expect(updated).toEqual([{ ...thing[0], location: 'main location', room: '' }])
 		})
 
-		it('handles unnamed room', async function () {
+		it('handles unnamed room', async () => {
 			const thing = [
 				{ locationId: 'uno', roomId: 'unnamed', other: 'field' },
 			]
@@ -187,7 +211,7 @@ describe('api-helpers', () => {
 			expect(updated).toEqual([{ ...thing[0], location: 'main location', room: '' }])
 		})
 
-		it('succeeds even with bad roomId', async function () {
+		it('succeeds even with bad roomId', async () => {
 			const things = [
 				{ locationId: 'uno', roomId: 'twelve', other: 'field' },
 				{ locationId: 'dos', roomId: 'not-a-real-room', another: 'value' },
@@ -205,7 +229,7 @@ describe('api-helpers', () => {
 			])
 		})
 
-		it('calls rooms only once for each locationId', async function () {
+		it('calls rooms only once for each locationId', async () => {
 			const things = [
 				{ locationId: 'uno', roomId: 'twelve', other: 'field' },
 				{ locationId: 'dos', roomId: 'thirteen', other: 'field' },
@@ -271,6 +295,29 @@ describe('api-helpers', () => {
 			expect(query).toHaveBeenCalledTimes(2)
 			expect(query).toHaveBeenCalledWith(org1Client, organization1)
 			expect(query).toHaveBeenCalledWith(org2Client, organization2)
+		})
+	})
+
+	describe('forAllNamespaces', () => {
+		const listNamespacesMock = jest.fn()
+		const capabilities = {
+			listNamespaces: listNamespacesMock,
+		} as unknown as CapabilitiesEndpoint
+		const client = { capabilities } as SmartThingsClient
+		const queryMock = jest.fn() as jest.Mock<Promise<SimpleType[]>, [CapabilityNamespace]>
+
+		it('combines multiple results', async () => {
+			listNamespacesMock.mockResolvedValueOnce(['namespace1', 'namespace2'])
+
+			const ns1Items = [{ num: 1, str: 'str1' }]
+			const ns2Items = [{ num: 2, str: 'str2' }, { num: 3, str: 'str3' }]
+			queryMock.mockResolvedValueOnce(ns1Items)
+			queryMock.mockResolvedValueOnce(ns2Items)
+
+			expect(await forAllNamespaces(client, queryMock)).toStrictEqual([...ns1Items, ...ns2Items])
+
+			expect(listNamespacesMock).toHaveBeenCalledTimes(1)
+			expect(listNamespacesMock).toHaveBeenCalledWith()
 		})
 	})
 })

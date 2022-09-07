@@ -2,8 +2,8 @@ import { Flags } from '@oclif/core'
 
 import { InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
 
-import { APICommand, outputItemOrList, OutputItemOrListConfig, withLocations } from '@smartthings/cli-lib'
-import { InstalledAppWithLocation, listTableFieldDefinitions, tableFieldDefinitions } from '../lib/commands/installedapps-util'
+import { APICommand, outputItemOrList, OutputItemOrListConfig, withLocation, withLocations, WithNamedLocation } from '@smartthings/cli-lib'
+import { listTableFieldDefinitions, tableFieldDefinitions } from '../lib/commands/installedapps-util'
 
 
 export default class InstalledAppsCommand extends APICommand<typeof InstalledAppsCommand.flags> {
@@ -30,29 +30,33 @@ export default class InstalledAppsCommand extends APICommand<typeof InstalledApp
 	}]
 
 	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<InstalledApp, InstalledAppWithLocation> = {
+		const config: OutputItemOrListConfig<InstalledApp & WithNamedLocation> = {
 			primaryKeyName: 'installedAppId',
 			sortKeyName: 'displayName',
 			listTableFieldDefinitions,
 			tableFieldDefinitions,
 		}
+
 		if (this.flags.verbose) {
-			config.listTableFieldDefinitions.splice(3, 0, 'location')
+			config.listTableFieldDefinitions.splice(3, 0, 'locationId', 'location')
+			config.tableFieldDefinitions.splice(7, 0, 'location')
+		}
+		const verboseInstalledApp: (app: Promise<InstalledApp>) => Promise<InstalledApp & WithNamedLocation> =
+			this.flags.verbose ? async app => withLocation(this.client, await app) : app => app
+
+		const installedApps = async (): Promise<(InstalledApp & WithNamedLocation)[]> => {
+			const listOptions: InstalledAppListOptions = {
+				locationId: this.flags['location-id'],
+			}
+			const apps = await this.client.installedApps.list(listOptions)
+			if (this.flags.verbose) {
+				return await withLocations(this.client, apps)
+			}
+			return apps
 		}
 
-		const listOptions: InstalledAppListOptions = {
-			locationId: this.flags['location-id'],
-		}
-
-		await outputItemOrList<InstalledApp, InstalledAppWithLocation>(this, config, this.args.id,
-			async () => {
-				const apps = await this.client.installedApps.list(listOptions)
-				if (this.flags.verbose) {
-					return await withLocations(this.client, apps)
-				}
-				return apps
-			},
-			id => this.client.installedApps.get(id),
+		await outputItemOrList(this, config, this.args.id, installedApps,
+			id => verboseInstalledApp(this.client.installedApps.get(id)),
 		)
 	}
 }

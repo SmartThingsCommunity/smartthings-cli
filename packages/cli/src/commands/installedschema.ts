@@ -2,10 +2,9 @@ import { Flags } from '@oclif/core'
 
 import { InstalledSchemaApp } from '@smartthings/core-sdk'
 
-import { APICommand, OutputItemOrListConfig, outputItemOrList } from '@smartthings/cli-lib'
+import { APICommand, OutputItemOrListConfig, outputItemOrList, WithNamedLocation, withLocation } from '@smartthings/cli-lib'
 
 import {
-	InstalledSchemaAppWithLocation,
 	installedSchemaInstances,
 	listTableFieldDefinitions,
 	tableFieldDefinitions,
@@ -36,7 +35,7 @@ export default class InstalledSchemaAppsCommand extends APICommand<typeof Instal
 	}]
 
 	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<InstalledSchemaApp, InstalledSchemaAppWithLocation> = {
+		const config: OutputItemOrListConfig<InstalledSchemaApp, InstalledSchemaApp & WithNamedLocation> = {
 			primaryKeyName: 'isaId',
 			sortKeyName: 'appName',
 			listTableFieldDefinitions,
@@ -44,13 +43,17 @@ export default class InstalledSchemaAppsCommand extends APICommand<typeof Instal
 		}
 
 		if (this.flags.verbose) {
-			config.listTableFieldDefinitions.splice(3, 0, 'location')
+			config.listTableFieldDefinitions = [...listTableFieldDefinitions]
+			config.listTableFieldDefinitions.splice(3, 0, 'locationId', 'location')
+			config.tableFieldDefinitions = [...tableFieldDefinitions]
 			config.tableFieldDefinitions.splice(5, 0, 'location')
 		}
+		const verboseInstalledApp: (app: Promise<InstalledSchemaApp>) => Promise<InstalledSchemaApp & WithNamedLocation> =
+			this.flags.verbose ? async app => withLocation(this.client, await app) : app => app
 
 		await outputItemOrList(this, config, this.args.id,
 			() => installedSchemaInstances(this.client, this.flags['location-id'], this.flags.verbose),
-			id => this.client.schema.getInstalledApp(id),
+			id => verboseInstalledApp(this.client.schema.getInstalledApp(id)),
 		)
 	}
 }
