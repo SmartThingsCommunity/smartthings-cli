@@ -19,6 +19,7 @@ jest.mock('@smartthings/cli-lib', () => {
 		outputItem: jest.fn(),
 		resetManagedConfig: jest.fn(),
 		formatAndWriteItem: jest.fn(),
+		withLocation: jest.fn(),
 		withLocations: jest.fn(),
 		withLocationsAndRooms: jest.fn(),
 		yamlExists: jest.fn(),

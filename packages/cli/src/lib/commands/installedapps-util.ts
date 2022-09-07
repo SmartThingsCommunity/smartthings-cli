@@ -2,8 +2,6 @@ import { TableFieldDefinition } from '@smartthings/cli-lib'
 import { InstalledApp } from '@smartthings/core-sdk'
 
 
-export type InstalledAppWithLocation = InstalledApp & { location?: string }
-
 export const listTableFieldDefinitions = ['displayName', 'installedAppType', 'installedAppStatus', 'installedAppId']
 
 export const tableFieldDefinitions: TableFieldDefinition<InstalledApp>[] = [

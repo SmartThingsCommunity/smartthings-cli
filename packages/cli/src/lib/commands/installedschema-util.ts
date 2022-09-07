@@ -3,8 +3,6 @@ import { InstalledSchemaApp, SmartThingsClient } from '@smartthings/core-sdk'
 import { TableFieldDefinition, withLocations, WithNamedLocation } from '@smartthings/cli-lib'
 
 
-export type InstalledSchemaAppWithLocation = InstalledSchemaApp & { location?: string }
-
 export const listTableFieldDefinitions = ['appName', 'partnerName', 'partnerSTConnection', 'isaId']
 export const tableFieldDefinitions: TableFieldDefinition<InstalledSchemaApp>[] = [
 	'appName', 'isaId', 'partnerName', 'partnerSTConnection', 'locationId',
