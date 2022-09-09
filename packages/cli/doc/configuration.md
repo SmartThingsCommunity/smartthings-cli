@@ -33,7 +33,35 @@ The following per-profile config options are supported:
 | indent | 2 | Indent level for JSON or YAML output. |
 | groupTableOutputRows | true | Separate groups of four rows by a line to make long rows easier to follow across the screen. |
 | organization | none | UUID of the organization to use in applicable CLI commands. |
+| edgeDriverTestDirs | `['test/**', 'tests/**']` | String or array of strings representing files to skip when building an edge driver package. See below for more details. |
 | token | none | Use a bearer token (such as a PAT) for authentication instead of the default login flow. |
+
+## `edgeDriverTestDirs` config option
+
+You can use this option to instruct the CLI to skip files when building an edge driver package. If
+you keep your tests in the same directory as your source code (and don't use one of the defaults,
+`test` or `tests`, for the base directory of your tests), you should use this to keep them out of
+the upload.
+
+You can specify a single string, for example:
+
+```yaml
+default:
+  edgeDriverTestDirs: specs/**
+```
+
+Or, you can specify an array:
+
+```yaml
+default:
+  edgeDriverTestDirs:
+    - specs/**
+    - tests/**
+```
+
+Files are matched using the `picomatch` library. You find documentation in the
+[picomatch README](https://github.com/micromatch/picomatch#basic-globbing) regarding
+how to write the matching expressions.
 
 ## Example
 
