@@ -109,6 +109,24 @@ export const setConfigKey = async (config: CLIConfig, key: string, value: unknow
 }
 
 /**
+ * Reset the specified managed config key for for all profiles. The `predicate` is called for each
+ * value found and the key will only be reset if it returns true.
+ *
+ * This can be used to wipe out default values when something is deleted.
+ */
+export const resetManagedConfigKey = async (config: CLIConfig, key: string, predicate: (value: unknown) => boolean): Promise<void> => {
+	config.managedProfiles = Object.fromEntries(Object.entries(config.managedProfiles).map(([profileName, profile]) => {
+		if (key in profile && predicate(profile[key])) {
+			delete profile[key]
+		}
+		return [profileName, profile]
+	}))
+
+	await writeFile(config.managedConfigFilename, managedConfigHeader + yaml.dump(config.managedProfiles))
+	config.mergedProfiles = mergeProfiles(config.profiles, config.managedProfiles)
+}
+
+/**
  * Reset all managed config options for the specified profile.
  */
 export const resetManagedConfig = async (config: CLIConfig, profileName: string): Promise<void> => {

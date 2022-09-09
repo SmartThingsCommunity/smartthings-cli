@@ -29,6 +29,7 @@ jest.mock('@smartthings/cli-lib', () => {
 		calculateOutputFormat: jest.fn(),
 		writeOutput: jest.fn(),
 		buildOutputFormatter: jest.fn(),
+		resetManagedConfigKey: jest.fn(),
 	}
 })
 
