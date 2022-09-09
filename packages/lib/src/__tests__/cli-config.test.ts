@@ -1,7 +1,15 @@
 import yaml from 'js-yaml'
 
 import { loadConfigFile, mergeProfiles, ProfilesByName } from '..'
-import { CLIConfig, CLIConfigDescription, loadConfig, resetManagedConfig, seeConfigDocs, setConfigKey } from '../cli-config'
+import {
+	CLIConfig,
+	CLIConfigDescription,
+	loadConfig,
+	resetManagedConfig,
+	resetManagedConfigKey,
+	seeConfigDocs,
+	setConfigKey,
+} from '../cli-config'
 import * as cliConfigModule from '../cli-config'
 import { readFile, writeFile, yamlExists } from '../io-util'
 
@@ -191,8 +199,8 @@ describe('cli-config', () => {
 		profileName: 'chosenProfile',
 	}
 
-	const profiles: ProfilesByName = { mainConfig: { mainConfigProfile: { key: 'value' } } }
-	const managedProfiles: ProfilesByName = { managedConfig: { managedConfigProfile: { key: 'value' } } }
+	const profiles: ProfilesByName = { mainConfigProfile: { key: 'value' } }
+	const managedProfiles: ProfilesByName = { managedConfigProfile: { key: 'value' } }
 
 	const yamlDumpMock = jest.mocked(yaml.dump)
 	const writeFileMock = jest.mocked(writeFile)
@@ -277,6 +285,71 @@ describe('cli-config', () => {
 		expect(mergeProfilesSpy).toHaveBeenCalledWith(profiles, updatedManagedConfig)
 	})
 
+	describe('resetManagedConfigKey', () => {
+		const deepCopy = <T> (input: T): T => JSON.parse(JSON.stringify(input))
+		const makeConfig = (profiles: ProfilesByName, managedProfiles: ProfilesByName): CLIConfig => deepCopy({
+			...description,
+			profileName: 'defaultProfile',
+			profiles,
+			managedProfiles,
+			mergedProfiles: mergeProfiles(profiles, managedProfiles),
+		} as CLIConfig)
+
+		const profilesWithKeyToRemove: ProfilesByName = {
+			profile1: {
+				keyToRemove: 'remove value',
+			},
+			profile2: {
+				keyToRemove: 'value to remove',
+			},
+		}
+		const profilesWithKeysRemoved: ProfilesByName = {
+			profile1: {},
+			profile2: {},
+		}
+
+		const predicateMock = jest.fn()
+
+		it('does nothing when key not present', async () => {
+			const cliConfig = makeConfig(profiles, managedProfiles)
+
+			await expect(resetManagedConfigKey(cliConfig, 'unusedKey', predicateMock)).resolves.not.toThrow()
+
+			expect(cliConfig).toStrictEqual(makeConfig(profiles, managedProfiles))
+			expect(predicateMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('does not modify user config', async () => {
+			const cliConfig = makeConfig(profilesWithKeyToRemove, managedProfiles)
+
+			predicateMock.mockReturnValue(true)
+			await expect(resetManagedConfigKey(cliConfig, 'keyToRemove', predicateMock)).resolves.not.toThrow()
+
+			expect(cliConfig).toStrictEqual(makeConfig(profilesWithKeyToRemove, managedProfiles))
+			expect(predicateMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('keeps keys that fail predicate', async () => {
+			const cliConfig = makeConfig(profiles, profilesWithKeyToRemove)
+
+			predicateMock.mockReturnValue(false)
+			await expect(resetManagedConfigKey(cliConfig, 'keyToRemove', predicateMock)).resolves.not.toThrow()
+
+			expect(cliConfig).toStrictEqual(makeConfig(profiles, profilesWithKeyToRemove))
+			expect(predicateMock).toHaveBeenCalledTimes(2)
+		})
+
+		it('removes managed keys that match predicate', async () => {
+			const cliConfig = makeConfig(profiles, profilesWithKeyToRemove)
+
+			predicateMock.mockReturnValue(true)
+			await expect(resetManagedConfigKey(cliConfig, 'keyToRemove', predicateMock)).resolves.not.toThrow()
+
+			expect(cliConfig).toStrictEqual(makeConfig(profiles, profilesWithKeysRemoved))
+			expect(predicateMock).toHaveBeenCalledTimes(2)
+		})
+	})
+
 	test('resetManagedConfig', async () => {
 		const managedProfilesWithProfileToReset: ProfilesByName = { ...managedProfiles, profileToReset: { not: 'empty' } }
 		const cliConfig = {
@@ -289,7 +362,7 @@ describe('cli-config', () => {
 		yamlDumpMock.mockReturnValueOnce('yaml output')
 		mergeProfilesSpy.mockReturnValueOnce(updateMergedConfig)
 
-		expect(await resetManagedConfig(cliConfig, 'profileToReset')).resolves.not.toThrow
+		await expect(resetManagedConfig(cliConfig, 'profileToReset')).resolves.not.toThrow()
 
 		expect(cliConfig.managedProfiles.profileToReset).toBeUndefined()
 		expect(cliConfig.mergedProfiles).toBe(updateMergedConfig)
