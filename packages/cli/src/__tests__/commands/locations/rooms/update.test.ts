@@ -44,7 +44,7 @@ describe('RoomsUpdateCommand', () => {
 	})
 
 	it('takes a specific locationId to query via flags', async () => {
-		await expect(RoomsUpdateCommand.run([`--location-id=${locationId}`])).resolves.not.toThrow()
+		await expect(RoomsUpdateCommand.run([`--location=${locationId}`])).resolves.not.toThrow()
 
 		expect(mockChooseRoom).toBeCalledWith(expect.any(RoomsUpdateCommand), locationId, undefined)
 		mockChooseRoom.mockClear()

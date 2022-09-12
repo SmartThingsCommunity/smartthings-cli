@@ -13,8 +13,7 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 	static flags = {
 		...APICommand.flags,
 		...outputItemOrList.flags,
-		/* eslint-disable @typescript-eslint/naming-convention */
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
@@ -24,18 +23,20 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 			description: 'filter results by capability',
 			multiple: true,
 		}),
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'capabilities-mode': Flags.string({
 			char: 'C',
 			description: 'Treat capability filter query params as a logical "or" or "and" with a default of "and".',
 			dependsOn: ['capability'],
 			options: ['and', 'or'],
 		}),
-		'device-id': Flags.string({
+		device: Flags.string({
 			char: 'd',
 			description: 'filter results by device',
 			multiple: true,
 		}),
-		'installed-app-id': Flags.string({
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		'installed-app': Flags.string({
 			char: 'a',
 			description: 'filter results by installed app that created the device',
 		}),
@@ -47,7 +48,6 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 			char: 'H',
 			description: 'include device health in response',
 		}),
-		/* eslint-enable @typescript-eslint/naming-convention */
 		type: Flags.string({
 			description: 'filter results by device type',
 			options: Object.values(DeviceIntegrationType),
@@ -92,9 +92,9 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 		const deviceListOptions: DeviceListOptions = {
 			capability: this.flags.capability,
 			capabilitiesMode: this.flags['capabilities-mode'] === 'or' ? 'or' : 'and',
-			locationId: this.flags['location-id'],
-			deviceId: this.flags['device-id'],
-			installedAppId: this.flags['installed-app-id'],
+			locationId: this.flags.location,
+			deviceId: this.flags.device,
+			installedAppId: this.flags['installed-app'],
 			type: this.flags.type as DeviceIntegrationType[] | undefined,
 			includeHealth: this.flags.health,
 			...deviceGetOptions,

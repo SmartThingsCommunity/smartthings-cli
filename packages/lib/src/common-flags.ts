@@ -5,8 +5,7 @@ export const lambdaAuthFlags = {
 	principal: Flags.string({
 		description: 'use this principal instead of the default when authorizing lambda functions',
 	}),
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	'statement-id': Flags.string({
+	statement: Flags.string({
 		description: 'use this statement id instead of the default when authorizing lambda functions',
 	}),
 }

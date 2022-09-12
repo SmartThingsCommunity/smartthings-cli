@@ -11,8 +11,7 @@ export default class RoomsCreateCommand extends APICommand<typeof RoomsCreateCom
 	static flags = {
 		...APICommand.flags,
 		...inputAndOutputItem.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -21,7 +20,7 @@ export default class RoomsCreateCommand extends APICommand<typeof RoomsCreateCom
 	static aliases = ['rooms:create']
 
 	async run(): Promise<void> {
-		const locationId = await chooseLocation(this, this.flags['location-id'])
+		const locationId = await chooseLocation(this, this.flags.location)
 		const config: CommonOutputProducer<Room> = { tableFieldDefinitions }
 		await inputAndOutputItem<RoomRequest, Room>(this, config,
 			(_, room) => this.client.rooms.create(room, locationId))

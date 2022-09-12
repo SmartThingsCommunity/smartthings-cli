@@ -17,7 +17,7 @@ export default class GeneratePresentationCommand extends APICommand<typeof Gener
 			description: 'generate from legacy DTH id instead of a profile id',
 		}),
 		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'type-shard-id': Flags.string({
+		'type-shard': Flags.string({
 			description: 'data management shard Id where the device type resides, ' +
 				'only useful for legacy DTH type integrations',
 		}),
@@ -33,8 +33,8 @@ export default class GeneratePresentationCommand extends APICommand<typeof Gener
 		const extraParams: HttpClientParams = {}
 		if (this.flags.dth) {
 			extraParams.typeIntegration = 'dth'
-			if (this.args['type-shard-id']) {
-				extraParams.typeShareId = this.args['type-shard-id']
+			if (this.flags['type-shard']) {
+				extraParams.typeShareId = this.flags['type-shard']
 			}
 		}
 		this.logger.debug(`extraParams = ${JSON.stringify(extraParams)}`)

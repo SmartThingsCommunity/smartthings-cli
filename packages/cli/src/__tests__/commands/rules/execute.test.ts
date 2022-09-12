@@ -70,7 +70,7 @@ describe('RulesExecuteCommand', () => {
 		chooseRuleMock.mockResolvedValueOnce('chosen-rule-id')
 		getRuleWithLocationMock.mockResolvedValue(ruleWithLocation)
 
-		await expect(RulesExecuteCommand.run(['--location-id', 'cmd-line-location-id'])).resolves.not.toThrow()
+		await expect(RulesExecuteCommand.run(['--location', 'cmd-line-location-id'])).resolves.not.toThrow()
 
 		expect(chooseRuleMock).toHaveBeenCalledTimes(1)
 		expect(chooseRuleMock).toHaveBeenCalledWith(expect.any(RulesExecuteCommand),

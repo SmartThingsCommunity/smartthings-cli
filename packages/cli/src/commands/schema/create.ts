@@ -25,7 +25,7 @@ export default class SchemaAppCreateCommand extends APICommand<typeof SchemaAppC
 			if (this.flags.authorize) {
 				if (data.hostingType === 'lambda') {
 					const principal = this.flags.principal ?? SCHEMA_AWS_PRINCIPAL
-					const statementId = this.flags['statement-id']
+					const statementId = this.flags.statement
 
 					if (data.lambdaArn) {
 						await addSchemaPermission(data.lambdaArn, principal, statementId)

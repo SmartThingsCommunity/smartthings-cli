@@ -122,7 +122,7 @@ describe('SchemaAppCreateCommand', () => {
 
 	it('passes statement-id flag to addSchemaPermission', async () => {
 		const statementId = 'statementId'
-		await expect(SchemaAppCreateCommand.run(['--authorize', `--statement-id=${statementId}`])).resolves.not.toThrow()
+		await expect(SchemaAppCreateCommand.run(['--authorize', `--statement=${statementId}`])).resolves.not.toThrow()
 
 		const schemaAppRequest = {
 			appName: 'schemaApp',

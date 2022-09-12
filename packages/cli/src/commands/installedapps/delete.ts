@@ -10,8 +10,7 @@ export default class InstalledAppDeleteCommand extends APICommand<typeof Install
 
 	static flags = {
 		...APICommand.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
@@ -38,7 +37,7 @@ export default class InstalledAppDeleteCommand extends APICommand<typeof Install
 		}
 
 		const listOptions: InstalledAppListOptions = {
-			locationId: this.flags['location-id'],
+			locationId: this.flags.location,
 		}
 
 		const id = await selectFromList<InstalledApp>(this, config, {

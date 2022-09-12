@@ -30,7 +30,7 @@ export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand
 				if (data.lambdaSmartApp) {
 					if (data.lambdaSmartApp.functions) {
 						const requests = data.lambdaSmartApp.functions.map((it) => {
-							return addPermission(it, this.flags.principal, this.flags['statement-id'])
+							return addPermission(it, this.flags.principal, this.flags.statement)
 						})
 						await Promise.all(requests)
 					}

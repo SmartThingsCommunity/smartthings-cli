@@ -12,8 +12,7 @@ export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> 
 
 	static flags = {
 		...APICommand.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -42,7 +41,7 @@ export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> 
 			config.listTableFieldDefinitions = tableFieldDefinitionsWithLocationName
 			config.tableFieldDefinitions = tableFieldDefinitionsWithLocationName
 		}
-		const rooms = await getRoomsByLocation(this.client, this.flags['location-id'])
+		const rooms = await getRoomsByLocation(this.client, this.flags.location)
 		await outputItemOrList(this, config, this.args.idOrIndex,
 			async () => rooms,
 			async id => {

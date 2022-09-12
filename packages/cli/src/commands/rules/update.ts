@@ -13,8 +13,7 @@ export default class RulesUpdateCommand extends APICommand<typeof RulesUpdateCom
 	static flags = {
 		...APICommand.flags,
 		...inputAndOutputItem.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -26,11 +25,11 @@ export default class RulesUpdateCommand extends APICommand<typeof RulesUpdateCom
 	}]
 
 	async run(): Promise<void> {
-		const id = await chooseRule(this, 'Select a rule to update.', this.flags['location-id'], this.args.id)
+		const id = await chooseRule(this, 'Select a rule to update.', this.flags.location, this.args.id)
 
 		await inputAndOutputItem<RuleRequest, Rule>(this, { tableFieldDefinitions },
 			async (_, data) => {
-				const rule = await getRuleWithLocation(this.client, id, this.flags['location-id'])
+				const rule = await getRuleWithLocation(this.client, id, this.flags.location)
 				return this.client.rules.update(id, data, rule.locationId)
 			})
 	}

@@ -26,7 +26,7 @@ describe('SchemaAppAuthorizeCommand', () => {
 	})
 
 	it('passes statement-id flag to addSchemaPermission', async () => {
-		await expect(SchemaAppAuthorizeCommand.run(['ARN', '--statement-id=statementId'])).resolves.not.toThrow()
+		await expect(SchemaAppAuthorizeCommand.run(['ARN', '--statement=statementId'])).resolves.not.toThrow()
 
 		expect(addSchemaPermissionMock).toBeCalledWith('ARN', undefined, 'statementId')
 	})

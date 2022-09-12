@@ -13,8 +13,7 @@ export default class ScenesCommand extends APICommand<typeof ScenesCommand.flags
 	static flags = {
 		...APICommand.flags,
 		...outputItemOrList.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 			multiple: true,
@@ -33,7 +32,7 @@ export default class ScenesCommand extends APICommand<typeof ScenesCommand.flags
 			tableFieldDefinitions,
 		}
 		const options: SceneListOptions = {
-			locationId: this.flags['location-id'],
+			locationId: this.flags.location,
 		}
 
 		await outputItemOrList<SceneSummary, SceneSummary>(this, config, this.args.idOrIndex,

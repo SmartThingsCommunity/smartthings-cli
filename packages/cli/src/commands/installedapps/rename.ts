@@ -13,8 +13,7 @@ export default class InstalledAppRenameCommand extends APICommand<typeof Install
 	static flags = {
 		...APICommand.flags,
 		...formatAndWriteItem.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
@@ -48,7 +47,7 @@ export default class InstalledAppRenameCommand extends APICommand<typeof Install
 			config.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 		const listOptions: InstalledAppListOptions = {
-			locationId: this.flags['location-id'],
+			locationId: this.flags.location,
 		}
 
 		const id = await selectFromList(this, config, {

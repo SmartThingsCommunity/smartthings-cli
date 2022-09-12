@@ -13,8 +13,7 @@ export default class RulesExecuteCommand extends APICommand<typeof RulesExecuteC
 	static flags = {
 		...APICommand.flags,
 		...formatAndWriteItem.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -34,10 +33,10 @@ export default class RulesExecuteCommand extends APICommand<typeof RulesExecuteC
 	]
 
 	async run(): Promise<void> {
-		const ruleId = await chooseRule(this, 'Select a rule to execute.', this.flags['location-id'], this.args.id)
+		const ruleId = await chooseRule(this, 'Select a rule to execute.', this.flags.location, this.args.id)
 
-		const locationId = this.flags['location-id']
-			?? (await getRuleWithLocation(this.client, ruleId, this.flags['location-id'])).locationId
+		const locationId = this.flags.location
+			?? (await getRuleWithLocation(this.client, ruleId, this.flags.location)).locationId
 
 		const result = await this.client.rules.execute(ruleId, locationId)
 		await formatAndWriteItem<RuleExecutionResponse>(this,

@@ -54,7 +54,7 @@ describe('RulesDeleteCommand', () => {
 		chooseRuleMock.mockResolvedValueOnce('chosen-rule-id')
 		getRuleWithLocationMock.mockResolvedValue(ruleWithLocation)
 
-		await expect(RulesDeleteCommand.run(['--location-id', 'cmd-line-location-id'])).resolves.not.toThrow()
+		await expect(RulesDeleteCommand.run(['--location', 'cmd-line-location-id'])).resolves.not.toThrow()
 
 		expect(chooseRuleMock).toHaveBeenCalledTimes(1)
 		expect(chooseRuleMock).toHaveBeenCalledWith(expect.any(RulesDeleteCommand),

@@ -49,7 +49,7 @@ describe('VirtualDevicesCommand', () => {
 			await listFunction()
 		})
 
-		await expect(VirtualDevicesCommand.run(['--location-id=location-id'])).resolves.not.toThrow()
+		await expect(VirtualDevicesCommand.run(['--location=location-id'])).resolves.not.toThrow()
 
 		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
 		expect(listSpy).toHaveBeenCalledTimes(1)
@@ -64,7 +64,7 @@ describe('VirtualDevicesCommand', () => {
 			await listFunction()
 		})
 
-		await expect(VirtualDevicesCommand.run(['--installed-app-id=installed-app-id'])).resolves.not.toThrow()
+		await expect(VirtualDevicesCommand.run(['--installed-app=installed-app-id'])).resolves.not.toThrow()
 
 		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
 		expect(listSpy).toHaveBeenCalledTimes(1)

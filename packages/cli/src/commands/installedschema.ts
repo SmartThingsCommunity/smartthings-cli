@@ -17,8 +17,7 @@ export default class InstalledSchemaAppsCommand extends APICommand<typeof Instal
 	static flags = {
 		...APICommand.flags,
 		...outputItemOrList.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
@@ -52,7 +51,7 @@ export default class InstalledSchemaAppsCommand extends APICommand<typeof Instal
 			this.flags.verbose ? async app => withLocation(this.client, await app) : app => app
 
 		await outputItemOrList(this, config, this.args.id,
-			() => installedSchemaInstances(this.client, this.flags['location-id'], this.flags.verbose),
+			() => installedSchemaInstances(this.client, this.flags.location, this.flags.verbose),
 			id => verboseInstalledApp(this.client.schema.getInstalledApp(id)),
 		)
 	}
