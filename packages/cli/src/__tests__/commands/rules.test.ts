@@ -50,7 +50,7 @@ describe('RulesCommand', () => {
 	})
 
 	it('passes location id from command line', async () => {
-		await expect(RulesCommand.run(['--location-id', 'cmd-line-location-id'])).resolves.not.toThrow()
+		await expect(RulesCommand.run(['--location', 'cmd-line-location-id'])).resolves.not.toThrow()
 
 		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
 		expect(outputItemOrListMock).toHaveBeenCalledWith(expect.any(RulesCommand),

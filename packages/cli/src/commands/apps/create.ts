@@ -24,7 +24,7 @@ export default class AppCreateCommand extends APICommand<typeof AppCreateCommand
 				if (data.lambdaSmartApp) {
 					if (data.lambdaSmartApp.functions) {
 						const requests = data.lambdaSmartApp.functions.map((functionArn) => {
-							return addPermission(functionArn, this.flags.principal, this.flags['statement-id'])
+							return addPermission(functionArn, this.flags.principal, this.flags.statement)
 						})
 						await Promise.all(requests)
 					}

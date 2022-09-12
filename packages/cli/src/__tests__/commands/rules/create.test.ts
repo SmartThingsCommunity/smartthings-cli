@@ -38,7 +38,7 @@ describe('RulesCreateCommand', () => {
 	it('uses location specified on command line', async () => {
 		chooseLocationMock.mockResolvedValue('chosen-location-id')
 
-		await expect(RulesCreateCommand.run(['--location-id', 'cmd-line-location-id'])).resolves.not.toThrow()
+		await expect(RulesCreateCommand.run(['--location', 'cmd-line-location-id'])).resolves.not.toThrow()
 
 		expect(chooseLocationMock).toHaveBeenCalledTimes(1)
 		expect(chooseLocationMock).toHaveBeenCalledWith(expect.any(RulesCreateCommand), 'cmd-line-location-id')

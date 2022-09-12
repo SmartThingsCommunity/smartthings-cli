@@ -61,8 +61,8 @@ describe('VirtualDeviceCreateCommand', () => {
 
 		await expect(VirtualDeviceCreateCommand.run([
 			'--name=NewDeviceName',
-			'--location-id=new-location-id',
-			'--room-id=new-room-id',
+			'--location=new-location-id',
+			'--room=new-room-id',
 		])).resolves.not.toThrow()
 
 		expect(mockInputAndOutputItem).toBeCalledWith(
@@ -102,9 +102,9 @@ describe('VirtualDeviceCreateCommand', () => {
 
 		await expect(VirtualDeviceCreateCommand.run([
 			'--name=DeviceName',
-			'--location-id=location-id',
-			'--room-id=room-id',
-			'--device-profile-id=device-profile-id',
+			'--location=location-id',
+			'--room=room-id',
+			'--device-profile=device-profile-id',
 		])).resolves.not.toThrow()
 
 		expect(mockChooseDeviceName).toBeCalledWith(expect.any(VirtualDeviceCreateCommand), 'DeviceName')
@@ -143,8 +143,8 @@ describe('VirtualDeviceCreateCommand', () => {
 
 		await expect(VirtualDeviceCreateCommand.run([
 			'--name=DeviceName',
-			'--location-id=location-id',
-			'--room-id=room-id',
+			'--location=location-id',
+			'--room=room-id',
 			'--device-profile-file=device-profile-filename',
 		])).resolves.not.toThrow()
 

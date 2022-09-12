@@ -39,16 +39,16 @@ export default class SchemaUpdateCommand extends APICommand<typeof SchemaUpdateC
 		if (this.flags.authorize) {
 			if (request.hostingType === 'lambda') {
 				if (request.lambdaArn) {
-					await addSchemaPermission(request.lambdaArn, this.flags.principal, this.flags['statement-id'])
+					await addSchemaPermission(request.lambdaArn, this.flags.principal, this.flags.statement)
 				}
 				if (request.lambdaArnAP) {
-					await addSchemaPermission(request.lambdaArnAP, this.flags.principal, this.flags['statement-id'])
+					await addSchemaPermission(request.lambdaArnAP, this.flags.principal, this.flags.statement)
 				}
 				if (request.lambdaArnCN) {
-					await addSchemaPermission(request.lambdaArnCN, this.flags.principal, this.flags['statement-id'])
+					await addSchemaPermission(request.lambdaArnCN, this.flags.principal, this.flags.statement)
 				}
 				if (request.lambdaArnEU) {
-					await addSchemaPermission(request.lambdaArnEU, this.flags.principal, this.flags['statement-id'])
+					await addSchemaPermission(request.lambdaArnEU, this.flags.principal, this.flags.statement)
 				}
 			} else {
 				throw Error('Authorization is not applicable to WebHook schema connectors')

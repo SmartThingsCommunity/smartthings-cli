@@ -65,7 +65,7 @@ describe('RulesUpdateCommand', () => {
 	it('uses location id from command line', async () => {
 		chooseRuleMock.mockResolvedValueOnce('chosen-rule-id')
 
-		await expect(RulesUpdateCommand.run(['--location-id', 'cmd-line-location-id'])).resolves.not.toThrow()
+		await expect(RulesUpdateCommand.run(['--location', 'cmd-line-location-id'])).resolves.not.toThrow()
 
 		expect(chooseRuleMock).toHaveBeenCalledTimes(1)
 		expect(chooseRuleMock).toHaveBeenCalledWith(expect.any(RulesUpdateCommand),

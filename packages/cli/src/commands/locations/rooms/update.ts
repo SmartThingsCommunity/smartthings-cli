@@ -10,8 +10,7 @@ export default class RoomsUpdateCommand extends APICommand<typeof RoomsUpdateCom
 	static flags = {
 		...APICommand.flags,
 		...inputAndOutputItem.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -25,7 +24,7 @@ export default class RoomsUpdateCommand extends APICommand<typeof RoomsUpdateCom
 	static aliases = ['rooms:update']
 
 	async run(): Promise<void> {
-		const [roomId, locationId] = await chooseRoom(this, this.flags['location-id'], this.args.id)
+		const [roomId, locationId] = await chooseRoom(this, this.flags.location, this.args.id)
 		const config: CommonOutputProducer<Room> = { tableFieldDefinitions }
 		await inputAndOutputItem<RoomRequest, Room>(this, config,
 			(_, data) => this.client.rooms.update(roomId, data, locationId))

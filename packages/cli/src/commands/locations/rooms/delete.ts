@@ -8,8 +8,7 @@ export default class RoomsDeleteCommand extends APICommand<typeof RoomsDeleteCom
 
 	static flags = {
 		...APICommand.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -23,7 +22,7 @@ export default class RoomsDeleteCommand extends APICommand<typeof RoomsDeleteCom
 	static aliases = ['rooms:delete']
 
 	async run(): Promise<void> {
-		const [roomId, locationId] = await chooseRoom(this, this.flags['location-id'], this.args.id)
+		const [roomId, locationId] = await chooseRoom(this, this.flags.location, this.args.id)
 		await this.client.rooms.delete(roomId, locationId)
 		this.log(`room ${roomId} deleted`)
 	}

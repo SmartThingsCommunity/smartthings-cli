@@ -62,8 +62,8 @@ describe('VirtualDeviceStandardCreateCommand', () => {
 
 		await expect(VirtualDeviceCreateStandardCommand.run([
 			'--name=NewDeviceName',
-			'--location-id=new-location-id',
-			'--room-id=new-room-id',
+			'--location=new-location-id',
+			'--room=new-room-id',
 		])).resolves.not.toThrow()
 
 		expect(createSpy).toBeCalledWith(expectedCreateRequest)
@@ -97,8 +97,8 @@ describe('VirtualDeviceStandardCreateCommand', () => {
 
 		await expect(VirtualDeviceCreateStandardCommand.run([
 			'--name=DeviceName',
-			'--location-id=location-id',
-			'--room-id=room-id',
+			'--location=location-id',
+			'--room=room-id',
 			'--prototype=VIRTUAL_SWITCH',
 		])).resolves.not.toThrow()
 

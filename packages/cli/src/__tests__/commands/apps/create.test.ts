@@ -126,7 +126,7 @@ describe('AppCreateCommand', () => {
 		})
 
 		const statementId = 'statementId'
-		await expect(AppCreateCommand.run(['--authorize', `--statement-id=${statementId}`])).resolves.not.toThrow()
+		await expect(AppCreateCommand.run(['--authorize', `--statement=${statementId}`])).resolves.not.toThrow()
 
 		expect(addPermission).toBeCalledWith(arn, undefined, statementId)
 	})

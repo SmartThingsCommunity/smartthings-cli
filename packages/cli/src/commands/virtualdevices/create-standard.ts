@@ -29,8 +29,8 @@ export default class VirtualDeviceCreateStandardCommand extends APICommand<typeo
 		'$ smartthings virtualdevices:create-standard \\                          # using command line parameters for everything\n' +
 		'>    --name="My Second Device" \\ \n' +
 		'>    --prototype=VIRTUAL_SWITCH \\ \n' +
-		'>    --location-id=95bdd473-4498-42fc-b932-974d6e5c236e \\ \n' +
-		'>    --room-id=c7266cb7-7dcc-4958-8bc4-4288f5b50e1b',
+		'>    --location=95bdd473-4498-42fc-b932-974d6e5c236e \\ \n' +
+		'>    --room=c7266cb7-7dcc-4958-8bc4-4288f5b50e1b',
 	]
 
 	static flags = {
@@ -40,16 +40,14 @@ export default class VirtualDeviceCreateStandardCommand extends APICommand<typeo
 			char: 'N',
 			description: 'name of the device to be created',
 		}),
-		/* eslint-disable @typescript-eslint/naming-convention */
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'location into which device should be created',
 		}),
-		'room-id': Flags.string({
+		room: Flags.string({
 			char: 'R',
 			description: 'the room to put the device into',
 		}),
-		/* eslint-enable @typescript-eslint/naming-convention */
 		prototype: Flags.string({
 			char: 'T',
 			description: 'standard device prototype, e.g. VIRTUAL_SWITCH or VIRTUAL_DIMMER_SWITCH',
@@ -72,11 +70,11 @@ export default class VirtualDeviceCreateStandardCommand extends APICommand<typeo
 		if (flags.name) {
 			data.name = flags.name
 		}
-		if (flags['location-id']) {
-			data.owner.ownerId = flags['location-id']
+		if (flags.location) {
+			data.owner.ownerId = flags.location
 		}
-		if (flags['room-id']) {
-			data.roomId = flags['room-id']
+		if (flags.room) {
+			data.roomId = flags.room
 		}
 		return data
 	}
@@ -84,8 +82,8 @@ export default class VirtualDeviceCreateStandardCommand extends APICommand<typeo
 	async getInputFromUser(): Promise<VirtualDeviceStandardCreateRequest> {
 		const name = await chooseDeviceName(this, this.flags.name)
 		const prototype = await chooseDevicePrototype(this, this.flags['prototype'])
-		const locationId = await chooseLocation(this, this.flags['location-id'], true)
-		const [roomId] = await chooseRoom(this, locationId, this.flags['room-id'], true)
+		const locationId = await chooseLocation(this, this.flags.location, true)
+		const [roomId] = await chooseRoom(this, locationId, this.flags.room, true)
 
 		if (name && prototype && locationId) {
 			return {

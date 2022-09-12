@@ -12,8 +12,7 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand<typeof I
 
 	static flags = {
 		...APICommand.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
@@ -40,7 +39,7 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand<typeof I
 
 		const id = await selectFromList<InstalledSchemaApp>(this, config, {
 			preselectedId: this.args.id,
-			listItems: () => installedSchemaInstances(this.client, this.flags['location-id'], this.flags.verbose),
+			listItems: () => installedSchemaInstances(this.client, this.flags.location, this.flags.verbose),
 			promptMessage: 'Select an installed schema app to delete.',
 		})
 		await this.client.schema.deleteInstalledApp(id)

@@ -13,8 +13,7 @@ export default class RulesCommand extends APICommand<typeof RulesCommand.flags> 
 	static flags = {
 		...APICommand.flags,
 		...outputItemOrList.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
@@ -33,8 +32,8 @@ export default class RulesCommand extends APICommand<typeof RulesCommand.flags> 
 			tableFieldDefinitions,
 		}
 		await outputItemOrList(this, config, this.args.idOrIndex,
-			() => getRulesByLocation(this.client, this.flags['location-id']),
-			id => getRuleWithLocation(this.client, id, this.flags['location-id']),
+			() => getRulesByLocation(this.client, this.flags.location),
+			id => getRuleWithLocation(this.client, id, this.flags.location),
 		)
 	}
 }

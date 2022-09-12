@@ -35,7 +35,7 @@ describe('AppsAuthorizeCommand', () => {
 
 	it('calls addPermission with statement-id flag', async () => {
 		const statementId = 'statementId'
-		await expect(AppsAuthorizeCommand.run([arn, `--statement-id=${statementId}`])).resolves.not.toThrow()
+		await expect(AppsAuthorizeCommand.run([arn, `--statement=${statementId}`])).resolves.not.toThrow()
 
 		expect(mockAddPermission).toBeCalledWith(arn, undefined, statementId)
 		expect(logSpy).toBeCalledWith(success)

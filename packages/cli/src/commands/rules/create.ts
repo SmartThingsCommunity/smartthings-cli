@@ -14,15 +14,14 @@ export default class RulesCreateCommand extends APICommand<typeof RulesCreateCom
 	static flags = {
 		...APICommand.flags,
 		...inputAndOutputItem.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
 		}),
 	}
 
 	async run(): Promise<void> {
-		const locationId = await chooseLocation(this, this.flags['location-id'])
+		const locationId = await chooseLocation(this, this.flags.location)
 
 		await inputAndOutputItem<RuleRequest, Rule>(this, { tableFieldDefinitions },
 			(_, rule) => this.client.rules.create(rule, locationId))

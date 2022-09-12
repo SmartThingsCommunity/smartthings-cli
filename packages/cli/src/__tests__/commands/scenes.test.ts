@@ -46,7 +46,7 @@ describe('ScenesCommand', () => {
 	})
 
 	it('uses one location from command line', async () => {
-		await expect(ScenesCommand.run(['--location-id="cmd-line-location-id"'])).resolves.not.toThrow()
+		await expect(ScenesCommand.run(['--location="cmd-line-location-id"'])).resolves.not.toThrow()
 
 		expect(mockListing).toHaveBeenCalledTimes(1)
 		expect(mockListing).toHaveBeenCalledWith(
@@ -60,7 +60,7 @@ describe('ScenesCommand', () => {
 	})
 
 	it('uses multiple locations from command line', async () => {
-		await expect(ScenesCommand.run(['--location-id="cmd-line-location-id" --l="cmd-line-location-id-2"'])).resolves.not.toThrow()
+		await expect(ScenesCommand.run(['--location="cmd-line-location-id" --l="cmd-line-location-id-2"'])).resolves.not.toThrow()
 
 		expect(mockListing).toHaveBeenCalledTimes(1)
 		expect(mockListing).toHaveBeenCalledWith(

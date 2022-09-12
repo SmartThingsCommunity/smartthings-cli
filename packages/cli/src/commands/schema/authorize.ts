@@ -24,13 +24,13 @@ export default class SchemaAppAuthorizeCommand extends SmartThingsCommand<typeof
 		'',
 		'$ aws lambda add-permission --region us-east-1 \\',
 		'    --function-name arn:aws:lambda:us-east-1:1234567890:function:your-test-app \\',
-		'    --statement-id smartthings --principal 148790070172 --action lambda:InvokeFunction',
+		'    --statement smartthings --principal 148790070172 --action lambda:InvokeFunction',
 		'',
 		'It requires your machine to be configured to run the AWS CLI',
 	]
 
 	async run(): Promise<void> {
-		const message = await addSchemaPermission(this.args.arn, this.flags.principal, this.flags['statement-id'])
+		const message = await addSchemaPermission(this.args.arn, this.flags.principal, this.flags.statement)
 		this.log(message)
 	}
 }

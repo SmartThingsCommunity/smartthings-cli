@@ -122,7 +122,7 @@ describe('RoomsCommand', () => {
 	})
 
 	it('takes a specific locationId to query via flags', async () => {
-		await expect(RoomsCommand.run([`--location-id=${locationId}`])).resolves.not.toThrow()
+		await expect(RoomsCommand.run([`--location=${locationId}`])).resolves.not.toThrow()
 
 		expect(mockGetRoomsByLocation).toBeCalledWith(expect.any(SmartThingsClient), locationId)
 		mockGetRoomsByLocation.mockClear()

@@ -61,7 +61,7 @@ describe('InstalledAppsCommand', () => {
 	})
 
 	it('accepts location-id flag to filter list', async () => {
-		await expect(InstalledAppsCommand.run(['--location-id=locationId'])).resolves.not.toThrow()
+		await expect(InstalledAppsCommand.run(['--location=locationId'])).resolves.not.toThrow()
 
 		let listFunction = outputItemOrListMock.mock.calls[0][3]
 		await listFunction()

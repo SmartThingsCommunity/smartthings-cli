@@ -12,8 +12,7 @@ export default class InstalledAppsCommand extends APICommand<typeof InstalledApp
 	static flags = {
 		...APICommand.flags,
 		...outputItemOrList.flags,
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'location-id': Flags.string({
+		location: Flags.string({
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
@@ -46,7 +45,7 @@ export default class InstalledAppsCommand extends APICommand<typeof InstalledApp
 
 		const installedApps = async (): Promise<(InstalledApp & WithNamedLocation)[]> => {
 			const listOptions: InstalledAppListOptions = {
-				locationId: this.flags['location-id'],
+				locationId: this.flags.location,
 			}
 			const apps = await this.client.installedApps.list(listOptions)
 			if (this.flags.verbose) {
