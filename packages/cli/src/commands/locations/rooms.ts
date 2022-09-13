@@ -15,6 +15,7 @@ export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> 
 		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
+			helpValue: '<UUID>',
 		}),
 		verbose: Flags.boolean({
 			description: 'include location name in output',

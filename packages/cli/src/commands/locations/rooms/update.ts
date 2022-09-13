@@ -13,6 +13,7 @@ export default class RoomsUpdateCommand extends APICommand<typeof RoomsUpdateCom
 		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
+			helpValue: '<UUID>',
 		}),
 	}
 

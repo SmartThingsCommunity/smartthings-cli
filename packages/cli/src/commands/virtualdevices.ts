@@ -26,11 +26,13 @@ export default class VirtualDevicesCommand extends APICommand<typeof VirtualDevi
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
+			helpValue: '<UUID>',
 		}),
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'installed-app': Flags.string({
 			char: 'a',
 			description: 'filter results by installed app that created the device',
+			helpValue: '<UUID>',
 		}),
 		verbose: Flags.boolean({
 			description: 'include location name in output',

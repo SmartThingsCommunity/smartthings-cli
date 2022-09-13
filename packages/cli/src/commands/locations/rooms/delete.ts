@@ -11,6 +11,7 @@ export default class RoomsDeleteCommand extends APICommand<typeof RoomsDeleteCom
 		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
+			helpValue: '<UUID>',
 		}),
 	}
 

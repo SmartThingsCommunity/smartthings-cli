@@ -17,6 +17,7 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
+			helpValue: '<UUID>',
 		}),
 		capability: Flags.string({
 			char: 'c',
@@ -34,11 +35,13 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 			char: 'd',
 			description: 'filter results by device',
 			multiple: true,
+			helpValue: '<UUID>',
 		}),
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'installed-app': Flags.string({
 			char: 'a',
 			description: 'filter results by installed app that created the device',
+			helpValue: '<UUID>',
 		}),
 		status: Flags.boolean({
 			char: 's',

@@ -16,6 +16,7 @@ export default class RulesExecuteCommand extends APICommand<typeof RulesExecuteC
 		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
+			helpValue: '<UUID>',
 		}),
 	}
 

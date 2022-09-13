@@ -45,15 +45,18 @@ export default class VirtualDeviceCreateCommand extends APIOrganizationCommand<t
 		location: Flags.string({
 			char: 'l',
 			description: 'location into which device should be created',
+			helpValue: '<UUID>',
 		}),
 		room: Flags.string({
 			char: 'R',
 			description: 'the room to put the device into',
+			helpValue: '<UUID>',
 		}),
 		/* eslint-disable @typescript-eslint/naming-convention */
 		'device-profile': Flags.string({
 			char: 'P',
 			description: 'the device profile ID',
+			helpValue: '<UUID>',
 		}),
 		'device-profile-file': Flags.string({
 			char: 'f',

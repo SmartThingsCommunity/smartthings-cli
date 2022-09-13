@@ -43,10 +43,12 @@ export default class VirtualDeviceCreateStandardCommand extends APICommand<typeo
 		location: Flags.string({
 			char: 'l',
 			description: 'location into which device should be created',
+			helpValue: '<UUID>',
 		}),
 		room: Flags.string({
 			char: 'R',
 			description: 'the room to put the device into',
+			helpValue: '<UUID>',
 		}),
 		prototype: Flags.string({
 			char: 'T',

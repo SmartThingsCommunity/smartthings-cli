@@ -13,6 +13,7 @@ export default class RulesDeleteCommand extends APICommand<typeof RulesDeleteCom
 		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
+			helpValue: '<UUID>',
 		}),
 	}
 
