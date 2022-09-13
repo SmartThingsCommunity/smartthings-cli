@@ -81,7 +81,7 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 		'│ 1 │ en  │\n' +
 		'│ 2 │ ko  │\n' +
 		'└───┴─────┘',
-		'outputModulation (master)$ st capabilities:translations -v\n' +
+		'$ st capabilities:translations -v\n' +
 		'┌───┬─────────────────────────────┬─────────┬──────────┬────────────┐\n' +
 		'│ # │ Id                          │ Version │ Status   │ Locales    │\n' +
 		'├───┼─────────────────────────────┼─────────┼──────────┼────────────┤\n' +

@@ -2,7 +2,7 @@ import yaml from 'js-yaml'
 import { readFile, writeFile, yamlExists } from './io-util'
 
 
-export const seeConfigDocs = 'see https://github.com/SmartThingsCommunity/smartthings-cli/blob/master/packages/cli/doc/configuration.md for more information'
+export const seeConfigDocs = 'see https://github.com/SmartThingsCommunity/smartthings-cli/blob/main/packages/cli/doc/configuration.md for more information'
 
 export type Profile = Record<string, unknown>
 export type ProfilesByName = Record<string, Profile>
