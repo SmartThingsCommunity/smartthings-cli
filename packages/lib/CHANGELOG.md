@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.0-beta.15
+
+### Patch Changes
+
+- [#398](https://github.com/SmartThingsCommunity/smartthings-cli/pull/398) [`d20ad61`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d20ad6198f663a5ecb04af1d80ccf42d10214fa9) Thanks [@rossiam](https://github.com/rossiam)! - IMPORTANT: removed `-id` suffix from command line flags that had them for consistency
+
+* [#392](https://github.com/SmartThingsCommunity/smartthings-cli/pull/392) [`594b5c7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/594b5c73b3803e6f7f4e47fa175e5aee5df4f250) Thanks [@rossiam](https://github.com/rossiam)! - added `withLocation` function to add location information to single item (similar to `withLocations` for multiple items)
+
 ## 1.0.0-beta.14
 
 ### Patch Changes
