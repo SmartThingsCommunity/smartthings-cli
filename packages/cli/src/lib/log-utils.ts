@@ -6,7 +6,7 @@ import { yamlExists } from '@smartthings/cli-lib'
 
 const DEFAULT_LOG_FILE_SIZE = 1_000_000 // bytes
 const LOGGING_DOCS_URL = 'https://github.com/SmartThingsCommunity/smartthings-cli/' +
-	'blob/master/packages/cli/doc/configuration.md#logging'
+	'blob/main/packages/cli/doc/configuration.md#logging'
 
 
 export function buildDefaultLog4jsConfig(logFilename: string): Log4jsConfig {
