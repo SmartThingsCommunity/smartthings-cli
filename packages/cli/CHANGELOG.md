@@ -1,5 +1,21 @@
 # Change Log
 
+## 1.0.0-beta.17
+
+### Patch Changes
+
+- [#398](https://github.com/SmartThingsCommunity/smartthings-cli/pull/398) [`d20ad61`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d20ad6198f663a5ecb04af1d80ccf42d10214fa9) Thanks [@rossiam](https://github.com/rossiam)! - IMPORTANT: removed `-id` suffix from command line flags that had them for consistency
+
+* [#394](https://github.com/SmartThingsCommunity/smartthings-cli/pull/394) [`e13f0c3`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e13f0c33902289083ced4a6c6642685e6832a4d6) Thanks [@rossiam](https://github.com/rossiam)! - \* fix vendor support information output for edge:drivers:installed command
+  - fix lookup by index for edge:drivers:installed command
+
+- [#400](https://github.com/SmartThingsCommunity/smartthings-cli/pull/400) [`eb1aab8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/eb1aab896d4248d293c662317056097aad777438) Thanks [@rossiam](https://github.com/rossiam)! - removed `-id` suffix from flags, update help text to reflect this
+
+* [#392](https://github.com/SmartThingsCommunity/smartthings-cli/pull/392) [`594b5c7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/594b5c73b3803e6f7f4e47fa175e5aee5df4f250) Thanks [@rossiam](https://github.com/rossiam)! - include location name for installedapps and installedschema when querying a single item in verbose mode
+
+* Updated dependencies [[`d20ad61`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d20ad6198f663a5ecb04af1d80ccf42d10214fa9), [`594b5c7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/594b5c73b3803e6f7f4e47fa175e5aee5df4f250)]:
+  - @smartthings/cli-lib@1.0.0-beta.15
+
 ## 1.0.0-beta.16
 
 ### Patch Changes

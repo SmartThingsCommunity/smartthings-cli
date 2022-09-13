@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli",
-	"version": "1.0.0-beta.16",
+	"version": "1.0.0-beta.17",
 	"description": "Command Line Interface for the SmartThings APIs",
 	"author": "SmartThings, Inc.",
 	"bin": {
@@ -72,7 +72,7 @@
 		"@oclif/plugin-help": "^5.1.12",
 		"@oclif/plugin-not-found": "^2.3.1",
 		"@oclif/plugin-plugins": "^2.1.0",
-		"@smartthings/cli-lib": "^1.0.0-beta.14",
+		"@smartthings/cli-lib": "^1.0.0-beta.15",
 		"@smartthings/core-sdk": "^5.1.1",
 		"@smartthings/plugin-cli-edge": "^1.15.5",
 		"aws-sdk": "^2.1175.0",
