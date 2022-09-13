@@ -17,6 +17,7 @@ export default class ScenesCommand extends APICommand<typeof ScenesCommand.flags
 			char: 'l',
 			description: 'a specific location to query',
 			multiple: true,
+			helpValue: '<UUID>',
 		}),
 	}
 

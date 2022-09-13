@@ -16,6 +16,7 @@ export default class InstalledAppsCommand extends APICommand<typeof InstalledApp
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
+			helpValue: '<UUID>',
 		}),
 		verbose: Flags.boolean({
 			description: 'include location name in output',

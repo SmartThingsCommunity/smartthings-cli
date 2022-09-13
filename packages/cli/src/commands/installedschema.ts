@@ -21,6 +21,7 @@ export default class InstalledSchemaAppsCommand extends APICommand<typeof Instal
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
+			helpValue: '<UUID>',
 		}),
 		verbose: Flags.boolean({
 			description: 'include location name in output',

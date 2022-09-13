@@ -16,6 +16,7 @@ export default class RulesCommand extends APICommand<typeof RulesCommand.flags> 
 		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
+			helpValue: '<UUID>',
 		}),
 	}
 

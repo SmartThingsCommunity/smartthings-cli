@@ -17,6 +17,7 @@ export default class InstalledAppRenameCommand extends APICommand<typeof Install
 			char: 'l',
 			description: 'filter results by location',
 			multiple: true,
+			helpValue: '<UUID>',
 		}),
 		verbose: Flags.boolean({
 			description: 'include location name in output',

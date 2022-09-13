@@ -14,6 +14,7 @@ export default class RoomsCreateCommand extends APICommand<typeof RoomsCreateCom
 		location: Flags.string({
 			char: 'l',
 			description: 'a specific location to query',
+			helpValue: '<UUID>',
 		}),
 	}
 
