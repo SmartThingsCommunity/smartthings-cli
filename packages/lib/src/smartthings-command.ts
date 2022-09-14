@@ -83,12 +83,16 @@ type InputFlags = typeof SmartThingsCommand.flags & Partial<typeof outputFlags>
  */
 export abstract class SmartThingsCommand<T extends InputFlags> extends Command implements SmartThingsCommandInterface {
 	static flags = {
-		help: Flags.help({ char: 'h' }),
+		help: Flags.help({
+			char: 'h',
+			helpGroup: 'common',
+		}),
 		profile: Flags.string({
 			char: 'p',
 			description: 'configuration profile',
 			default: 'default',
 			env: 'SMARTTHINGS_PROFILE',
+			helpGroup: 'common',
 		}),
 	}
 

@@ -288,17 +288,19 @@ ARGUMENTS
   ID  the app id or number from list
 
 FLAGS
-  -h, --help                   Show CLI help.
-  -j, --json                   use JSON format of input and/or output
-  -o, --output=<value>         specify output file
-  -p, --profile=<value>        [default: default] configuration profile
-  -t, --token=<value>          the auth token to use
   -v, --verbose                include URLs and ARNs in table output
-  -y, --yaml                   use YAML format of input and/or output
   --classification=<value>...  filter results by one or more classifications, AUTOMATION, SERVICE, DEVICE,
                                CONNECTED_SERVICE
-  --language=<value>           ISO language code or "NONE" to not specify a language. Defaults to the OS locale
   --type=<value>               filter results by appType, WEBHOOK_SMART_APP, LAMBDA_SMART_APP, API_ONLY
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get a specific app or a list of apps
@@ -318,10 +320,12 @@ ARGUMENTS
   ARN  the ARN of the AWS Lambda function
 
 FLAGS
+  --principal=<value>  use this principal instead of the default when authorizing lambda functions
+  --statement=<value>  use this statement id instead of the default when authorizing lambda functions
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
-  --principal=<value>    use this principal instead of the default when authorizing lambda functions
-  --statement=<value>    use this statement id instead of the default when authorizing lambda functions
 
 DESCRIPTION
   authorize calls to your AWS Lambda function from SmartThings
@@ -358,7 +362,12 @@ USAGE
     <value>] [-d] [--authorize] [--principal <value>] [--statement <value>]
 
 FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
+  -d, --dry-run        produce JSON but don't actually submit
+  --authorize          authorize Lambda functions to be called by SmartThings
+  --principal=<value>  use this principal instead of the default when authorizing lambda functions
+  --statement=<value>  use this statement id instead of the default when authorizing lambda functions
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
@@ -366,10 +375,7 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --authorize            authorize Lambda functions to be called by SmartThings
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-  --principal=<value>    use this principal instead of the default when authorizing lambda functions
-  --statement=<value>    use this statement id instead of the default when authorizing lambda functions
 
 DESCRIPTION
   create an app
@@ -388,7 +394,7 @@ USAGE
 ARGUMENTS
   ID  App profile UUID or number in the list
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -411,7 +417,7 @@ USAGE
 ARGUMENTS
   ID  the app id or number in the list
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -439,7 +445,9 @@ ARGUMENTS
   ID  the app id
 
 FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
+  -d, --dry-run  produce JSON but don't actually submit
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
@@ -468,7 +476,9 @@ ARGUMENTS
   ID  the app id
 
 FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
+  -d, --dry-run  produce JSON but don't actually submit
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
@@ -495,7 +505,7 @@ USAGE
 ARGUMENTS
   ID  the app id
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -518,7 +528,7 @@ USAGE
 ARGUMENTS
   ID  the app id
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -546,7 +556,9 @@ ARGUMENTS
   ID  the app id
 
 FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
+  -d, --dry-run  produce JSON but don't actually submit
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
@@ -575,7 +587,12 @@ ARGUMENTS
   ID  the app id
 
 FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
+  -d, --dry-run        produce JSON but don't actually submit
+  --authorize          authorize Lambda functions to be called by SmartThings
+  --principal=<value>  use this principal instead of the default when authorizing lambda functions
+  --statement=<value>  use this statement id instead of the default when authorizing lambda functions
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
@@ -583,10 +600,7 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --authorize            authorize Lambda functions to be called by SmartThings
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-  --principal=<value>    use this principal instead of the default when authorizing lambda functions
-  --statement=<value>    use this statement id instead of the default when authorizing lambda functions
 
 DESCRIPTION
   update the settings of the app
@@ -639,15 +653,17 @@ ARGUMENTS
 FLAGS
   -A, --all-organizations     include entities from all organizations the user belongs to
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
   -n, --namespace=<value>     a specific namespace to query; will use all by default
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
   -s, --standard              show standard SmartThings capabilities
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get a specific capability
@@ -667,15 +683,17 @@ USAGE
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
   -n, --namespace=<value>     the namespace to create the capability under
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create a capability for a user
@@ -697,10 +715,12 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   delete a capability
@@ -719,13 +739,15 @@ USAGE
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   list all capability namespaces currently available in a user account
@@ -748,14 +770,16 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
   -n, --namespace=<value>     a specific namespace to query; will use all by default
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get presentation information for a specific capability
@@ -779,14 +803,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create presentation model for a capability
@@ -810,14 +836,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   update presentation information of a capability
@@ -841,15 +869,17 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
   -n, --namespace=<value>     a specific namespace to query; will use all by default
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
   -v, --verbose               include list of supported locales in table output
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get list of locales supported by the capability
@@ -941,14 +971,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create a capability translation
@@ -1024,14 +1056,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   update a capability translation
@@ -1107,14 +1141,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create or update a capability translation
@@ -1190,14 +1226,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   update a capability
@@ -1217,11 +1255,13 @@ ARGUMENTS
   NAME  the config name
 
 FLAGS
+  -v, --verbose  Include additional data in table output
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
-  -v, --verbose          Include additional data in table output
   -y, --yaml             use YAML format of input and/or output
 
 DESCRIPTION
@@ -1238,7 +1278,7 @@ clear saved answers to questions
 USAGE
   $ smartthings config:reset [-h] [-p <value>]
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
 
@@ -1266,15 +1306,17 @@ ARGUMENTS
 FLAGS
   -A, --all-organizations     include entities from all organizations the user belongs to
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
   -n, --namespace=<value>     a specific namespace to query; will use all by default
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
   -s, --standard              show standard SmartThings device preferences
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   list device preferences or get information for a specific device preference
@@ -1306,14 +1348,16 @@ USAGE
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create a device preference
@@ -1354,14 +1398,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   update a device preference
@@ -1390,14 +1436,16 @@ ARGUMENTS
 FLAGS
   -A, --all-organizations     include entities from all organizations the user belongs to
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
   -v, --verbose               include presentationId and manufacturerName in list output
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   list all device profiles available in a user account or retrieve a single profile
@@ -1431,14 +1479,16 @@ USAGE
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create a new device profile
@@ -1473,10 +1523,12 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   delete a device profile
@@ -1504,13 +1556,15 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get the device configuration associated with a device profile
@@ -1533,13 +1587,15 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get the presentation associated with a device profile
@@ -1579,13 +1635,15 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   publish a device profile (published profiles cannot be modified)
@@ -1609,14 +1667,16 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
   -v, --verbose               include list of locales in table output
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get list of locales supported by the device profiles
@@ -1741,10 +1801,12 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   delete a device profile translation
@@ -1807,14 +1869,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create or update a device profile translation
@@ -1903,14 +1967,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   update a device profile
@@ -1933,13 +1999,15 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   show device profile and device configuration in a single, consolidated view
@@ -1960,14 +2028,16 @@ USAGE
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create a new device profile and device configuration
@@ -2038,14 +2108,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   update a device profile and configuration
@@ -2122,15 +2194,17 @@ ARGUMENTS
 FLAGS
   -A, --all-organizations     include entities from all organizations the user belongs to
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
   -n, --namespace=<value>     a specific namespace to query; will use all by default
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
   -s, --standard              show standard SmartThings device preferences
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   list device preferences or get information for a specific device preference
@@ -2164,14 +2238,16 @@ USAGE
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create a device preference
@@ -2214,13 +2290,15 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get translated device preference values in a desired locale
@@ -2256,14 +2334,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create a device preference translation
@@ -2289,14 +2369,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   update a device preference translation
@@ -2322,14 +2404,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   update a device preference
@@ -2360,14 +2444,16 @@ ARGUMENTS
 FLAGS
   -A, --all-organizations     include entities from all organizations the user belongs to
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
   -v, --verbose               include presentationId and manufacturerName in list output
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   list all device profiles available in a user account or retrieve a single profile
@@ -2403,14 +2489,16 @@ USAGE
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create a new device profile
@@ -2447,10 +2535,12 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   delete a device profile
@@ -2480,13 +2570,15 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get the device configuration associated with a device profile
@@ -2511,13 +2603,15 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get the presentation associated with a device profile
@@ -2559,13 +2653,15 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   publish a device profile (published profiles cannot be modified)
@@ -2591,14 +2687,16 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
   -v, --verbose               include list of locales in table output
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get list of locales supported by the device profiles
@@ -2725,10 +2823,12 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   delete a device profile translation
@@ -2793,14 +2893,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create or update a device profile translation
@@ -2891,14 +2993,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   update a device profile
@@ -2923,13 +3027,15 @@ ARGUMENTS
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   show device profile and device configuration in a single, consolidated view
@@ -2952,14 +3058,16 @@ USAGE
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create a new device profile and device configuration
@@ -3032,14 +3140,16 @@ ARGUMENTS
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
   -d, --dry-run               produce JSON but don't actually submit
-  -h, --help                  Show CLI help.
-  -i, --input=<value>         specify input file
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   update a device profile and configuration
@@ -3124,19 +3234,21 @@ FLAGS
   -a, --installed-app=<UUID>        filter results by installed app that created the device
   -c, --capability=<value>...       filter results by capability
   -d, --device=<UUID>...            filter results by device
-  -h, --help                        Show CLI help.
-  -j, --json                        use JSON format of input and/or output
   -l, --location=<UUID>...          filter results by location
-  -o, --output=<value>              specify output file
-  -p, --profile=<value>             [default: default] configuration profile
   -s, --status                      include attribute values in the response
-  -t, --token=<value>               the auth token to use
   -v, --verbose                     include location name in output
-  -y, --yaml                        use YAML format of input and/or output
-  --language=<value>                ISO language code or "NONE" to not specify a language. Defaults to the OS locale
   --type=<option>...                filter results by device type
                                     <options: BLE|BLE_D2D|DTH|ENDPOINT_APP|GROUP|HUB|IR|IR_OCF|LAN|MATTER|MOBILE|MQTT|OC
                                     F|PENGYOU|SHP|VIDEO|VIPER|VIRTUAL|WATCH|ZIGBEE|ZWAVE>
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   list all devices available in a user account or retrieve a single device
@@ -3158,7 +3270,7 @@ ARGUMENTS
   COMPONENT   the component id
   CAPABILITY  the capability id
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -3186,7 +3298,7 @@ ARGUMENTS
   ID       the device id
   COMMAND  the command [<component>]:<capability>:<command>([<arguments>])
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
@@ -3223,7 +3335,7 @@ ARGUMENTS
   ID         the device id
   COMPONENT  the component id
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -3249,7 +3361,7 @@ USAGE
 ARGUMENTS
   ID  device UUID
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -3272,7 +3384,7 @@ USAGE
 ARGUMENTS
   ID  the device id
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -3300,12 +3412,14 @@ ARGUMENTS
   ID  the device id
 
 FLAGS
-  -A, --after=<value>    return events newer than or equal to this timestamp, expressed as an epoch time in milliseconds
-                         or an ISO time string
-  -B, --before=<value>   return events older than than this timestamp, expressed as an epoch time in milliseconds or an
-                         ISO time string
-  -L, --limit=<value>    maximum number of events to return, defaults to 20
-  -U, --utc              display times in UTC time zone. Defaults to local time
+  -A, --after=<value>   return events newer than or equal to this timestamp, expressed as an epoch time in milliseconds
+                        or an ISO time string
+  -B, --before=<value>  return events older than than this timestamp, expressed as an epoch time in milliseconds or an
+                        ISO time string
+  -L, --limit=<value>   maximum number of events to return, defaults to 20
+  -U, --utc             display times in UTC time zone. Defaults to local time
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -3331,7 +3445,7 @@ USAGE
 ARGUMENTS
   ID  the device id
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -3357,7 +3471,7 @@ USAGE
 ARGUMENTS
   ID  the device id or number in the list
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -3385,7 +3499,7 @@ ARGUMENTS
   ID     the device id
   LABEL  the new device label
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -3411,7 +3525,7 @@ USAGE
 ARGUMENTS
   ID  the device id
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -3439,7 +3553,9 @@ ARGUMENTS
   ID  the device id
 
 FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
+  -d, --dry-run  produce JSON but don't actually submit
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
@@ -4533,15 +4649,17 @@ ARGUMENTS
   ID  the app id
 
 FLAGS
-  -h, --help                Show CLI help.
-  -j, --json                use JSON format of input and/or output
   -l, --location=<UUID>...  filter results by location
-  -o, --output=<value>      specify output file
-  -p, --profile=<value>     [default: default] configuration profile
-  -t, --token=<value>       the auth token to use
   -v, --verbose             include location name in output
-  -y, --yaml                use YAML format of input and/or output
-  --language=<value>        ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get a specific app or a list of apps
@@ -4561,12 +4679,14 @@ ARGUMENTS
   ID  installed app UUID
 
 FLAGS
-  -h, --help                Show CLI help.
   -l, --location=<UUID>...  filter results by location
-  -p, --profile=<value>     [default: default] configuration profile
-  -t, --token=<value>       the auth token to use
   -v, --verbose             include location name in output
-  --language=<value>        ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   delete the installed app instance
@@ -4588,15 +4708,17 @@ ARGUMENTS
   NAME  the new installed app name
 
 FLAGS
-  -h, --help                Show CLI help.
-  -j, --json                use JSON format of input and/or output
   -l, --location=<UUID>...  filter results by location
-  -o, --output=<value>      specify output file
-  -p, --profile=<value>     [default: default] configuration profile
-  -t, --token=<value>       the auth token to use
   -v, --verbose             include location name in output
-  -y, --yaml                use YAML format of input and/or output
-  --language=<value>        ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   renamed an installed app instance
@@ -4617,15 +4739,17 @@ ARGUMENTS
   ID  the isa id
 
 FLAGS
-  -h, --help                Show CLI help.
-  -j, --json                use JSON format of input and/or output
   -l, --location=<UUID>...  filter results by location
-  -o, --output=<value>      specify output file
-  -p, --profile=<value>     [default: default] configuration profile
-  -t, --token=<value>       the auth token to use
   -v, --verbose             include location name in output
-  -y, --yaml                use YAML format of input and/or output
-  --language=<value>        ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   get a specific schema connector instance or a list of instances
@@ -4645,12 +4769,14 @@ ARGUMENTS
   ID  installed schema connector UUID
 
 FLAGS
-  -h, --help                Show CLI help.
   -l, --location=<UUID>...  filter results by location
-  -p, --profile=<value>     [default: default] configuration profile
-  -t, --token=<value>       the auth token to use
   -v, --verbose             include location name in output
-  --language=<value>        ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   delete the installed schema connector instance
@@ -4669,7 +4795,7 @@ USAGE
 ARGUMENTS
   IDORINDEX  the location id or number in list
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -4694,7 +4820,9 @@ USAGE
     <value>] [-d]
 
 FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
+  -d, --dry-run  produce JSON but don't actually submit
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
@@ -4721,7 +4849,7 @@ USAGE
 ARGUMENTS
   ID  location id
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -4751,12 +4879,14 @@ ARGUMENTS
   ID  the location id
 
 FLAGS
-  -A, --after=<value>    return events newer than or equal to this timestamp, expressed as an epoch time in milliseconds
-                         or an ISO time string
-  -B, --before=<value>   return events older than than this timestamp, expressed as an epoch time in milliseconds or an
-                         ISO time string
-  -L, --limit=<value>    maximum number of events to return, defaults to 20
-  -U, --utc              display times in UTC time zone. Defaults to local time
+  -A, --after=<value>   return events newer than or equal to this timestamp, expressed as an epoch time in milliseconds
+                        or an ISO time string
+  -B, --before=<value>  return events older than than this timestamp, expressed as an epoch time in milliseconds or an
+                        ISO time string
+  -L, --limit=<value>   maximum number of events to return, defaults to 20
+  -U, --utc             display times in UTC time zone. Defaults to local time
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -4784,13 +4914,15 @@ ARGUMENTS
   IDORINDEX  room UUID or index
 
 FLAGS
+  -l, --location=<UUID>  a specific location to query
+  -v, --verbose          include location name in output
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
-  -l, --location=<UUID>  a specific location to query
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
-  -v, --verbose          include location name in output
   -y, --yaml             use YAML format of input and/or output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
@@ -4814,10 +4946,12 @@ USAGE
 
 FLAGS
   -d, --dry-run          produce JSON but don't actually submit
+  -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
-  -l, --location=<UUID>  a specific location to query
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -4845,8 +4979,10 @@ ARGUMENTS
   ID  room UUID
 
 FLAGS
-  -h, --help             Show CLI help.
   -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
@@ -4874,10 +5010,12 @@ ARGUMENTS
 
 FLAGS
   -d, --dry-run          produce JSON but don't actually submit
+  -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
-  -l, --location=<UUID>  a specific location to query
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -4906,7 +5044,9 @@ ARGUMENTS
   ID  the location id
 
 FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
+  -d, --dry-run  produce JSON but don't actually submit
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
@@ -4928,7 +5068,7 @@ _See code: [src/commands/locations/update.ts](https://github.com/SmartThingsComm
 USAGE
   $ smartthings logout [-h] [-p <value>] [-t <value>] [--language <value>]
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -4948,7 +5088,7 @@ USAGE
 ARGUMENTS
   ID  the organization name, id or index
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -4974,13 +5114,15 @@ USAGE
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   return the currently active organization
@@ -5241,7 +5383,7 @@ ARGUMENTS
   PRESENTATIONID    system generated identifier that corresponds to a device presentation
   MANUFACTURERNAME  manufacturer name. Defaults to SmartThingsCommunity
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -5288,7 +5430,7 @@ ARGUMENTS
   PRESENTATIONID    system generated identifier that corresponds to a device presentation
   MANUFACTURERNAME  manufacturer name. Defaults to SmartThingsCommunity
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -5313,7 +5455,9 @@ USAGE
     <value>] [-d]
 
 FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
+  -d, --dry-run  produce JSON but don't actually submit
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
@@ -5342,16 +5486,18 @@ ARGUMENTS
   ID  the profile id (or legacy DTH id))
 
 FLAGS
+  --dth                 generate from legacy DTH id instead of a profile id
+  --type-shard=<value>  data management shard Id where the device type resides, only useful for legacy DTH type
+                        integrations
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --dth                  generate from legacy DTH id instead of a profile id
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-  --type-shard=<value>   data management shard Id where the device type resides, only useful for legacy DTH type
-                         integrations
 
 DESCRIPTION
   generate the default device configuration
@@ -5372,13 +5518,15 @@ ARGUMENTS
   IDORINDEX  room UUID or index
 
 FLAGS
+  -l, --location=<UUID>  a specific location to query
+  -v, --verbose          include location name in output
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
-  -l, --location=<UUID>  a specific location to query
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
-  -v, --verbose          include location name in output
   -y, --yaml             use YAML format of input and/or output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
@@ -5400,10 +5548,12 @@ USAGE
 
 FLAGS
   -d, --dry-run          produce JSON but don't actually submit
+  -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
-  -l, --location=<UUID>  a specific location to query
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -5429,8 +5579,10 @@ ARGUMENTS
   ID  room UUID
 
 FLAGS
-  -h, --help             Show CLI help.
   -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
@@ -5456,10 +5608,12 @@ ARGUMENTS
 
 FLAGS
   -d, --dry-run          produce JSON but don't actually submit
+  -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
-  -l, --location=<UUID>  a specific location to query
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -5486,9 +5640,11 @@ ARGUMENTS
   IDORINDEX  rule UUID or index
 
 FLAGS
+  -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
-  -l, --location=<UUID>  a specific location to query
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -5512,10 +5668,12 @@ USAGE
 
 FLAGS
   -d, --dry-run          produce JSON but don't actually submit
+  -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
-  -l, --location=<UUID>  a specific location to query
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -5540,8 +5698,10 @@ ARGUMENTS
   ID  rule UUID
 
 FLAGS
-  -h, --help             Show CLI help.
   -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
@@ -5565,9 +5725,11 @@ ARGUMENTS
   ID  rule UUID
 
 FLAGS
+  -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
-  -l, --location=<UUID>  a specific location to query
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -5605,10 +5767,12 @@ ARGUMENTS
 
 FLAGS
   -d, --dry-run          produce JSON but don't actually submit
+  -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
-  -l, --location=<UUID>  a specific location to query
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -5634,14 +5798,16 @@ ARGUMENTS
   IDORINDEX  the scene id or number in list
 
 FLAGS
-  -h, --help                Show CLI help.
-  -j, --json                use JSON format of input and/or output
   -l, --location=<UUID>...  a specific location to query
-  -o, --output=<value>      specify output file
-  -p, --profile=<value>     [default: default] configuration profile
-  -t, --token=<value>       the auth token to use
-  -y, --yaml                use YAML format of input and/or output
-  --language=<value>        ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   list scenes or get information for a specific scene
@@ -5660,7 +5826,7 @@ USAGE
 ARGUMENTS
   ID  scene UUID
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -5698,12 +5864,14 @@ ARGUMENTS
   ID  the schema connector id
 
 FLAGS
+  -v, --verbose  include ARN in output
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
-  -v, --verbose          include ARN in output
   -y, --yaml             use YAML format of input and/or output
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
@@ -5725,10 +5893,12 @@ ARGUMENTS
   ARN  the ARN of the AWS Lambda function
 
 FLAGS
+  --principal=<value>  use this principal instead of the default when authorizing lambda functions
+  --statement=<value>  use this statement id instead of the default when authorizing lambda functions
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
-  --principal=<value>    use this principal instead of the default when authorizing lambda functions
-  --statement=<value>    use this statement id instead of the default when authorizing lambda functions
 
 DESCRIPTION
   authorize calls to your ST Schema Lambda function from SmartThings
@@ -5765,7 +5935,12 @@ USAGE
     <value>] [-d] [--authorize] [--principal <value>] [--statement <value>]
 
 FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
+  -d, --dry-run        produce JSON but don't actually submit
+  --authorize          authorize connector's Lambda functions to be called by SmartThings
+  --principal=<value>  use this principal instead of the default when authorizing lambda functions
+  --statement=<value>  use this statement id instead of the default when authorizing lambda functions
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
@@ -5773,10 +5948,7 @@ FLAGS
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --authorize            authorize connector's Lambda functions to be called by SmartThings
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-  --principal=<value>    use this principal instead of the default when authorizing lambda functions
-  --statement=<value>    use this statement id instead of the default when authorizing lambda functions
 
 DESCRIPTION
   create an ST Schema connector
@@ -5795,7 +5967,7 @@ USAGE
 ARGUMENTS
   ID  schema app id
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -5818,7 +5990,7 @@ USAGE
 ARGUMENTS
   ID  schema app id
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -j, --json             use JSON format of input and/or output
   -o, --output=<value>   specify output file
@@ -5847,16 +6019,18 @@ ARGUMENTS
   ID  the app id
 
 FLAGS
+  --authorize          authorize Lambda functions to be called by SmartThings
+  --principal=<value>  use this principal instead of the default when authorizing lambda functions
+  --statement=<value>  use this statement id instead of the default when authorizing lambda functions
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
   -y, --yaml             use YAML format of input and/or output
-  --authorize            authorize Lambda functions to be called by SmartThings
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-  --principal=<value>    use this principal instead of the default when authorizing lambda functions
-  --statement=<value>    use this statement id instead of the default when authorizing lambda functions
 
 DESCRIPTION
   update an ST Schema connector
@@ -5878,15 +6052,17 @@ ARGUMENTS
 
 FLAGS
   -a, --installed-app=<UUID>  filter results by installed app that created the device
-  -h, --help                  Show CLI help.
-  -j, --json                  use JSON format of input and/or output
   -l, --location=<UUID>...    filter results by location
-  -o, --output=<value>        specify output file
-  -p, --profile=<value>       [default: default] configuration profile
-  -t, --token=<value>         the auth token to use
   -v, --verbose               include location name in output
-  -y, --yaml                  use YAML format of input and/or output
-  --language=<value>          ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   list all virtual devices available in a user account or retrieve a single device
@@ -5910,15 +6086,17 @@ FLAGS
   -R, --room=<UUID>                  the room to put the device into
   -d, --dry-run                      produce JSON but don't actually submit
   -f, --device-profile-file=<value>  a file containing the device profile definition
-  -h, --help                         Show CLI help.
-  -i, --input=<value>                specify input file
-  -j, --json                         use JSON format of input and/or output
   -l, --location=<UUID>              location into which device should be created
-  -o, --output=<value>               specify output file
-  -p, --profile=<value>              [default: default] configuration profile
-  -t, --token=<value>                the auth token to use
-  -y, --yaml                         use YAML format of input and/or output
-  --language=<value>                 ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create a virtual device from a device profile ID or definition
@@ -5959,15 +6137,17 @@ FLAGS
   -R, --room=<UUID>        the room to put the device into
   -T, --prototype=<value>  standard device prototype, e.g. VIRTUAL_SWITCH or VIRTUAL_DIMMER_SWITCH
   -d, --dry-run            produce JSON but don't actually submit
-  -h, --help               Show CLI help.
-  -i, --input=<value>      specify input file
-  -j, --json               use JSON format of input and/or output
   -l, --location=<UUID>    location into which device should be created
-  -o, --output=<value>     specify output file
-  -p, --profile=<value>    [default: default] configuration profile
-  -t, --token=<value>      the auth token to use
-  -y, --yaml               use YAML format of input and/or output
-  --language=<value>       ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
   create a device from one of the standard prototypes.
@@ -6003,7 +6183,7 @@ USAGE
 ARGUMENTS
   ID  device UUID
 
-FLAGS
+COMMON FLAGS
   -h, --help             Show CLI help.
   -p, --profile=<value>  [default: default] configuration profile
   -t, --token=<value>    the auth token to use
@@ -6031,7 +6211,9 @@ ARGUMENTS
   UNIT   optional unit of measure
 
 FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
+  -d, --dry-run  produce JSON but don't actually submit
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
@@ -6072,7 +6254,9 @@ ARGUMENTS
   ID  the device id
 
 FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
+  -d, --dry-run  produce JSON but don't actually submit
+
+COMMON FLAGS
   -h, --help             Show CLI help.
   -i, --input=<value>    specify input file
   -j, --json             use JSON format of input and/or output
