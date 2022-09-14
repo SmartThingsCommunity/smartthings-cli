@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.16
+
+### Patch Changes
+
+- [#395](https://github.com/SmartThingsCommunity/smartthings-cli/pull/395) [`4677218`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/46772188ff8a7d432757a871aa49272c86b28e64) Thanks [@rossiam](https://github.com/rossiam)! - added support for removing managed config values
+
 ## 1.0.0-beta.15
 
 ### Patch Changes
