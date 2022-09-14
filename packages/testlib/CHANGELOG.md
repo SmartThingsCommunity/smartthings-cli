@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.10
+
+### Patch Changes
+
+- [#404](https://github.com/SmartThingsCommunity/smartthings-cli/pull/404) [`86ad2ec`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/86ad2ec1f2a2dd7cf53827ac357f9f42bf4395e5) Thanks [@rossiam](https://github.com/rossiam)! - include resetManagedConfigKey in mocked functions
+
 ## 1.0.0-beta.9
 
 ### Patch Changes
