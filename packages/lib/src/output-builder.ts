@@ -24,6 +24,7 @@ export const outputFlags = {
 	output: Flags.string({
 		char: 'o',
 		description: 'specify output file',
+		helpGroup: 'common',
 	}),
 	/* eslint-disable @typescript-eslint/naming-convention */
 	'group-rows': Flags.boolean({

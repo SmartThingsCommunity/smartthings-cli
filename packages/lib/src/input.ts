@@ -12,10 +12,12 @@ export const commonIOFlags = {
 	json: Flags.boolean({
 		description: 'use JSON format of input and/or output',
 		char: 'j',
+		helpGroup: 'common',
 	}),
 	yaml: Flags.boolean({
 		char: 'y',
 		description: 'use YAML format of input and/or output',
+		helpGroup: 'common',
 	}),
 }
 
@@ -23,6 +25,7 @@ export const inputFlag = {
 	input: Flags.string({
 		char: 'i',
 		description: 'specify input file',
+		helpGroup: 'common',
 	}),
 }
 

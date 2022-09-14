@@ -20,9 +20,11 @@ export abstract class APICommand<T extends typeof APICommand.flags> extends Smar
 			char: 't',
 			description: 'the auth token to use',
 			env: 'SMARTTHINGS_TOKEN',
+			helpGroup: 'common',
 		}),
 		language: Flags.string({
 			description: 'ISO language code or "NONE" to not specify a language. Defaults to the OS locale',
+			helpGroup: 'common',
 		}),
 	}
 
