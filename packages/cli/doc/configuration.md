@@ -12,7 +12,7 @@ following location:
 
 It's possible to define multiple profiles with different configurations.
 
-* Top-level keys other than the special `logging` key define these profiles.
+* Top-level keys define these profiles.
 * The default profile is simply named "default" and will be used unless otherwise
 specified. Most users can simply put their configuration options here.
 * To choose a different profile you can either set the SMARTTHINGS_PROFILE
