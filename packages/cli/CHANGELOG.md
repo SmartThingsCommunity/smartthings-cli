@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.0-beta.18
+
+### Patch Changes
+
+- [#407](https://github.com/SmartThingsCommunity/smartthings-cli/pull/407) [`f2ebdc2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/f2ebdc21ee1f6b369c0479c2546f34b1f3e5b228) Thanks [@john-u](https://github.com/john-u)! - Add build support for macos-arm64, linux-arm64, and linuxstatic-armv7
+
 ## 1.0.0-beta.17
 
 ### Patch Changes
