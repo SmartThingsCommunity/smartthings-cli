@@ -2,13 +2,13 @@ import inquirer from 'inquirer'
 
 import { Channel, ChannelCreate } from '@smartthings/core-sdk'
 
-import { inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
+import { inputAndOutputItem, TableFieldDefinition, userInputProcessor } from '@smartthings/cli-lib'
 
 import { EdgeCommand } from '../../../lib/edge-command'
 
 
-const tableFieldDefinitions = ['channelId', 'name', 'description', 'type', 'termsOfServiceUrl',
-	'createdDate', 'lastModifiedDate']
+const tableFieldDefinitions: TableFieldDefinition<Channel>[] = ['channelId', 'name', 'description',
+	'type', 'termsOfServiceUrl', 'createdDate', 'lastModifiedDate']
 
 export default class ChannelsCreateCommand extends EdgeCommand<typeof ChannelsCreateCommand.flags> {
 	static description = 'create a channel'

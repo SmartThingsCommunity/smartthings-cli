@@ -8,11 +8,12 @@ import {
 	selectFromList,
 	SelectFromListConfig,
 	stringTranslateToId,
+	TableFieldDefinition,
 } from '@smartthings/cli-lib'
 
 
-export const listTableFieldDefinitions = ['channelId', 'name', 'description', 'termsOfServiceUrl',
-	'createdDate', 'lastModifiedDate']
+export const listTableFieldDefinitions: TableFieldDefinition<Channel>[] =
+	['channelId', 'name', 'description', 'termsOfServiceUrl', 'createdDate', 'lastModifiedDate']
 
 export const tableFieldDefinitions = listTableFieldDefinitions
 

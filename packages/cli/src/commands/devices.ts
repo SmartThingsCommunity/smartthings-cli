@@ -1,8 +1,15 @@
 import { Flags } from '@oclif/core'
 
-import { Device, DeviceIntegrationType, DeviceGetOptions, DeviceListOptions } from '@smartthings/core-sdk'
+import { Device, DeviceIntegrationType, DeviceGetOptions, DeviceListOptions, DeviceStatus } from '@smartthings/core-sdk'
 
-import { APICommand, outputItemOrList, OutputItemOrListConfig, TableFieldDefinition, withLocationsAndRooms } from '@smartthings/cli-lib'
+import {
+	APICommand,
+	outputItemOrList,
+	OutputItemOrListConfig,
+	TableFieldDefinition,
+	withLocationsAndRooms,
+	WithNamedRoom,
+} from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../lib/commands/devices-util'
 
@@ -68,7 +75,9 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 	}]
 
 	async run(): Promise<void> {
-		const listTableFieldDefinitions: TableFieldDefinition<Device>[] = ['label', 'name', 'type', 'deviceId']
+		// type that includes extra fields sometimes included when requested via command line flags
+		type OutputDevice = Device & WithNamedRoom & Pick<DeviceStatus, 'healthState'>
+		const listTableFieldDefinitions: TableFieldDefinition<OutputDevice>[] = ['label', 'name', 'type', 'deviceId']
 
 		if (this.flags.verbose) {
 			listTableFieldDefinitions.splice(3, 0, 'location', 'room')
@@ -76,12 +85,12 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 
 		if (this.flags.health) {
 			listTableFieldDefinitions.splice(3, 0, {
-				prop: 'healthState.state',
+				path: 'healthState.state',
 				label: 'Health',
 			})
 		}
 
-		const config: OutputItemOrListConfig<Device> = {
+		const config: OutputItemOrListConfig<OutputDevice> = {
 			primaryKeyName: 'deviceId',
 			sortKeyName: 'label',
 			listTableFieldDefinitions,
@@ -111,7 +120,7 @@ export default class DevicesCommand extends APICommand<typeof DevicesCommand.fla
 				}
 				return devices
 			},
-			async (id) => {
+			async id => {
 				// Note -- we have to do this explicitly because the API does not honor the includeHealth parameter
 				// for individual devices
 				if (this.flags.health) {

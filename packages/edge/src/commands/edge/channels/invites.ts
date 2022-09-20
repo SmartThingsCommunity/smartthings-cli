@@ -17,15 +17,15 @@ import { Invitation } from '../../../lib/endpoints/invites'
 
 export const listTableFieldDefinitions: TableFieldDefinition<Invitation>[] = [
 	'id',
-	'metadata.name',
-	{ label: 'Channel Id', prop: 'resource.components[0].id' },
+	{ path: 'metadata.name' },
+	{ label: 'Channel Id', path: 'resource.components[0].id' },
 	{
 		label: 'Expiration',
 		value: ({ expiration }) => expiration ? new Date(expiration * 1000).toISOString() : '',
 	},
 	'acceptUrl',
 ]
-export const tableFieldDefinitions = [
+export const tableFieldDefinitions: TableFieldDefinition<Invitation>[] = [
 	...listTableFieldDefinitions,
 	'profileId',
 ]
@@ -43,7 +43,7 @@ export async function chooseInvite(command: EdgeCommand<typeof EdgeCommand.flags
 		itemName: 'invitation',
 		primaryKeyName: 'id',
 		sortKeyName: 'id', // only supports simple properties so we can't sort by metadata.name even though we can use that in the table
-		listTableFieldDefinitions: ['id', 'metadata.name'],
+		listTableFieldDefinitions: ['id', { path: 'metadata.name' }],
 	}
 	const listItems = buildListFunction(command, channelId)
 	const preselectedId = opts.allowIndex

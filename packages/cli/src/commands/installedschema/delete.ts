@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 
 import { InstalledSchemaApp } from '@smartthings/core-sdk'
 
-import { APICommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
+import { APICommand, selectFromList, SelectFromListConfig, WithNamedLocation } from '@smartthings/cli-lib'
 
 import { installedSchemaInstances } from '../../lib/commands/installedschema-util'
 
@@ -29,7 +29,7 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand<typeof I
 	}]
 
 	async run(): Promise<void> {
-		const config: SelectFromListConfig<InstalledSchemaApp> = {
+		const config: SelectFromListConfig<InstalledSchemaApp & WithNamedLocation> = {
 			primaryKeyName: 'isaId',
 			sortKeyName: 'appName',
 			listTableFieldDefinitions: ['appName', 'partnerName', 'partnerSTConnection', 'isaId'],
@@ -38,7 +38,7 @@ export default class InstalledSchemaAppDeleteCommand extends APICommand<typeof I
 			config.listTableFieldDefinitions.splice(3, 0, 'location')
 		}
 
-		const id = await selectFromList<InstalledSchemaApp>(this, config, {
+		const id = await selectFromList(this, config, {
 			preselectedId: this.args.id,
 			listItems: () => installedSchemaInstances(this.client, this.flags.location, this.flags.verbose),
 			promptMessage: 'Select an installed schema app to delete.',

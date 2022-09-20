@@ -3,7 +3,7 @@ import { Flags } from '@oclif/core'
 import { CapabilityLocalization, DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, OutputItemOrListConfig, outputItemOrList, selectFromList,
-	SelectFromListConfig, TableGenerator } from '@smartthings/cli-lib'
+	SelectFromListConfig, TableGenerator, WithLocales } from '@smartthings/cli-lib'
 
 import { CapabilityId, capabilityIdOrIndexInputArgs, CapabilitySummaryWithNamespace, getCustomByNamespace,
 	getIdFromUser, translateToId } from '../../lib/commands/capabilities-util'
@@ -42,7 +42,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: Capabilit
 	return result
 }
 
-export type CapabilitySummaryWithLocales = CapabilitySummaryWithNamespace & { locales?: string }
+export type CapabilitySummaryWithLocales = CapabilitySummaryWithNamespace & WithLocales
 
 export default class CapabilityTranslationsCommand extends APIOrganizationCommand<typeof CapabilityTranslationsCommand.flags> {
 
@@ -128,9 +128,9 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 	]
 
 	async run(): Promise<void> {
-		const capConfig: SelectFromListConfig<CapabilitySummaryWithNamespace> = {
+		const primaryKeyName = 'id'
+		const capConfig: SelectFromListConfig<CapabilitySummaryWithLocales> = {
 			primaryKeyName: 'id',
-			sortKeyName: 'id',
 			listTableFieldDefinitions: ['id', 'version', 'status'],
 		}
 		if (this.flags.verbose) {
@@ -160,15 +160,15 @@ export default class CapabilityTranslationsCommand extends APIOrganizationComman
 				preselectedId = { id: this.args.id, version: this.args.version }
 			} else {
 				// capability id or index, no capability version specified, tag specified
-				preselectedId = await translateToId(capConfig.primaryKeyName, this.args.id, listItems)
+				preselectedId = await translateToId(primaryKeyName, this.args.id, listItems)
 				preselectedTag = this.args.version
 			}
 		} else {
 			// capability id or index, no tag specified
-			preselectedId = await translateToId(capConfig.primaryKeyName, this.args.id, listItems)
+			preselectedId = await translateToId(primaryKeyName, this.args.id, listItems)
 		}
 
-		const capabilityId = await selectFromList(this, capConfig, {
+		const capabilityId = await selectFromList<CapabilitySummaryWithLocales, CapabilityId>(this, capConfig, {
 			preselectedId,
 			listItems,
 			getIdFromUser,

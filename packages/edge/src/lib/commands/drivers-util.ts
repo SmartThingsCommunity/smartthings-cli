@@ -18,11 +18,13 @@ import {
 	SelectFromListConfig,
 	stringTranslateToId,
 	summarizedText,
+	TableFieldDefinition,
 	TableGenerator,
 } from '@smartthings/cli-lib'
 
 
-export const listTableFieldDefinitions = ['driverId', 'name', 'version', 'packageKey']
+export const listTableFieldDefinitions: TableFieldDefinition<EdgeDriverSummary>[] =
+	['driverId', 'name', 'version', 'packageKey']
 
 export const permissionsValue = (driver: EdgeDriver): string => driver.permissions?.map(permission => permission.name).join('\n') || 'none'
 

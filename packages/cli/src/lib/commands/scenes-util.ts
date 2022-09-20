@@ -1,9 +1,9 @@
 import { SceneSummary } from '@smartthings/core-sdk'
 
-import { APICommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
+import { APICommand, selectFromList, SelectFromListConfig, TableFieldDefinition } from '@smartthings/cli-lib'
 
 
-export const tableFieldDefinitions = [
+export const tableFieldDefinitions: TableFieldDefinition<SceneSummary>[] = [
 	'sceneName', 'sceneId', 'locationId', 'lastExecutedDate',
 ]
 

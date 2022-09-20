@@ -5,14 +5,14 @@ import { APICommand, selectFromList, SelectFromListConfig, TableFieldDefinition 
 
 export const tableFieldDefinitions: TableFieldDefinition<DevicePreference>[] = [
 	'preferenceId', 'title', 'name', 'description', 'required', 'preferenceType',
-	{ prop: 'definition.default', skipEmpty: true },
-	{ prop: 'definition.minimum', skipEmpty: true },
-	{ prop: 'definition.maximum', skipEmpty: true },
-	{ prop: 'definition.minLength', skipEmpty: true },
-	{ prop: 'definition.maxLength', skipEmpty: true },
-	{ prop: 'definition.stringType', skipEmpty: true },
+	{ path: 'definition.default', skipEmpty: true },
+	{ path: 'definition.minimum', skipEmpty: true },
+	{ path: 'definition.maximum', skipEmpty: true },
+	{ path: 'definition.minLength', skipEmpty: true },
+	{ path: 'definition.maxLength', skipEmpty: true },
+	{ path: 'definition.stringType', skipEmpty: true },
 	{
-		prop: 'definition.options',
+		path: 'definition.options',
 		skipEmpty: true,
 		value: (pref: DevicePreference): string | undefined => {
 			if (pref.preferenceType !== 'enumeration') {

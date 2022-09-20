@@ -1,9 +1,9 @@
 import { Location, LocationItem } from '@smartthings/core-sdk'
 
-import { APICommand, outputItemOrList, OutputItemOrListConfig, selectFromList, SelectFromListConfig, stringTranslateToId } from '@smartthings/cli-lib'
+import { APICommand, outputItemOrList, OutputItemOrListConfig, selectFromList, SelectFromListConfig, stringTranslateToId, TableFieldDefinition } from '@smartthings/cli-lib'
 
 
-export const tableFieldDefinitions = [
+export const tableFieldDefinitions: TableFieldDefinition<Location>[] = [
 	'name', 'locationId', 'countryCode', 'timeZoneId', 'backgroundImage',
 	'latitude', 'longitude', 'regionRadius', 'temperatureScale', 'locale',
 ]

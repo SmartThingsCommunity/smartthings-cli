@@ -187,7 +187,7 @@ describe('rules-util', () => {
 				['executionId', 'id', 'result'])
 			expect(buildTableFromListMock).toHaveBeenCalledTimes(1)
 			expect(buildTableFromListMock).toHaveBeenCalledWith(executeResponse.actions,
-				expect.arrayContaining(['actionId', 'location.locationId']))
+				expect.arrayContaining(['actionId', { path: 'location.locationId' }]))
 		})
 
 		it('leaves out actions table when there are no actions', () => {

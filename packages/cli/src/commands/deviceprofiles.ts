@@ -8,7 +8,6 @@ import {
 	allOrganizationsFlags,
 	outputItemOrList,
 	forAllOrganizations,
-	TableFieldDefinition,
 	OutputItemOrListConfig,
 } from '@smartthings/cli-lib'
 
@@ -45,10 +44,10 @@ export default class DeviceProfilesCommand extends APIOrganizationCommand<typeof
 	static aliases = ['device-profiles']
 
 	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<DeviceProfile> = {
+		const config: OutputItemOrListConfig<DeviceProfile & WithOrganization> = {
 			primaryKeyName: 'id',
 			sortKeyName: 'name',
-			listTableFieldDefinitions: ['name', 'status', 'id'] as TableFieldDefinition<DeviceProfile & WithOrganization>[],
+			listTableFieldDefinitions: ['name', 'status', 'id'],
 			buildTableOutput: (data: DeviceProfile) => buildTableOutput(this.tableGenerator, data),
 		}
 

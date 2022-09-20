@@ -99,55 +99,55 @@ export const buildTableOutput = (tableGenerator: TableGenerator, device: Device 
 
 	let deviceIntegrationInfo = 'None'
 	let infoFrom
-	if ('app' in device) {
+	if (device.app) {
 		infoFrom = 'app'
-		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.app ?? {},
-			['installedAppId', 'externalId', { prop: 'profile.id', label: 'Profile Id' }])
-	} else if ('ble' in device) {
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.app,
+			['installedAppId', 'externalId', { path: 'profile.id', label: 'Profile Id' }])
+	} else if (device.ble) {
 		infoFrom = 'ble'
 		deviceIntegrationInfo = 'No Device Integration Info for BLE devices'
-	} else if ('bleD2D' in device) {
+	} else if (device.bleD2D) {
 		infoFrom = 'bleD2D'
-		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.bleD2D ?? {},
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.bleD2D,
 			['advertisingId', 'identifier', 'configurationVersion', 'configurationUrl'])
-	} else if ('dth' in device) {
+	} else if (device.dth) {
 		infoFrom = 'dth'
-		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.dth ?? {},
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.dth,
 			['deviceTypeId', 'deviceTypeName', 'completedSetup', 'deviceNetworkType',
 				'executingLocally', 'hubId', 'installedGroovyAppId', 'networkSecurityLevel'])
-	} else if ('lan' in device) {
+	} else if (device.lan) {
 		infoFrom = 'lan'
-		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.lan ?? {},
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.lan,
 			['networkId', 'driverId', 'executingLocally', 'hubId', 'provisioningState'])
-	} else if ('zigbee' in device) {
+	} else if (device.zigbee) {
 		infoFrom = 'zigbee'
-		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.zigbee ?? {},
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.zigbee,
 			['eui', 'networkId', 'driverId', 'executingLocally', 'hubId', 'provisioningState'])
-	} else if ('zwave' in device) {
+	} else if (device.zwave) {
 		infoFrom = 'zwave'
-		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.zwave ?? {},
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.zwave,
 			['networkId', 'driverId', 'executingLocally', 'hubId', 'networkSecurityLevel', 'provisioningState'])
-	} else if ('ir' in device) {
+	} else if (device.ir) {
 		infoFrom = 'ir'
-		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.ir ?? {},
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.ir,
 			['parentDeviceId', 'profileId', 'ocfDeviceType', 'irCode'])
-	} else if ('irOcf' in device) {
+	} else if (device.irOcf) {
 		infoFrom = 'irOcf'
-		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.irOcf ?? {},
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.irOcf,
 			['parentDeviceId', 'profileId', 'ocfDeviceType', 'irCode'])
-	} else if ('ocf' in device) {
+	} else if (device.ocf) {
 		infoFrom = 'ocf'
-		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.ocf ?? {},
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.ocf,
 			['deviceId', 'ocfDeviceType', 'name', 'specVersion', 'verticalDomainSpecVersion',
 				'manufacturerName', 'modelNumber', 'platformVersion', 'platformOS', 'hwVersion',
 				'firmwareVersion', 'vendorId', 'vendorResourceClientServerVersion', 'locale'])
-	} else if ('viper' in device) {
+	} else if (device.viper) {
 		infoFrom = 'viper'
-		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.viper ?? {},
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.viper,
 			['uniqueIdentifier', 'manufacturerName', 'modelName', 'swVersion', 'hwVersion'])
-	} else if ('virtual' in device) {
+	} else if (device.virtual) {
 		infoFrom = 'virtual'
-		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.virtual ?? {},
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.virtual,
 			['name', { prop: 'hubId', skipEmpty: true }, { prop: 'driverId', skipEmpty: true }])
 	}
 

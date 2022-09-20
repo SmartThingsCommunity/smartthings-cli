@@ -3,11 +3,11 @@ import { Errors } from '@oclif/core'
 import { LocationItem, Room, SmartThingsClient } from '@smartthings/core-sdk'
 
 import * as roomsUtil from './rooms-util'
-import { APICommand, selectFromList, SelectFromListConfig, WithNamedLocation } from '@smartthings/cli-lib'
+import { APICommand, selectFromList, SelectFromListConfig, TableFieldDefinition, WithNamedLocation } from '@smartthings/cli-lib'
 
 
-export const tableFieldDefinitions = ['name', 'roomId', 'locationId' ]
-export const tableFieldDefinitionsWithLocationName = ['name', 'roomId', 'location', 'locationId' ]
+export const tableFieldDefinitions: TableFieldDefinition<Room>[] = ['name', 'roomId', 'locationId' ]
+export const tableFieldDefinitionsWithLocationName: TableFieldDefinition<Room & WithNamedLocation>[] = ['name', 'roomId', 'location', 'locationId' ]
 
 export async function getRoomsByLocation(client: SmartThingsClient, locationId?: string): Promise<(Room & WithNamedLocation)[]> {
 	let locations: LocationItem[] = []
@@ -32,7 +32,7 @@ export async function getRoomsByLocation(client: SmartThingsClient, locationId?:
 
 export async function chooseRoom(command: APICommand<typeof APICommand.flags>, locationId?: string, preselectedId?: string, autoChoose?: boolean): Promise<[string, string]> {
 	const rooms = await roomsUtil.getRoomsByLocation(command.client, locationId)
-	const config: SelectFromListConfig<Room> = {
+	const config: SelectFromListConfig<Room & WithNamedLocation> = {
 		itemName: 'room',
 		primaryKeyName: 'roomId',
 		sortKeyName: 'name',

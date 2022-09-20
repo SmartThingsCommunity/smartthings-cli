@@ -1,6 +1,17 @@
 import { Flags } from '@oclif/core'
+
 import { DevicePreference } from '@smartthings/core-sdk'
-import { APIOrganizationCommand, outputItemOrList, allOrganizationsFlags, forAllOrganizations, OutputItemOrListConfig } from '@smartthings/cli-lib'
+
+import {
+	APIOrganizationCommand,
+	outputItemOrList,
+	allOrganizationsFlags,
+	forAllOrganizations,
+	OutputItemOrListConfig,
+	TableFieldDefinition,
+	WithOrganization,
+} from '@smartthings/cli-lib'
+
 import { tableFieldDefinitions } from '../lib/commands/devicepreferences-util'
 
 
@@ -57,8 +68,9 @@ export default class DevicePreferencesCommand extends APIOrganizationCommand<typ
 	]
 
 	async run(): Promise<void> {
-		const listTableFieldDefinitions = ['preferenceId', 'title', 'name', 'description', 'required', 'preferenceType']
-		const config: OutputItemOrListConfig<DevicePreference> = {
+		const listTableFieldDefinitions: TableFieldDefinition<DevicePreference & WithOrganization>[] =
+			['preferenceId', 'title', 'name', 'description', 'required', 'preferenceType']
+		const config: OutputItemOrListConfig<DevicePreference, DevicePreference & WithOrganization> = {
 			itemName: 'device preference',
 			primaryKeyName: 'preferenceId',
 			sortKeyName: 'preferenceId',

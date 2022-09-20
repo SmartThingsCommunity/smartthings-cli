@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 
 import { InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
 
-import { selectFromList, APICommand, withLocations, SelectFromListConfig } from '@smartthings/cli-lib'
+import { selectFromList, APICommand, withLocations, SelectFromListConfig, WithNamedLocation } from '@smartthings/cli-lib'
 
 
 export default class InstalledAppDeleteCommand extends APICommand<typeof InstalledAppDeleteCommand.flags> {
@@ -28,7 +28,7 @@ export default class InstalledAppDeleteCommand extends APICommand<typeof Install
 	}]
 
 	async run(): Promise<void> {
-		const config: SelectFromListConfig<InstalledApp> = {
+		const config: SelectFromListConfig<InstalledApp & WithNamedLocation> = {
 			primaryKeyName: 'installedAppId',
 			sortKeyName: 'displayName',
 			listTableFieldDefinitions: ['displayName', 'installedAppType', 'installedAppStatus', 'installedAppId'],
@@ -41,7 +41,7 @@ export default class InstalledAppDeleteCommand extends APICommand<typeof Install
 			locationId: this.flags.location,
 		}
 
-		const id = await selectFromList<InstalledApp>(this, config, {
+		const id = await selectFromList(this, config, {
 			preselectedId: this.args.id,
 			listItems: async () => {
 				const apps = await this.client.installedApps.list(listOptions)

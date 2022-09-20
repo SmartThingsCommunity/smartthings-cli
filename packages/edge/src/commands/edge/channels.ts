@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 
 import { Channel, SubscriberType } from '@smartthings/core-sdk'
 
-import { allOrganizationsFlags, outputItemOrList, OutputItemOrListConfig } from '@smartthings/cli-lib'
+import { allOrganizationsFlags, outputItemOrList, OutputItemOrListConfig, WithOrganization } from '@smartthings/cli-lib'
 
 import { EdgeCommand } from '../../lib/edge-command'
 import { listChannels, listTableFieldDefinitions, tableFieldDefinitions } from '../../lib/commands/channels-util'
@@ -51,7 +51,7 @@ $ smartthings edge:channels 2
 $ smartthings edge:channels --subscriber-type HUB --subscriber-id <hub-id>`]
 
 	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<Channel> = {
+		const config: OutputItemOrListConfig<Channel & WithOrganization> = {
 			primaryKeyName: 'channelId',
 			sortKeyName: 'name',
 			listTableFieldDefinitions,
