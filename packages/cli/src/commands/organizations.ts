@@ -1,8 +1,8 @@
-import { APICommand, outputItemOrList, OutputItemOrListConfig } from '@smartthings/cli-lib'
+import { APICommand, outputItemOrList, OutputItemOrListConfig, TableFieldDefinition } from '@smartthings/cli-lib'
 import { OrganizationResponse } from '@smartthings/core-sdk'
 
 
-export const tableFieldDefinitions = [
+export const tableFieldDefinitions: TableFieldDefinition<OrganizationResponse>[] = [
 	'name', 'label', 'organizationId', 'developerGroupId', 'adminGroupId', 'warehouseGroupId',
 	{
 		prop: 'isDefaultUserOrg',

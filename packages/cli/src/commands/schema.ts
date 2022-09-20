@@ -26,7 +26,8 @@ export default class SchemaCommand extends APICommand<typeof SchemaCommand.flags
 		const config: OutputItemOrListConfig<SchemaApp> = {
 			tableFieldDefinitions: [
 				'appName', 'partnerName', 'endpointAppId', 'schemaType', 'hostingType',
-				'stClientId', 'oAuthAuthorizationUrl', 'oAuthTokenUrl', 'oAuthClientId',
+				// stClientId is missing from the docs
+				('stClientId' as keyof SchemaApp), 'oAuthAuthorizationUrl', 'oAuthTokenUrl', 'oAuthClientId',
 				'oAuthClientSecret', 'icon', 'icon2x', 'icon3x',
 				{ prop: 'lambdaArn', skipEmpty: true },
 				{ prop: 'lambdaArnAP', skipEmpty: true },

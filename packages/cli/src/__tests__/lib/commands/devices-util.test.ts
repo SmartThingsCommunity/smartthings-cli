@@ -306,7 +306,7 @@ describe('devices-util', () => {
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
 			expect(buildTableFromItemMock).toHaveBeenCalledWith(app,
-				['installedAppId', 'externalId', { prop: 'profile.id', label: 'Profile Id' }])
+				['installedAppId', 'externalId', { path: 'profile.id', label: 'Profile Id' }])
 		})
 
 		it('includes ble info', () => {

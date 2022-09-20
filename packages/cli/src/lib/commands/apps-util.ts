@@ -1,4 +1,4 @@
-import { AppListOptions, AppResponse, AppSettingsResponse, PagedApp, SmartThingsClient } from '@smartthings/core-sdk'
+import { AppListOptions, AppOAuthRequest, AppResponse, AppSettingsResponse, PagedApp, SmartThingsClient } from '@smartthings/core-sdk'
 
 import {
 	APICommand,
@@ -22,28 +22,28 @@ export const tableFieldDefinitions: TableFieldDefinition<AppResponse>[] = [
 	'description',
 	'singleInstance',
 	{ prop: 'classifications', include: app => !!app.classifications },
-	{ prop: 'installMetadata.certified', include: app => !!app.installMetadata?.certified },
-	{ prop: 'installMetadata.maxInstalls', include: app => !!app.installMetadata?.maxInstalls },
+	{ path: 'installMetadata.certified', include: app => !!app.installMetadata?.certified },
+	{ path: 'installMetadata.maxInstalls', include: app => !!app.installMetadata?.maxInstalls },
 	'appType',
-	{ prop: 'webhookSmartApp.signatureType', include: isWebhookSmartApp },
-	{ prop: 'webhookSmartApp.targetUrl', include: isWebhookSmartApp },
-	{ prop: 'webhookSmartApp.targetStatus', include: isWebhookSmartApp },
+	{ path: 'webhookSmartApp.signatureType', include: isWebhookSmartApp },
+	{ path: 'webhookSmartApp.targetUrl', include: isWebhookSmartApp },
+	{ path: 'webhookSmartApp.targetStatus', include: isWebhookSmartApp },
 	{
-		prop: 'webhookSmartApp.publicKey',
+		label: 'Public Key',
 		include: app => !!app.webhookSmartApp?.publicKey,
 		value: app => app.webhookSmartApp?.publicKey?.replace(/\r\n/g, '\n') ?? '',
 	},
 	{
-		include: app => !!app.lambdaSmartApp?.functions,
 		label: 'Lambda Function',
+		include: app => !!app.lambdaSmartApp?.functions,
 		value: app => app.lambdaSmartApp?.functions?.join('\n') ?? '',
 	},
-	{ prop: 'apiOnly.subscription.targetUrl', include: hasSubscription },
-	{ prop: 'apiOnly.subscription.targetStatus', include: hasSubscription },
-	{ prop: 'installMetadata.certified', include: app => app.installMetadata?.certified !== undefined },
+	{ path: 'apiOnly.subscription.targetUrl', include: hasSubscription },
+	{ path: 'apiOnly.subscription.targetStatus', include: hasSubscription },
+	{ path: 'installMetadata.certified', include: app => app.installMetadata?.certified !== undefined },
 ]
 
-export const oauthTableFieldDefinitions = ['clientName', 'scope', 'redirectUris']
+export const oauthTableFieldDefinitions: TableFieldDefinition<AppOAuthRequest>[] = ['clientName', 'scope', 'redirectUris']
 
 export const chooseApp =  async (command: APICommand<typeof APICommand.flags>, appFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> => {
 	const opts = chooseOptionsWithDefaults(options)

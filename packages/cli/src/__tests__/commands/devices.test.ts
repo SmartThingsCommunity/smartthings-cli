@@ -121,7 +121,7 @@ describe('DevicesCommand', () => {
 			expect(outputItemOrListMock).toHaveBeenCalledWith(
 				expect.any(DevicesCommand),
 				expect.objectContaining({
-					listTableFieldDefinitions: ['label', 'name', 'type', { label: 'Health', prop: 'healthState.state' }, 'deviceId'],
+					listTableFieldDefinitions: ['label', 'name', 'type', { label: 'Health', path: 'healthState.state' }, 'deviceId'],
 				}),
 				undefined,
 				expect.any(Function),

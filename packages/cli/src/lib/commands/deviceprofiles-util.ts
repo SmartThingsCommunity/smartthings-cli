@@ -16,6 +16,7 @@ import {
 	stringTranslateToId,
 	summarizedText,
 	TableGenerator,
+	WithLocales,
 } from '@smartthings/cli-lib'
 
 
@@ -87,7 +88,7 @@ export const buildTableOutput = (tableGenerator: TableGenerator, data: DevicePro
 	if (options?.includePreferences) {
 		const preferencesInfo = data.preferences?.length
 			? 'Device Preferences\n' + tableGenerator.buildTableFromList(data.preferences,
-				['preferenceId', 'title', 'preferenceType', 'definition.default'])
+				['preferenceId', 'title', 'preferenceType', { path: 'definition.default' }])
 			: 'No preferences'
 		return `Basic Information\n${table.toString()}\n\n` +
 			`${preferencesInfo}\n\n` +
@@ -99,7 +100,7 @@ export const buildTableOutput = (tableGenerator: TableGenerator, data: DevicePro
 export const chooseDeviceProfile = async (command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>,
 		deviceProfileFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> => {
 	const opts = chooseOptionsWithDefaults(options)
-	const config: SelectFromListConfig<DeviceProfile> = {
+	const config: SelectFromListConfig<DeviceProfile & WithLocales> = {
 		itemName: 'device profile',
 		primaryKeyName: 'id',
 		sortKeyName: 'name',
@@ -109,10 +110,10 @@ export const chooseDeviceProfile = async (command: APIOrganizationCommand<typeof
 		config.listTableFieldDefinitions.splice(3, 0, 'locales')
 	}
 
-	const listItems = async (): Promise<DeviceProfile[]> => {
+	const listItems = async (): Promise<(DeviceProfile & WithLocales)[]> => {
 		const deviceProfiles = await command.client.deviceProfiles.list()
 		if (opts.verbose) {
-			const ops = deviceProfiles.map(async (it) => {
+			const ops = deviceProfiles.map(async it => {
 				try {
 					return await command.client.deviceProfiles.listLocales(it.id)
 				} catch (error) {

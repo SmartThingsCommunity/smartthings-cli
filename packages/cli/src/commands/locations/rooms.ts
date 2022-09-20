@@ -32,7 +32,7 @@ export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> 
 	static aliases = ['rooms']
 
 	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<Room, Room & WithNamedLocation> = {
+		const config: OutputItemOrListConfig<Room & WithNamedLocation> = {
 			primaryKeyName: 'roomId',
 			sortKeyName: 'name',
 			listTableFieldDefinitions: tableFieldDefinitions,

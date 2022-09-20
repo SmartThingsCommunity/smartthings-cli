@@ -91,3 +91,7 @@ export async function forAllNamespaces<T>(
 	const nestedItems = await Promise.all(namespaces.map(async (namespace) => query(namespace)))
 	return nestedItems.flat()
 }
+
+export interface WithLocales {
+	locales?: string
+}

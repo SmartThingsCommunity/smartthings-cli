@@ -1,6 +1,6 @@
 import * as ioUtil from '../io-util'
 import { calculateOutputFormat, itemTableFormatter, jsonFormatter, listTableFormatter, sort, writeOutput, yamlFormatter } from '../output'
-import { DefaultTableGenerator, TableGenerator } from '../table-generator'
+import { DefaultTableGenerator, TableFieldDefinition, TableGenerator } from '../table-generator'
 
 import { buildMockCommand } from './test-lib/mock-command'
 import { SimpleType } from './test-lib/simple-type'
@@ -92,7 +92,7 @@ describe('itemTableFormatter', () => {
 			buildTableFromList: jest.fn(),
 		}
 
-		const fieldDefinitions = ['str', 'num']
+		const fieldDefinitions: TableFieldDefinition<SimpleType>[] = ['str', 'num']
 		const formatter = itemTableFormatter(mockTableGenerator, fieldDefinitions)
 
 		const expected = 'expected result'
@@ -109,7 +109,7 @@ describe('itemTableFormatter', () => {
 })
 
 describe('listTableFormatter', () => {
-	const fieldDefinitions = ['str', 'num']
+	const fieldDefinitions: TableFieldDefinition<SimpleType>[] = ['str', 'num']
 	const expected = 'expected result'
 
 	const list: SimpleType[] = [{ str: 'string1', num: 4 }, { str: 'string2', num: 5 }, { str: 'string3', num: 6 }]

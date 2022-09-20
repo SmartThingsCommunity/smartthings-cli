@@ -11,6 +11,7 @@ import {
 	outputItemOrList,
 	OutputItemOrListConfig,
 	withLocationsAndRooms,
+	WithNamedRoom,
 } from '@smartthings/cli-lib'
 
 import { buildTableOutput } from '../lib/commands/devices-util'
@@ -46,7 +47,7 @@ export default class VirtualDevicesCommand extends APICommand<typeof VirtualDevi
 	}]
 
 	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<Device> = {
+		const config: OutputItemOrListConfig<Device & WithNamedRoom> = {
 			primaryKeyName: 'deviceId',
 			sortKeyName: 'label',
 			listTableFieldDefinitions: ['label', 'deviceId'],

@@ -1,14 +1,17 @@
 import { Flags } from '@oclif/core'
 import inquirer from 'inquirer'
 
-import { inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
+import { inputAndOutputItem, TableFieldDefinition, userInputProcessor } from '@smartthings/cli-lib'
 
 import { chooseChannel } from '../../../../lib/commands/channels-util'
 import { EdgeCommand } from '../../../../lib/edge-command'
 import { CreateInvitation, Invitation } from '../../../../lib/endpoints/invites'
 
 
-const tableFieldDefinitions = ['id', 'metadata.name', 'profileId', 'expiration', 'acceptUrl']
+const tableFieldDefinitions: TableFieldDefinition<Invitation>[] = [
+	'id',
+	{ path: 'metadata.name' },
+	'profileId', 'expiration', 'acceptUrl']
 
 const defaultInvitationProfileId = '61a79569-e8fd-4a4d-9b9c-a4a55ccdd15e'
 

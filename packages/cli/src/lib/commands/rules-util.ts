@@ -69,8 +69,8 @@ export const buildExecuteResponseTableOutput = (tableGenerator: TableGenerator, 
 	const actionsInfoTableDefinitions: TableFieldDefinition<ActionExecutionResult>[] = [
 		'actionId',
 		{ label: 'Result', value: calculateResult },
-		'location.locationId',
-		'command.deviceId',
+		{ path: 'location.locationId' },
+		{ path: 'command.deviceId' },
 	]
 	const actionsInfo = executeResponse.actions
 		? tableGenerator.buildTableFromList(executeResponse.actions, actionsInfoTableDefinitions)

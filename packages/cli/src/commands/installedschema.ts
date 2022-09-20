@@ -35,7 +35,7 @@ export default class InstalledSchemaAppsCommand extends APICommand<typeof Instal
 	}]
 
 	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<InstalledSchemaApp, InstalledSchemaApp & WithNamedLocation> = {
+		const config: OutputItemOrListConfig<InstalledSchemaApp & WithNamedLocation> = {
 			primaryKeyName: 'isaId',
 			sortKeyName: 'appName',
 			listTableFieldDefinitions,

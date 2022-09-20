@@ -7,49 +7,11 @@ import { Logger } from '@smartthings/core-sdk'
 
 export const summarizedText = '(Information is summarized, for full details use YAML, -y, or JSON flag, -j.)'
 
-/**
- * Used to define a field in an output table.
- *
- * If the name of the property can programmatically be converted to the name
- * of the header, a simple string can be used. For example, if the name of
- * the field is "maxValue", using the string "maxValue" here will result
- * in a heading name of "Max Value" and data is retrieved simply from the
- * "maxValue" property.
- *
- * If more control is needed, a more complex definition can be included.
- *
- * Leaving out both label and value is the equivalent of using a simple string
- * for the definition.
- */
-export type TableFieldDefinition<T extends object> = string | {
+interface TableFieldDefinitionBase<T extends object> {
 	/**
-	 * The name of the property from which to get data. This reference a nested
-	 * property if desired.
-	 *
-	 * The lodash.at function is used to access the property but any path
-	 * used should return a single value.
-	 *
-	 * https://lodash.com/docs#at
-	 *
-	 * The default label is also derived from this field when the `label`
-	 * property is not included. Only the final property in the path is used.
-	 */
-	prop?: string
-
-	/**
-	 * If included, the header (column or row depending on the type of table),
-	 * will come from label. If not included, it will be the property
-	 * name with the first letter made uppercase and spaces added before other
-	 * uppercase letters.
+	 * If included, overrides the default label for the column.
 	 */
 	label?: string
-
-	/**
-	 * If included, the displayValue function will be called to get the value
-	 * to be displayed. If not, the property of the given name, simply coerced
-	 * to a string, will be used.
-	 */
-	value?: (i: T) => string | undefined
 
 	/**
 	 * Use this function if you want to optionally include this field.
@@ -65,10 +27,86 @@ export type TableFieldDefinition<T extends object> = string | {
 	/**
 	 * If included and set to true, skip the row if it the value is empty.
 	 * This is a shortcut for an `include` method that would just do that
-	 * check.
+	 * check. Like include, this is only valid for single-item tables.
 	 */
 	skipEmpty?: boolean
 }
+
+/**
+ * Simplest table field definition that specifies a property name as the definition.
+ *
+ * The label for the field will be derived from the name of the property.
+ */
+export type SimpleTableFieldDefinition<T extends object> = keyof T
+
+/**
+ * A `TableFieldDefinition` where the property is specified as a direct property
+ * of the input type.
+ *
+ * The default label (when not overridden with the `label` option) is the string version of `prop`
+ * with the first letter made uppercase and spaces added before other uppercase letters.
+ */
+export interface PropertyTableFieldDefinition<T extends object> extends TableFieldDefinitionBase<T> {
+	/**
+	 * The name of the property from which to get data.
+	 */
+	prop: keyof T
+}
+
+/**
+ * A `TableFieldDefinition` where the property is specified as a string given to the `lodash.at`
+ * method.
+ *
+ * The default label is also derived from the final property of the path when the `label` option is
+ * not included.
+ */
+export interface PathTableFieldDefinition<T extends object> extends TableFieldDefinitionBase<T> {
+	/**
+	 * The lodash path of property from which to get data. This is used to reference a nested
+	 * property. If you want to reference a non-nested property use `PropertyTableFieldDefinition`
+	 * or even `SimpleTableFieldDDefinition` instead.
+	 *
+	 * The lodash.at function is used to access the property but any path
+	 * used should return a single value.
+	 *
+	 * https://lodash.com/docs#at
+	 */
+	path: `${Extract<keyof T, string>}.${string}`
+}
+
+/**
+ * If a simple property is not good enough to specify the value, you can use this
+ * `TableFieldDefinition` to specify a function which calculates the value of the field. Note
+ * that for this type of `TableFieldDefinition`, the `label` option is required.
+ */
+export interface ValueTableFieldDefinition<T extends object> extends TableFieldDefinitionBase<T> {
+	/**
+	 * If included, overrides the default label for the column.
+	 */
+	label: string
+
+	/**
+	 * If included, the displayValue function will be called to get the value
+	 * to be displayed. If not, the property of the given name, coerced
+	 * to a string, will be used.
+	 */
+	value: (i: T) => string | undefined
+}
+
+/**
+ * Used to define a field in an output table.
+ *
+ * If the name of the property can programmatically be converted to the name
+ * of the header, a simple string can be used. For example, if the name of
+ * the field is "maxValue", using the string "maxValue" here will result
+ * in a heading name of "Max Value" and data is retrieved from the "maxValue" property.
+ *
+ * If more control is needed, a more complex definition can be included.
+ *
+ * Leaving out both label and value is the equivalent of using a simple string
+ * for the definition.
+ */
+export type TableFieldDefinition<T extends object> = SimpleTableFieldDefinition<T> | PropertyTableFieldDefinition<T> | PathTableFieldDefinition<T> | ValueTableFieldDefinition<T>
 
 export interface TableGenerator {
 	newOutputTable(options?: Partial<TableOptions>): Table
@@ -200,45 +238,46 @@ export class DefaultTableGenerator implements TableGenerator {
 	}
 
 	private getLabelFor<T extends object>(definition: TableFieldDefinition<T>): string {
-		if (typeof definition === 'string') {
-			return this.convertToLabel(definition)
+		if (typeof definition !== 'object') {
+			return this.convertToLabel(definition.toString())
 		}
 
 		if (definition.label) {
 			return definition.label
 		}
 
-		if (!definition.prop) {
-			throw Error('both label and value are required if prop is not specified')
+		if ('value' in definition) {
+			return definition.label
 		}
 
-		return this.convertToLabel(definition.prop)
+		if ('prop' in definition) {
+			return this.convertToLabel(definition.prop.toString())
+		}
+
+		return this.convertToLabel(definition.path)
 	}
 
 	private getDisplayValueFor<T extends object>(item: T, definition: TableFieldDefinition<T>): string | undefined {
-		if (!(typeof definition === 'string') && definition.value) {
+		if (typeof definition === 'object' && 'value' in definition) {
 			return definition.value(item)
 		}
 
-		const propertyName = typeof definition === 'string' ? definition : definition.prop
-		if (!propertyName) {
-			throw Error('both label and value are required if prop is not specified')
+		if (typeof definition !== 'object' || 'prop' in definition) {
+			const propertyName = typeof definition !== 'object' ? definition : definition.prop
+			return stringFromUnknown(item[propertyName])
 		}
 
-		// No types satisfy the lodash.at documented (Object, string|string[])
-		// Here we are passing (Object, string)
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const matches = at(item, propertyName)
+		// The DefinitelyTyped type for the second parameter doesn't match what lodash actually
+		// takes so we cast it to the DefinitelyTyped type.
+		const matches = at(item, definition.path as unknown as keyof T)
 		if (matches.length === 0) {
-			this.logger.debug(`did not find match for ${propertyName} in ${JSON.stringify(item)}`)
+			this.logger.debug(`did not find match for ${definition.path} in ${JSON.stringify(item)}`)
 			return ''
 		}
 		if (matches.length > 1) {
-			this.logger.warn(`found more than one match for ${propertyName} in ${JSON.stringify(item)}`)
+			this.logger.warn(`found more than one match for ${definition.path} in ${JSON.stringify(item)}`)
 		}
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		return matches.map((value: any ) => value ? value.toString() : '').join(', ')
+		return matches.map(value => stringFromUnknown(value)).join(', ')
 	}
 
 	newOutputTable(options?: Partial<TableOptions>): Table {
@@ -253,11 +292,11 @@ export class DefaultTableGenerator implements TableGenerator {
 	buildTableFromItem<T extends object>(item: T, definitions: TableFieldDefinition<T>[]): string {
 		const table = this.newOutputTable()
 		for (const definition of definitions) {
-			if (typeof definition === 'string'
+			if (typeof definition !== 'object'
 					|| definition.include === undefined
 					|| definition.include(item)) {
 				const value = this.getDisplayValueFor(item, definition)
-				if (typeof definition === 'string'
+				if (typeof definition !== 'object'
 						|| !definition.skipEmpty
 						|| value) {
 					table.push([this.getLabelFor(definition), value])
