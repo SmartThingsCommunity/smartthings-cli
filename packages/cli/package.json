@@ -63,6 +63,7 @@
 		"targets": [
 			"node16-macos-x64",
 			"node16-macos-arm64",
+			"node16-alpine-x64",
 			"node16-linux-x64",
 			"node16-linuxstatic-x64",
 			"node16-linux-arm64",
