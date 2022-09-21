@@ -2,8 +2,7 @@
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"outDir": "./lib",
-		"rootDir": "./src",
-		"esModuleInterop": true,
+		"rootDir": "./src"
 	},
 	"references": [
 		{
@@ -13,10 +12,6 @@
 		{
 			"path": "../testlib",
 			"name": "@smartthings/cli-testlib"
-		},
-		{
-			"path": "../edge",
-			"name": "@smartthings/plugin-cli-edge"
 		}
 	],
 	"exclude": [

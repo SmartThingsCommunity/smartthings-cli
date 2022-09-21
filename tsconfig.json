@@ -18,6 +18,10 @@
 			"name": "@smartthings/cli"
 		},
 		{
+			"path": "packages/edge",
+			"name": "@smartthings/plugin-cli-edge"
+		},
+		{
 			"path": "packages/lib",
 			"name": "@smartthings/cli-lib"
 		},
