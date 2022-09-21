@@ -3,6 +3,7 @@
   "tag": "beta",
   "initialVersions": {
     "@smartthings/cli": "1.0.0-beta.0",
+    "@smartthings/plugin-cli-edge": "2.0.0-beta.0",
     "@smartthings/cli-lib": "1.0.0-beta.0",
     "@smartthings/cli-testlib": "1.0.0-beta.0"
   },

@@ -13,6 +13,7 @@ module.exports = {
 	],
 	modulePathIgnorePatterns: [
 		'<rootDir>/dist',
+		'<rootDir>/lib',
 	],
 	clearMocks: true,
 	reporters: [
@@ -22,6 +23,7 @@ module.exports = {
 	globals: {
 		// TODO: remove when https://github.com/kulshekhar/ts-jest/issues/1967 is resolved
 		// related flag in tsconfig as well
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'ts-jest': {
 			isolatedModules: true,
 		},

@@ -1,0 +1,94 @@
+{
+	"name": "@smartthings/plugin-cli-edge",
+	"version": "2.0.0-beta.0",
+	"description": "Edge-related SmartThings CLI commands",
+	"author": "SmartThings, Inc.",
+	"bugs": {
+		"url": "https://github.com/SmartThingsCommunity/smartthings-cli/issues"
+	},
+	"homepage": "https://github.com/SmartThingsCommunity/smartthings-cli",
+	"license": "Apache-2.0",
+	"main": "lib/index",
+	"types": "lib/index",
+	"engines": {
+		"node": ">=16.14.2 <17",
+		"npm": ">=8"
+	},
+	"files": [
+		"lib",
+		"README.md",
+		"oclif.manifest.json",
+		"!*/__tests__"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/SmartThingsCommunity/smartthings-cli.git",
+		"directory": "packages/edge"
+	},
+	"keywords": [
+		"oclif-plugin"
+	],
+	"oclif": {
+		"commands": "./lib/commands",
+		"bin": "smartthings",
+		"devPlugins": [
+			"@oclif/plugin-help"
+		]
+	},
+	"dependencies": {
+		"@log4js-node/log4js-api": "^1.0.2",
+		"@oclif/core": "^1.13.10",
+		"@smartthings/cli-lib": "^1.0.0-beta.16",
+		"@smartthings/core-sdk": "^5.1.1",
+		"axios": "^0.21.4",
+		"inquirer": "^8.2.4",
+		"js-yaml": "^4.1.0",
+		"jszip": "^3.9.1",
+		"picomatch": "^2.3.1",
+		"tslib": "^2.3.1"
+	},
+	"devDependencies": {
+		"@smartthings/cli-testlib": "^1.0.0-beta.10",
+		"@types/cli-table": "^0.3.0",
+		"@types/eventsource": "^1.1.8",
+		"@types/inquirer": "^8.2.1",
+		"@types/jest": "^28.1.5",
+		"@types/js-yaml": "^4.0.5",
+		"@types/node": "^16.11.44",
+		"@types/picomatch": "^2.3.0",
+		"@typescript-eslint/eslint-plugin": "^5.30.6",
+		"@typescript-eslint/parser": "^5.30.6",
+		"eslint": "^8.19.0",
+		"eslint-plugin-eslint-comments": "^3.2.0",
+		"eslint-plugin-import": "^2.26.0",
+		"eslint-plugin-jest": "^26.6.0",
+		"eventsource": "^2.0.0",
+		"jest": "^28.1.3",
+		"jest-extended": "^0.11.5",
+		"oclif": "^3.1.2",
+		"rimraf": "^3.0.2",
+		"strip-ansi": "^6.0.1",
+		"ts-jest": "^28.0.6",
+		"ts-node": "^10.9.1",
+		"typescript": "^4.7.4"
+	},
+	"scripts": {
+		"lint": "eslint --ext .ts src",
+		"format": "eslint --ext .ts src --fix",
+		"clean": "rimraf lib && rimraf tsconfig.tsbuildinfo",
+		"full-clean": "rimraf node_modules && rimraf coverage && npm run clean",
+		"compile": "tsc -b",
+		"watch": "tsc -b -w",
+		"readme": "oclif readme",
+		"build": "npm run clean && npm run compile && npm run readme",
+		"test": "jest",
+		"test-watch": "jest --watch",
+		"test-coverage": "jest --coverage",
+		"postpack": "rimraf oclif.manifest.json",
+		"prepack": "tsc -b && oclif manifest && oclif readme",
+		"version": "oclif readme && git add README.md"
+	}
+}
