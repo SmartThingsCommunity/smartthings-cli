@@ -31,9 +31,23 @@ for (const pkg of pkgs) {
 	await mkdir(newDir, { recursive: true })
 	await rename(pkgName, newName)
 
-	const archiveName = path.join(newDir, `smartthings-${platform}-${arch}.tar.gz`)
+	let archiveExt
+	/** @type {archiver.Format} */
+	let format
+	let config
+	if (platform !== 'win') {
+		archiveExt = '.tar.gz'
+		format = 'tar'
+		config = { gzip: true }
+	} else {
+		archiveExt = '.zip'
+		format = 'zip'
+		config = {}
+	}
 
-	const archive = archiver('tar', { gzip: true })
+	const archiveName = path.join(newDir, `smartthings-${platform}-${arch}${archiveExt}`)
+
+	const archive = archiver(format, config)
 	archive.append(fs.createReadStream(newName), { name: binaryName, mode: 0o755 })
 	archive.pipe(fs.createWriteStream(archiveName))
 
