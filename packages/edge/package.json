@@ -40,7 +40,7 @@
 	},
 	"dependencies": {
 		"@log4js-node/log4js-api": "^1.0.2",
-		"@oclif/core": "^1.13.10",
+		"@oclif/core": "^1.16.3",
 		"@smartthings/cli-lib": "^1.0.0-beta.16",
 		"@smartthings/core-sdk": "^5.1.1",
 		"axios": "^0.21.4",
@@ -71,9 +71,7 @@
 		"oclif": "^3.1.2",
 		"rimraf": "^3.0.2",
 		"strip-ansi": "^6.0.1",
-		"ts-jest": "^28.0.6",
-		"ts-node": "^10.9.1",
-		"typescript": "^4.7.4"
+		"ts-jest": "^28.0.6"
 	},
 	"scripts": {
 		"lint": "eslint --ext .ts src",

@@ -35,7 +35,7 @@ export const withLocations = async <T>(client: SmartThingsClient, list: (T & Wit
 	return list.map(item => withLocation(item))
 }
 
-export const withLocation = async <T>(client: SmartThingsClient, item: T): Promise<T & WithNamedLocation> =>
+export const withLocation = async <T>(client: SmartThingsClient, item: T & WithLocation): Promise<T & WithNamedLocation> =>
 	(await withLocations(client, [item]))[0]
 
 const notEmpty = <T>(value: T | null | undefined): value is T => {
