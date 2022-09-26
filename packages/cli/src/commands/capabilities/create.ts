@@ -384,10 +384,6 @@ export default class CapabilitiesCreateCommand extends APIOrganizationCommand<ty
 			}
 		} while (argumentName)
 
-		if (command.arguments?.length === 0) {
-			delete command.arguments
-		}
-
 		this.addCommand(capability, name, command)
 	}
 
