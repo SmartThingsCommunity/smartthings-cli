@@ -101,7 +101,9 @@
 		"oclif": "^3.1.2",
 		"pkg": "^5.8.0",
 		"rimraf": "^3.0.2",
-		"ts-jest": "^28.0.6"
+		"ts-jest": "^28.0.6",
+		"ts-node": "^10.9.1",
+		"typescript": "^4.8.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext ts src",
