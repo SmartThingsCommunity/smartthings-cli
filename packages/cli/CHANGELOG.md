@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.0.0-beta.20
+
+### Patch Changes
+
+- [#417](https://github.com/SmartThingsCommunity/smartthings-cli/pull/417) [`5a90f2e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/5a90f2e36ddca09f962d546c4dc8fe474b844549) Thanks [@rossiam](https://github.com/rossiam)! - fix issue with creating capabilities with commands with no arguments
+
+- [#414](https://github.com/SmartThingsCommunity/smartthings-cli/pull/414) [`206c4a1`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/206c4a1070ce91e97e421c57d759c1d03c6adf3b) Thanks [@john-u](https://github.com/john-u)! - switch Windows archive format back to zip
+
+- Updated dependencies [[`ec1744e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/ec1744e21b973f9b10a929e67d9dbd4c3e8c5e5f)]:
+  - @smartthings/plugin-cli-edge@2.0.0-beta.2
+
 ## 1.0.0-beta.19
 
 ### Patch Changes
