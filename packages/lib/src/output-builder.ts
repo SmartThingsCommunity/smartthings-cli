@@ -6,7 +6,7 @@ import { calculateOutputFormat, jsonFormatter, OutputFormatter, yamlFormatter } 
 import { SmartThingsCommandInterface } from './smartthings-command'
 
 
-export function buildOutputFormatter<T>(command: SmartThingsCommandInterface,
+export function buildOutputFormatter<T extends object>(command: SmartThingsCommandInterface,
 		inputFormat?: IOFormat, commonOutputFormatter?: OutputFormatter<T>): OutputFormatter<T> {
 	const outputFormat = calculateOutputFormat(command, inputFormat)
 

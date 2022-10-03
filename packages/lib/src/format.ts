@@ -6,23 +6,23 @@ import { SmartThingsCommandInterface } from './smartthings-command'
 import { TableFieldDefinition } from './table-generator'
 
 
-export interface TableCommonOutputProducer<O> {
+export interface TableCommonOutputProducer<O extends object> {
 	tableFieldDefinitions: TableFieldDefinition<O>[]
 }
-export interface CustomCommonOutputProducer<O> {
+export interface CustomCommonOutputProducer<O extends object> {
 	buildTableOutput(data: O): string
 }
-export type CommonOutputProducer<O> = TableCommonOutputProducer<O> | CustomCommonOutputProducer<O>
+export type CommonOutputProducer<O extends object> = TableCommonOutputProducer<O> | CustomCommonOutputProducer<O>
 
-export interface TableCommonListOutputProducer<L> {
+export interface TableCommonListOutputProducer<L extends object> {
 	listTableFieldDefinitions: TableFieldDefinition<L>[]
 }
-export interface CustomCommonListOutputProducer<L> {
+export interface CustomCommonListOutputProducer<L extends object> {
 	buildListTableOutput(data: L[]): string
 }
 export type CommonListOutputProducer<L extends object> = TableCommonListOutputProducer<L> | CustomCommonListOutputProducer<L> | Sorting<L>
 
-export type FormatAndWriteItemConfig<O> = CommonOutputProducer<O>
+export type FormatAndWriteItemConfig<O extends object> = CommonOutputProducer<O>
 /**
  * Format and output the given item.
  *
@@ -34,7 +34,7 @@ export type FormatAndWriteItemConfig<O> = CommonOutputProducer<O>
  * @param defaultIOFormat The default IOFormat to use. This should be used when a command also takes
  *   input so the output can default to the input format.
  */
-export async function formatAndWriteItem<O>(command: SmartThingsCommandInterface,
+export async function formatAndWriteItem<O extends object>(command: SmartThingsCommandInterface,
 		config: FormatAndWriteItemConfig<O>, item: O, defaultIOFormat?: IOFormat): Promise<void> {
 	const commonFormatter = 'buildTableOutput' in config
 		? (data: O) => config.buildTableOutput(data)

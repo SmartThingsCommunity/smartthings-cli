@@ -1,4 +1,4 @@
-import { AppResponse, AppSettingsResponse, PagedApp } from '@smartthings/core-sdk'
+import { AppListOptions, AppResponse, AppSettingsResponse, PagedApp, SmartThingsClient } from '@smartthings/core-sdk'
 
 import {
 	APICommand,
@@ -45,7 +45,7 @@ export const tableFieldDefinitions: TableFieldDefinition<AppResponse>[] = [
 
 export const oauthTableFieldDefinitions = ['clientName', 'scope', 'redirectUris']
 
-export async function chooseApp(command: APICommand<typeof APICommand.flags>, appFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
+export const chooseApp =  async (command: APICommand<typeof APICommand.flags>, appFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> => {
 	const opts = chooseOptionsWithDefaults(options)
 	const config: SelectFromListConfig<PagedApp> = {
 		itemName: 'app',
@@ -59,7 +59,7 @@ export async function chooseApp(command: APICommand<typeof APICommand.flags>, ap
 	return selectFromList(command, config, { preselectedId, listItems })
 }
 
-export function buildTableOutput(tableGenerator: TableGenerator, appSettings: AppSettingsResponse): string {
+export const buildTableOutput = (tableGenerator: TableGenerator, appSettings: AppSettingsResponse): string => {
 	if (!appSettings.settings || Object.keys(appSettings.settings).length === 0) {
 		return 'No application settings.'
 	}
@@ -69,4 +69,19 @@ export function buildTableOutput(tableGenerator: TableGenerator, appSettings: Ap
 		table.push([key, appSettings.settings[key]])
 	}
 	return table.toString()
+}
+
+export const verboseApps = async (client: SmartThingsClient, listOptions: AppListOptions): Promise<AppResponse[]> => {
+	const apps = await client.apps.list(listOptions)
+	return Promise.all(apps.map(app => client.apps.get(app.appId)))
+}
+
+export const shortARNorURL = (app: PagedApp & Partial<AppResponse>): string => {
+	const uri = (app.webhookSmartApp
+		? app.webhookSmartApp.targetUrl
+		: (app.lambdaSmartApp
+			? (app.lambdaSmartApp.functions?.length ? app.lambdaSmartApp.functions[0] : '')
+			: (app.apiOnly?.subscription?.targetUrl))) ?? ''
+
+	return uri.length < 96 ? uri : uri.slice(0, 95) + '...'
 }

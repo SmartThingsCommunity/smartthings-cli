@@ -21,7 +21,7 @@ export const summarizedText = '(Information is summarized, for full details use 
  * Leaving out both label and value is the equivalent of using a simple string
  * for the definition.
  */
-export type TableFieldDefinition<T> = string | {
+export type TableFieldDefinition<T extends object> = string | {
 	/**
 	 * The name of the property from which to get data. This reference a nested
 	 * property if desired.
@@ -78,14 +78,14 @@ export interface TableGenerator {
 	 * will have two columns. The first displays the label for each property
 	 * and the second the associated value.
 	 */
-	buildTableFromItem<T>(item: T, tableFieldDefinitions: TableFieldDefinition<T>[]): string
+	buildTableFromItem<T extends object>(item: T, tableFieldDefinitions: TableFieldDefinition<T>[]): string
 
 	/**
 	 * Build a table for a list of items. The first row will be the header row,
 	 * displaying labels for all the tableFieldDefinitions and there will be
 	 * one row for each item in the items list displaying the associated values.
 	 */
-	buildTableFromList<T>(items: T[], tableFieldDefinitions: TableFieldDefinition<T>[]): string
+	buildTableFromList<T extends object>(items: T[], tableFieldDefinitions: TableFieldDefinition<T>[]): string
 }
 
 export interface TableOptions {
@@ -199,7 +199,7 @@ export class DefaultTableGenerator implements TableGenerator {
 			.replace(/^Is /, '')
 	}
 
-	private getLabelFor<T>(definition: TableFieldDefinition<T>): string {
+	private getLabelFor<T extends object>(definition: TableFieldDefinition<T>): string {
 		if (typeof definition === 'string') {
 			return this.convertToLabel(definition)
 		}
@@ -215,7 +215,7 @@ export class DefaultTableGenerator implements TableGenerator {
 		return this.convertToLabel(definition.prop)
 	}
 
-	private getDisplayValueFor<T>(item: T, definition: TableFieldDefinition<T>): string | undefined {
+	private getDisplayValueFor<T extends object>(item: T, definition: TableFieldDefinition<T>): string | undefined {
 		if (!(typeof definition === 'string') && definition.value) {
 			return definition.value(item)
 		}
@@ -250,7 +250,7 @@ export class DefaultTableGenerator implements TableGenerator {
 		return new TableAdapter(configuredOptions)
 	}
 
-	buildTableFromItem<T>(item: T, definitions: TableFieldDefinition<T>[]): string {
+	buildTableFromItem<T extends object>(item: T, definitions: TableFieldDefinition<T>[]): string {
 		const table = this.newOutputTable()
 		for (const definition of definitions) {
 			if (typeof definition === 'string'
@@ -267,7 +267,7 @@ export class DefaultTableGenerator implements TableGenerator {
 		return table.toString()
 	}
 
-	buildTableFromList<T>(items: T[], definitions: TableFieldDefinition<T>[]): string {
+	buildTableFromList<T extends object>(items: T[], definitions: TableFieldDefinition<T>[]): string {
 		const headingLabels = definitions.map(def => this.getLabelFor(def))
 		const table = this.newOutputTable({ isList: true, head: headingLabels })
 		for (const item of items) {

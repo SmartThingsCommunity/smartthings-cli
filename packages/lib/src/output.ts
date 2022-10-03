@@ -35,22 +35,22 @@ export function calculateOutputFormat(command: SmartThingsCommandInterface, defa
 	return stdoutIsTTY() ? IOFormat.COMMON : IOFormat.JSON
 }
 
-export type OutputFormatter<T> = (data: T) => string
+export type OutputFormatter<T extends object> = (data: T) => string
 
-export function jsonFormatter<T>(indent: number): OutputFormatter<T> {
+export function jsonFormatter<T extends object>(indent: number): OutputFormatter<T> {
 	return (data: T) => JSON.stringify(data, null, indent)
 }
 
-export function yamlFormatter<T>(indent: number): OutputFormatter<T> {
+export function yamlFormatter<T extends object>(indent: number): OutputFormatter<T> {
 	return (data: T) => yaml.dump(data, { indent })
 }
 
-export function itemTableFormatter<T>(tableGenerator: TableGenerator,
+export function itemTableFormatter<T extends object>(tableGenerator: TableGenerator,
 		fieldDefinitions: TableFieldDefinition<T>[]): OutputFormatter<T> {
 	return (item: T) => tableGenerator.buildTableFromItem(item, fieldDefinitions)
 }
 
-export function listTableFormatter<T>(tableGenerator: TableGenerator,
+export function listTableFormatter<T extends object>(tableGenerator: TableGenerator,
 		fieldDefinitions: TableFieldDefinition<T>[], includeIndex = false): OutputFormatter<T[]> {
 	let count = 0
 	const tfd = includeIndex ? [{

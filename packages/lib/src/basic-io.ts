@@ -56,7 +56,7 @@ export interface Naming {
 	pluralItemName?: string
 }
 
-export async function inputItem<I>(command: SmartThingsCommandInterface,
+export async function inputItem<I extends object>(command: SmartThingsCommandInterface,
 		...alternateInputProcessors: InputProcessor<I>[]): Promise<[I, IOFormat]> {
 	const inputProcessor = buildInputProcessor<I>(command, ...alternateInputProcessors)
 	if (inputProcessor.hasInput()) {
@@ -68,7 +68,7 @@ export async function inputItem<I>(command: SmartThingsCommandInterface,
 }
 inputItem.flags = buildInputProcessor.flags
 
-export type OutputItemConfig<O> = FormatAndWriteItemConfig<O>
+export type OutputItemConfig<O extends object> = FormatAndWriteItemConfig<O>
 export async function outputItem<O extends object>(command: SmartThingsCommandInterface, config: OutputItemConfig<O>,
 		getData: GetDataFunction<O>): Promise<O> {
 	const data = await getData()
@@ -88,7 +88,7 @@ export async function outputList<L extends object>(command: SmartThingsCommandIn
 outputList.flags = buildOutputFormatter.flags
 
 
-export type InputAndOutputItemConfig<O> = FormatAndWriteItemConfig<O>
+export type InputAndOutputItemConfig<O extends object> = FormatAndWriteItemConfig<O>
 /**
  * This is the main function used in most create and update commands. It parses input and passes it
  * on to the executeAction function parameter.
