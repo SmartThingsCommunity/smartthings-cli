@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core'
 import { AppType, AppClassification, AppListOptions, PagedApp, AppResponse } from '@smartthings/core-sdk'
 import { APICommand, outputItemOrList, OutputItemOrListConfig } from '@smartthings/cli-lib'
-import { tableFieldDefinitions } from '../lib/commands/apps-util'
+import { shortARNorURL, tableFieldDefinitions, verboseApps } from '../lib/commands/apps-util'
 
 
 export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
@@ -30,7 +30,7 @@ export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
 	}]
 
 	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<AppResponse, PagedApp> = {
+		const config: OutputItemOrListConfig<AppResponse, PagedApp | AppResponse> = {
 			primaryKeyName: 'appId',
 			sortKeyName: 'displayName',
 			tableFieldDefinitions,
@@ -38,7 +38,7 @@ export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
 		}
 
 		if (this.flags.verbose) {
-			config.listTableFieldDefinitions.push('ARN/URL')
+			config.listTableFieldDefinitions.push({ label: 'ARN/URL', value: shortARNorURL })
 		}
 
 		const listApps = async (): Promise<PagedApp[] | AppResponse[]> => {
@@ -52,22 +52,7 @@ export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
 			}
 
 			if (this.flags.verbose) {
-				return this.client.apps.list(appListOptions).then(list => {
-					const apps = list.map(app => this.client.apps.get(app.appId))
-					// eslint-disable-next-line @typescript-eslint/naming-convention
-					return Promise.all(apps).then((list: (AppResponse & { 'ARN/URL'?: string })[]) => {
-						for (const app of list) {
-							const uri = (app.webhookSmartApp ?
-								app.webhookSmartApp.targetUrl :
-								(app.lambdaSmartApp ? (app.lambdaSmartApp?.functions?.length ? app.lambdaSmartApp?.functions[0] : '') :
-									(app.apiOnly?.subscription?.targetUrl ?? ''))) ?? ''
-
-							const arnURL = uri.length < 96 ? uri : uri.slice(0, 95) + '...'
-							app['ARN/URL'] = arnURL
-						}
-						return list
-					})
-				})
+				return verboseApps(this.client, appListOptions)
 			}
 			return this.client.apps.list(appListOptions)
 		}

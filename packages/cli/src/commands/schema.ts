@@ -40,20 +40,14 @@ export default class SchemaCommand extends APICommand<typeof SchemaCommand.flags
 			listTableFieldDefinitions: ['appName', 'endpointAppId', 'hostingType'],
 		}
 		if (this.flags.verbose) {
-			config.listTableFieldDefinitions.push('ARN/URL')
+			config.listTableFieldDefinitions.push({
+				label: 'ARN/URL',
+				value: app => app.hostingType === 'lambda' ? app.lambdaArn : app.webhookUrl,
+			})
 		}
 
 		await outputItemOrList(this, config, this.args.id,
-			async () => {
-				const schemaApps = await this.client.schema.list()
-				return schemaApps.map(app => {
-					return {
-						...app,
-						// eslint-disable-next-line @typescript-eslint/naming-convention
-						'ARN/URL': app.hostingType === 'lambda' ? app.lambdaArn : app.webhookUrl,
-					}
-				})
-			},
+			() => this.client.schema.list(),
 			id => this.client.schema.get(id),
 		)
 	}
