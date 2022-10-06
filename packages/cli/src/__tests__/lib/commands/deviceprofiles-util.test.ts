@@ -40,7 +40,7 @@ describe('entryValues', () => {
 		expect(entryValues([input])).toBe(result)
 	})
 
-	it('combines items with new-lines', () => {
+	it('combines items with newlines', () => {
 		const entries = [
 			{ component: 'main', capability: 'capability-1' },
 			{ component: 'second', capability: 'capability-2' },

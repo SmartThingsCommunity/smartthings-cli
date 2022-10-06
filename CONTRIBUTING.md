@@ -60,7 +60,47 @@ We use changesets to automatically version and publish releases, and generate re
 
 ### Core SDK
 
-The CLI depends on the [SmartThings Core SDK](https://github.com/SmartThingsCommunity/smartthings-core-sdk). To use a pre-release version of the SDK for testing purposes, you'll need to make any required changes in both checked out repositories and then [npm-link](https://docs.npmjs.com/cli/v8/commands/npm-link#workspace-usage) the SDK into the CLI.
+The CLI depends on the [SmartThings Core SDK](https://github.com/SmartThingsCommunity/smartthings-core-sdk). To use a pre-release version of the SDK for testing purposes, you'll need to make any required changes in both checked-out repositories and then [npm-link](https://docs.npmjs.com/cli/v8/commands/npm-link#workspace-usage) the SDK into the CLI.
+
+### Command Documentation
+
+The SmartThings CLI is built using [oclif](https://oclif.io), which allows for self-documenting
+commands. Some ground rules to follow when creating or updating commands:
+
+* Commands should be kebab case. The module name is used as the command name and can be placed in
+  a topic by placing it in that topic's directory.
+* Commands should always include a short one-line description that starts with a lowercase letter
+  and does not end with a period. A more detailed description can be included after a newline. This
+  description can be split across lines but should not include newlines (oclif will wrap it).
+* Flags are also kebab case and should have a short single-character version only if they ar
+  expected to be used often.
+  * Descriptions of flags should be short, start with a lowercase letter, and include no ending
+    punctuation.
+  * Flags for ids should not include an `-id` suffix.
+* Names for arguments should be camel case starting with a lowercase letter.
+  * Descriptions for arguments should be a short phrase without a capital letter and without ending
+    punctuation.
+* Examples of common tasks should be included with a description of the example.
+  * Use the [object format](https://oclif.io/docs/commands#other-command-options)
+    rather than the simple string format when providing examples.
+  * When specifying an id in an example, use a representative example id.
+  * Descriptions should start with a capital letter and end with a period.
+  * There is no need to include `$ ` prefix for command examples because oclif includes it
+    automatically.
+
+### Command Naming
+
+Commands that map to CRUD API calls should use the following conventions:
+
+* A primary command that allows listing or retrieving a single object. Example: `capabilities`.
+  * Displays a list when no item is specified.
+  * Displays a single item when an item is specified using:
+    1. The id of the item.
+	2. The index of the item as displayed when listing items with the same command. (This method of
+	   choosing an item should not be used for commands that make changes such as `update` or `delete`.)
+* A command to create an item using the POST method: Example: `capabilities:create`.
+* A command to update an item using the PUT method. Example: `capabilities:update`.
+* A command to delete an item using the DELETE method. Example: `capabilities:delete`.
 
 ## How Can I Contribute?
 
