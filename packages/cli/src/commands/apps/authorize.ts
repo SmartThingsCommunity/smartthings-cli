@@ -19,15 +19,18 @@ export default class AppsAuthorizeCommand extends SmartThingsCommand<typeof Apps
 	]
 
 	static examples = [
-		'$ smartthings apps:authorize arn:aws:lambda:us-east-1:1234567890:function:your-test-app',
-		'',
-		'Note that this command is the same as running the following with the AWS CLI:',
-		'',
-		'$ aws lambda add-permission --region us-east-1 \\',
-		'    --function-name arn:aws:lambda:us-east-1:1234567890:function:your-test-app \\',
-		'    --statement smartthings --principal 906037444270 --action lambda:InvokeFunction',
-		'',
-		'It requires your machine to be configured to run the AWS CLI',
+		{
+			description: `authorize an app
+
+NOTE: This command is the same as running the following with the AWS CLI:
+
+$ aws lambda add-permission --region us-east-1 --function-name \\
+>  arn:aws:lambda:us-east-1:1234567890:function:your-test-app \\
+>  --statement smartthings --principal 906037444270 --action lambda:InvokeFunction
+
+This command requires your machine to be configured to run the AWS CLI.`,
+			command: 'smartthings apps:authorize arn:aws:lambda:us-east-1:1234567890:function:your-test-app',
+		},
 	]
 
 	async run(): Promise<void> {

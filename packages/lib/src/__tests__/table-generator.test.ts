@@ -53,7 +53,7 @@ function stripEscapeSequences(str: string): string {
 /**
  * Clean up string created using backticks. Lines are stripped of ` +|` at the beginning of each
  * line (allowing indentation) and `|` at the end (allowing for spaces at the end of the line
- * that are not automatically removed by tooling). If there is a new-line at the beginning of the
+ * that are not automatically removed by tooling). If there is a newline at the beginning of the
  * string, it is also removed.
  */
 const fixIndent = (input: string): string => input.replace(/^\s*\|/gm, '').replace(/\|$/gm, '').replace(/^\n/, '')

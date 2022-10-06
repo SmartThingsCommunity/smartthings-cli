@@ -17,6 +17,15 @@ export default class AppCreateCommand extends APICommand<typeof AppCreateCommand
 		...lambdaAuthFlags,
 	}
 
+	static examples = [
+		{ description: 'create an app defined in "my-app.yaml"', command: 'smartthings apps:create -i my-app.yaml' },
+		{
+			description: 'create an app defined in "my-app.json" and then authorize it\n' +
+				'(See "smartthings apps:authorize" for more information on authorization.)',
+			command: 'smartthings apps:create -i my-app.json --authorize',
+		},
+	]
+
 	async run(): Promise<void> {
 		const createApp = async (_: void, data: AppCreateRequest): Promise<AppCreationResponse> => {
 			// TODO extract this authorization block out to util function and use in ./update.ts as well

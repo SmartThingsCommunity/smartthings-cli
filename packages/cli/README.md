@@ -289,17 +289,17 @@ EXAMPLES
 
   list an app by id
 
-    $ smartthings apps <app-id>
+    $ smartthings apps 5dfd6626-ab1d-42da-bb76-90def3153998
 
   include URLs and ARNs in the output
 
     $ smartthings apps --verbose
 
-  list only SERVICE classification devices
+  list SERVICE classification apps
 
     $ smartthings apps --classification SERVICE
 
-  list only API only apps
+  list API-only apps
 
     $ smartthings apps --type API_ONLY
 ```
@@ -329,23 +329,17 @@ DESCRIPTION
   authorize calls to your AWS Lambda function from SmartThings
 
 EXAMPLES
-  $ smartthings apps:authorize arn:aws:lambda:us-east-1:1234567890:function:your-test-app
+  authorize an app
 
+  NOTE: This command is the same as running the following with the AWS CLI:
 
+  $ aws lambda add-permission --region us-east-1 --function-name \
+  >  arn:aws:lambda:us-east-1:1234567890:function:your-test-app \
+  >  --statement smartthings --principal 906037444270 --action lambda:InvokeFunction
 
-  Note that this command is the same as running the following with the AWS CLI:
+  This command requires your machine to be configured to run the AWS CLI.
 
-
-
-  $ aws lambda add-permission --region us-east-1 \
-
-      --function-name arn:aws:lambda:us-east-1:1234567890:function:your-test-app \
-
-      --statement smartthings --principal 906037444270 --action lambda:InvokeFunction
-
-
-
-  It requires your machine to be configured to run the AWS CLI
+    $ smartthings apps:authorize arn:aws:lambda:us-east-1:1234567890:function:your-test-app
 ```
 
 _See code: [src/commands/apps/authorize.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0/packages/cli/src/commands/apps/authorize.ts)_
@@ -377,6 +371,16 @@ COMMON FLAGS
 
 DESCRIPTION
   create an app
+
+EXAMPLES
+  create an app defined in "my-app.yaml"
+
+    $ smartthings apps:create -i my-app.yaml
+
+  create an app defined in "my-app.json" and then authorize it
+  (See "smartthings apps:authorize" for more information on authorization.)
+
+    $ smartthings apps:create -i my-app.json --authorize
 ```
 
 _See code: [src/commands/apps/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0/packages/cli/src/commands/apps/create.ts)_
@@ -400,6 +404,15 @@ COMMON FLAGS
 
 DESCRIPTION
   delete the app
+
+EXAMPLES
+  select app to delete from list
+
+    $ smartthings apps:delete
+
+  delete a specific app by id
+
+    $ smartthings apps:delete 5dfd6626-ab1d-42da-bb76-90def3153998
 ```
 
 _See code: [src/commands/apps/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0/packages/cli/src/commands/apps/delete.ts)_
