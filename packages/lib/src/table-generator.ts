@@ -5,8 +5,6 @@ import { table } from 'table'
 import { Logger } from '@smartthings/core-sdk'
 
 
-export const summarizedText = '(Information is summarized, for full details use YAML, -y, or JSON flag, -j.)'
-
 interface TableFieldDefinitionBase<T extends object> {
 	/**
 	 * If included, overrides the default label for the column.

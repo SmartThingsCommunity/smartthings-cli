@@ -14,7 +14,6 @@ import {
 	selectFromList,
 	SelectFromListConfig,
 	stringTranslateToId,
-	summarizedText,
 	TableGenerator,
 	WithLocales,
 } from '@smartthings/cli-lib'
@@ -91,10 +90,9 @@ export const buildTableOutput = (tableGenerator: TableGenerator, data: DevicePro
 				['preferenceId', 'title', 'preferenceType', { path: 'definition.default' }])
 			: 'No preferences'
 		return `Basic Information\n${table.toString()}\n\n` +
-			`${preferencesInfo}\n\n` +
-			summarizedText
+			preferencesInfo
 	}
-	return `${table.toString()}\n\n${summarizedText}`
+	return table.toString()
 }
 
 export const chooseDeviceProfile = async (command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>,

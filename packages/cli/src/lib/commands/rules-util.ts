@@ -2,7 +2,14 @@ import { Errors } from '@oclif/core'
 
 import { ActionExecutionResult, LocationItem, Rule, RuleExecutionResponse, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, selectFromList, SelectFromListConfig, summarizedText, TableFieldDefinition, TableGenerator, WithNamedLocation } from '@smartthings/cli-lib'
+import {
+	APICommand,
+	selectFromList,
+	SelectFromListConfig,
+	TableFieldDefinition,
+	TableGenerator,
+	WithNamedLocation,
+} from '@smartthings/cli-lib'
 
 
 export const tableFieldDefinitions: TableFieldDefinition<Rule>[] = ['name', 'id',
@@ -76,5 +83,5 @@ export const buildExecuteResponseTableOutput = (tableGenerator: TableGenerator, 
 		? tableGenerator.buildTableFromList(executeResponse.actions, actionsInfoTableDefinitions)
 		: undefined
 
-	return `${mainInfo}${actionsInfo ? `\n\nActions\n${actionsInfo}` : ''}\n${summarizedText}`
+	return `${mainInfo}${actionsInfo ? `\n\nActions\n${actionsInfo}` : ''}`
 }

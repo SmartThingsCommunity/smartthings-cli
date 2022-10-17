@@ -17,7 +17,6 @@ import {
 	selectFromList,
 	SelectFromListConfig,
 	stringTranslateToId,
-	summarizedText,
 	TableFieldDefinition,
 	TableGenerator,
 } from '@smartthings/cli-lib'
@@ -44,8 +43,7 @@ export const buildTableOutput = (tableGenerator: TableGenerator, driver: EdgeDri
 	}
 	return `Basic Information\n${basicInfo}\n\n` +
 		`${deviceIntegrationProfiles}\n\n` +
-		`${fingerprints}\n\n` +
-		summarizedText
+		fingerprints
 }
 
 export const listDrivers = async (client: SmartThingsClient, includeAllOrganizations?: boolean): Promise<EdgeDriver[]> =>

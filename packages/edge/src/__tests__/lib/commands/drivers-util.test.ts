@@ -17,7 +17,6 @@ jest.mock('@smartthings/cli-lib', () => ({
 	stringTranslateToId: jest.fn(),
 	selectFromList: jest.fn(),
 	forAllOrganizations: jest.fn(),
-	summarizedText: 'summarized text',
 }))
 
 describe('drivers-util', () => {
@@ -66,8 +65,7 @@ describe('drivers-util', () => {
 			expect(buildTableOutput(tableGenerator, minimalDriver))
 				.toBe('Basic Information\nbasic info\n\n' +
 					'Device Integration Profiles\nprofiles table\n\n' +
-					'No fingerprints specified.\n\n' +
-					'summarized text')
+					'No fingerprints specified.')
 
 			expect(buildTableFromItem).toHaveBeenCalledTimes(1)
 			expect(buildTableFromItem).toHaveBeenCalledWith(minimalDriver,
@@ -85,8 +83,7 @@ describe('drivers-util', () => {
 			expect(buildTableOutput(tableGenerator, driver))
 				.toBe('Basic Information\nbasic info\n\n' +
 					'Device Integration Profiles\nprofiles table\n\n' +
-					'Fingerprints\nfingerprints table\n\n' +
-					'summarized text')
+					'Fingerprints\nfingerprints table')
 
 			expect(buildTableFromItem).toHaveBeenCalledTimes(1)
 			expect(buildTableFromItem).toHaveBeenCalledWith(driver,

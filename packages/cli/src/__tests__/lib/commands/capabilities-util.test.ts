@@ -7,7 +7,7 @@ import {
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, selectFromList, Sorting, summarizedText, Table, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, selectFromList, Sorting, Table, TableGenerator } from '@smartthings/cli-lib'
 
 import {
 	attributeType,
@@ -128,13 +128,6 @@ describe('buildTableOutput', () => {
 		const result = buildTableOutput(tableGenerator, baseCapability)
 
 		expect(result).toStartWith('Capability: Name (capability-id)\n')
-		expect(newOutputTableMock).toHaveBeenCalledTimes(0)
-	})
-
-	it('ends with summarized text', () => {
-		const result = buildTableOutput(tableGenerator, baseCapability)
-
-		expect(result).toEndWith(`\n\n${summarizedText}`)
 		expect(newOutputTableMock).toHaveBeenCalledTimes(0)
 	})
 

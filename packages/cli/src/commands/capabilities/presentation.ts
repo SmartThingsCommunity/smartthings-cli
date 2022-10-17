@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 
 import { CapabilityPresentation } from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand, OutputItemOrListConfig, outputItemOrListGeneric, summarizedText, TableGenerator } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, OutputItemOrListConfig, outputItemOrListGeneric, TableGenerator } from '@smartthings/cli-lib'
 
 import { CapabilityId, capabilityIdOrIndexInputArgs, CapabilitySummaryWithNamespace, getCustomByNamespace, translateToId } from '../../lib/commands/capabilities-util'
 
@@ -63,8 +63,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, presentation: C
 		`${dashboardBasicPlus}\n\n` +
 		`${detailView}\n\n` +
 		`${automationConditions}\n\n` +
-		`${automationActions}\n\n` +
-		summarizedText
+		automationActions
 }
 
 export default class PresentationsCommand extends APIOrganizationCommand<typeof PresentationsCommand.flags> {
