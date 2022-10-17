@@ -13,7 +13,6 @@ import {
 	chooseOptionsWithDefaults,
 	selectFromList,
 	stringTranslateToId,
-	summarizedText,
 	Table,
 	TableGenerator,
 } from '@smartthings/cli-lib'
@@ -74,7 +73,7 @@ describe('buildTableOutput', () => {
 	}
 
 	it('includes basic info', () => {
-		expect(buildTableOutput(tableGenerator, baseDeviceProfile)).toBe(`table-output\n\n${summarizedText}`)
+		expect(buildTableOutput(tableGenerator, baseDeviceProfile)).toBe('table-output')
 
 		expect(newOutputTableMock).toHaveBeenCalledTimes(1)
 		expect(newOutputTableMock).toHaveBeenCalledWith()
@@ -100,7 +99,7 @@ describe('buildTableOutput', () => {
 			},
 		}
 
-		expect(buildTableOutput(tableGenerator, deviceProfile)).toBe(`table-output\n\n${summarizedText}`)
+		expect(buildTableOutput(tableGenerator, deviceProfile)).toBe('table-output')
 
 		expect(newOutputTableMock).toHaveBeenCalledTimes(1)
 		expect(newOutputTableMock).toHaveBeenCalledWith()
@@ -122,7 +121,7 @@ describe('buildTableOutput', () => {
 			],
 		}
 
-		expect(buildTableOutput(tableGenerator, deviceProfile)).toBe(`table-output\n\n${summarizedText}`)
+		expect(buildTableOutput(tableGenerator, deviceProfile)).toBe('table-output')
 
 		expect(newOutputTableMock).toHaveBeenCalledTimes(1)
 		expect(newOutputTableMock).toHaveBeenCalledWith()
@@ -146,7 +145,7 @@ describe('buildTableOutput', () => {
 			.mockReturnValueOnce('action entries')
 
 		expect(buildTableOutput(tableGenerator, deviceProfile, { includeViewInfo: true }))
-			.toBe(`table-output\n\n${summarizedText}`)
+			.toBe('table-output')
 
 		expect(newOutputTableMock).toHaveBeenCalledTimes(1)
 		expect(newOutputTableMock).toHaveBeenCalledWith()
@@ -170,7 +169,7 @@ describe('buildTableOutput', () => {
 			.mockReturnValueOnce('detail view entries')
 
 		expect(buildTableOutput(tableGenerator, deviceProfile, { includeViewInfo: true }))
-			.toBe(`table-output\n\n${summarizedText}`)
+			.toBe('table-output')
 
 		expect(newOutputTableMock).toHaveBeenCalledTimes(1)
 		expect(newOutputTableMock).toHaveBeenCalledWith()
@@ -194,7 +193,7 @@ describe('buildTableOutput', () => {
 			.mockReturnValueOnce('action entries')
 
 		expect(buildTableOutput(tableGenerator, deviceProfile, { includeViewInfo: true }))
-			.toBe(`table-output\n\n${summarizedText}`)
+			.toBe('table-output')
 
 		expect(newOutputTableMock).toHaveBeenCalledTimes(1)
 		expect(newOutputTableMock).toHaveBeenCalledWith()
@@ -217,7 +216,7 @@ describe('buildTableOutput', () => {
 			.mockReturnValueOnce('action entries')
 
 		expect(buildTableOutput(tableGenerator, deviceProfile, { includePreferences: true }))
-			.toBe(`Basic Information\ntable-output\n\nNo preferences\n\n${summarizedText}`)
+			.toBe('Basic Information\ntable-output\n\nNo preferences')
 
 		expect(newOutputTableMock).toHaveBeenCalledTimes(1)
 		expect(newOutputTableMock).toHaveBeenCalledWith()
@@ -237,7 +236,7 @@ describe('buildTableOutput', () => {
 			.mockReturnValueOnce('action entries')
 
 		expect(buildTableOutput(tableGenerator, deviceProfile, { includePreferences: true }))
-			.toBe(`Basic Information\ntable-output\n\nDevice Preferences\npreferences-table\n\n${summarizedText}`)
+			.toBe('Basic Information\ntable-output\n\nDevice Preferences\npreferences-table')
 
 		expect(newOutputTableMock).toHaveBeenCalledTimes(1)
 		expect(newOutputTableMock).toHaveBeenCalledWith()

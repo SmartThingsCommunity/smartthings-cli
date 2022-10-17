@@ -40,7 +40,7 @@ export const loadConfigFile = async (filename: string): Promise<ProfilesByName> 
 		return {}
 	}
 
-	const parsed = yaml.load(await readFile(`${filename}`, 'utf-8'))
+	const parsed = yaml.load(await readFile(filename, 'utf-8'))
 	if (parsed) {
 		if (typeof parsed === 'object' && !Array.isArray(parsed)) {
 			const errors: string[] = []

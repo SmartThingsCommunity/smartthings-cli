@@ -29,6 +29,15 @@ export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
 		description: 'the app id or number from list',
 	}]
 
+	static examples = [
+		{ description: 'list all apps', command: 'smartthings apps' },
+		{ description: 'list the first app in the list retrieved by running "smartthings apps"', command: 'smartthings apps 1' },
+		{ description: 'list an app by id', command: 'smartthings apps <app-id>' },
+		{ description: 'include URLs and ARNs in the output', command: 'smartthings apps --verbose' },
+		{ description: 'list only SERVICE classification devices', command: 'smartthings apps --classification SERVICE' },
+		{ description: 'list only API only apps', command: 'smartthings apps --type API_ONLY' },
+	]
+
 	async run(): Promise<void> {
 		const config: OutputItemOrListConfig<AppResponse, PagedApp | AppResponse> = {
 			primaryKeyName: 'appId',

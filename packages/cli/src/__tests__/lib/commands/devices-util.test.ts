@@ -1,6 +1,6 @@
 import { Device, DeviceStatus } from '@smartthings/core-sdk'
 
-import { summarizedText, Table, TableGenerator } from '@smartthings/cli-lib'
+import { Table, TableGenerator } from '@smartthings/cli-lib'
 
 import {
 	buildEmbeddedStatusTableOutput,
@@ -137,7 +137,7 @@ describe('devices-util', () => {
 			tableToStringMock.mockReturnValueOnce('main component status')
 
 			expect(buildEmbeddedStatusTableOutput(tableGeneratorMock, device))
-				.toEqual('main component status\n')
+				.toEqual('main component status')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(1)
 			expect(tablePushMock).toHaveBeenCalledWith(['switch', 'switch', '"off"'])
@@ -179,7 +179,7 @@ describe('devices-util', () => {
 			tableToStringMock.mockReturnValueOnce('light component status')
 
 			expect(buildEmbeddedStatusTableOutput(tableGeneratorMock, device))
-				.toEqual('\nmain component\nmain component status\n\nlight component\nlight component status\n')
+				.toEqual('main component\nmain component status\nlight component\nlight component status')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(2)
 			expect(tablePushMock).toHaveBeenNthCalledWith(1, ['switch', 'switch', '"off"'])
@@ -206,7 +206,7 @@ describe('devices-util', () => {
 			tableToStringMock.mockReturnValueOnce('main table')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(10)
 			expect(tablePushMock).toHaveBeenCalledWith(['Label', 'device label'])
@@ -229,7 +229,7 @@ describe('devices-util', () => {
 			tableToStringMock.mockReturnValueOnce('main table')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(tablePushMock).toHaveBeenCalledWith(['Profile Id', 'device-profile-id'])
@@ -240,7 +240,7 @@ describe('devices-util', () => {
 			tableToStringMock.mockReturnValueOnce('main table')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(tablePushMock).toHaveBeenCalledWith(['Manufacturer Code', ''])
@@ -259,7 +259,7 @@ describe('devices-util', () => {
 			tableToStringMock.mockReturnValueOnce('main table')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(10)
 			expect(tablePushMock).toHaveBeenCalledWith(['Device Health', 'ONLINE'])
@@ -288,7 +288,7 @@ describe('devices-util', () => {
 			tableToStringMock.mockReturnValueOnce('device status')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Status\ndevice status\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Status\ndevice status')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(10)
 			expect(tableToStringMock).toHaveBeenCalledTimes(2)
@@ -301,7 +301,7 @@ describe('devices-util', () => {
 			buildTableFromItemMock.mockReturnValue('app info')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from app)\napp info\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from app)\napp info')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
@@ -315,7 +315,7 @@ describe('devices-util', () => {
 			tableToStringMock.mockReturnValueOnce('main table')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from ble)\nNo Device Integration Info for BLE devices\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from ble)\nNo Device Integration Info for BLE devices')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(0)
@@ -328,7 +328,7 @@ describe('devices-util', () => {
 			buildTableFromItemMock.mockReturnValue('bleD2D info')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from bleD2D)\nbleD2D info\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from bleD2D)\nbleD2D info')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
@@ -343,7 +343,7 @@ describe('devices-util', () => {
 			buildTableFromItemMock.mockReturnValue('dth info')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from dth)\ndth info\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from dth)\ndth info')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
@@ -359,7 +359,7 @@ describe('devices-util', () => {
 			buildTableFromItemMock.mockReturnValue('lan info')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from lan)\nlan info\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from lan)\nlan info')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
@@ -374,7 +374,7 @@ describe('devices-util', () => {
 			buildTableFromItemMock.mockReturnValue('zigbee info')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from zigbee)\nzigbee info\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from zigbee)\nzigbee info')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
@@ -389,7 +389,7 @@ describe('devices-util', () => {
 			buildTableFromItemMock.mockReturnValue('zwave info')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from zwave)\nzwave info\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from zwave)\nzwave info')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
@@ -404,7 +404,7 @@ describe('devices-util', () => {
 			buildTableFromItemMock.mockReturnValue('ir info')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from ir)\nir info\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from ir)\nir info')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
@@ -419,7 +419,7 @@ describe('devices-util', () => {
 			buildTableFromItemMock.mockReturnValue('ir ocf info')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from irOcf)\nir ocf info\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from irOcf)\nir ocf info')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
@@ -434,7 +434,7 @@ describe('devices-util', () => {
 			buildTableFromItemMock.mockReturnValue('ocf info')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from ocf)\nocf info\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from ocf)\nocf info')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
@@ -451,7 +451,7 @@ describe('devices-util', () => {
 			buildTableFromItemMock.mockReturnValue('viper info')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from viper)\nviper info\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from viper)\nviper info')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
@@ -466,7 +466,7 @@ describe('devices-util', () => {
 			buildTableFromItemMock.mockReturnValue('virtual device info')
 
 			expect(buildTableOutput(tableGeneratorMock, device))
-				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from virtual)\nvirtual device info\n\n' + summarizedText)
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from virtual)\nvirtual device info')
 
 			expect(tablePushMock).toHaveBeenCalledTimes(8)
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)

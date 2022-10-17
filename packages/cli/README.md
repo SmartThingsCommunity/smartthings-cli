@@ -102,6 +102,8 @@ headless servers or for users who frequently switch between accounts.
    by the `--input` (shortcut `-i`) flag.
 1. Commands that output data will output the data to stdout unless a file
    is specified the using `--output (shortcut `-o`) flag.
+1. When no output format is specified, the CLI outputs a summary of the most useful information
+   in table format. For full details, use `--json` (`-j`) or `--yaml` (`-y`).
 1. When a command takes input and results in output, the format of the output
    will match the input format unless an output filename is specified
    using `--output` with a different extension.

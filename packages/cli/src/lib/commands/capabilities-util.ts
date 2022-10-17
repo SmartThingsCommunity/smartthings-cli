@@ -16,7 +16,6 @@ import {
 	SelectFromListConfig,
 	sort,
 	Sorting,
-	summarizedText,
 	TableGenerator,
 } from '@smartthings/cli-lib'
 
@@ -108,7 +107,7 @@ export const buildTableOutput = (tableGenerator: TableGenerator, capability: Cap
 		output += '\n\nCommands: \n'
 		output += makeTable(capability, SubItemTypes.COMMANDS)
 	}
-	return `${output}\n\n${summarizedText}`
+	return output
 }
 
 export interface CapabilityId {

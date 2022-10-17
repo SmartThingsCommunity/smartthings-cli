@@ -180,7 +180,7 @@ describe('rules-util', () => {
 			} as RuleExecutionResponse
 
 			expect(rulesUtil.buildExecuteResponseTableOutput(tableGenerator, executeResponse))
-				.toBe('main info\n\nActions\nactions info\nsummarized text')
+				.toBe('main info\n\nActions\nactions info')
 
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
 			expect(buildTableFromItemMock).toHaveBeenCalledWith(executeResponse,
@@ -194,7 +194,7 @@ describe('rules-util', () => {
 			const executeResponse = { id: 'execute-response-id' } as RuleExecutionResponse
 
 			expect(rulesUtil.buildExecuteResponseTableOutput(tableGenerator, executeResponse))
-				.toBe('main info\nsummarized text')
+				.toBe('main info')
 
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
 			expect(buildTableFromItemMock).toHaveBeenCalledWith(executeResponse,

@@ -1,6 +1,6 @@
 import { PresentationDeviceConfig, PresentationDPInfo, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
 
-import { APICommand, outputItem, summarizedText, TableGenerator } from '@smartthings/cli-lib'
+import { APICommand, outputItem, TableGenerator } from '@smartthings/cli-lib'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, deviceConfig: PresentationDeviceConfig): string {
@@ -71,8 +71,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, deviceConfig: P
 		`${dashboardActions}\n\n` +
 		`${detailView}\n\n` +
 		`${automationConditions}\n\n` +
-		`${automationActions}\n\n` +
-		summarizedText
+		automationActions
 }
 
 export default class DeviceConfigPresentationCommand extends APICommand<typeof DeviceConfigPresentationCommand.flags> {

@@ -1,6 +1,6 @@
 import { Device, DeviceHealth, DeviceStatus } from '@smartthings/core-sdk'
 
-import { summarizedText, TableGenerator } from '@smartthings/cli-lib'
+import { TableGenerator } from '@smartthings/cli-lib'
 
 
 export type DeviceWithLocation = Device & { location?: string }
@@ -45,10 +45,16 @@ export const buildEmbeddedStatusTableOutput = (tableGenerator: TableGenerator, d
 	let output = ''
 	let hasStatus = false
 	if (data.components) {
+		let isFirst = true
 		for (const component of data.components) {
+			if (isFirst) {
+				isFirst = false
+			} else {
+				output += '\n'
+			}
 			const table = tableGenerator.newOutputTable({ head: ['Capability', 'Attribute', 'Value'] })
 			if (data.components.length > 1) {
-				output += `\n${component.id} component\n`
+				output += `${component.id} component\n`
 			}
 
 			for (const capability of component.capabilities) {
@@ -65,7 +71,6 @@ export const buildEmbeddedStatusTableOutput = (tableGenerator: TableGenerator, d
 				}
 			}
 			output += table.toString()
-			output += '\n'
 		}
 	}
 	return hasStatus ? output : ''
@@ -151,8 +156,7 @@ export const buildTableOutput = (tableGenerator: TableGenerator, device: Device 
 			['name', { prop: 'hubId', skipEmpty: true }, { prop: 'driverId', skipEmpty: true }])
 	}
 
-	return `Main Info\n${mainInfo}\n\n` +
-		(statusInfo ? `Device Status\n${statusInfo}\n` : '') +
-		(infoFrom ? `Device Integration Info (from ${infoFrom})\n${deviceIntegrationInfo}\n\n` : '') +
-		summarizedText
+	return `Main Info\n${mainInfo}` +
+		(statusInfo ? `\n\nDevice Status\n${statusInfo}` : '') +
+		(infoFrom ? `\n\nDevice Integration Info (from ${infoFrom})\n${deviceIntegrationInfo}` : '')
 }
