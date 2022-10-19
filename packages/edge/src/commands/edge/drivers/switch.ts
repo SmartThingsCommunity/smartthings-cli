@@ -70,8 +70,10 @@ $ smartthings edge:drivers:switch --include-non-matching`,
 			: () => listMatchingDrivers(this.client, deviceId, hubId)
 		const driverId = await chooseDriver(this, 'Choose a driver to use.', this.flags.driver,
 			{ listItems })
+		const forceUpdate = this.flags['include-non-matching'] &&
+			!(await listMatchingDrivers(this.client, deviceId, hubId)).find(driver => driver.driverId === driverId)
 
-		await this.client.hubdevices.switchDriver(driverId, hubId, deviceId)
+		await this.client.hubdevices.switchDriver(driverId, hubId, deviceId, forceUpdate)
 		this.log(`updated driver for device ${deviceId} to ${driverId}`)
 	}
 }
