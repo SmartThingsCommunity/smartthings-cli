@@ -23,7 +23,7 @@ export default class ChannelsDriversCommand extends EdgeCommand<typeof ChannelsD
 	async run(): Promise<void> {
 		const config: OutputListConfig<DriverChannelDetailsWithName> = {
 			primaryKeyName: 'channelId',
-			sortKeyName: 'version',
+			sortKeyName: 'name',
 			listTableFieldDefinitions: ['name', 'driverId', 'version', 'createdDate', 'lastModifiedDate'],
 		}
 
