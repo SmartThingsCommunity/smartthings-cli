@@ -41,6 +41,7 @@ describe('ChannelsDriversCommand', () => {
 		expect(outputListMock).toHaveBeenCalledWith(expect.any(ChannelsDriversCommand),
 			expect.objectContaining({
 				primaryKeyName: 'channelId',
+				sortKeyName: 'name',
 				listTableFieldDefinitions: expect.arrayContaining(['name', 'driverId', 'version']),
 			}),
 			expect.any(Function))
