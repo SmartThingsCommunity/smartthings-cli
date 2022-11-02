@@ -1,5 +1,19 @@
 # Change Log
 
+## 1.0.0-beta.21
+
+### Patch Changes
+
+- [#427](https://github.com/SmartThingsCommunity/smartthings-cli/pull/427) [`5493e58`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/5493e58ad6e3ddea1491ffcf370b27cc90fecf6d) Thanks [@rossiam](https://github.com/rossiam)! - fix bug when changing drivers to an unsupported driver
+
+- [#431](https://github.com/SmartThingsCommunity/smartthings-cli/pull/431) [`dd7cffc`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/dd7cffc9c30ee76c6c2b2a7a6dde171eacb0a937) Thanks [@rossiam](https://github.com/rossiam)! - fix sorting for edge:channels:drivers command
+
+- [#432](https://github.com/SmartThingsCommunity/smartthings-cli/pull/432) [`1478253`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/147825356f3f2805650c034e9237c4b249675a61) Thanks [@rossiam](https://github.com/rossiam)! - add --verbose option to edge:drivers:installed command to include channel name
+
+- Updated dependencies [[`5493e58`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/5493e58ad6e3ddea1491ffcf370b27cc90fecf6d), [`e9ff59c`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e9ff59ca0f5963d09b7193589762592af61db5e8), [`dd7cffc`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/dd7cffc9c30ee76c6c2b2a7a6dde171eacb0a937), [`1478253`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/147825356f3f2805650c034e9237c4b249675a61)]:
+  - @smartthings/plugin-cli-edge@2.0.0-beta.3
+  - @smartthings/cli-lib@1.0.0-beta.17
+
 ## 1.0.0-beta.20
 
 ### Patch Changes
