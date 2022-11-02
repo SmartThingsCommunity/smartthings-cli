@@ -306,6 +306,31 @@ COMMON FLAGS
 
 DESCRIPTION
   get a specific app or a list of apps
+
+EXAMPLES
+  list all apps
+
+    $ smartthings apps
+
+  list the first app in the list retrieved by running "smartthings apps"
+
+    $ smartthings apps 1
+
+  list an app by id
+
+    $ smartthings apps <app-id>
+
+  include URLs and ARNs in the output
+
+    $ smartthings apps --verbose
+
+  list only SERVICE classification devices
+
+    $ smartthings apps --classification SERVICE
+
+  list only API only apps
+
+    $ smartthings apps --type API_ONLY
 ```
 
 _See code: [src/commands/apps.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.20/packages/cli/src/commands/apps.ts)_
@@ -4445,7 +4470,7 @@ list all drivers installed on a given hub
 ```
 USAGE
   $ smartthings edge:drivers:installed [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
-    [-y] [-o <value>] [-H <value>] [--device <value>]
+    [-y] [-o <value>] [-H <value>] [--device <value>] [-v]
 
 ARGUMENTS
   IDORINDEX  the driver id or number in list
@@ -4453,6 +4478,7 @@ ARGUMENTS
 FLAGS
   -H, --hub=<UUID>            hub id
   -O, --organization=<value>  the organization ID to use for this command
+  -v, --verbose               include channel name in output
   --device=<UUID>             return drivers matching the specified device
 
 COMMON FLAGS
@@ -4466,6 +4492,23 @@ COMMON FLAGS
 
 DESCRIPTION
   list all drivers installed on a given hub
+
+EXAMPLES
+  list all installed drivers
+
+    $ smartthings edge:drivers:installed
+
+  list all installed drivers and include the channel name in the output
+
+    $ smartthings edge:drivers:installed --verbose
+
+  list the first driver in the list retrieved by running "smartthings edge:drivers:installed"
+
+    $ smartthings edge:drivers:installed 1
+
+  list an installed driver by id
+
+    $ smartthings edge:drivers:installed <driver-id>
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.2/packages/edge/src/commands/edge/drivers/installed.ts)_
