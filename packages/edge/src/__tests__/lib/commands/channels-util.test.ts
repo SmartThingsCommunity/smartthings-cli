@@ -3,7 +3,7 @@ import { Channel, OrganizationResponse, SmartThingsClient } from '@smartthings/c
 import { APICommand, ChooseOptions, chooseOptionsWithDefaults, forAllOrganizations, selectFromList,
 	stringTranslateToId } from '@smartthings/cli-lib'
 
-import { chooseChannel, listChannels, ChooseChannelOptions, chooseChannelOptionsWithDefaults }
+import { chooseChannel, listChannels, ChooseChannelOptions, chooseChannelOptionsWithDefaults, withChannelNames }
 	from '../../../lib/commands/channels-util'
 import * as channelsUtil from '../../../lib/commands/channels-util'
 
@@ -18,10 +18,6 @@ jest.mock('@smartthings/cli-lib', () => ({
 
 
 describe('channels-util', () => {
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('chooseChannelOptionsWithDefaults', () => {
 		const chooseOptionsWithDefaultsMock = jest.mocked(chooseOptionsWithDefaults)
 
@@ -152,14 +148,16 @@ describe('channels-util', () => {
 		})
 	})
 
-	describe('listChannels', () => {
-		const apiListChannelsMock = jest.fn()
-		const client = {
-			channels: {
-				list: apiListChannelsMock,
-			},
-		} as unknown as SmartThingsClient
+	const apiListChannelsMock = jest.fn()
+	const apiGetChannelsMock = jest.fn()
+	const client = {
+		channels: {
+			list: apiListChannelsMock,
+			get: apiGetChannelsMock,
+		},
+	} as unknown as SmartThingsClient
 
+	describe('listChannels', () => {
 		const result = [
 			{
 				'channelId': 'channel-id',
@@ -212,6 +210,38 @@ describe('channels-util', () => {
 		it('throws error when both allOrganizations and includeReadOnly included', async () => {
 			await expect(listChannels(client, { allOrganizations: true, includeReadOnly: true }))
 				.rejects.toThrow('includeReadOnly and allOrganizations options are incompatible')
+		})
+	})
+
+	describe('withChannelNames', () => {
+		const thingWithChannel1 = { channelId: 'channel-id-1' }
+		const channel1 = { channelId: 'channel-id-1', name: 'Channel 1' } as Channel
+		const thingWithChannel2 = { channelId: 'channel-id-2' }
+		const channel2 = { channelId: 'channel-id-2', name: 'Channel 2' } as Channel
+
+		it('adds channel name to single item', async () => {
+			apiGetChannelsMock.mockResolvedValueOnce(channel1)
+
+			expect(await withChannelNames(client, thingWithChannel1)).toStrictEqual(
+				{ channelId: 'channel-id-1', channelName: 'Channel 1' },
+			)
+
+			expect(apiListChannelsMock).toHaveBeenCalledTimes(0)
+			expect(apiGetChannelsMock).toHaveBeenCalledTimes(1)
+			expect(apiGetChannelsMock).toHaveBeenCalledWith('channel-id-1')
+		})
+
+		it('adds channel name to multiple items', async () => {
+			apiListChannelsMock.mockResolvedValueOnce([channel1, channel2])
+
+			expect(await withChannelNames(client, [thingWithChannel1, thingWithChannel2])).toStrictEqual([
+				{ channelId: 'channel-id-1', channelName: 'Channel 1' },
+				{ channelId: 'channel-id-2', channelName: 'Channel 2' },
+			])
+
+			expect(apiListChannelsMock).toHaveBeenCalledTimes(1)
+			expect(apiListChannelsMock).toHaveBeenCalledWith(expect.objectContaining({ includeReadOnly: true }))
+			expect(apiGetChannelsMock).toHaveBeenCalledTimes(0)
 		})
 	})
 })

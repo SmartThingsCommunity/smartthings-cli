@@ -67,3 +67,24 @@ export async function listChannels(client: SmartThingsClient, options?: Partial<
 	}
 	return client.channels.list({ includeReadOnly, subscriberType, subscriberId })
 }
+
+export interface WithChannel {
+	channelId: string
+}
+
+export interface WithNamedChannel extends WithChannel {
+	channelName?: string
+}
+
+export async function withChannelNames<T extends WithChannel>(client: SmartThingsClient, input: T): Promise<T & WithNamedChannel>
+export async function withChannelNames<T extends WithChannel>(client: SmartThingsClient, input: T[]): Promise<(T & WithNamedChannel)[]>
+export async function withChannelNames<T extends WithChannel>(client: SmartThingsClient, input: T | T[]): Promise<(T & WithNamedChannel) | (T & WithNamedChannel)[]> {
+	if (Array.isArray(input)) {
+		const channels = await listChannels(client, { includeReadOnly: true })
+		const channelNamesById = new Map(channels.map(channel => [channel.channelId, channel.name]))
+		return input.map(input => ({ ...input, channelName: channelNamesById.get(input.channelId) }))
+	}
+
+	const channel = await client.channels.get(input.channelId)
+	return { ...input, channelName: channel.name }
+}
