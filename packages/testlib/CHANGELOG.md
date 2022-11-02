@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.0.0-beta.11
+
+### Patch Changes
+
+- [#412](https://github.com/SmartThingsCommunity/smartthings-cli/pull/412) [`e9ff59c`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e9ff59ca0f5963d09b7193589762592af61db5e8) Thanks [@rossiam](https://github.com/rossiam)! - refactored `TableGenerator` interface and supporting code
+
+- Updated dependencies [[`e9ff59c`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e9ff59ca0f5963d09b7193589762592af61db5e8)]:
+  - @smartthings/cli-lib@1.0.0-beta.17
+
 ## 1.0.0-beta.10
 
 ### Patch Changes
