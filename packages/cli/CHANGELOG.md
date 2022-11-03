@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.0.0-beta.22
+
+### Patch Changes
+
+- [#435](https://github.com/SmartThingsCommunity/smartthings-cli/pull/435) [`2c889a2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/2c889a2d61d3ddacf7589c5a298644034777e2b3) Thanks [@rossiam](https://github.com/rossiam)! - output fewer columns when listing channels to make the list fit on the screen better
+
+- Updated dependencies [[`2c889a2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/2c889a2d61d3ddacf7589c5a298644034777e2b3)]:
+  - @smartthings/plugin-cli-edge@2.0.0-beta.4
+
 ## 1.0.0-beta.21
 
 ### Patch Changes
