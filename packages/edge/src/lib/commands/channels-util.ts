@@ -13,9 +13,10 @@ import {
 
 
 export const listTableFieldDefinitions: TableFieldDefinition<Channel>[] =
-	['channelId', 'name', 'description', 'termsOfServiceUrl', 'createdDate', 'lastModifiedDate']
+	['channelId', 'name', 'createdDate', 'lastModifiedDate']
 
-export const tableFieldDefinitions = listTableFieldDefinitions
+export const tableFieldDefinitions: TableFieldDefinition<Channel>[] =
+	['channelId', 'name', 'description', 'termsOfServiceUrl', 'createdDate', 'lastModifiedDate']
 
 export interface ChooseChannelOptions extends ChooseOptions {
 	includeReadOnly: boolean
