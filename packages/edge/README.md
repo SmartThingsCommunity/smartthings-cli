@@ -98,7 +98,7 @@ EXAMPLES
   $ smartthings edge:channels --subscriber-type HUB --subscriber-id <hub-id>
 ```
 
-_See code: [src/commands/edge/channels.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels.ts)_
+_See code: [src/commands/edge/channels.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels.ts)_
 
 ## `smartthings edge:channels:assign [DRIVERID] [VERSION]`
 
@@ -130,7 +130,7 @@ ALIASES
   $ smartthings edge:drivers:publish
 ```
 
-_See code: [src/commands/edge/channels/assign.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/assign.ts)_
+_See code: [src/commands/edge/channels/assign.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/assign.ts)_
 
 ## `smartthings edge:channels:assignments [IDORINDEX]`
 
@@ -190,7 +190,7 @@ DESCRIPTION
   create a channel
 ```
 
-_See code: [src/commands/edge/channels/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/create.ts)_
+_See code: [src/commands/edge/channels/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/create.ts)_
 
 ## `smartthings edge:channels:delete [ID]`
 
@@ -216,7 +216,7 @@ DESCRIPTION
   delete a channel
 ```
 
-_See code: [src/commands/edge/channels/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/delete.ts)_
+_See code: [src/commands/edge/channels/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/delete.ts)_
 
 ## `smartthings edge:channels:drivers [IDORINDEX]`
 
@@ -249,7 +249,7 @@ ALIASES
   $ smartthings edge:channels:assignments
 ```
 
-_See code: [src/commands/edge/channels/drivers.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/drivers.ts)_
+_See code: [src/commands/edge/channels/drivers.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/drivers.ts)_
 
 ## `smartthings edge:channels:enroll [HUBID]`
 
@@ -277,7 +277,7 @@ DESCRIPTION
   enroll a hub in a channel
 ```
 
-_See code: [src/commands/edge/channels/enroll.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/enroll.ts)_
+_See code: [src/commands/edge/channels/enroll.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/enroll.ts)_
 
 ## `smartthings edge:channels:enrollments [IDORINDEX]`
 
@@ -307,7 +307,7 @@ DESCRIPTION
   list all channels a given hub is enrolled in
 ```
 
-_See code: [src/commands/edge/channels/enrollments.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/enrollments.ts)_
+_See code: [src/commands/edge/channels/enrollments.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/enrollments.ts)_
 
 ## `smartthings edge:channels:invitations [IDORINDEX]`
 
@@ -511,7 +511,7 @@ EXAMPLES
   $ smartthings edge:channels:invites <invite id>      # list details about the invite with id <invite id>
 ```
 
-_See code: [src/commands/edge/channels/invites.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/invites.ts)_
+_See code: [src/commands/edge/channels/invites.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/invites.ts)_
 
 ## `smartthings edge:channels:invites:accept ID`
 
@@ -540,7 +540,7 @@ ALIASES
   $ smartthings edge:channels:invitations:accept
 ```
 
-_See code: [src/commands/edge/channels/invites/accept.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/invites/accept.ts)_
+_See code: [src/commands/edge/channels/invites/accept.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/invites/accept.ts)_
 
 ## `smartthings edge:channels:invites:create`
 
@@ -573,7 +573,7 @@ ALIASES
   $ smartthings edge:channels:invitations:create
 ```
 
-_See code: [src/commands/edge/channels/invites/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/invites/create.ts)_
+_See code: [src/commands/edge/channels/invites/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/invites/create.ts)_
 
 ## `smartthings edge:channels:invites:delete [ID]`
 
@@ -606,7 +606,7 @@ ALIASES
   $ smartthings edge:channels:invites:revoke
 ```
 
-_See code: [src/commands/edge/channels/invites/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/invites/delete.ts)_
+_See code: [src/commands/edge/channels/invites/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/invites/delete.ts)_
 
 ## `smartthings edge:channels:invites:revoke [ID]`
 
@@ -681,7 +681,7 @@ EXAMPLES
       699c7308-8c72-4363-9571-880d0f5cc725
 ```
 
-_See code: [src/commands/edge/channels/metainfo.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/metainfo.ts)_
+_See code: [src/commands/edge/channels/metainfo.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/metainfo.ts)_
 
 ## `smartthings edge:channels:unassign [DRIVERID]`
 
@@ -712,7 +712,7 @@ ALIASES
   $ smartthings edge:drivers:unpublish
 ```
 
-_See code: [src/commands/edge/channels/unassign.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/unassign.ts)_
+_See code: [src/commands/edge/channels/unassign.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/unassign.ts)_
 
 ## `smartthings edge:channels:unenroll [HUBID]`
 
@@ -740,7 +740,7 @@ DESCRIPTION
   unenroll a hub from a channel
 ```
 
-_See code: [src/commands/edge/channels/unenroll.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/unenroll.ts)_
+_See code: [src/commands/edge/channels/unenroll.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/unenroll.ts)_
 
 ## `smartthings edge:channels:update [ID]`
 
@@ -772,7 +772,7 @@ DESCRIPTION
   update a channel
 ```
 
-_See code: [src/commands/edge/channels/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/channels/update.ts)_
+_See code: [src/commands/edge/channels/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/update.ts)_
 
 ## `smartthings edge:drivers [IDORINDEX]`
 
@@ -823,7 +823,7 @@ EXAMPLES
   $ smartthings edge:drivers 699c7308-8c72-4363-9571-880d0f5cc725 --version 2021-10-25T00:48:23.295969
 ```
 
-_See code: [src/commands/edge/drivers.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/drivers.ts)_
+_See code: [src/commands/edge/drivers.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/drivers.ts)_
 
 ## `smartthings edge:drivers:default`
 
@@ -855,7 +855,7 @@ EXAMPLES
     $ smartthings edge:drivers:default
 ```
 
-_See code: [src/commands/edge/drivers/default.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/drivers/default.ts)_
+_See code: [src/commands/edge/drivers/default.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/drivers/default.ts)_
 
 ## `smartthings edge:drivers:delete [ID]`
 
@@ -881,7 +881,7 @@ DESCRIPTION
   delete an edge driver
 ```
 
-_See code: [src/commands/edge/drivers/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/drivers/delete.ts)_
+_See code: [src/commands/edge/drivers/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/drivers/delete.ts)_
 
 ## `smartthings edge:drivers:install [DRIVERID]`
 
@@ -917,7 +917,7 @@ EXAMPLES
   $ smartthings edge:drivers:install -H <hub-id> -C <channel-id> <driver-id> # install a driver from a channel on an enrolled hub
 ```
 
-_See code: [src/commands/edge/drivers/install.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/drivers/install.ts)_
+_See code: [src/commands/edge/drivers/install.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/drivers/install.ts)_
 
 ## `smartthings edge:drivers:installed [IDORINDEX]`
 
@@ -967,7 +967,7 @@ EXAMPLES
     $ smartthings edge:drivers:installed <driver-id>
 ```
 
-_See code: [src/commands/edge/drivers/installed.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/drivers/installed.ts)_
+_See code: [src/commands/edge/drivers/installed.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/drivers/installed.ts)_
 
 ## `smartthings edge:drivers:logcat [DRIVERID]`
 
@@ -997,7 +997,7 @@ DESCRIPTION
   stream logs from installed drivers
 ```
 
-_See code: [src/commands/edge/drivers/logcat.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/drivers/logcat.ts)_
+_See code: [src/commands/edge/drivers/logcat.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/drivers/logcat.ts)_
 
 ## `smartthings edge:drivers:package [PROJECTDIRECTORY]`
 
@@ -1053,7 +1053,7 @@ EXAMPLES
     $ smartthings edge:drivers:package -u driver.zip
 ```
 
-_See code: [src/commands/edge/drivers/package.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/drivers/package.ts)_
+_See code: [src/commands/edge/drivers/package.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/drivers/package.ts)_
 
 ## `smartthings edge:drivers:publish [DRIVERID] [VERSION]`
 
@@ -1124,7 +1124,7 @@ EXAMPLES
     $ smartthings edge:drivers:switch --include-non-matching
 ```
 
-_See code: [src/commands/edge/drivers/switch.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/drivers/switch.ts)_
+_See code: [src/commands/edge/drivers/switch.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/drivers/switch.ts)_
 
 ## `smartthings edge:drivers:uninstall [DRIVERID]`
 
@@ -1152,7 +1152,7 @@ DESCRIPTION
   uninstall an edge driver from a hub
 ```
 
-_See code: [src/commands/edge/drivers/uninstall.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.3/packages/edge/src/commands/edge/drivers/uninstall.ts)_
+_See code: [src/commands/edge/drivers/uninstall.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/drivers/uninstall.ts)_
 
 ## `smartthings edge:drivers:unpublish [DRIVERID]`
 
