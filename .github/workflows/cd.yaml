@@ -187,7 +187,7 @@ jobs:
           body_path: ${{ github.workspace }}/RELEASE_NOTES.txt
           tag_name: ${{ needs.release.outputs.cli-tag }}
           prerelease: true
-          files: 'packages/cli/dist_bin/**/*.{tar.gz,zip}'
+          files: 'packages/cli/dist_bin/**/*.@(tar.gz|zip)'
 
   homebrew-formula:
     needs: [release, github-release]
