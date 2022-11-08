@@ -83,8 +83,6 @@ export default class DeviceProfileTranslationsCommand extends APIOrganizationCom
 		'└───────────┴────────────┴───────────────────────────────┘',
 	]
 
-	static aliases = ['device-profiles:translations']
-
 	async run(): Promise<void> {
 		const deviceProfileId = await chooseDeviceProfile(this, this.args.id, { verbose: this.flags.verbose, allowIndex: true })
 

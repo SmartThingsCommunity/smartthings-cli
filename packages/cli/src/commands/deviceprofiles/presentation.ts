@@ -30,8 +30,6 @@ export default class DeviceProfilePresentationCommand extends APIOrganizationCom
 		'flag then no language header is specified in the API request',
 	]
 
-	static aliases = ['device-profiles:presentation']
-
 	async run(): Promise<void> {
 		const id = await chooseDeviceProfile(this, this.args.id, { allowIndex: true })
 

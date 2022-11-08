@@ -19,8 +19,6 @@ export default class DeviceProfileDeviceConfigCommand extends APIOrganizationCom
 		description: 'device profile id or the number in list',
 	}]
 
-	static aliases = ['device-profiles:device-config']
-
 	async run(): Promise<void> {
 		const id = await chooseDeviceProfile(this, this.args.id, { allowIndex: true })
 

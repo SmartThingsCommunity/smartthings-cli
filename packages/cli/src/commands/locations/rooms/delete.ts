@@ -20,8 +20,6 @@ export default class RoomsDeleteCommand extends APICommand<typeof RoomsDeleteCom
 		description: 'room UUID',
 	}]
 
-	static aliases = ['rooms:delete']
-
 	async run(): Promise<void> {
 		const [roomId, locationId] = await chooseRoom(this, this.flags.location, this.args.id)
 		await this.client.rooms.delete(roomId, locationId)

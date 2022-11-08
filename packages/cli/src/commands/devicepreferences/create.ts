@@ -13,8 +13,6 @@ export default class DevicePreferencesCreateCommand extends APIOrganizationComma
 		...inputAndOutputItem.flags,
 	}
 
-	static aliases = ['device-preferences:create']
-
 	static examples = [`
 # create a new device preference by answering questions
 $ smartthings devicepreferences:create

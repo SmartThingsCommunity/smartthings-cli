@@ -71,8 +71,6 @@ export default class ChannelsInvitesCommand extends EdgeCommand<typeof ChannelsI
 		description: 'the invitation id or number in list',
 	}]
 
-	static aliases = ['edge:channels:invitations']
-
 	static examples = [
 		'smartthings edge:channels:invites                  # list all invites on all channels you own',
 		'smartthings edge:channels:invites 2                # list details about the second invite show when listed as in the example above',

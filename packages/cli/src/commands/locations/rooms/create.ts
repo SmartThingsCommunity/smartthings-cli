@@ -18,8 +18,6 @@ export default class RoomsCreateCommand extends APICommand<typeof RoomsCreateCom
 		}),
 	}
 
-	static aliases = ['rooms:create']
-
 	async run(): Promise<void> {
 		const locationId = await chooseLocation(this, this.flags.location)
 		const config: CommonOutputProducer<Room> = { tableFieldDefinitions }

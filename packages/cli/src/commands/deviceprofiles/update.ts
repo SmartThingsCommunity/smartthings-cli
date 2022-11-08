@@ -25,8 +25,6 @@ export default class DeviceProfileUpdateCommand extends APIOrganizationCommand<t
 		description: 'device profile UUID or number in the list',
 	}]
 
-	static aliases = ['device-profiles:update']
-
 	async run(): Promise<void> {
 		const id = await chooseDeviceProfile(this, this.args.id)
 		const executeUpdate: ActionFunction<void, DeviceDefinitionRequest, DeviceProfile> = async (_, data) => {

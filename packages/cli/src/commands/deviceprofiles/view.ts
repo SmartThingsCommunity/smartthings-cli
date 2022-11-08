@@ -19,8 +19,6 @@ export default class DeviceProfilesViewCommand extends APIOrganizationCommand<ty
 		description: 'device profile UUID or the number from list',
 	}]
 
-	static aliases = ['device-profiles:view']
-
 	async run(): Promise<void> {
 		const config: OutputItemOrListConfig<DeviceDefinition, DeviceProfile> = {
 			primaryKeyName: 'id',

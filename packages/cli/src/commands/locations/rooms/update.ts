@@ -22,8 +22,6 @@ export default class RoomsUpdateCommand extends APICommand<typeof RoomsUpdateCom
 		description: 'room UUID',
 	}]
 
-	static aliases = ['rooms:update']
-
 	async run(): Promise<void> {
 		const [roomId, locationId] = await chooseRoom(this, this.flags.location, this.args.id)
 		const config: CommonOutputProducer<Room> = { tableFieldDefinitions }

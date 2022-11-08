@@ -12,8 +12,6 @@ export default class ChannelsInvitesAcceptCommand extends EdgeCommand<typeof Cha
 		required: true,
 	}]
 
-	static aliases = ['edge:channels:invitations:accept']
-
 	async run(): Promise<void> {
 		const id = this.args.id
 		await this.edgeClient.invites.accept(id)

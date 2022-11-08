@@ -16,8 +16,6 @@ export default class DevicePreferencesUpdateCommand extends APIOrganizationComma
 		description: 'the device preference id',
 	}]
 
-	static aliases = ['device-preferences:update']
-
 	static examples = [
 		'$ smartthings devicepreferences:update -i dp.json                   # update a device preference with data from dp.json, select which preference from a list',
 		'$ smartthings devicepreferences:update -i dp.yaml my-preference-id  # update device preference my-preference-id with data from dp.yaml',

@@ -18,8 +18,6 @@ export default class DeviceProfilePublishCommand extends APIOrganizationCommand<
 		description: 'device profile id',
 	}]
 
-	static aliases = ['device-profiles:publish']
-
 	async run(): Promise<void> {
 		const id = await chooseDeviceProfile(this, this.args.id)
 

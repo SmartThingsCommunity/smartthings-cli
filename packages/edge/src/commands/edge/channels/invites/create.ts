@@ -29,8 +29,6 @@ export default class ChannelsInvitesCreateCommand extends EdgeCommand<typeof Cha
 		...inputAndOutputItem.flags,
 	}
 
-	static aliases = ['edge:channels:invitations:create']
-
 	async run(): Promise<void> {
 		const create = async (_: void, input: CreateInvitation): Promise<Invitation> => {
 			const { invitationId } = await this.edgeClient.invites.create(input)
