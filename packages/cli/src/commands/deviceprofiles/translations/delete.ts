@@ -43,8 +43,6 @@ export default class DeviceProfileTranslationsDeleteCommand extends APIOrganizat
 		'Device profile "3acbf2fc-6be2-4be0-aeb5-44759cbd66c2" translation "en" deleted',
 	]
 
-	static aliases = ['device-profiles:translations:delete']
-
 	async run(): Promise<void> {
 		const deviceProfileId = await chooseDeviceProfile(this, this.args.id)
 

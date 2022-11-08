@@ -22,12 +22,6 @@ export default class ChannelsInvitesDeleteCommand extends EdgeCommand<typeof Cha
 		description: 'invitation UUID',
 	}]
 
-	static aliases = [
-		'edge:channels:invitations:revoke',
-		'edge:channels:invitations:delete',
-		'edge:channels:invites:revoke',
-	]
-
 	async run(): Promise<void> {
 		const channelId = await chooseChannel(this,
 			'Which channel is the invite you want to delete for?',

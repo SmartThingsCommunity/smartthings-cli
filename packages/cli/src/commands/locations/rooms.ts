@@ -29,8 +29,6 @@ export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> 
 		description: 'room UUID or index',
 	}]
 
-	static aliases = ['rooms']
-
 	async run(): Promise<void> {
 		const config: OutputItemOrListConfig<Room & WithNamedLocation> = {
 			primaryKeyName: 'roomId',

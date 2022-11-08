@@ -18,8 +18,6 @@ export default class DeviceProfileDeleteCommand extends APIOrganizationCommand<t
 		'$ smartthings deviceprofiles:delete 5                                     # delete the 5th profile in the list',
 	]
 
-	static aliases = ['device-profiles:delete']
-
 	async run(): Promise<void> {
 		const id = await chooseDeviceProfile(this, this.args.id)
 		await this.client.deviceProfiles.delete(id)

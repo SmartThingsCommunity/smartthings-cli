@@ -23,8 +23,6 @@ export default class DeviceProfileCreateCommand extends APIOrganizationCommand<t
 		'$ smartthings deviceprofiles:create                      # create a device profile with interactive dialog',
 	]
 
-	static aliases = ['device-profiles:create']
-
 	async run(): Promise<void> {
 		const createDeviceProfile = async (_: void, data: DeviceDefinitionRequest): Promise<DeviceProfile> => {
 			if (data.view) {

@@ -28,8 +28,6 @@ export class ChannelsAssignCommand extends EdgeCommand<typeof ChannelsAssignComm
 		},
 	]
 
-	static aliases = ['edge:drivers:publish']
-
 	async run(): Promise<void> {
 		const channelId = await chooseChannel(this, 'Select a channel for the driver.',
 			this.flags.channel, { useConfigDefault: true })

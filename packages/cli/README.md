@@ -142,22 +142,6 @@ that map to the API spec.
 * [`smartthings capabilities:update [ID] [VERSION]`](#smartthings-capabilitiesupdate-id-version)
 * [`smartthings config [NAME]`](#smartthings-config-name)
 * [`smartthings config:reset`](#smartthings-configreset)
-* [`smartthings device-preferences [IDORINDEX]`](#smartthings-device-preferences-idorindex)
-* [`smartthings device-preferences:create`](#smartthings-device-preferencescreate)
-* [`smartthings device-preferences:update [ID]`](#smartthings-device-preferencesupdate-id)
-* [`smartthings device-profiles [ID]`](#smartthings-device-profiles-id)
-* [`smartthings device-profiles:create`](#smartthings-device-profilescreate)
-* [`smartthings device-profiles:delete [ID]`](#smartthings-device-profilesdelete-id)
-* [`smartthings device-profiles:device-config [ID]`](#smartthings-device-profilesdevice-config-id)
-* [`smartthings device-profiles:presentation [ID]`](#smartthings-device-profilespresentation-id)
-* [`smartthings device-profiles:publish [ID]`](#smartthings-device-profilespublish-id)
-* [`smartthings device-profiles:translations [ID] [TAG]`](#smartthings-device-profilestranslations-id-tag)
-* [`smartthings device-profiles:translations:delete [ID] [TAG]`](#smartthings-device-profilestranslationsdelete-id-tag)
-* [`smartthings device-profiles:translations:upsert [ID]`](#smartthings-device-profilestranslationsupsert-id)
-* [`smartthings device-profiles:update [ID]`](#smartthings-device-profilesupdate-id)
-* [`smartthings device-profiles:view [ID]`](#smartthings-device-profilesview-id)
-* [`smartthings device-profiles:view:create`](#smartthings-device-profilesviewcreate)
-* [`smartthings device-profiles:view:update [ID]`](#smartthings-device-profilesviewupdate-id)
 * [`smartthings devicepreferences [IDORINDEX]`](#smartthings-devicepreferences-idorindex)
 * [`smartthings devicepreferences:create`](#smartthings-devicepreferencescreate)
 * [`smartthings devicepreferences:translations [PREFERENCEID] [TAG]`](#smartthings-devicepreferencestranslations-preferenceid-tag)
@@ -191,22 +175,15 @@ that map to the API spec.
 * [`smartthings devices:update [ID]`](#smartthings-devicesupdate-id)
 * [`smartthings edge:channels [IDORINDEX]`](#smartthings-edgechannels-idorindex)
 * [`smartthings edge:channels:assign [DRIVERID] [VERSION]`](#smartthings-edgechannelsassign-driverid-version)
-* [`smartthings edge:channels:assignments [IDORINDEX]`](#smartthings-edgechannelsassignments-idorindex)
 * [`smartthings edge:channels:create`](#smartthings-edgechannelscreate)
 * [`smartthings edge:channels:delete [ID]`](#smartthings-edgechannelsdelete-id)
 * [`smartthings edge:channels:drivers [IDORINDEX]`](#smartthings-edgechannelsdrivers-idorindex)
 * [`smartthings edge:channels:enroll [HUBID]`](#smartthings-edgechannelsenroll-hubid)
 * [`smartthings edge:channels:enrollments [IDORINDEX]`](#smartthings-edgechannelsenrollments-idorindex)
-* [`smartthings edge:channels:invitations [IDORINDEX]`](#smartthings-edgechannelsinvitations-idorindex)
-* [`smartthings edge:channels:invitations:accept ID`](#smartthings-edgechannelsinvitationsaccept-id)
-* [`smartthings edge:channels:invitations:create`](#smartthings-edgechannelsinvitationscreate)
-* [`smartthings edge:channels:invitations:delete [ID]`](#smartthings-edgechannelsinvitationsdelete-id)
-* [`smartthings edge:channels:invitations:revoke [ID]`](#smartthings-edgechannelsinvitationsrevoke-id)
 * [`smartthings edge:channels:invites [IDORINDEX]`](#smartthings-edgechannelsinvites-idorindex)
 * [`smartthings edge:channels:invites:accept ID`](#smartthings-edgechannelsinvitesaccept-id)
 * [`smartthings edge:channels:invites:create`](#smartthings-edgechannelsinvitescreate)
 * [`smartthings edge:channels:invites:delete [ID]`](#smartthings-edgechannelsinvitesdelete-id)
-* [`smartthings edge:channels:invites:revoke [ID]`](#smartthings-edgechannelsinvitesrevoke-id)
 * [`smartthings edge:channels:metainfo [IDORINDEX]`](#smartthings-edgechannelsmetainfo-idorindex)
 * [`smartthings edge:channels:unassign [DRIVERID]`](#smartthings-edgechannelsunassign-driverid)
 * [`smartthings edge:channels:unenroll [HUBID]`](#smartthings-edgechannelsunenroll-hubid)
@@ -218,10 +195,8 @@ that map to the API spec.
 * [`smartthings edge:drivers:installed [IDORINDEX]`](#smartthings-edgedriversinstalled-idorindex)
 * [`smartthings edge:drivers:logcat [DRIVERID]`](#smartthings-edgedriverslogcat-driverid)
 * [`smartthings edge:drivers:package [PROJECTDIRECTORY]`](#smartthings-edgedriverspackage-projectdirectory)
-* [`smartthings edge:drivers:publish [DRIVERID] [VERSION]`](#smartthings-edgedriverspublish-driverid-version)
 * [`smartthings edge:drivers:switch [DEVICEID]`](#smartthings-edgedriversswitch-deviceid)
 * [`smartthings edge:drivers:uninstall [DRIVERID]`](#smartthings-edgedriversuninstall-driverid)
-* [`smartthings edge:drivers:unpublish [DRIVERID]`](#smartthings-edgedriversunpublish-driverid)
 * [`smartthings help [COMMAND]`](#smartthings-help-command)
 * [`smartthings installedapps [ID]`](#smartthings-installedapps-id)
 * [`smartthings installedapps:delete [ID]`](#smartthings-installedappsdelete-id)
@@ -253,10 +228,6 @@ that map to the API spec.
 * [`smartthings presentation:device-config PRESENTATIONID [MANUFACTURERNAME]`](#smartthings-presentationdevice-config-presentationid-manufacturername)
 * [`smartthings presentation:device-config:create`](#smartthings-presentationdevice-configcreate)
 * [`smartthings presentation:device-config:generate ID`](#smartthings-presentationdevice-configgenerate-id)
-* [`smartthings rooms [IDORINDEX]`](#smartthings-rooms-idorindex)
-* [`smartthings rooms:create`](#smartthings-roomscreate)
-* [`smartthings rooms:delete [ID]`](#smartthings-roomsdelete-id)
-* [`smartthings rooms:update [ID]`](#smartthings-roomsupdate-id)
 * [`smartthings rules [IDORINDEX]`](#smartthings-rules-idorindex)
 * [`smartthings rules:create`](#smartthings-rulescreate)
 * [`smartthings rules:delete [ID]`](#smartthings-rulesdelete-id)
@@ -1318,894 +1289,6 @@ DESCRIPTION
 
 _See code: [src/commands/config/reset.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.22/packages/cli/src/commands/config/reset.ts)_
 
-## `smartthings device-preferences [IDORINDEX]`
-
-list device preferences or get information for a specific device preference
-
-```
-USAGE
-  $ smartthings device-preferences [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
-    [-y] [-o <value>] [-A] [-n <value>] [-s]
-
-ARGUMENTS
-  IDORINDEX  device preference id or index
-
-FLAGS
-  -A, --all-organizations     include entities from all organizations the user belongs to
-  -O, --organization=<value>  the organization ID to use for this command
-  -n, --namespace=<value>     a specific namespace to query; will use all by default
-  -s, --standard              show standard SmartThings device preferences
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  list device preferences or get information for a specific device preference
-
-ALIASES
-  $ smartthings device-preferences
-
-EXAMPLES
-  $ smartthings devicepreferences                       # list all device preferences, sorted by title
-
-  $ smartthings devicepreferences device-preference-id  # display details for preference with specified id
-
-  $ smartthings devicepreferences 2                     # display details for second preference when sorted by title
-
-  $ smartthings devicepreferences 3 -y                  # display details for third preference as YAML
-
-  $ smartthings devicepreferences 3 -o dp.json          # write details as JSON for third preference to dp.json
-```
-
-## `smartthings device-preferences:create`
-
-create a device preference
-
-```
-USAGE
-  $ smartthings device-preferences:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [-d]
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-  -d, --dry-run               produce JSON but don't actually submit
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -i, --input=<value>    specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  create a device preference
-
-ALIASES
-  $ smartthings device-preferences:create
-
-EXAMPLES
-  # create a new device preference by answering questions
-
-    $ smartthings devicepreferences:create
-
-  # generate a device preference by answering questions but do not actually create it
-
-    $ smartthings devicepreferences:create -d
-
-  # create a new device preference defined by the file dp.json
-
-    $ smartthings devicepreferences:create -i dp.json
-
-  # create a new device preference defined by the file dp.json and write the results to dp - saved.json
-
-    $ smartthings devicepreferences: create - i dp.json - o dp - saved.json
-```
-
-## `smartthings device-preferences:update [ID]`
-
-update a device preference
-
-```
-USAGE
-  $ smartthings device-preferences:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [-d]
-
-ARGUMENTS
-  ID  the device preference id
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-  -d, --dry-run               produce JSON but don't actually submit
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -i, --input=<value>    specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  update a device preference
-
-ALIASES
-  $ smartthings device-preferences:update
-
-EXAMPLES
-  $ smartthings devicepreferences:update -i dp.json                   # update a device preference with data from dp.json, select which preference from a list
-
-  $ smartthings devicepreferences:update -i dp.yaml my-preference-id  # update device preference my-preference-id with data from dp.yaml
-```
-
-## `smartthings device-profiles [ID]`
-
-list all device profiles available in a user account or retrieve a single profile
-
-```
-USAGE
-  $ smartthings device-profiles [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
-    <value>] [-A] [-v]
-
-ARGUMENTS
-  ID  device profile to retrieve; UUID or the number of the profile from list
-
-FLAGS
-  -A, --all-organizations     include entities from all organizations the user belongs to
-  -O, --organization=<value>  the organization ID to use for this command
-  -v, --verbose               include presentationId and manufacturerName in list output
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  list all device profiles available in a user account or retrieve a single profile
-
-ALIASES
-  $ smartthings device-profiles
-
-EXAMPLES
-  $ smartthings deviceprofiles                      # list all device profiles
-
-  $ smartthings deviceprofiles bb0fdc5-...-a8bd2ea  # show device profile with the specified UUID
-
-  $ smartthings deviceprofiles 2                    # show the second device profile in the list
-
-  $ smartthings deviceprofiles 3 -j                 # show the profile in JSON format
-
-  $ smartthings deviceprofiles 5 -y                 # show the profile in YAML format
-
-  $ smartthings deviceprofiles 4 -j -o profile.json # write the profile to the file "profile.json"
-```
-
-## `smartthings device-profiles:create`
-
-create a new device profile
-
-```
-USAGE
-  $ smartthings device-profiles:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [-d]
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-  -d, --dry-run               produce JSON but don't actually submit
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -i, --input=<value>    specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  create a new device profile
-
-  Creates a new device profile. If a vid field is not present in the meta
-
-  then a default device presentation will be created for this profile and the
-
-  vid set to reference it.
-
-ALIASES
-  $ smartthings device-profiles:create
-
-EXAMPLES
-  $ smartthings deviceprofiles:create -i myprofile.json    # create a device profile from the JSON file definition
-
-  $ smartthings deviceprofiles:create -i myprofile.yaml    # create a device profile from the YAML file definition
-
-  $ smartthings deviceprofiles:create                      # create a device profile with interactive dialog
-```
-
-## `smartthings device-profiles:delete [ID]`
-
-delete a device profile
-
-```
-USAGE
-  $ smartthings device-profiles:delete [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-
-ARGUMENTS
-  ID  Device profile UUID or number in the list
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  delete a device profile
-
-ALIASES
-  $ smartthings device-profiles:delete
-
-EXAMPLES
-  $ smartthings deviceprofiles:delete 63b8c91e-9686-4c43-9afb-fbd9f77e3bb0  # delete profile with this UUID
-
-  $ smartthings deviceprofiles:delete 5                                     # delete the 5th profile in the list
-```
-
-## `smartthings device-profiles:device-config [ID]`
-
-get the device configuration associated with a device profile
-
-```
-USAGE
-  $ smartthings device-profiles:device-config [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
-    <value>]
-
-ARGUMENTS
-  ID  device profile id or the number in list
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  get the device configuration associated with a device profile
-
-ALIASES
-  $ smartthings device-profiles:device-config
-```
-
-## `smartthings device-profiles:presentation [ID]`
-
-get the presentation associated with a device profile
-
-```
-USAGE
-  $ smartthings device-profiles:presentation [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
-    <value>]
-
-ARGUMENTS
-  ID  device profile UUID or the number of the profile from list
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  get the presentation associated with a device profile
-
-ALIASES
-  $ smartthings device-profiles:presentation
-
-EXAMPLES
-  $ smartthings deviceprofiles:presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf
-
-  $ smartthings deviceprofiles:presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf --language=ko
-
-  $ smartthings deviceprofiles:presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf --language=NONE
-
-
-
-  Specifying only the presentationId defaults to the "SmartThingsCommunity" manufacturer
-
-  name and the language set for the computer's operating system. The language can be
-
-  overridden by specifying an ISO language code. If "NONE" is specified for the language
-
-  flag then no language header is specified in the API request
-```
-
-## `smartthings device-profiles:publish [ID]`
-
-publish a device profile (published profiles cannot be modified)
-
-```
-USAGE
-  $ smartthings device-profiles:publish [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
-    <value>]
-
-ARGUMENTS
-  ID  device profile id
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  publish a device profile (published profiles cannot be modified)
-
-ALIASES
-  $ smartthings device-profiles:publish
-```
-
-## `smartthings device-profiles:translations [ID] [TAG]`
-
-get list of locales supported by the device profiles
-
-```
-USAGE
-  $ smartthings device-profiles:translations [ID] [TAG] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y]
-    [-o <value>] [-v]
-
-ARGUMENTS
-  ID   UUID or the number of the profile from list
-  TAG  the locale tag or number of the tag from list
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-  -v, --verbose               include list of locales in table output
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  get list of locales supported by the device profiles
-
-ALIASES
-  $ smartthings device-profiles:translations
-
-EXAMPLES
-  $ smartthings deviceprofiles:translations
-
-  ┌────┬─────────────────────┬─────────────┬──────────────────────────────────────┐
-
-  │ #  │ Name                │ Status      │ Id                                   │
-
-  ├────┼─────────────────────┼─────────────┼──────────────────────────────────────┤
-
-  │  1 │ Test Switch         │ DEVELOPMENT │ 58e73d0c-b5a5-4814-b344-c10f4ff357bb │
-
-  │  2 │ Two Channel Outlet  │ DEVELOPMENT │ 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 │
-
-  └────┴─────────────────────┴─────────────┴──────────────────────────────────────┘
-
-  ? Select a Device Profile. 2
-
-  ┌───┬─────┐
-
-  │ # │ Tag │
-
-  ├───┼─────┤
-
-  │ 1 │ en  │
-
-  │ 2 │ es  │
-
-  └───┴─────┘
-
-
-
-  $ smartthings deviceprofiles:translations -v
-
-  ┌────┬─────────────────────┬─────────────┬──────────────────────────────────────┬─────────┐
-
-  │ #  │ Name                │ Status      │ Id                                   │ Locales │
-
-  ├────┼─────────────────────┼─────────────┼──────────────────────────────────────┼─────────┤
-
-  │  1 │ Test Switch         │ DEVELOPMENT │ 58e73d0c-b5a5-4814-b344-c10f4ff357bb │         │
-
-  │  2 │ Two Channel Outlet  │ DEVELOPMENT │ 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 │ en, es  │
-
-  └────┴─────────────────────┴─────────────┴──────────────────────────────────────┴─────────┘
-
-  ? Select a Device Profile. 2
-
-  ┌───┬─────┐
-
-  │ # │ Tag │
-
-  ├───┼─────┤
-
-  │ 1 │ en  │
-
-  │ 2 │ es  │
-
-  └───┴─────┘
-
-
-
-  $ smartthings deviceprofiles:translations 2
-
-  $ smartthings deviceprofiles:translations 3acbf2fc-6be2-4be0-aeb5-c10f4ff357bb
-
-  ┌───┬─────┐
-
-  │ # │ Tag │
-
-  ├───┼─────┤
-
-  │ 1 │ en  │
-
-  │ 2 │ es  │
-
-  └───┴─────┘
-
-
-
-  $ smartthings deviceprofiles:translations 2 2
-
-  $ smartthings deviceprofiles:translations 2 en
-
-  $ smartthings deviceprofiles:translations 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 en
-
-  Tag: en
-
-  ┌───────────┬────────────┬───────────────────────────────┐
-
-  │ Component │ Label      │ Description                   │
-
-  ├───────────┼────────────┼───────────────────────────────┤
-
-  │ main      │ Main Power │ Controls power to all outlets │
-
-  │ outlet1   │ Outlet One │ Switchable outlet 1 power     │
-
-  │ outlet2   │ Outlet two │ Switchable outlet 1 power     │
-
-  └───────────┴────────────┴───────────────────────────────┘
-```
-
-## `smartthings device-profiles:translations:delete [ID] [TAG]`
-
-delete a device profile translation
-
-```
-USAGE
-  $ smartthings device-profiles:translations:delete [ID] [TAG] [-h] [-p <value>] [-t <value>] [--language <value>] [-O
-  <value>]
-
-ARGUMENTS
-  ID   device profile UUID or number in the list
-  TAG  the locale tag
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  delete a device profile translation
-
-ALIASES
-  $ smartthings device-profiles:translations:delete
-
-EXAMPLES
-  $ smartthings deviceprofiles:translations:delete 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 en
-
-  Device profile "3acbf2fc-6be2-4be0-aeb5-44759cbd66c2" translation "en" deleted
-
-
-
-  $ smartthings deviceprofiles:translations:delete
-
-  ┌────┬─────────────────────┬─────────────┬──────────────────────────────────────┐
-
-  │ #  │ Name                │ Status      │ Id                                   │
-
-  ├────┼─────────────────────┼─────────────┼──────────────────────────────────────┤
-
-  │  1 │ Test Switch         │ DEVELOPMENT │ 58e73d0c-b5a5-4814-b344-c10f4ff357bb │
-
-  │  2 │ Two Channel Outlet  │ DEVELOPMENT │ 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 │
-
-  └────┴─────────────────────┴─────────────┴──────────────────────────────────────┘
-
-  ? Enter id or index 2
-
-  ┌───┬─────┐
-
-  │ # │ Tag │
-
-  ├───┼─────┤
-
-  │ 1 │ en  │
-
-  │ 2 │ es  │
-
-  └───┴─────┘
-
-  ? Enter id or index 1
-
-  Device profile "3acbf2fc-6be2-4be0-aeb5-44759cbd66c2" translation "en" deleted
-```
-
-## `smartthings device-profiles:translations:upsert [ID]`
-
-create or update a device profile translation
-
-```
-USAGE
-  $ smartthings device-profiles:translations:upsert [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [-d]
-
-ARGUMENTS
-  ID  UUID or the number of the profile from list
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-  -d, --dry-run               produce JSON but don't actually submit
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -i, --input=<value>    specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  create or update a device profile translation
-
-ALIASES
-  $ smartthings device-profiles:translations:upsert
-
-EXAMPLES
-  $ smartthings deviceprofiles:translations:upsert 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 -i en.yaml
-
-  tag: en
-
-  components:
-
-    main:
-
-      label: Main Power
-
-      description: Controls power to all outlets
-
-    outlet1:
-
-      label: Outlet One
-
-      description: Switchable outlet 1 power
-
-    outlet2:
-
-      label: Outlet two
-
-      description: Switchable outlet 1 power
-
-
-
-  $ smartthings deviceprofiles:translations:upsert -i en.yaml
-
-  ┌────┬─────────────────────┬─────────────┬──────────────────────────────────────┐
-
-  │ #  │ Name                │ Status      │ Id                                   │
-
-  ├────┼─────────────────────┼─────────────┼──────────────────────────────────────┤
-
-  │  1 │ Test Switch         │ DEVELOPMENT │ 58e73d0c-b5a5-4814-b344-c10f4ff357bb │
-
-  │  2 │ Two Channel Outlet  │ DEVELOPMENT │ 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 │
-
-  └────┴─────────────────────┴─────────────┴──────────────────────────────────────┘
-
-  ? Enter id or index 2
-
-  tag: en
-
-  components:
-
-    main:
-
-      label: Main Power
-
-      description: Controls power to all outlets
-
-    outlet1:
-
-      label: Outlet One
-
-      description: Switchable outlet 1 power
-
-    outlet2:
-
-      label: Outlet two
-
-      description: Switchable outlet 1 power
-```
-
-## `smartthings device-profiles:update [ID]`
-
-update a device profile
-
-```
-USAGE
-  $ smartthings device-profiles:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [-d]
-
-ARGUMENTS
-  ID  device profile UUID or number in the list
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-  -d, --dry-run               produce JSON but don't actually submit
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -i, --input=<value>    specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  update a device profile
-
-ALIASES
-  $ smartthings device-profiles:update
-```
-
-## `smartthings device-profiles:view [ID]`
-
-show device profile and device configuration in a single, consolidated view
-
-```
-USAGE
-  $ smartthings device-profiles:view [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
-    <value>]
-
-ARGUMENTS
-  ID  device profile UUID or the number from list
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  show device profile and device configuration in a single, consolidated view
-
-ALIASES
-  $ smartthings device-profiles:view
-```
-
-## `smartthings device-profiles:view:create`
-
-create a new device profile and device configuration
-
-```
-USAGE
-  $ smartthings device-profiles:view:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [-d]
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-  -d, --dry-run               produce JSON but don't actually submit
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -i, --input=<value>    specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  create a new device profile and device configuration
-
-  Creates a new device profile and device configuration. Unlike deviceprofiles:create,
-
-  this command accepts a consolidated object that can include a device configuration
-
-  in a property named "view".
-
-ALIASES
-  $ smartthings device-profiles:view:create
-
-EXAMPLES
-  $ smartthings deviceprofiles:view:create -i test.json
-
-
-
-  This test.json file defines a switch that cannot be controlled by the automations builder:
-
-
-
-  name: Test Switch
-
-  components:
-
-    - id: main
-
-      capabilities:
-
-        - id: switch
-
-  view:
-
-    dashboard:
-
-      states:
-
-        - capability: switch
-
-      actions:
-
-        - capability: switch
-
-    detailView:
-
-      - capability: switch
-
-    automation:
-
-      conditions:
-
-        - capability: switch
-```
-
-## `smartthings device-profiles:view:update [ID]`
-
-update a device profile and configuration
-
-```
-USAGE
-  $ smartthings device-profiles:view:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
-    <value>] [-o <value>] [-d]
-
-ARGUMENTS
-  ID  device profile id
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-  -d, --dry-run               produce JSON but don't actually submit
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -i, --input=<value>    specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  update a device profile and configuration
-
-  Updates a device profile and device configuration and sets the vid of the profile
-
-  to the vid of the updated configuration. Unlike deviceprofiles:update this
-
-  command accepts a consolidated object that can include a device configuration
-
-  in a property named "view".
-
-ALIASES
-  $ smartthings device-profiles:view:update
-
-EXAMPLES
-  $ smartthings deviceprofiles:view:update 84042863-0d34-4c5c-b497-808daf230787 -i test.json
-
-
-
-  This test.json file adds the powerMeter capability to the device and makes it available in
-
-  the device detail view but not the rule builder:
-
-
-
-  components:
-
-    - id: main
-
-      capabilities:
-
-        - id: switch
-
-        - id: powerMeter
-
-  view:
-
-    dashboard:
-
-      states:
-
-        - capability: switch
-
-      actions:
-
-        - capability: switch
-
-    detailView:
-
-      - capability: switch
-
-      - capability: powerMeter
-
-    automation:
-
-      conditions:
-
-        - capability: switch
-```
-
 ## `smartthings devicepreferences [IDORINDEX]`
 
 list device preferences or get information for a specific device preference
@@ -2235,9 +1318,6 @@ COMMON FLAGS
 
 DESCRIPTION
   list device preferences or get information for a specific device preference
-
-ALIASES
-  $ smartthings device-preferences
 
 EXAMPLES
   $ smartthings devicepreferences                       # list all device preferences, sorted by title
@@ -2278,9 +1358,6 @@ COMMON FLAGS
 
 DESCRIPTION
   create a device preference
-
-ALIASES
-  $ smartthings device-preferences:create
 
 EXAMPLES
   # create a new device preference by answering questions
@@ -2445,9 +1522,6 @@ COMMON FLAGS
 DESCRIPTION
   update a device preference
 
-ALIASES
-  $ smartthings device-preferences:update
-
 EXAMPLES
   $ smartthings devicepreferences:update -i dp.json                   # update a device preference with data from dp.json, select which preference from a list
 
@@ -2484,9 +1558,6 @@ COMMON FLAGS
 
 DESCRIPTION
   list all device profiles available in a user account or retrieve a single profile
-
-ALIASES
-  $ smartthings device-profiles
 
 EXAMPLES
   $ smartthings deviceprofiles                      # list all device profiles
@@ -2536,9 +1607,6 @@ DESCRIPTION
 
   vid set to reference it.
 
-ALIASES
-  $ smartthings device-profiles:create
-
 EXAMPLES
   $ smartthings deviceprofiles:create -i myprofile.json    # create a device profile from the JSON file definition
 
@@ -2571,9 +1639,6 @@ COMMON FLAGS
 
 DESCRIPTION
   delete a device profile
-
-ALIASES
-  $ smartthings device-profiles:delete
 
 EXAMPLES
   $ smartthings deviceprofiles:delete 63b8c91e-9686-4c43-9afb-fbd9f77e3bb0  # delete profile with this UUID
@@ -2609,9 +1674,6 @@ COMMON FLAGS
 
 DESCRIPTION
   get the device configuration associated with a device profile
-
-ALIASES
-  $ smartthings device-profiles:device-config
 ```
 
 _See code: [src/commands/deviceprofiles/device-config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.22/packages/cli/src/commands/deviceprofiles/device-config.ts)_
@@ -2642,9 +1704,6 @@ COMMON FLAGS
 
 DESCRIPTION
   get the presentation associated with a device profile
-
-ALIASES
-  $ smartthings device-profiles:presentation
 
 EXAMPLES
   $ smartthings deviceprofiles:presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf
@@ -2692,9 +1751,6 @@ COMMON FLAGS
 
 DESCRIPTION
   publish a device profile (published profiles cannot be modified)
-
-ALIASES
-  $ smartthings device-profiles:publish
 ```
 
 _See code: [src/commands/deviceprofiles/publish.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.22/packages/cli/src/commands/deviceprofiles/publish.ts)_
@@ -2727,9 +1783,6 @@ COMMON FLAGS
 
 DESCRIPTION
   get list of locales supported by the device profiles
-
-ALIASES
-  $ smartthings device-profiles:translations
 
 EXAMPLES
   $ smartthings deviceprofiles:translations
@@ -2860,9 +1913,6 @@ COMMON FLAGS
 DESCRIPTION
   delete a device profile translation
 
-ALIASES
-  $ smartthings device-profiles:translations:delete
-
 EXAMPLES
   $ smartthings deviceprofiles:translations:delete 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 en
 
@@ -2933,9 +1983,6 @@ COMMON FLAGS
 
 DESCRIPTION
   create or update a device profile translation
-
-ALIASES
-  $ smartthings device-profiles:translations:upsert
 
 EXAMPLES
   $ smartthings deviceprofiles:translations:upsert 3acbf2fc-6be2-4be0-aeb5-44759cbd66c2 -i en.yaml
@@ -3033,9 +2080,6 @@ COMMON FLAGS
 
 DESCRIPTION
   update a device profile
-
-ALIASES
-  $ smartthings device-profiles:update
 ```
 
 _See code: [src/commands/deviceprofiles/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.22/packages/cli/src/commands/deviceprofiles/update.ts)_
@@ -3066,9 +2110,6 @@ COMMON FLAGS
 
 DESCRIPTION
   show device profile and device configuration in a single, consolidated view
-
-ALIASES
-  $ smartthings device-profiles:view
 ```
 
 _See code: [src/commands/deviceprofiles/view.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.22/packages/cli/src/commands/deviceprofiles/view.ts)_
@@ -3104,9 +2145,6 @@ DESCRIPTION
   this command accepts a consolidated object that can include a device configuration
 
   in a property named "view".
-
-ALIASES
-  $ smartthings device-profiles:view:create
 
 EXAMPLES
   $ smartthings deviceprofiles:view:create -i test.json
@@ -3188,9 +2226,6 @@ DESCRIPTION
   command accepts a consolidated object that can include a device configuration
 
   in a property named "view".
-
-ALIASES
-  $ smartthings device-profiles:view:update
 
 EXAMPLES
   $ smartthings deviceprofiles:view:update 84042863-0d34-4c5c-b497-808daf230787 -i test.json
@@ -3669,43 +2704,9 @@ COMMON FLAGS
 
 DESCRIPTION
   assign a driver to a channel
-
-ALIASES
-  $ smartthings edge:drivers:publish
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/assign.ts)_
-
-## `smartthings edge:channels:assignments [IDORINDEX]`
-
-list all drivers assigned to a given channel
-
-```
-USAGE
-  $ smartthings edge:channels:assignments [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
-    [-y] [-o <value>]
-
-ARGUMENTS
-  IDORINDEX  the channel id or number in list
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  list all drivers assigned to a given channel
-
-ALIASES
-  $ smartthings edge:channels:assignments
-```
 
 ## `smartthings edge:channels:create`
 
@@ -3788,9 +2789,6 @@ COMMON FLAGS
 
 DESCRIPTION
   list all drivers assigned to a given channel
-
-ALIASES
-  $ smartthings edge:channels:assignments
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/drivers.ts)_
@@ -3853,167 +2851,6 @@ DESCRIPTION
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/enrollments.ts)_
 
-## `smartthings edge:channels:invitations [IDORINDEX]`
-
-list invitations or retrieve a single invitation by id or index
-
-```
-USAGE
-  $ smartthings edge:channels:invitations [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
-    [-y] [-o <value>] [-C <value>]
-
-ARGUMENTS
-  IDORINDEX  the invitation id or number in list
-
-FLAGS
-  -C, --channel=<UUID>        channel id
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  list invitations or retrieve a single invitation by id or index
-
-ALIASES
-  $ smartthings edge:channels:invitations
-
-EXAMPLES
-  $ smartthings edge:channels:invites                  # list all invites on all channels you own
-
-  $ smartthings edge:channels:invites 2                # list details about the second invite show when listed as in the example above
-
-  $ smartthings edge:channels:invites -C <channel id>  # list all invites on channel with id <channel id>
-
-  $ smartthings edge:channels:invites <invite id>      # list details about the invite with id <invite id>
-```
-
-## `smartthings edge:channels:invitations:accept ID`
-
-accept a channel invitation
-
-```
-USAGE
-  $ smartthings edge:channels:invitations:accept [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-
-ARGUMENTS
-  ID  invite UUID
-
-FLAGS
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  accept a channel invitation
-
-ALIASES
-  $ smartthings edge:channels:invitations:accept
-```
-
-## `smartthings edge:channels:invitations:create`
-
-create an invitation
-
-```
-USAGE
-  $ smartthings edge:channels:invitations:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-C <value> | -i
-    <value>] [-j] [-y] [-o <value>] [-d]
-
-FLAGS
-  -C, --channel=<UUID>        channel id
-  -O, --organization=<value>  the organization ID to use for this command
-  -d, --dry-run               produce JSON but don't actually submit
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -i, --input=<value>    specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  create an invitation
-
-ALIASES
-  $ smartthings edge:channels:invitations:create
-```
-
-## `smartthings edge:channels:invitations:delete [ID]`
-
-delete a channel invitation
-
-```
-USAGE
-  $ smartthings edge:channels:invitations:delete [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-  [-C <value>]
-
-ARGUMENTS
-  ID  invitation UUID
-
-FLAGS
-  -C, --channel=<UUID>        channel id
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  delete a channel invitation
-
-ALIASES
-  $ smartthings edge:channels:invitations:revoke
-  $ smartthings edge:channels:invitations:delete
-  $ smartthings edge:channels:invites:revoke
-```
-
-## `smartthings edge:channels:invitations:revoke [ID]`
-
-delete a channel invitation
-
-```
-USAGE
-  $ smartthings edge:channels:invitations:revoke [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-  [-C <value>]
-
-ARGUMENTS
-  ID  invitation UUID
-
-FLAGS
-  -C, --channel=<UUID>        channel id
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  delete a channel invitation
-
-ALIASES
-  $ smartthings edge:channels:invitations:revoke
-  $ smartthings edge:channels:invitations:delete
-  $ smartthings edge:channels:invites:revoke
-```
-
 ## `smartthings edge:channels:invites [IDORINDEX]`
 
 list invitations or retrieve a single invitation by id or index
@@ -4041,9 +2878,6 @@ COMMON FLAGS
 
 DESCRIPTION
   list invitations or retrieve a single invitation by id or index
-
-ALIASES
-  $ smartthings edge:channels:invitations
 
 EXAMPLES
   $ smartthings edge:channels:invites                  # list all invites on all channels you own
@@ -4079,9 +2913,6 @@ COMMON FLAGS
 
 DESCRIPTION
   accept a channel invitation
-
-ALIASES
-  $ smartthings edge:channels:invitations:accept
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/invites/accept.ts)_
@@ -4112,9 +2943,6 @@ COMMON FLAGS
 
 DESCRIPTION
   create an invitation
-
-ALIASES
-  $ smartthings edge:channels:invitations:create
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/invites/create.ts)_
@@ -4143,45 +2971,9 @@ COMMON FLAGS
 
 DESCRIPTION
   delete a channel invitation
-
-ALIASES
-  $ smartthings edge:channels:invitations:revoke
-  $ smartthings edge:channels:invitations:delete
-  $ smartthings edge:channels:invites:revoke
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/invites/delete.ts)_
-
-## `smartthings edge:channels:invites:revoke [ID]`
-
-delete a channel invitation
-
-```
-USAGE
-  $ smartthings edge:channels:invites:revoke [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-C
-  <value>]
-
-ARGUMENTS
-  ID  invitation UUID
-
-FLAGS
-  -C, --channel=<UUID>        channel id
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  delete a channel invitation
-
-ALIASES
-  $ smartthings edge:channels:invitations:revoke
-  $ smartthings edge:channels:invitations:delete
-  $ smartthings edge:channels:invites:revoke
-```
 
 ## `smartthings edge:channels:metainfo [IDORINDEX]`
 
@@ -4251,9 +3043,6 @@ COMMON FLAGS
 
 DESCRIPTION
   remove a driver from a channel
-
-ALIASES
-  $ smartthings edge:drivers:unpublish
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/channels/unassign.ts)_
@@ -4599,36 +3388,6 @@ EXAMPLES
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/drivers/package.ts)_
 
-## `smartthings edge:drivers:publish [DRIVERID] [VERSION]`
-
-assign a driver to a channel
-
-```
-USAGE
-  $ smartthings edge:drivers:publish [DRIVERID] [VERSION] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
-    [-C <value>]
-
-ARGUMENTS
-  DRIVERID  driver id
-  VERSION   driver version
-
-FLAGS
-  -C, --channel=<UUID>        channel id
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  assign a driver to a channel
-
-ALIASES
-  $ smartthings edge:drivers:publish
-```
-
 ## `smartthings edge:drivers:switch [DEVICEID]`
 
 change the driver used by an installed device
@@ -4697,35 +3456,6 @@ DESCRIPTION
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0-beta.4/packages/edge/src/commands/edge/drivers/uninstall.ts)_
-
-## `smartthings edge:drivers:unpublish [DRIVERID]`
-
-remove a driver from a channel
-
-```
-USAGE
-  $ smartthings edge:drivers:unpublish [DRIVERID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-C
-    <value>]
-
-ARGUMENTS
-  DRIVERID  driver id
-
-FLAGS
-  -C, --channel=<UUID>        channel id
-  -O, --organization=<value>  the organization ID to use for this command
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  remove a driver from a channel
-
-ALIASES
-  $ smartthings edge:drivers:unpublish
-```
 
 ## `smartthings help [COMMAND]`
 
@@ -5039,9 +3769,6 @@ COMMON FLAGS
 
 DESCRIPTION
   list rooms or get information for a specific room
-
-ALIASES
-  $ smartthings rooms
 ```
 
 _See code: [src/commands/locations/rooms.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.22/packages/cli/src/commands/locations/rooms.ts)_
@@ -5071,9 +3798,6 @@ COMMON FLAGS
 
 DESCRIPTION
   create a room
-
-ALIASES
-  $ smartthings rooms:create
 ```
 
 _See code: [src/commands/locations/rooms/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.22/packages/cli/src/commands/locations/rooms/create.ts)_
@@ -5100,9 +3824,6 @@ COMMON FLAGS
 
 DESCRIPTION
   delete a room
-
-ALIASES
-  $ smartthings rooms:delete
 ```
 
 _See code: [src/commands/locations/rooms/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.22/packages/cli/src/commands/locations/rooms/delete.ts)_
@@ -5135,9 +3856,6 @@ COMMON FLAGS
 
 DESCRIPTION
   update a room
-
-ALIASES
-  $ smartthings rooms:update
 ```
 
 _See code: [src/commands/locations/rooms/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.22/packages/cli/src/commands/locations/rooms/update.ts)_
@@ -5615,128 +4333,6 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/presentation/device-config/generate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.0-beta.22/packages/cli/src/commands/presentation/device-config/generate.ts)_
-
-## `smartthings rooms [IDORINDEX]`
-
-list rooms or get information for a specific room
-
-```
-USAGE
-  $ smartthings rooms [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>] [-v]
-    [-j] [-y] [-o <value>]
-
-ARGUMENTS
-  IDORINDEX  room UUID or index
-
-FLAGS
-  -l, --location=<UUID>  a specific location to query
-  -v, --verbose          include location name in output
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  list rooms or get information for a specific room
-
-ALIASES
-  $ smartthings rooms
-```
-
-## `smartthings rooms:create`
-
-create a room
-
-```
-USAGE
-  $ smartthings rooms:create [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
-    <value>] [-d] [-l <value>]
-
-FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
-  -l, --location=<UUID>  a specific location to query
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -i, --input=<value>    specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  create a room
-
-ALIASES
-  $ smartthings rooms:create
-```
-
-## `smartthings rooms:delete [ID]`
-
-delete a room
-
-```
-USAGE
-  $ smartthings rooms:delete [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>]
-
-ARGUMENTS
-  ID  room UUID
-
-FLAGS
-  -l, --location=<UUID>  a specific location to query
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  delete a room
-
-ALIASES
-  $ smartthings rooms:delete
-```
-
-## `smartthings rooms:update [ID]`
-
-update a room
-
-```
-USAGE
-  $ smartthings rooms:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
-    <value>] [-d] [-l <value>]
-
-ARGUMENTS
-  ID  room UUID
-
-FLAGS
-  -d, --dry-run          produce JSON but don't actually submit
-  -l, --location=<UUID>  a specific location to query
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -i, --input=<value>    specify input file
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  update a room
-
-ALIASES
-  $ smartthings rooms:update
-```
 
 ## `smartthings rules [IDORINDEX]`
 

@@ -59,8 +59,6 @@ export class ChannelsUnassignCommand extends EdgeCommand<typeof ChannelsUnassign
 		},
 	]
 
-	static aliases = ['edge:drivers:unpublish']
-
 	async run(): Promise<void> {
 		const channelId = await chooseChannel(this, 'Select a channel for the driver.',
 			this.flags.channel, { useConfigDefault: true })

@@ -41,8 +41,6 @@ export default class DeviceProfilesCommand extends APIOrganizationCommand<typeof
 		'$ smartthings deviceprofiles 4 -j -o profile.json # write the profile to the file "profile.json"',
 	]
 
-	static aliases = ['device-profiles']
-
 	async run(): Promise<void> {
 		const config: OutputItemOrListConfig<DeviceProfile & WithOrganization> = {
 			primaryKeyName: 'id',

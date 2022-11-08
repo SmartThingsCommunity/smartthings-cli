@@ -42,8 +42,6 @@ export default class DeviceDefCreateCommand extends APIOrganizationCommand<typeo
 		'      - capability: switch  ',
 	]
 
-	static aliases = ['device-profiles:view:create']
-
 	private async createWithCustomConfig(data: DeviceDefinitionRequest): Promise<DeviceDefinition> {
 		if (!data.view) {
 			throw Error('View property not defined')

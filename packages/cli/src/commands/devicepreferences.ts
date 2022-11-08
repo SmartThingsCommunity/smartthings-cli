@@ -57,8 +57,6 @@ export default class DevicePreferencesCommand extends APIOrganizationCommand<typ
 		{ name: 'idOrIndex', description: 'device preference id or index' },
 	]
 
-	static aliases = ['device-preferences']
-
 	static examples = [
 		'$ smartthings devicepreferences                       # list all device preferences, sorted by title',
 		'$ smartthings devicepreferences device-preference-id  # display details for preference with specified id',

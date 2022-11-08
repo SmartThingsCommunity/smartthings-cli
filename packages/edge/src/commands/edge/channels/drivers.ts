@@ -18,8 +18,6 @@ export default class ChannelsDriversCommand extends EdgeCommand<typeof ChannelsD
 		description: 'the channel id or number in list',
 	}]
 
-	static aliases = ['edge:channels:assignments']
-
 	async run(): Promise<void> {
 		const config: OutputListConfig<DriverChannelDetailsWithName> = {
 			primaryKeyName: 'channelId',

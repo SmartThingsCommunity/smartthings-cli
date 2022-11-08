@@ -56,8 +56,6 @@ export default class DeviceProfileTranslationsUpsertCommand extends APIOrganizat
 		'    description: Switchable outlet 1 power',
 	]
 
-	static aliases = ['device-profiles:translations:upsert']
-
 	async run(): Promise<void> {
 		const id = await chooseDeviceProfile(this, this.args.id)
 
