@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.0.0-beta.23
+
+### Patch Changes
+
+- [#439](https://github.com/SmartThingsCommunity/smartthings-cli/pull/439) [`0ff4918`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/0ff491827ee13d4dfe308792e19f1440422399dc) Thanks [@rossiam](https://github.com/rossiam)! - removed command aliases (`@oclif/plugin-notfound` plugin works much better now than it once did)
+
+- Updated dependencies [[`0ff4918`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/0ff491827ee13d4dfe308792e19f1440422399dc)]:
+  - @smartthings/plugin-cli-edge@2.0.0-beta.5
+
 ## 1.0.0-beta.22
 
 ### Patch Changes
