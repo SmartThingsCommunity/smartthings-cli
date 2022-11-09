@@ -17,8 +17,6 @@ https://www.npmjs.com/package/@oclif/dev-cli
 SmartThings CLI
 =======================
 
-:warning: :construction: This CLI is currently in beta release. Please [open an issue](https://github.com/SmartThingsCommunity/smartthings-cli/issues/new/choose) to report a bug or ask a question.
-
 <!-- toc -->
 * [Overview](#overview)
 * [Usage](#usage)
@@ -109,6 +107,7 @@ headless servers or for users who frequently switch between accounts.
    using `--output` with a different extension.
 1. Command line flags must go after the command. Use `smartthings command -f flag` instead
    of `smartthings -f flag command`.
+1. You can [open an issue](https://github.com/SmartThingsCommunity/smartthings-cli/issues/new/choose) to report a bug or ask a question.
 
 # Commands
 
