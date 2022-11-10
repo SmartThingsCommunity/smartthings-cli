@@ -1,5 +1,106 @@
 # Change Log
 
+## 1.0.0
+
+### Minor Changes
+
+- [#279](https://github.com/SmartThingsCommunity/smartthings-cli/pull/279) [`08ea9dd`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/08ea9dd52e7af829ba0629d9e7c9a89a7505baca) Thanks [@rossiam](https://github.com/rossiam)! - support saving default hub and channel
+
+### Patch Changes
+
+- [#309](https://github.com/SmartThingsCommunity/smartthings-cli/pull/309) [`7e3a1b8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/7e3a1b83d6c301aa86fe35d5660cfadde2bcfaf1) Thanks [@john-u](https://github.com/john-u)! - - shutdown logger before Node exits
+
+  - update @oclif deps to latest
+  - replace process exits with command errors
+
+- [#356](https://github.com/SmartThingsCommunity/smartthings-cli/pull/356) [`97f5c32`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/97f5c32db1be3b96ed7fc637ade3c1e209300ff5) Thanks [@john-u](https://github.com/john-u)! - bump log4js to resolve vulnerability
+
+- [#294](https://github.com/SmartThingsCommunity/smartthings-cli/pull/294) [`356a24b`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/356a24be75a467f82f627a654dd6a1c8b83c56f8) Thanks [@john-u](https://github.com/john-u)! - Add ability to enable debug logging (to console) via env variable.
+
+- [#410](https://github.com/SmartThingsCommunity/smartthings-cli/pull/410) [`4bff9ea`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/4bff9eac6bac23daa0b995fb0be64d919e409b2c) Thanks [@rossiam](https://github.com/rossiam)! - incorporate edge plugin into monorepo
+
+- [#407](https://github.com/SmartThingsCommunity/smartthings-cli/pull/407) [`f2ebdc2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/f2ebdc21ee1f6b369c0479c2546f34b1f3e5b228) Thanks [@john-u](https://github.com/john-u)! - Add build support for macos-arm64, linux-arm64, and linuxstatic-armv7
+
+- [#398](https://github.com/SmartThingsCommunity/smartthings-cli/pull/398) [`d20ad61`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d20ad6198f663a5ecb04af1d80ccf42d10214fa9) Thanks [@rossiam](https://github.com/rossiam)! - IMPORTANT: removed `-id` suffix from command line flags that had them for consistency
+
+- [#374](https://github.com/SmartThingsCommunity/smartthings-cli/pull/374) [`aeb8b28`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/aeb8b2892ca4de80fd4335a7ed1e8af2ed5153c4) Thanks [@bflorian](https://github.com/bflorian)! - feat: added device and location history commands
+
+- [#306](https://github.com/SmartThingsCommunity/smartthings-cli/pull/306) [`d4730e0`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d4730e00712ddb18b916295b138301afaa8c23eb) Thanks [@john-u](https://github.com/john-u)! - add debug logging to defualt login authenticator
+
+- [#369](https://github.com/SmartThingsCommunity/smartthings-cli/pull/369) [`d62c051`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d62c0517d6947db55cd0c701e3c8ba194efaf201) Thanks [@bflorian](https://github.com/bflorian)! - feat: Refactored devices command and added health and status flags.
+
+- [#382](https://github.com/SmartThingsCommunity/smartthings-cli/pull/382) [`3bda890`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/3bda89049474fe4137bfc75c4d7c6edd6ff79f02) Thanks [@rossiam](https://github.com/rossiam)! - fix broken edge commands
+
+- [#284](https://github.com/SmartThingsCommunity/smartthings-cli/pull/284) [`51a9c9a`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/51a9c9abec2e05d626979cb8dd59c24f88b01ef7) Thanks [@rossiam](https://github.com/rossiam)! - build fix (don't remove compiled files before publish)
+
+- [#274](https://github.com/SmartThingsCommunity/smartthings-cli/pull/274) [`efc1eed`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/efc1eed852a61399342b5040c2d60561bbfb17af) Thanks [@john-u](https://github.com/john-u)! - replace usage of lodash with native ES or separate lodash modules
+
+- [#427](https://github.com/SmartThingsCommunity/smartthings-cli/pull/427) [`5493e58`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/5493e58ad6e3ddea1491ffcf370b27cc90fecf6d) Thanks [@rossiam](https://github.com/rossiam)! - fix bug when changing drivers to an unsupported driver
+
+- [#394](https://github.com/SmartThingsCommunity/smartthings-cli/pull/394) [`e13f0c3`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e13f0c33902289083ced4a6c6642685e6832a4d6) Thanks [@rossiam](https://github.com/rossiam)! - \* fix vendor support information output for edge:drivers:installed command
+
+  - fix lookup by index for edge:drivers:installed command
+
+- [#439](https://github.com/SmartThingsCommunity/smartthings-cli/pull/439) [`0ff4918`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/0ff491827ee13d4dfe308792e19f1440422399dc) Thanks [@rossiam](https://github.com/rossiam)! - removed command aliases (`@oclif/plugin-notfound` plugin works much better now than it once did)
+
+- [#355](https://github.com/SmartThingsCommunity/smartthings-cli/pull/355) [`a7bf89d`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a7bf89d606d71b2e7494555a2e4c078b539df50f) Thanks [@rossiam](https://github.com/rossiam)! - minor cleanup of capabilities table output
+
+- [#361](https://github.com/SmartThingsCommunity/smartthings-cli/pull/361) [`688082f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/688082fe6d0e12e0e510b5c238de61b46bfddc08) Thanks [@bflorian](https://github.com/bflorian)! - Add userEmail field to ST Schema apps
+
+- [#301](https://github.com/SmartThingsCommunity/smartthings-cli/pull/301) [`6ad407a`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/6ad407a0e98b4125ff8bbdd1ed237b8e9f81e8ca) Thanks [@john-u](https://github.com/john-u)! - bump @smartthings/plugin-cli-edge
+
+- [#339](https://github.com/SmartThingsCommunity/smartthings-cli/pull/339) [`0849c4e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/0849c4e36f81816cce8c6204c339424a8211c556) Thanks [@rossiam](https://github.com/rossiam)! - Update table output: - switch to table package which handles international characters properly - removed compact / expanded command line options - removed compactTableOutput configuration option - added group-rows and no-group-rows command line options - added groupTableOutputRows configuration option - (lib) completely isolated use of dependency to table-generator.ts
+
+- [#351](https://github.com/SmartThingsCommunity/smartthings-cli/pull/351) [`e8852ab`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e8852ababae0b14d664737cd9e818dbd73b64dd0) Thanks [@Sitlintac](https://github.com/Sitlintac)! - enable multiple types when filtering devices
+
+- [#431](https://github.com/SmartThingsCommunity/smartthings-cli/pull/431) [`dd7cffc`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/dd7cffc9c30ee76c6c2b2a7a6dde171eacb0a937) Thanks [@rossiam](https://github.com/rossiam)! - fix sorting for edge:channels:drivers command
+
+- [#400](https://github.com/SmartThingsCommunity/smartthings-cli/pull/400) [`eb1aab8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/eb1aab896d4248d293c662317056097aad777438) Thanks [@rossiam](https://github.com/rossiam)! - removed `-id` suffix from flags, update help text to reflect this
+
+- [#381](https://github.com/SmartThingsCommunity/smartthings-cli/pull/381) [`852cdd7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/852cdd748497f66628c6ef810a312594731efe48) Thanks [@john-u](https://github.com/john-u)! - resolve logcat command bug that was ignoring all messages from the hub
+
+- [#327](https://github.com/SmartThingsCommunity/smartthings-cli/pull/327) [`82652c9`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/82652c9a2fc144ee253e256718f034b47aeca7fc) Thanks [@bflorian](https://github.com/bflorian)! - Added commands to create virtual devices and generate events on their behalf
+
+- [#417](https://github.com/SmartThingsCommunity/smartthings-cli/pull/417) [`5a90f2e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/5a90f2e36ddca09f962d546c4dc8fe474b844549) Thanks [@rossiam](https://github.com/rossiam)! - fix issue with creating capabilities with commands with no arguments
+
+- [#435](https://github.com/SmartThingsCommunity/smartthings-cli/pull/435) [`2c889a2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/2c889a2d61d3ddacf7589c5a298644034777e2b3) Thanks [@rossiam](https://github.com/rossiam)! - output fewer columns when listing channels to make the list fit on the screen better
+
+- [#347](https://github.com/SmartThingsCommunity/smartthings-cli/pull/347) [`76ba4c5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/76ba4c50090abe4f330d269eccd041dd71c562df) Thanks [@john-u](https://github.com/john-u)! - Add Windows installer build
+
+- [#386](https://github.com/SmartThingsCommunity/smartthings-cli/pull/386) [`34b91ab`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/34b91ab734e7db8d27344ba4f95ab65091b1f161) Thanks [@bflorian](https://github.com/bflorian)! - fix - fixed bug in capability translation output
+
+- [#313](https://github.com/SmartThingsCommunity/smartthings-cli/pull/313) [`3aa7e60`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/3aa7e6071b451818670b7553491e73557cad72b3) Thanks [@rossiam](https://github.com/rossiam)! - - edge:drivers:package command - log error when broken symlink is encountered
+
+  - edge:drivers:package command - log error when symlink to directory is encountered
+  - added edge:drivers:switch command for switching driver used by a device
+
+- [#371](https://github.com/SmartThingsCommunity/smartthings-cli/pull/371) [`b2ea4c0`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b2ea4c04c626e2991b9f6a400656ab764f700f93) Thanks [@rossiam](https://github.com/rossiam)! - include virtual device info in device output
+
+- [#432](https://github.com/SmartThingsCommunity/smartthings-cli/pull/432) [`1478253`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/147825356f3f2805650c034e9237c4b249675a61) Thanks [@rossiam](https://github.com/rossiam)! - add --verbose option to edge:drivers:installed command to include channel name
+
+- [#375](https://github.com/SmartThingsCommunity/smartthings-cli/pull/375) [`3523e38`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/3523e38aa4b47f0a411b7969fb1771bbb7c50900) Thanks [@john-u](https://github.com/john-u)! - bump @smartthings/plugin-cli-edge to support newer oclif/core version
+
+- [#282](https://github.com/SmartThingsCommunity/smartthings-cli/pull/282) [`48236e7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/48236e7f19a17b7b36d42a6741ec5adb11d32cee) Thanks [@rossiam](https://github.com/rossiam)! - Updated pkg tool used to build binaries and target Node 16.
+
+- [#367](https://github.com/SmartThingsCommunity/smartthings-cli/pull/367) [`22b9a78`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/22b9a78570d44e4df8adfd265c95148c2e29256b) Thanks [@john-u](https://github.com/john-u)! - pin dependency to resolve timeout error
+
+- [#348](https://github.com/SmartThingsCommunity/smartthings-cli/pull/348) [`d1ee1c1`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d1ee1c1717720f3a55099dddd2b92bed9668bfc2) Thanks [@Sitlintac](https://github.com/Sitlintac)! - feat: add verbose ability to rooms command
+
+  - reorder columns in table output
+  - add test
+
+- [#392](https://github.com/SmartThingsCommunity/smartthings-cli/pull/392) [`594b5c7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/594b5c73b3803e6f7f4e47fa175e5aee5df4f250) Thanks [@rossiam](https://github.com/rossiam)! - include location name for installedapps and installedschema when querying a single item in verbose mode
+
+- [#414](https://github.com/SmartThingsCommunity/smartthings-cli/pull/414) [`206c4a1`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/206c4a1070ce91e97e421c57d759c1d03c6adf3b) Thanks [@john-u](https://github.com/john-u)! - switch Windows archive format back to zip
+
+- [#278](https://github.com/SmartThingsCommunity/smartthings-cli/pull/278) [`b0cb399`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b0cb3990dc07b0072d50802de95168acb4e94467) Thanks [@john-u](https://github.com/john-u)! - update oclif packages
+
+- [#335](https://github.com/SmartThingsCommunity/smartthings-cli/pull/335) [`975c037`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/975c037c7983a1073eb6bf9f133e0f99599342df) Thanks [@john-u](https://github.com/john-u)! - update @smartthings/core-sdk to 5.0.0
+
+- Updated dependencies [[`4464873`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/44648732d54093a1e9f842dfb99dfe8bc81ea131), [`7e3a1b8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/7e3a1b83d6c301aa86fe35d5660cfadde2bcfaf1), [`356a24b`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/356a24be75a467f82f627a654dd6a1c8b83c56f8), [`4bff9ea`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/4bff9eac6bac23daa0b995fb0be64d919e409b2c), [`d20ad61`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d20ad6198f663a5ecb04af1d80ccf42d10214fa9), [`d4730e0`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d4730e00712ddb18b916295b138301afaa8c23eb), [`2ed225f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/2ed225f6fd4843aad4550634d49facb87ede7c7d), [`efc1eed`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/efc1eed852a61399342b5040c2d60561bbfb17af), [`5493e58`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/5493e58ad6e3ddea1491ffcf370b27cc90fecf6d), [`a77e73b`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a77e73b4348e4a3d65798e2711fbb40ecf0a139d), [`0ff4918`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/0ff491827ee13d4dfe308792e19f1440422399dc), [`d0fd25d`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d0fd25d12158214c051584a19efb260f938204ce), [`688082f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/688082fe6d0e12e0e510b5c238de61b46bfddc08), [`e9ff59c`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e9ff59ca0f5963d09b7193589762592af61db5e8), [`1e0bae5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/1e0bae5d33dbb2ca967ab18677616b407baf86fe), [`ea04f1e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/ea04f1ed890201608f921979c0c3b3a647ce6e59), [`2ed225f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/2ed225f6fd4843aad4550634d49facb87ede7c7d), [`0849c4e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/0849c4e36f81816cce8c6204c339424a8211c556), [`dd7cffc`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/dd7cffc9c30ee76c6c2b2a7a6dde171eacb0a937), [`82652c9`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/82652c9a2fc144ee253e256718f034b47aeca7fc), [`47b27d2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/47b27d2e2d74324a199302f6709ef698599a984c), [`2c889a2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/2c889a2d61d3ddacf7589c5a298644034777e2b3), [`d91418c`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d91418caa5d54f984728ed02520338ac2410eae6), [`1478253`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/147825356f3f2805650c034e9237c4b249675a61), [`3523e38`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/3523e38aa4b47f0a411b7969fb1771bbb7c50900), [`22b9a78`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/22b9a78570d44e4df8adfd265c95148c2e29256b), [`97f5c32`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/97f5c32db1be3b96ed7fc637ade3c1e209300ff5), [`b0cb399`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b0cb3990dc07b0072d50802de95168acb4e94467), [`ec1744e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/ec1744e21b973f9b10a929e67d9dbd4c3e8c5e5f), [`4677218`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/46772188ff8a7d432757a871aa49272c86b28e64), [`975c037`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/975c037c7983a1073eb6bf9f133e0f99599342df), [`594b5c7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/594b5c73b3803e6f7f4e47fa175e5aee5df4f250)]:
+  - @smartthings/cli-lib@1.0.0
+  - @smartthings/plugin-cli-edge@2.0.0
+
 ## 1.0.0-beta.23
 
 ### Patch Changes
