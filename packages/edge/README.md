@@ -20,6 +20,7 @@ for information on running the CLI.
 # Commands
 
 <!-- commands -->
+* [`smartthings edge`](#smartthings-edge)
 * [`smartthings edge:channels [IDORINDEX]`](#smartthings-edgechannels-idorindex)
 * [`smartthings edge:channels:assign [DRIVERID] [VERSION]`](#smartthings-edgechannelsassign-driverid-version)
 * [`smartthings edge:channels:create`](#smartthings-edgechannelscreate)
@@ -44,6 +45,23 @@ for information on running the CLI.
 * [`smartthings edge:drivers:package [PROJECTDIRECTORY]`](#smartthings-edgedriverspackage-projectdirectory)
 * [`smartthings edge:drivers:switch [DEVICEID]`](#smartthings-edgedriversswitch-deviceid)
 * [`smartthings edge:drivers:uninstall [DRIVERID]`](#smartthings-edgedriversuninstall-driverid)
+
+## `smartthings edge`
+
+edge topic
+
+```
+USAGE
+  $ smartthings edge [-h]
+
+COMMON FLAGS
+  -h, --help  Show CLI help.
+
+DESCRIPTION
+  edge topic
+```
+
+_See code: [src/commands/edge.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.0/packages/edge/src/commands/edge.ts)_
 
 ## `smartthings edge:channels [IDORINDEX]`
 
