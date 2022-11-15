@@ -2,7 +2,7 @@ import inquirer from 'inquirer'
 
 import ConfigResetCommand from '../../../commands/config/reset'
 
-import { resetManagedConfig } from '@smartthings/cli-lib'
+import { resetManagedConfig, SmartThingsCommand } from '@smartthings/cli-lib'
 
 
 jest.mock('inquirer')
@@ -14,6 +14,8 @@ describe('ConfigResetCommand', () => {
 
 	const resetManagedConfigMock = jest.mocked(resetManagedConfig)
 
+	const profileNameSpy = jest.spyOn(SmartThingsCommand.prototype, 'profileName', 'get')
+
 	it('does nothing if user says no to prompt', async () => {
 		promptMock.mockResolvedValueOnce({ confirmed: false })
 
@@ -24,11 +26,14 @@ describe('ConfigResetCommand', () => {
 
 	it('resets config if user says yes to prompt', async () => {
 		promptMock.mockResolvedValueOnce({ confirmed: true })
+		profileNameSpy.mockReturnValue('default')
 
 		await expect(ConfigResetCommand.run([])).resolves.not.toThrow()
 
 		expect(resetManagedConfigMock).toHaveBeenCalledTimes(1)
 		expect(resetManagedConfigMock).toHaveBeenCalledWith(expect.anything(), 'default')
+
+		profileNameSpy.mockRestore()
 	})
 
 	it('resets config for alternate profile', async () => {
