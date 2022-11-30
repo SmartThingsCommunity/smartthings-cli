@@ -42,7 +42,7 @@ export interface InputProcessor<T> {
 	 * The processor should return `false` to indicate `read` should not be called or `true`
 	 * if calling `read` can be expected to return data.
 	 */
-	hasInput(): boolean
+	hasInput(): boolean | Promise<boolean>
 
 	/**
 	 * Actually read the input. This should not be called if `hasInput` returned false and should
@@ -75,20 +75,27 @@ export class FileInputProcessor<T> implements InputProcessor<T> {
 export class StdinInputProcessor<T> implements InputProcessor<T> {
 	// Could be JSON or YAML but it's not really worth trying to figure out which.
 	readonly ioFormat = IOFormat.JSON
+	inputData?: string = undefined
 
-	hasInput(): boolean {
-		return !stdinIsTTY()
+	async hasInput(): Promise<boolean> {
+		if (this.inputData === undefined && !stdinIsTTY()) {
+			this.inputData = await readDataFromStdin()
+		}
+		return !!this.inputData
 	}
 
 	async read(): Promise<T> {
-		return parseJSONOrYAML(await readDataFromStdin(), 'stdin')
+		if (!this.inputData) {
+			throw Error('invalid state; `hasInput` was not called or returned false')
+		}
+		return parseJSONOrYAML(this.inputData, 'stdin')
 	}
 }
 
 /**
  * Build an input processor given the necessary functions for doing so.
  */
-export function inputProcessor<T>(hasInput: () => boolean, read: () => Promise<T>,
+export function inputProcessor<T>(hasInput: () => boolean | Promise<boolean>, read: () => Promise<T>,
 		ioFormat: IOFormat = IOFormat.COMMON): InputProcessor<T> {
 	return { ioFormat, hasInput, read }
 }
@@ -120,7 +127,7 @@ export function userInputProcessor<T>(command: UserInputCommand<T>): InputProces
 
 export class CombinedInputProcessor<T> implements InputProcessor<T> {
 	private inputProcessors: InputProcessor<T>[]
-	private theInputProcessor?: InputProcessor<T>
+	private selectedInputProcessor?: InputProcessor<T>
 	private _ioFormat?: IOFormat
 
 	get ioFormat(): IOFormat {
@@ -134,18 +141,25 @@ export class CombinedInputProcessor<T> implements InputProcessor<T> {
 		this.inputProcessors = [inputProcessor, ...inputProcessors]
 	}
 
-	hasInput(): boolean {
-		this.theInputProcessor = this.inputProcessors.find(ip => ip.hasInput())
-		return !!this.theInputProcessor
+	async hasInput(): Promise<boolean> {
+		for (const inputProcessor of this.inputProcessors) {
+			const hasInputResult = inputProcessor.hasInput()
+			const hasInput = typeof hasInputResult === 'boolean' ? hasInputResult : await hasInputResult
+			if (hasInput) {
+				this.selectedInputProcessor = inputProcessor
+				return true
+			}
+		}
+		return false
 	}
 
 	async read(): Promise<T> {
-		if (!this.theInputProcessor) {
+		if (!this.selectedInputProcessor) {
 			throw ReferenceError('read called when hasInput returns false')
 		}
 
-		const retVal = this.theInputProcessor.read()
-		this._ioFormat = this.theInputProcessor.ioFormat
+		const retVal = this.selectedInputProcessor.read()
+		this._ioFormat = this.selectedInputProcessor.ioFormat
 		return retVal
 	}
 }

@@ -59,7 +59,9 @@ export interface Naming {
 export async function inputItem<I extends object>(command: SmartThingsCommandInterface,
 		...alternateInputProcessors: InputProcessor<I>[]): Promise<[I, IOFormat]> {
 	const inputProcessor = buildInputProcessor<I>(command, ...alternateInputProcessors)
-	if (inputProcessor.hasInput()) {
+	const hasInputResult = inputProcessor.hasInput()
+	const hasInput = typeof hasInputResult === 'boolean' ? hasInputResult : await hasInputResult
+	if (hasInput) {
 		const item = await inputProcessor.read()
 		return [item, inputProcessor.ioFormat]
 	} else {
