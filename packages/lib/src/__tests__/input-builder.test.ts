@@ -40,7 +40,8 @@ describe('buildInputProcessor', () => {
 		}
 
 		const fileInputProcessor = makeProcessor()
-		const fileSpy = jest.spyOn(input, 'FileInputProcessor').mockReturnValue(fileInputProcessor)
+		const fileSpy = jest.spyOn(input, 'FileInputProcessor')
+			.mockReturnValue(fileInputProcessor as input.FileInputProcessor<SimpleType>)
 		const stdinInputProcessor = makeProcessor()
 		const stdinSpy = jest.spyOn(input, 'StdinInputProcessor')
 			.mockReturnValue(stdinInputProcessor as input.StdinInputProcessor<SimpleType>)

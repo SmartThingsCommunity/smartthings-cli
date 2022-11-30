@@ -26,10 +26,10 @@ describe('basic-io', () => {
 	describe('inputItem', () => {
 		const buildInputProcessorSpy = jest.spyOn(inputBuilder, 'buildInputProcessor')
 
+		const ioFormatMock = jest.fn()
+		const hasInputMock = jest.fn()
+		const readMock = jest.fn()
 		it('accepts input and returns input', async () => {
-			const ioFormatMock = jest.fn()
-			const hasInputMock = jest.fn()
-			const readMock = jest.fn()
 			class TestInputProcessor implements InputProcessor<SimpleType> {
 				get ioFormat(): IOFormat.COMMON {
 					return ioFormatMock()
@@ -65,6 +65,26 @@ describe('basic-io', () => {
 
 			await expect(inputItem(command)).rejects.toThrow(
 				new Errors.CLIError('input is required either via file specified with --input option or from stdin'))
+		})
+
+		it('works with async hasInput', async () => {
+			const inputProcessor: InputProcessor<SimpleType> = {
+				ioFormat: IOFormat.COMMON,
+				hasInput: hasInputMock,
+				read: readMock,
+			}
+
+			hasInputMock.mockResolvedValueOnce(true)
+			readMock.mockResolvedValue(item)
+
+			buildInputProcessorSpy.mockReturnValue(inputProcessor)
+
+			expect(await inputItem(command)).toEqual([item, IOFormat.COMMON])
+
+			expect(hasInputMock).toHaveBeenCalledTimes(1)
+			expect(readMock).toHaveBeenCalledTimes(1)
+			expect(hasInputMock).toHaveBeenCalledBefore(readMock)
+			expect(readMock).toHaveBeenCalledBefore(ioFormatMock)
 		})
 	})
 

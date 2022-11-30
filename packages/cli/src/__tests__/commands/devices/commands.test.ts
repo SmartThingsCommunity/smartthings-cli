@@ -44,7 +44,7 @@ describe('DeviceCommandsCommand', () => {
 	const getCapabilitiesSpy = jest.spyOn(CapabilitiesEndpoint.prototype, 'get').mockImplementation()
 	const promptSpy = jest.spyOn(inquirer, 'prompt').mockImplementation()
 	jest.spyOn(DeviceCommandsCommand.prototype, 'log').mockImplementation()
-	jest.spyOn(StdinInputProcessor.prototype, 'hasInput').mockReturnValue(false)
+	jest.spyOn(StdinInputProcessor.prototype, 'hasInput').mockResolvedValue(false)
 
 	const chooseDeviceMock = jest.mocked(chooseDevice).mockResolvedValue('deviceId')
 
