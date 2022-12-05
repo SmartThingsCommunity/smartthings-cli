@@ -17,6 +17,8 @@ https://www.npmjs.com/package/@oclif/dev-cli
 SmartThings CLI
 =======================
 
+The SmartThings CLI is a tool to help with developing applications and drivers for the SmartThings ecosystem.
+
 <!-- toc -->
 * [Overview](#overview)
 * [Usage](#usage)
