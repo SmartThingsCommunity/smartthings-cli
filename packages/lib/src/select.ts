@@ -1,8 +1,8 @@
 import { CliUx } from '@oclif/core'
 import inquirer from 'inquirer'
 
-import { IdRetrievalFunction, ListDataFunction, Naming, outputList, OutputListConfig, Sorting } from './basic-io'
-import { setConfigKey } from './cli-config'
+import { IdRetrievalFunction, ListDataFunction, LookupDataFunction, Naming, outputList, OutputListConfig, Sorting } from './basic-io'
+import { resetManagedConfigKey, setConfigKey } from './cli-config'
 import { stringGetIdFromUser } from './command-util'
 import { SmartThingsCommandInterface } from './smartthings-command'
 
@@ -83,7 +83,27 @@ export interface SelectOptions<L extends object, ID = string> extends PromptUser
 	 * Specify this if you want to allow the user to save their answer as a default. (Including
 	 * this will also use that default rather than prompting the user if one has been set.)
 	 */
-	configKeyForDefaultValue?: string
+	defaultValue?: {
+		/**
+		 * The key name in the config file to use.
+		 */
+		configKey: string
+
+		/**
+		 * This method will be called to verify the saved id is still valid and inform the user it
+		 * is being used if so.
+		 *
+		 * The item is considered invalid if this method returns undefined or throws axios exception
+		 * with a status code of 403 or 404.
+		 */
+		getItem: LookupDataFunction<ID, L>
+
+		/**
+		 * This function should return a message to display to the user when the default value is
+		 * found and used.
+		 */
+		userMessage: (item: L) => string
+	}
 }
 
 /**
@@ -101,17 +121,30 @@ export async function selectFromList<L extends object, ID = string>(command: Sma
 		return options.preselectedId
 	}
 
-	if (options.configKeyForDefaultValue) {
-		const configuredDefault = command.cliConfig.profile[options.configKeyForDefaultValue] as ID
+	if (options.defaultValue) {
+		const configuredDefault = command.cliConfig.profile[options.defaultValue.configKey] as ID
 		if (configuredDefault) {
-			return configuredDefault
+			try {
+				const item = await options.defaultValue.getItem(configuredDefault)
+				if (item) {
+					command.logToStderr(options.defaultValue.userMessage(item))
+					return configuredDefault
+				}
+			} catch (error) {
+				if (!error.response || error.response.status !== 404 && error.response.status !== 403) {
+					throw error
+				}
+			}
+
+			await resetManagedConfigKey(command.cliConfig, options.defaultValue.configKey)
+			command.logger.debug(`removed ${options.defaultValue.configKey} from ${command.cliConfig.profileName}`)
 		}
 	}
 
 	const userSelected = await promptUser(command, config, options)
 
-	const neverAgainKey = `${options.configKeyForDefaultValue}::neverAskForSaveAgain`
-	if (options.configKeyForDefaultValue && !command.booleanConfigValue(neverAgainKey)) {
+	const neverAgainKey = `${options.defaultValue?.configKey ?? ''}::neverAskForSaveAgain`
+	if (options.defaultValue && !command.booleanConfigValue(neverAgainKey)) {
 		const answer = (await inquirer.prompt({
 			type: 'list',
 			name: 'answer',
@@ -125,7 +158,7 @@ export async function selectFromList<L extends object, ID = string>(command: Sma
 
 		const resetInfo = 'You can reset these settings using the config:reset command.'
 		if (answer === 'yes') {
-			await setConfigKey(command.cliConfig, options.configKeyForDefaultValue, userSelected)
+			await setConfigKey(command.cliConfig, options.defaultValue.configKey, userSelected)
 			CliUx.ux.log(`${userSelected} is now the default.\n${resetInfo}`)
 		} else if (answer === 'never') {
 			await setConfigKey(command.cliConfig, neverAgainKey, true)

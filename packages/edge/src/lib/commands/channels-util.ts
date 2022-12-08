@@ -45,9 +45,15 @@ export async function chooseChannel(command: APICommand<typeof APICommand.flags>
 			: channelFromArg)
 		: undefined
 
-	const configKeyForDefaultValue = opts.useConfigDefault ? 'defaultChannel' : undefined
+	const defaultValue = opts.useConfigDefault
+		? {
+			configKey: 'defaultChannel',
+			getItem: (id: string): Promise<Channel> => command.client.channels.get(id),
+			userMessage: (channel: Channel): string => `using previously specified default channel named "${channel.name}" (${channel.channelId})`,
+		}
+		: undefined
 	return selectFromList(command, config,
-		{ preselectedId, listItems, promptMessage, configKeyForDefaultValue })
+		{ preselectedId, listItems, promptMessage, defaultValue })
 }
 
 export interface ListChannelOptions {

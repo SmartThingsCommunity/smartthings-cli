@@ -339,6 +339,14 @@ describe('cli-config', () => {
 			expect(predicateMock).toHaveBeenCalledTimes(2)
 		})
 
+		it('removes managed keys when no predicate is specified', async () => {
+			const cliConfig = makeConfig(profiles, profilesWithKeyToRemove)
+
+			await expect(resetManagedConfigKey(cliConfig, 'keyToRemove')).resolves.not.toThrow()
+
+			expect(cliConfig).toStrictEqual(makeConfig(profiles, profilesWithKeysRemoved))
+		})
+
 		it('removes managed keys that match predicate', async () => {
 			const cliConfig = makeConfig(profiles, profilesWithKeyToRemove)
 
