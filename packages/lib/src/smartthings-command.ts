@@ -14,7 +14,7 @@ export interface Loggable {
  * An interface version of SmartThingsCommand to make its contract easier to mix with other
  * interfaces and to limit what we need to mock for tests.
  */
-export interface SmartThingsCommandInterface extends Loggable {
+export type SmartThingsCommandInterface = Loggable & Pick<Command, 'exit' | 'logToStderr'> & {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	readonly flags: Interfaces.OutputFlags<any>
 
@@ -58,8 +58,6 @@ export interface SmartThingsCommandInterface extends Loggable {
 	 * exists but is not a boolean.
 	 */
 	booleanConfigValue(keyName: string, defaultValue?: boolean): boolean
-
-	exit(code?: number): void
 }
 
 /**

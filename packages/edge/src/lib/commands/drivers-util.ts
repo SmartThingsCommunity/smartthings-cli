@@ -150,9 +150,14 @@ export const chooseHub = async (command: APICommand<typeof APICommand.flags>, pr
 			: commandLineHubId)
 		: undefined
 
-	const configKeyForDefaultValue = opts.useConfigDefault ? 'defaultHub' : undefined
-	return selectFromList(command, config,
-		{ preselectedId, listItems, promptMessage, configKeyForDefaultValue })
+	const defaultValue = opts.useConfigDefault
+		? {
+			configKey: 'defaultHub',
+			getItem: (id: string): Promise<Device> => command.client.devices.get(id),
+			userMessage: (hub: Device): string => `using previously specified default hub labeled "${hub.label}" (${hub.deviceId})`,
+		}
+		: undefined
+	return selectFromList(command, config, { preselectedId, listItems, promptMessage, defaultValue })
 }
 
 export interface DriverChannelDetailsWithName extends DriverChannelDetails {

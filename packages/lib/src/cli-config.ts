@@ -114,9 +114,9 @@ export const setConfigKey = async (config: CLIConfig, key: string, value: unknow
  *
  * This can be used to wipe out default values when something is deleted.
  */
-export const resetManagedConfigKey = async (config: CLIConfig, key: string, predicate: (value: unknown) => boolean): Promise<void> => {
+export const resetManagedConfigKey = async (config: CLIConfig, key: string, predicate?: (value: unknown) => boolean): Promise<void> => {
 	config.managedProfiles = Object.fromEntries(Object.entries(config.managedProfiles).map(([profileName, profile]) => {
-		if (key in profile && predicate(profile[key])) {
+		if (key in profile && (!predicate || predicate(profile[key]))) {
 			delete profile[key]
 		}
 		return [profileName, profile]

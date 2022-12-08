@@ -336,10 +336,18 @@ describe('drivers-util', () => {
 	})
 
 	describe('chooseHub', () => {
+		const hub = { deviceId: 'hub-device-id', label: 'hub label' } as Device
+
 		const listDevicesMock = jest.fn()
+		const getDevicesMock = jest.fn()
 		const getLocationsMock = jest.fn()
-		const client = { devices: { list: listDevicesMock }, locations: { get: getLocationsMock } }
-		const command = { client, logger: { warn: jest.fn() } } as unknown as APICommand<typeof APICommand.flags>
+		const client = { devices: { list: listDevicesMock, get: getDevicesMock }, locations: { get: getLocationsMock } }
+		const logToStderrMock = jest.fn()
+		const command = {
+			client,
+			logToStderr: logToStderrMock,
+			logger: { warn: jest.fn() },
+		} as unknown as APICommand<typeof APICommand.flags>
 
 		const chooseOptionsWithDefaultsMock = jest.mocked(chooseOptionsWithDefaults)
 		const stringTranslateToIdMock = jest.mocked(stringTranslateToId)
@@ -357,7 +365,10 @@ describe('drivers-util', () => {
 			expect(selectFromListMock).toHaveBeenCalledTimes(1)
 			expect(selectFromListMock).toHaveBeenCalledWith(command,
 				expect.objectContaining({ primaryKeyName: 'deviceId', sortKeyName: 'name' }),
-				expect.objectContaining({ configKeyForDefaultValue: 'defaultHub', promptMessage: 'prompt message' }))
+				expect.objectContaining({
+					defaultValue: { configKey: 'defaultHub', getItem: expect.any(Function), userMessage: expect.any(Function) },
+					promptMessage: 'prompt message',
+				}))
 		})
 
 		it('prefers command line over default', async () => {
@@ -375,7 +386,7 @@ describe('drivers-util', () => {
 				expect.objectContaining({ primaryKeyName: 'deviceId', sortKeyName: 'name' }),
 				expect.objectContaining({
 					preselectedId: 'command-line-hub-id',
-					configKeyForDefaultValue: 'defaultHub',
+					defaultValue: { configKey: 'defaultHub', getItem: expect.any(Function), userMessage: expect.any(Function) },
 					promptMessage: 'prompt message',
 				}))
 		})
@@ -432,105 +443,145 @@ describe('drivers-util', () => {
 			expect(listDevicesMock).toHaveBeenCalledWith({ type: DeviceIntegrationType.HUB })
 		})
 
-		test('list function checks hub locations for ownership', async () => {
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions)
-			selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
+		describe('listItems', () => {
+			it('checks hub locations for ownership', async () => {
+				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions)
+				selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
 
-			expect(await chooseHub(command, 'prompt message', 'command-line-hub-id')).toBe('chosen-hub-id')
+				expect(await chooseHub(command, 'prompt message', 'command-line-hub-id')).toBe('chosen-hub-id')
 
-			const hubList = [
-				{ name: 'Hub', locationId: 'locationId' },
-				{ name: 'AnotherHub', locationId: 'locationId' },
-				{ name: 'SecondLocationHub', locationId: 'secondLocationId' },
-			] as Device[]
+				const hubList = [
+					{ name: 'Hub', locationId: 'locationId' },
+					{ name: 'AnotherHub', locationId: 'locationId' },
+					{ name: 'SecondLocationHub', locationId: 'secondLocationId' },
+				] as Device[]
 
-			const location = {
-				'allowed': [
-					'd:locations',
-				],
-			} as Location
+				const location = {
+					'allowed': [
+						'd:locations',
+					],
+				} as Location
 
-			listDevicesMock.mockResolvedValueOnce(hubList)
-			getLocationsMock.mockResolvedValue(location)
+				listDevicesMock.mockResolvedValueOnce(hubList)
+				getLocationsMock.mockResolvedValue(location)
 
-			const listItems = selectFromListMock.mock.calls[0][2].listItems
+				const listItems = selectFromListMock.mock.calls[0][2].listItems
 
-			expect(await listItems()).toStrictEqual(hubList)
+				expect(await listItems()).toStrictEqual(hubList)
 
-			expect(getLocationsMock).toBeCalledTimes(2)
-			expect(getLocationsMock).toBeCalledWith('locationId', { allowed: true })
-			expect(getLocationsMock).toBeCalledWith('secondLocationId', { allowed: true })
+				expect(getLocationsMock).toBeCalledTimes(2)
+				expect(getLocationsMock).toBeCalledWith('locationId', { allowed: true })
+				expect(getLocationsMock).toBeCalledWith('secondLocationId', { allowed: true })
+			})
+
+			it('filters out devices on shared locations or when allowed is null, undefined', async () => {
+				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions)
+				selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
+
+				expect(await chooseHub(command, 'prompt message', 'command-line-hub-id')).toBe('chosen-hub-id')
+
+				const ownedHub = { name: 'Hub', locationId: 'locationId' }
+				const hubList = [
+					ownedHub,
+					{ name: 'SharedHub', locationId: 'sharedLocationId' },
+					{ name: 'NullAllowedHub', locationId: 'nullAllowedLocationId' },
+					{ name: 'UndefinedAllowedHub', locationId: 'undefinedAllowedLocationId' },
+				] as Device[]
+
+				listDevicesMock.mockResolvedValueOnce(hubList)
+
+				const location = {
+					'allowed': [
+						'd:locations',
+					],
+					'locationId': 'locationId',
+				}
+
+				const sharedLocation = {
+					'allowed': [
+					],
+					'locationId': 'sharedLocationId',
+				}
+
+				const nullAllowedLocation = {
+					'allowed': null,
+					'locationId': 'nullAllowedLocationId',
+				}
+
+				const undefinedAllowedLocation = {
+					'locationId': 'undefinedAllowedLocationId',
+				}
+
+				getLocationsMock
+					.mockResolvedValueOnce(location)
+					.mockResolvedValueOnce(sharedLocation)
+					.mockResolvedValueOnce(nullAllowedLocation)
+					.mockResolvedValueOnce(undefinedAllowedLocation)
+
+				const listItems = selectFromListMock.mock.calls[0][2].listItems
+
+				expect(await listItems()).toStrictEqual([ownedHub])
+
+				expect(getLocationsMock).toBeCalledTimes(4)
+				expect(command.logger.warn).toBeCalledWith('filtering out location', sharedLocation)
+				expect(command.logger.warn).toBeCalledWith('filtering out location', nullAllowedLocation)
+				expect(command.logger.warn).toBeCalledWith('filtering out location', undefinedAllowedLocation)
+			})
+
+			it('warns when hub does not have locationId', async () => {
+				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions)
+				selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
+
+				expect(await chooseHub(command, 'prompt message', 'command-line-hub-id')).toBe('chosen-hub-id')
+
+				const hub = { name: 'Hub' } as Device
+
+				listDevicesMock.mockResolvedValueOnce([hub])
+
+				const listItems = selectFromListMock.mock.calls[0][2].listItems
+
+				expect(await listItems()).toStrictEqual([])
+
+				expect(command.logger.warn).toBeCalledWith('hub record found without locationId', hub)
+			})
 		})
 
-		test('list function filters out devices on shared locations or when allowed is null, undefined', async () => {
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions)
-			selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
+		describe('defaultConfig', () => {
+			test('getItem uses devices.get', async () => {
+				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false, useConfigDefault: true } as ChooseOptions)
+				selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
 
-			expect(await chooseHub(command, 'prompt message', 'command-line-hub-id')).toBe('chosen-hub-id')
+				expect(await chooseHub(command, 'prompt message', undefined,
+					{ useConfigDefault: true })).toBe('chosen-hub-id')
 
-			const ownedHub = { name: 'Hub', locationId: 'locationId' }
-			const hubList = [
-				ownedHub,
-				{ name: 'SharedHub', locationId: 'sharedLocationId' },
-				{ name: 'NullAllowedHub', locationId: 'nullAllowedLocationId' },
-				{ name: 'UndefinedAllowedHub', locationId: 'undefinedAllowedLocationId' },
-			] as Device[]
+				const defaultValue = selectFromListMock.mock.calls[0][2].defaultValue
 
-			listDevicesMock.mockResolvedValueOnce(hubList)
+				expect(defaultValue).toBeDefined()
+				const getItem = defaultValue?.getItem as (id: string) => Promise<Device>
+				expect(getItem).toBeDefined()
+				getDevicesMock.mockResolvedValueOnce(hub)
 
-			const location = {
-				'allowed': [
-					'd:locations',
-				],
-				'locationId': 'locationId',
-			}
+				expect(await getItem('id-to-check')).toBe(hub)
 
-			const sharedLocation = {
-				'allowed': [
-				],
-				'locationId': 'sharedLocationId',
-			}
+				expect(getDevicesMock).toHaveBeenCalledTimes(1)
+				expect(getDevicesMock).toHaveBeenCalledWith('id-to-check')
+			})
 
-			const nullAllowedLocation = {
-				'allowed': null,
-				'locationId': 'nullAllowedLocationId',
-			}
+			test('userMessage returns expected message', async () => {
+				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false, useConfigDefault: true } as ChooseOptions)
+				selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
 
-			const undefinedAllowedLocation = {
-				'locationId': 'undefinedAllowedLocationId',
-			}
+				expect(await chooseHub(command, 'prompt message', undefined,
+					{ useConfigDefault: true })).toBe('chosen-hub-id')
 
-			getLocationsMock
-				.mockResolvedValueOnce(location)
-				.mockResolvedValueOnce(sharedLocation)
-				.mockResolvedValueOnce(nullAllowedLocation)
-				.mockResolvedValueOnce(undefinedAllowedLocation)
+				const defaultValue = selectFromListMock.mock.calls[0][2].defaultValue
 
-			const listItems = selectFromListMock.mock.calls[0][2].listItems
+				expect(defaultValue).toBeDefined()
+				const userMessage = defaultValue?.userMessage as (hub: Device) => string
+				expect(userMessage).toBeDefined()
 
-			expect(await listItems()).toStrictEqual([ownedHub])
-
-			expect(getLocationsMock).toBeCalledTimes(4)
-			expect(command.logger.warn).toBeCalledWith('filtering out location', sharedLocation)
-			expect(command.logger.warn).toBeCalledWith('filtering out location', nullAllowedLocation)
-			expect(command.logger.warn).toBeCalledWith('filtering out location', undefinedAllowedLocation)
-		})
-
-		test('list function warns when hub does not have locationId', async () => {
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions)
-			selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
-
-			expect(await chooseHub(command, 'prompt message', 'command-line-hub-id')).toBe('chosen-hub-id')
-
-			const hub = { name: 'Hub' } as Device
-
-			listDevicesMock.mockResolvedValueOnce([hub])
-
-			const listItems = selectFromListMock.mock.calls[0][2].listItems
-
-			expect(await listItems()).toStrictEqual([])
-
-			expect(command.logger.warn).toBeCalledWith('hub record found without locationId', hub)
+				expect(userMessage(hub)).toBe('using previously specified default hub labeled "hub label" (hub-device-id)')
+			})
 		})
 	})
 

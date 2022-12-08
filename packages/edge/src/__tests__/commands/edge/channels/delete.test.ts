@@ -29,7 +29,8 @@ describe('ChannelsDeleteCommand', () => {
 		)
 
 		const predicate = resetManagedConfigKeyMock.mock.calls[0][2]
-		expect(predicate('another-channel-id')).toBeFalsy()
-		expect(predicate('chosen-channel-id')).toBeTruthy()
+		expect(predicate).toBeDefined()
+		expect(predicate?.('another-channel-id')).toBeFalsy()
+		expect(predicate?.('chosen-channel-id')).toBeTruthy()
 	})
 })

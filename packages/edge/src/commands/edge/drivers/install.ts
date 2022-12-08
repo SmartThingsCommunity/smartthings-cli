@@ -47,7 +47,6 @@ export default class DriversInstallCommand extends EdgeCommand<typeof DriversIns
 		return selectFromList(this, config, {
 			listItems,
 			promptMessage: 'Select a channel to install the driver from.',
-			configKeyForDefaultValue: 'defaultChannel',
 		})
 	}
 

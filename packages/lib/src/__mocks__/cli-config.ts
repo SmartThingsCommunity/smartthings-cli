@@ -1,6 +1,8 @@
 import { CLIConfig, CLIConfigDescription } from '../cli-config'
 
 
+export const mergeProfiles = jest.fn()
+
 export const loadConfig = jest.fn().mockImplementation(async (description: CLIConfigDescription): Promise<CLIConfig> =>
 	({
 		...description,
@@ -12,3 +14,5 @@ export const loadConfig = jest.fn().mockImplementation(async (description: CLICo
 
 
 export const setConfigKey = jest.fn()
+export const resetManagedConfigKey = jest.fn()
+export const resetManagedConfig = jest.fn()
