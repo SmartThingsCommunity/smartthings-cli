@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.0.1
+
+### Patch Changes
+
+- [#448](https://github.com/SmartThingsCommunity/smartthings-cli/pull/448) [`c615772`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c6157720531cb9383fcf74c4eea607cbf1971770) Thanks [@rossiam](https://github.com/rossiam)! - fixed error handling stdin when not run from the console
+
+- Updated dependencies [[`c615772`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c6157720531cb9383fcf74c4eea607cbf1971770), [`712476c`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/712476c0166c030ce94f04bf89a0893f00204bc1)]:
+  - @smartthings/cli-lib@1.0.1
+  - @smartthings/plugin-cli-edge@2.0.1
+
 ## 1.0.0
 
 ### Minor Changes
