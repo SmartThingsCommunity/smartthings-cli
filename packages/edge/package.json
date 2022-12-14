@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/plugin-cli-edge",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "Edge-related SmartThings CLI commands",
 	"author": "SmartThings, Inc.",
 	"bugs": {
@@ -42,7 +42,7 @@
 	"dependencies": {
 		"@log4js-node/log4js-api": "^1.0.2",
 		"@oclif/core": "^1.16.3",
-		"@smartthings/cli-lib": "^1.0.0",
+		"@smartthings/cli-lib": "^1.0.1",
 		"@smartthings/core-sdk": "^5.2.0",
 		"axios": "^0.21.4",
 		"inquirer": "^8.2.4",
