@@ -1,16 +1,24 @@
 import inquirer from 'inquirer'
-import { DeviceActivity, PaginatedList } from '@smartthings/core-sdk'
+
+import { DeviceActivity, HistoryEndpoint, PaginatedList, SmartThingsClient } from '@smartthings/core-sdk'
+
 import { SmartThingsCommandInterface, Table, TableGenerator } from '@smartthings/cli-lib'
+
 import {
 	toEpochTime,
 	sortEvents,
 	getNextDeviceEvents,
 	writeDeviceEventsTable,
+	calculateRequestLimit,
+	getHistory,
+	maxItemsPerRequest,
+	maxRequestsBeforeWarning,
 } from '../../../lib/commands/history-util'
 
 
-describe('devices-util', () => {
+jest.mock('inquirer')
 
+describe('history-util', () => {
 	describe('epochTime', () => {
 		it ('handles ISO input', () => {
 			expect(toEpochTime('2022-08-01T22:41:42.559Z')).toBe(1659393702559)
@@ -30,6 +38,7 @@ describe('devices-util', () => {
 		it('sorts in reverse order', () => {
 			const events = [
 				{ epoch: 1659394186591 },
+				{ epoch: 1659394186591 },
 				{ epoch: 1659394186592 },
 				{ epoch: 1659394186593 },
 				{ epoch: 1659394186590 },
@@ -38,11 +47,12 @@ describe('devices-util', () => {
 			const result = sortEvents([...events])
 
 			expect(result).toBeDefined()
-			expect(result.length).toBe(4)
-			expect(result[0]).toBe(events[2])
-			expect(result[1]).toBe(events[1])
+			expect(result.length).toBe(5)
+			expect(result[0]).toBe(events[3])
+			expect(result[1]).toBe(events[2])
 			expect(result[2]).toBe(events[0])
-			expect(result[3]).toBe(events[3])
+			expect(result[3]).toBe(events[1])
+			expect(result[4]).toBe(events[4])
 		})
 	})
 
@@ -199,6 +209,149 @@ describe('devices-util', () => {
 			expect(newOutputTableMock).toHaveBeenCalledTimes(2)
 			expect(tablePushMock).toHaveBeenCalledTimes(2)
 			expect(stdOutSpy).toHaveBeenCalledTimes(2)
+		})
+	})
+
+	describe('calculateHistoryRequestLimit', () => {
+		it('returns limit if less than or equal to maxItemsPerRequest', () => {
+			expect(calculateRequestLimit(20)).toBe(20)
+			expect(calculateRequestLimit(300)).toBe(300)
+			expect(calculateRequestLimit(301)).toBe(300)
+			expect(calculateRequestLimit(500)).toBe(300)
+		})
+	})
+
+	describe('getHistory', () => {
+		const historyDevicesMock = jest.fn()
+		const history = { devices: historyDevicesMock } as unknown as HistoryEndpoint
+		const client = { history } as SmartThingsClient
+
+		const hasNextMock = jest.fn().mockReturnValue(false)
+		const nextMock = jest.fn().mockImplementation()
+
+		const params = { locationId: 'location-id', deviceId: 'device-id' }
+		const items: DeviceActivity[] = []
+		for (let index = 0; index < maxItemsPerRequest * maxRequestsBeforeWarning + 10; index++) {
+			items.push({ deviceId: 'history-device-id', text: `item${index}` } as DeviceActivity)
+		}
+
+		const promptMock = jest.mocked(inquirer.prompt)
+
+		// Since the core SDK mutates this object via the `.next` call, each test needs its own instance.
+		const makeHistoryResponse = (items: DeviceActivity[]): PaginatedList<DeviceActivity> => ({
+			items,
+			hasNext: hasNextMock,
+			next: nextMock,
+		} as unknown as PaginatedList<DeviceActivity>)
+
+		it('uses single request when one is enough', async () => {
+			const returnedItems = items.slice(0, 2)
+			historyDevicesMock.mockResolvedValueOnce(makeHistoryResponse(returnedItems))
+
+			expect(await getHistory(client, 20, 20, params)).toStrictEqual(returnedItems)
+
+			expect(historyDevicesMock).toHaveBeenCalledTimes(1)
+			expect(historyDevicesMock).toHaveBeenCalledWith(params)
+			expect(hasNextMock).toHaveBeenCalledTimes(1)
+			expect(nextMock).toHaveBeenCalledTimes(0)
+			expect(promptMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('makes multiple calls when needed', async () => {
+			const firstItemSet = items.slice(0, 2)
+			const secondItemSet = items.slice(2, 4)
+			const allItems = items.slice(0, 4)
+			const historyResponse = makeHistoryResponse(firstItemSet)
+			historyDevicesMock.mockResolvedValueOnce(historyResponse)
+			hasNextMock.mockReturnValueOnce(true)
+			nextMock.mockImplementationOnce(async () => historyResponse.items = secondItemSet)
+
+			expect(await getHistory(client, 20, 20, params)).toStrictEqual(allItems)
+
+			expect(historyDevicesMock).toHaveBeenCalledTimes(1)
+			expect(historyDevicesMock).toHaveBeenCalledWith(params)
+			expect(hasNextMock).toHaveBeenCalledTimes(2)
+			expect(nextMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('abandons large query when requested to do so', async () => {
+			promptMock.mockResolvedValueOnce({ answer: 'cancel' })
+
+			await expect(getHistory(client, maxItemsPerRequest * maxRequestsBeforeWarning + 1, maxItemsPerRequest,
+				params)).rejects.toThrow()
+
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(historyDevicesMock).toHaveBeenCalledTimes(0)
+			expect(hasNextMock).toHaveBeenCalledTimes(0)
+			expect(nextMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('limits large query when requested to do so', async () => {
+			promptMock.mockResolvedValueOnce({ answer: 'reduce' })
+			const firstItemSet = items.slice(0, maxItemsPerRequest)
+			const historyResponse = makeHistoryResponse(firstItemSet)
+			historyDevicesMock.mockResolvedValueOnce(historyResponse)
+			hasNextMock.mockReturnValue(true)
+			let nextStart = 300
+			nextMock.mockImplementation(async () => {
+				historyResponse.items = items.slice(nextStart, nextStart + maxItemsPerRequest)
+				nextStart += maxItemsPerRequest
+			})
+
+			const result = await getHistory(client, maxItemsPerRequest * maxRequestsBeforeWarning + 1,
+				maxItemsPerRequest, params)
+			expect(result).toStrictEqual(items.slice(0, maxRequestsBeforeWarning * maxItemsPerRequest))
+
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(historyDevicesMock).toHaveBeenCalledTimes(1)
+			expect(historyDevicesMock).toHaveBeenCalledWith(params)
+			expect(hasNextMock).toHaveBeenCalledTimes(5)
+			expect(nextMock).toHaveBeenCalledTimes(5)
+		})
+
+		it('makes all requests when asked to', async () => {
+			promptMock.mockResolvedValueOnce({ answer: 'yes' })
+			const firstItemSet = items.slice(0, maxItemsPerRequest)
+			const historyResponse = makeHistoryResponse(firstItemSet)
+			historyDevicesMock.mockResolvedValueOnce(historyResponse)
+			hasNextMock.mockReturnValue(true)
+			let nextStart = 300
+			nextMock.mockImplementation(async () => {
+				historyResponse.items = items.slice(nextStart, nextStart + maxItemsPerRequest)
+				nextStart += maxItemsPerRequest
+			})
+
+			const result = await getHistory(client, items.length, maxItemsPerRequest, params)
+			expect(result).toStrictEqual(items)
+
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(historyDevicesMock).toHaveBeenCalledTimes(1)
+			expect(historyDevicesMock).toHaveBeenCalledWith(params)
+			expect(hasNextMock).toHaveBeenCalledTimes(6)
+			expect(nextMock).toHaveBeenCalledTimes(6)
+		})
+
+		it('ignores some result from last request to return no more than requested limit', async () => {
+			promptMock.mockResolvedValueOnce({ answer: 'yes' })
+			const firstItemSet = items.slice(0, maxItemsPerRequest)
+			const historyResponse = makeHistoryResponse(firstItemSet)
+			historyDevicesMock.mockResolvedValueOnce(historyResponse)
+			hasNextMock.mockReturnValue(true)
+			let nextStart = 300
+			nextMock.mockImplementation(async () => {
+				historyResponse.items = items.slice(nextStart, nextStart + maxItemsPerRequest)
+				nextStart += maxItemsPerRequest
+			})
+
+			const result = await getHistory(client, items.length - 5, maxItemsPerRequest, params)
+			expect(result).toStrictEqual(items.slice(0, items.length - 5))
+
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(historyDevicesMock).toHaveBeenCalledTimes(1)
+			expect(historyDevicesMock).toHaveBeenCalledWith(params)
+			expect(hasNextMock).toHaveBeenCalledTimes(6)
+			expect(nextMock).toHaveBeenCalledTimes(6)
 		})
 	})
 })

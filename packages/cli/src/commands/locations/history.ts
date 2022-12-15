@@ -6,12 +6,20 @@ import {
 	IOFormat,
 	writeOutput,
 } from '@smartthings/cli-lib'
-import { historyFlags, toEpochTime, writeDeviceEventsTable } from '../../lib/commands/history-util'
+
+import {
+	calculateRequestLimit,
+	getHistory,
+	historyFlags,
+	maxItemsPerRequest,
+	toEpochTime,
+	writeDeviceEventsTable,
+} from '../../lib/commands/history-util'
 import { chooseLocation } from '../locations'
 
 
 export default class LocationDeviceHistoryCommand extends APICommand<typeof LocationDeviceHistoryCommand.flags> {
-	static description = 'get the current preferences of a device'
+	static description = 'get device history by location'
 
 	static flags = {
 		...APICommand.flags,
@@ -25,8 +33,10 @@ export default class LocationDeviceHistoryCommand extends APICommand<typeof Loca
 	}]
 
 	async run(): Promise<void> {
-		const id = await chooseLocation(this, this.args.id, true, true)
+		const limit = this.flags.limit
+		const perRequestLimit = calculateRequestLimit(limit)
 
+		const id = await chooseLocation(this, this.args.id, true, true)
 		const params = {
 			locationId: id,
 			limit: this.flags.limit,
@@ -34,13 +44,16 @@ export default class LocationDeviceHistoryCommand extends APICommand<typeof Loca
 			after: toEpochTime(this.flags.after),
 		}
 
-		const history = await this.client.history.devices(params)
-
 		if (calculateOutputFormat(this) === IOFormat.COMMON) {
+			if (limit > perRequestLimit) {
+				this.log(`History is limited to ${maxItemsPerRequest} items per request.`)
+			}
+			const history = await this.client.history.devices(params)
 			await writeDeviceEventsTable(this, history, { includeName: true, utcTimeFormat: this.flags.utc })
 		} else {
+			const items = getHistory(this.client, limit, perRequestLimit, params)
 			const outputFormatter = buildOutputFormatter(this)
-			await writeOutput(outputFormatter(history.items), this.flags.output)
+			await writeOutput(outputFormatter(items), this.flags.output)
 		}
 	}
 }
