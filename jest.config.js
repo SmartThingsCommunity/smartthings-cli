@@ -19,6 +19,7 @@ module.exports = {
 	reporters: [
 		'default',
 		'github-actions',
+		'jest-html-reporters',
 	],
 	globals: {
 		// TODO: remove when https://github.com/kulshekhar/ts-jest/issues/1967 is resolved

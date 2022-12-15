@@ -62,6 +62,7 @@
 		"jest": "^28.1.3",
 		"jest-environment-jsdom": "^28.1.3",
 		"jest-extended": "^0.11.5",
+		"jest-html-reporters": "^3.0.11",
 		"log4js": "^6.6.0",
 		"mock-stdin": "^1.0.0",
 		"oclif": "^3.1.2",
@@ -74,12 +75,12 @@
 		"lint": "eslint --ext ts src",
 		"format": "eslint --ext ts src --fix",
 		"clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-		"full-clean": "rimraf node_modules && rimraf coverage && npm run clean",
+		"full-clean": "rimraf node_modules && rimraf coverage && rimraf jest*html* && npm run clean",
 		"compile": "tsc -b",
 		"watch": "tsc -b -w",
 		"build": "npm run clean && npm run compile",
 		"test": "jest",
-		"test-watch": "jest --watch",
+		"test-watch": "jest --watch --reporters=default",
 		"test-coverage": "jest --coverage=true"
 	}
 }
