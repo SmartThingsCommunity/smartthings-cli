@@ -13,6 +13,8 @@ tsconfig.tsbuildinfo
 scratch_pad.txt
 packages/*/smartthings-cli-*.tgz
 coverage
+jest-html-reporters-attach
+jest_html_reporters.html
 smartthings-*.zip
 
 # the Typescript outDir that oclif prefers
