@@ -4,7 +4,8 @@ import { buildTableOutput, chooseApp } from '../../lib/commands/apps-util'
 
 
 export default class AppSettingsCommand extends APICommand<typeof AppSettingsCommand.flags> {
-	static description = 'get the settings of the app'
+	static description = 'get the settings of the app' +
+		this.apiDocsURL('getAppSettings')
 
 	static flags = {
 		...APICommand.flags,

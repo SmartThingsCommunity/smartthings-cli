@@ -5,7 +5,8 @@ import { shortARNorURL, tableFieldDefinitions, verboseApps } from '../lib/comman
 
 
 export default class AppsCommand extends APICommand<typeof AppsCommand.flags> {
-	static description = 'get a specific app or a list of apps'
+	static description = 'get a specific app or a list of apps' +
+		this.apiDocsURL('listApps', 'getApp')
 
 	static flags = {
 		...APICommand.flags,

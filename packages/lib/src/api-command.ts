@@ -28,6 +28,9 @@ export abstract class APICommand<T extends typeof APICommand.flags> extends Smar
 		}),
 	}
 
+	static apiDocsURL = (...names: string[]): string => '\nFor API information, see:\n\n' +
+		names.map(name => `https://developer.smartthings.com/docs/api/public/#operation/${name}`).join(', ')
+
 	protected clientIdProvider = defaultClientIdProvider
 	protected token?: string
 	private _authenticator!: Authenticator

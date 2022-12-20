@@ -6,7 +6,8 @@ import { tableFieldDefinitions } from '../../lib/commands/apps-util'
 
 
 export default class AppCreateCommand extends APICommand<typeof AppCreateCommand.flags> {
-	static description = 'create an app'
+	static description = 'create an app' +
+		this.apiDocsURL('createApp')
 
 	static flags = {
 		...APICommand.flags,

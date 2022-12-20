@@ -4,7 +4,8 @@ import { chooseApp } from '../../../lib/commands/apps-util'
 
 
 export default class AppOauthGenerateCommand extends APICommand<typeof AppOauthGenerateCommand.flags> {
-	static description = 'regenerate the OAuth clientId and clientSecret of an app'
+	static description = 'regenerate the OAuth clientId and clientSecret of an app' +
+		this.apiDocsURL('updateAppOauth')
 
 	static flags = {
 		...APICommand.flags,

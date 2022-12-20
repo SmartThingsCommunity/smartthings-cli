@@ -3,7 +3,8 @@ import { chooseApp } from '../../lib/commands/apps-util'
 
 
 export default class AppDeleteCommand extends APICommand<typeof AppDeleteCommand.flags> {
-	static description = 'delete the app'
+	static description = 'delete the app' +
+		this.apiDocsURL('deleteApp')
 
 	static flags = APICommand.flags
 
