@@ -2478,7 +2478,7 @@ _See code: [src/commands/devices/health.ts](https://github.com/SmartThingsCommun
 
 ## `smartthings devices:history [ID]`
 
-get the current preferences of a device
+get device history by device
 
 ```
 USAGE
@@ -2493,7 +2493,7 @@ FLAGS
                         or an ISO time string
   -B, --before=<value>  return events older than than this timestamp, expressed as an epoch time in milliseconds or an
                         ISO time string
-  -L, --limit=<value>   maximum number of events to return, defaults to 20
+  -L, --limit=<value>   [default: 20] maximum number of events to return
   -U, --utc             display times in UTC time zone. Defaults to local time
 
 COMMON FLAGS
@@ -2506,7 +2506,7 @@ COMMON FLAGS
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
-  get the current preferences of a device
+  get device history by device
 ```
 
 _See code: [src/commands/devices/history.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/devices/history.ts)_
@@ -3741,7 +3741,7 @@ _See code: [src/commands/locations/delete.ts](https://github.com/SmartThingsComm
 
 ## `smartthings locations:history [ID]`
 
-get the current preferences of a device
+get device history by location
 
 ```
 USAGE
@@ -3756,7 +3756,7 @@ FLAGS
                         or an ISO time string
   -B, --before=<value>  return events older than than this timestamp, expressed as an epoch time in milliseconds or an
                         ISO time string
-  -L, --limit=<value>   maximum number of events to return, defaults to 20
+  -L, --limit=<value>   [default: 20] maximum number of events to return
   -U, --utc             display times in UTC time zone. Defaults to local time
 
 COMMON FLAGS
@@ -3769,7 +3769,7 @@ COMMON FLAGS
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
-  get the current preferences of a device
+  get device history by location
 ```
 
 _See code: [src/commands/locations/history.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/locations/history.ts)_
