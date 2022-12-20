@@ -280,6 +280,11 @@ COMMON FLAGS
 DESCRIPTION
   get a specific app or a list of apps
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listApps,
+  https://developer.smartthings.com/docs/api/public/#operation/getApp
+
 EXAMPLES
   list all apps
 
@@ -374,6 +379,10 @@ COMMON FLAGS
 DESCRIPTION
   create an app
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createApp
+
 EXAMPLES
   create an app defined in "my-app.yaml"
 
@@ -406,6 +415,10 @@ COMMON FLAGS
 
 DESCRIPTION
   delete the app
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteApp
 
 EXAMPLES
   select app to delete from list
@@ -441,6 +454,10 @@ COMMON FLAGS
 
 DESCRIPTION
   get OAuth information for the app
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getAppOauth
 ```
 
 _See code: [src/commands/apps/oauth.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/apps/oauth.ts)_
@@ -472,6 +489,10 @@ COMMON FLAGS
 
 DESCRIPTION
   regenerate the OAuth clientId and clientSecret of an app
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateAppOauth
 ```
 
 _See code: [src/commands/apps/oauth/generate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/apps/oauth/generate.ts)_
@@ -526,6 +547,10 @@ COMMON FLAGS
 
 DESCRIPTION
   send request to app target URL to confirm existence and authorize lifecycle events
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/register
 ```
 
 _See code: [src/commands/apps/register.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/apps/register.ts)_
@@ -552,6 +577,10 @@ COMMON FLAGS
 
 DESCRIPTION
   get the settings of the app
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getAppSettings
 ```
 
 _See code: [src/commands/apps/settings.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/apps/settings.ts)_
@@ -583,6 +612,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update the settings of the app
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateAppSettings
 ```
 
 _See code: [src/commands/apps/settings/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/apps/settings/update.ts)_
@@ -617,6 +650,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update the settings of the app
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateApp
 ```
 
 _See code: [src/commands/apps/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/apps/update.ts)_
@@ -652,7 +689,7 @@ _See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomp
 
 ## `smartthings capabilities [ID] [VERSION]`
 
-get a specific capability
+get a specific capability or a list of capabilities
 
 ```
 USAGE
@@ -679,7 +716,7 @@ COMMON FLAGS
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
-  get a specific capability
+  get a specific capability or a list of capabilities
 ```
 
 _See code: [src/commands/capabilities.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/capabilities.ts)_

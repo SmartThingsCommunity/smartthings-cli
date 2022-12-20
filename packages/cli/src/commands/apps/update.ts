@@ -6,7 +6,8 @@ import { chooseApp, tableFieldDefinitions } from '../../lib/commands/apps-util'
 
 
 export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand.flags> {
-	static description = 'update the settings of the app'
+	static description = 'update the settings of the app' +
+		this.apiDocsURL('updateApp')
 
 	static flags = {
 		...APICommand.flags,

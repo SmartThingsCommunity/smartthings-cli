@@ -3,7 +3,8 @@ import { chooseApp, oauthTableFieldDefinitions } from '../../lib/commands/apps-u
 
 
 export default class AppOauthCommand extends APICommand<typeof AppOauthCommand.flags> {
-	static description = 'get OAuth information for the app'
+	static description = 'get OAuth information for the app' +
+		this.apiDocsURL('getAppOauth')
 
 	static flags = {
 		...APICommand.flags,
