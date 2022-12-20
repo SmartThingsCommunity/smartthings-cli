@@ -27,7 +27,7 @@ export const historyFlags = {
 	}),
 	limit: Flags.integer({
 		char: 'L',
-		description: 'maximum number of events to return, defaults to 20',
+		description: 'maximum number of events to return',
 		default: 20,
 	}),
 	utc: Flags.boolean({
