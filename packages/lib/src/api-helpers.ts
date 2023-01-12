@@ -71,6 +71,9 @@ export const withLocationsAndRooms = async <T extends WithRoom>(client: SmartThi
 	})
 }
 
+export const withLocationAndRoom = async <T extends WithRoom>(client: SmartThingsClient, item: T): Promise<T & WithNamedRoom> =>
+	(await withLocationsAndRooms(client, [item]))[0]
+
 export async function forAllOrganizations<T>(
 		client: SmartThingsClient,
 		query: (orgClient: SmartThingsClient, org: OrganizationResponse) => Promise<T[]>): Promise<(T & WithOrganization)[]> {

@@ -266,6 +266,21 @@ describe('devices-util', () => {
 			expect(tablePushMock).toHaveBeenCalledWith(['Last Updated', '2022-07-28T14:50:42.899Z'])
 		})
 
+		it('displays location and room names', () => {
+			const verboseDevice = {
+				room: 'room-name',
+				location: 'location-name',
+			} as unknown as Device
+			tableToStringMock.mockReturnValueOnce('main table')
+
+			expect(buildTableOutput(tableGeneratorMock, verboseDevice))
+				.toEqual('Main Info\nmain table')
+
+			expect(tablePushMock).toHaveBeenCalledTimes(10)
+			expect(tablePushMock).toHaveBeenCalledWith(['Room', 'room-name'])
+			expect(tablePushMock).toHaveBeenCalledWith(['Location', 'location-name'])
+		})
+
 		it('displays device status', () => {
 			const device = {
 				components: [

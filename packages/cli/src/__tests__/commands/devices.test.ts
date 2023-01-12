@@ -1,7 +1,8 @@
-import { Device, DevicesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
+import { Device, DevicesEndpoint, DeviceStatus, SmartThingsClient } from '@smartthings/core-sdk'
 
 import {
 	CustomCommonOutputProducer, DefaultTableGenerator, outputItemOrList,
+	withLocationAndRoom,
 	withLocationsAndRooms, WithNamedRoom,
 } from '@smartthings/cli-lib'
 
@@ -16,6 +17,7 @@ describe('DevicesCommand', () => {
 	const deviceId = 'device-id'
 	const getSpy = jest.spyOn(DevicesEndpoint.prototype, 'get').mockImplementation()
 	const outputItemOrListMock = jest.mocked(outputItemOrList)
+	const withLocationAndRoomMock = jest.mocked(withLocationAndRoom)
 
 	it('passes undefined for location id when not specified', async () => {
 		await expect(DevicesCommand.run([])).resolves.not.toThrow()
@@ -345,5 +347,59 @@ describe('DevicesCommand', () => {
 		)
 		expect(getSpy).toBeCalledWith(deviceId, { includeStatus: undefined })
 		expect(getHealthSpy).toBeCalledWith(deviceId)
+	})
+
+	it('includes room and location names when verbose flag is set', async () => {
+		const device = { deviceId: 'device-id' } as Device
+		const deviceWithRoom = { ...device, location: 'location-name', room: 'room-name' } as Device & WithNamedRoom
+		getSpy.mockResolvedValueOnce(device)
+		withLocationAndRoomMock.mockResolvedValueOnce(deviceWithRoom)
+
+		await expect(DevicesCommand.run([deviceId, '--verbose'])).resolves.not.toThrow()
+		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+		expect(outputItemOrListMock).toBeCalledWith(
+			expect.anything(),
+			expect.anything(),
+			deviceId,
+			expect.anything(),
+			expect.anything(),
+		)
+
+		const getFunction = outputItemOrListMock.mock.calls[0][4]
+
+		await expect(getFunction(deviceId)).resolves.toBe(deviceWithRoom)
+		expect(getSpy).toHaveBeenCalledTimes(1)
+		expect(getSpy).toBeCalledWith(deviceId, { includeStatus: undefined })
+		expect(withLocationAndRoomMock).toHaveBeenCalledTimes(1)
+		expect(withLocationAndRoomMock).toBeCalledWith(expect.anything(), device)
+	})
+
+	it('includes both location and health when both flags are set', async () => {
+		const getHealthSpy = jest.spyOn(DevicesEndpoint.prototype, 'getHealth').mockImplementation()
+		const device = { deviceId: 'device-id' } as Device
+		const deviceWithRoom = { ...device, location: 'location-name', room: 'room-name' } as Device & WithNamedRoom
+		const deviceWithRoomAndHealth = { ...deviceWithRoom, healthState: undefined } as Device & WithNamedRoom & Pick<DeviceStatus, 'healthState'>
+		getSpy.mockResolvedValueOnce(device)
+		withLocationAndRoomMock.mockResolvedValueOnce(deviceWithRoom)
+
+		await expect(DevicesCommand.run([deviceId, '--verbose', '--health'])).resolves.not.toThrow()
+		expect(outputItemOrListMock).toHaveBeenCalledTimes(1)
+		expect(outputItemOrListMock).toBeCalledWith(
+			expect.anything(),
+			expect.anything(),
+			deviceId,
+			expect.anything(),
+			expect.anything(),
+		)
+
+		const getFunction = outputItemOrListMock.mock.calls[0][4]
+
+		await expect(getFunction(deviceId)).resolves.toEqual(deviceWithRoomAndHealth)
+		expect(getSpy).toHaveBeenCalledTimes(1)
+		expect(getSpy).toBeCalledWith(deviceId, { includeStatus: undefined })
+		expect(getHealthSpy).toHaveBeenCalledTimes(1)
+		expect(getHealthSpy).toBeCalledWith(deviceId)
+		expect(withLocationAndRoomMock).toHaveBeenCalledTimes(1)
+		expect(withLocationAndRoomMock).toBeCalledWith(expect.anything(), device)
 	})
 })
