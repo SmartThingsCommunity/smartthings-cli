@@ -8,7 +8,7 @@ import {
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { forAllNamespaces, forAllOrganizations, withLocation, withLocations, withLocationsAndRooms } from '../api-helpers'
+import { forAllNamespaces, forAllOrganizations, withLocation, withLocations, withLocationAndRoom, withLocationsAndRooms } from '../api-helpers'
 import * as apiHelpers from '../api-helpers'
 import { SimpleType } from './test-lib/simple-type'
 
@@ -250,6 +250,27 @@ describe('api-helpers', () => {
 				{ ...things[2], location: 'vacation home', room: 'living room' },
 				{ ...things[3], location: 'main location', room: 'garage' },
 			])
+		})
+	})
+
+	describe('withLocationAndRoom', () => {
+		const withLocationsAndRoomsSpy = jest.spyOn(apiHelpers, 'withLocationsAndRooms')
+
+		it('proxies to withLocationsAndRooms and indexes return', async () => {
+			const item: SimpleType & apiHelpers.WithRoom = {
+				num: 1,
+				str: 'string',
+				locationId: 'location-id',
+				roomId: 'room-id',
+			}
+			const itemWithLocationAndRoom = { ...item, location: 'Location Name', room: 'Room Name' }
+
+			withLocationsAndRoomsSpy.mockResolvedValueOnce([itemWithLocationAndRoom])
+
+			expect(await withLocationAndRoom(client, item)).toBe(itemWithLocationAndRoom)
+
+			expect(withLocationsAndRoomsSpy).toHaveBeenCalledTimes(1)
+			expect(withLocationsAndRoomsSpy).toHaveBeenCalledWith(client, [item])
 		})
 	})
 

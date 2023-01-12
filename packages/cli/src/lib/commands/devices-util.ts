@@ -1,6 +1,6 @@
 import { Device, DeviceHealth, DeviceStatus } from '@smartthings/core-sdk'
 
-import { TableGenerator } from '@smartthings/cli-lib'
+import { TableGenerator, WithNamedRoom } from '@smartthings/cli-lib'
 
 
 export type DeviceWithLocation = Device & { location?: string }
@@ -76,7 +76,7 @@ export const buildEmbeddedStatusTableOutput = (tableGenerator: TableGenerator, d
 	return hasStatus ? output : ''
 }
 
-export const buildTableOutput = (tableGenerator: TableGenerator, device: Device & { profileId?: string; healthState?: DeviceHealth }): string => {
+export const buildTableOutput = (tableGenerator: TableGenerator, device: Device & WithNamedRoom & { profileId?: string; healthState?: DeviceHealth }): string => {
 	const table = tableGenerator.newOutputTable()
 	table.push(['Label', device.label])
 	table.push(['Name', device.name])
@@ -84,7 +84,13 @@ export const buildTableOutput = (tableGenerator: TableGenerator, device: Device 
 	table.push(['Type', device.type])
 	table.push(['Manufacturer Code', device.deviceManufacturerCode ?? ''])
 	table.push(['Location Id', device.locationId ?? ''])
+	if (device.location) {
+		table.push(['Location', device.location])
+	}
 	table.push(['Room Id', device.roomId ?? ''])
+	if (device.room) {
+		table.push(['Room', device.room])
+	}
 	table.push(['Profile Id', device.profile?.id ?? (device.profileId ?? '')])
 	for (const comp of device.components ?? []) {
 		const label = comp.id === 'main' ? 'Capabilities' : `Capabilities (${comp.id})`
