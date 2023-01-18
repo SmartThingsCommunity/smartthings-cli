@@ -4,11 +4,13 @@ import VirtualDeviceCreateCommand from '../../../commands/virtualdevices/create'
 import { chooseLocation } from '../../../commands/locations'
 import { chooseRoom } from '../../../lib/commands/locations/rooms-util'
 import { chooseDeviceName, chooseDeviceProfileDefinition } from '../../../lib/commands/virtualdevices-util'
+import { chooseDriver, chooseHub } from '../../../lib/commands/hubs-util'
 
 
 jest.mock('../../../commands/locations')
 jest.mock('../../../lib/commands/locations/rooms-util')
 jest.mock('../../../lib/commands/virtualdevices-util')
+jest.mock('../../../lib/commands/hubs-util')
 
 describe('VirtualDeviceCreateCommand', () => {
 	const mockInputAndOutputItem = jest.mocked(inputAndOutputItem)
@@ -88,6 +90,7 @@ describe('VirtualDeviceCreateCommand', () => {
 			},
 			roomId: 'room-id',
 			deviceProfileId: 'device-profile-id',
+			executionTarget: 'CLOUD',
 		}
 
 		mockChooseDeviceName.mockResolvedValueOnce('DeviceName')
@@ -129,6 +132,7 @@ describe('VirtualDeviceCreateCommand', () => {
 			},
 			roomId: 'room-id',
 			deviceProfile: {},
+			executionTarget: 'CLOUD',
 		}
 
 		mockChooseDeviceName.mockResolvedValueOnce('DeviceName')
@@ -152,6 +156,59 @@ describe('VirtualDeviceCreateCommand', () => {
 		expect(mockChooseLocation).toBeCalledWith(expect.any(VirtualDeviceCreateCommand), 'location-id', true)
 		expect(mockChooseRoom).toBeCalledWith(expect.any(VirtualDeviceCreateCommand), 'location-id', 'room-id', true)
 		expect(mockChooseDeviceProfileDefinition).toBeCalledWith(expect.any(VirtualDeviceCreateCommand), undefined, 'device-profile-filename')
+
+		expect(createSpy).toBeCalledWith(expectedCreateRequest)
+	})
+
+	it('local device includes driver ID', async () => {
+		const mockChooseDeviceName = jest.mocked(chooseDeviceName)
+		const mockChooseRoom = jest.mocked(chooseRoom)
+		const mockChooseLocation = jest.mocked(chooseLocation)
+		const mockChooseDeviceProfileDefinition = jest.mocked(chooseDeviceProfileDefinition)
+		const mockChooseDriver = jest.mocked(chooseDriver)
+		const mockChooseHub = jest.mocked(chooseHub)
+
+		const expectedCreateRequest: VirtualDeviceCreateRequest = {
+			name: 'LocalDeviceName',
+			owner: {
+				ownerType: 'LOCATION',
+				ownerId: 'location-id',
+			},
+			roomId: 'room-id',
+			deviceProfileId: 'device-profile-id',
+			driverId: 'driver-id',
+			hubId: 'hub-id',
+			executionTarget: 'LOCAL',
+		}
+
+		mockChooseDeviceName.mockResolvedValueOnce('LocalDeviceName')
+		mockChooseLocation.mockResolvedValueOnce('location-id')
+		mockChooseRoom.mockResolvedValueOnce(['room-id', 'location-id'])
+		mockChooseDeviceProfileDefinition.mockResolvedValueOnce({ deviceProfileId: 'device-profile-id' })
+		mockChooseDriver.mockResolvedValueOnce('driver-id')
+		mockChooseHub.mockResolvedValueOnce('hub-id')
+
+		mockInputAndOutputItem.mockImplementationOnce(async (_command, _config, actionFunction, inputProcessor) => {
+			const data = await inputProcessor.read()
+			await actionFunction(undefined, data)
+		})
+
+		await expect(VirtualDeviceCreateCommand.run([
+			'--local',
+			'--name=LocalDeviceName',
+			'--location=location-id',
+			'--room=room-id',
+			'--driver=driver-id',
+			'--hub=hub-id',
+			'--device-profile=device-profile-id',
+		])).resolves.not.toThrow()
+
+		expect(mockChooseDeviceName).toBeCalledWith(expect.any(VirtualDeviceCreateCommand), 'LocalDeviceName')
+		expect(mockChooseLocation).toBeCalledWith(expect.any(VirtualDeviceCreateCommand), 'location-id', true)
+		expect(mockChooseRoom).toBeCalledWith(expect.any(VirtualDeviceCreateCommand), 'location-id', 'room-id', true)
+		expect(mockChooseDeviceProfileDefinition).toBeCalledWith(expect.any(VirtualDeviceCreateCommand), 'device-profile-id', undefined)
+		expect(mockChooseDriver).toBeCalledWith(expect.any(VirtualDeviceCreateCommand), 'Select driver providing local execution', 'driver-id')
+		expect(mockChooseHub).toBeCalledWith(expect.any(VirtualDeviceCreateCommand), 'Select hub for local execution', 'location-id', 'hub-id', true)
 
 		expect(createSpy).toBeCalledWith(expectedCreateRequest)
 	})

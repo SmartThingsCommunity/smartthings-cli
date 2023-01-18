@@ -11,8 +11,13 @@ import {
 } from '@smartthings/cli-lib'
 import { buildTableOutput } from '../../lib/commands/devices-util'
 import { chooseLocation } from '../locations'
-import { chooseDeviceName, chooseDevicePrototype } from '../../lib/commands/virtualdevices-util'
+import {
+	chooseDeviceName,
+	chooseDevicePrototype,
+	chooseLocallyExecutingDevicePrototype,
+} from '../../lib/commands/virtualdevices-util'
 import { chooseRoom } from '../../lib/commands/locations/rooms-util'
+import { chooseHub } from '../../lib/commands/hubs-util'
 
 
 export default class VirtualDeviceCreateStandardCommand extends APICommand<typeof VirtualDeviceCreateStandardCommand.flags> {
@@ -54,6 +59,15 @@ export default class VirtualDeviceCreateStandardCommand extends APICommand<typeo
 			char: 'T',
 			description: 'standard device prototype, e.g. VIRTUAL_SWITCH or VIRTUAL_DIMMER_SWITCH',
 		}),
+		local: Flags.boolean({
+			char: 'L',
+			description: 'run this device locally on a SmartThings hub',
+		}),
+		hub: Flags.string({
+			char: 'H',
+			description: 'hub on which to run locally executing device',
+			helpValue: '<UUID>',
+		}),
 	}
 
 	async run(): Promise<void> {
@@ -83,15 +97,25 @@ export default class VirtualDeviceCreateStandardCommand extends APICommand<typeo
 
 	async getInputFromUser(): Promise<VirtualDeviceStandardCreateRequest> {
 		const name = await chooseDeviceName(this, this.flags.name)
-		const prototype = await chooseDevicePrototype(this, this.flags['prototype'])
 		const locationId = await chooseLocation(this, this.flags.location, true)
 		const [roomId] = await chooseRoom(this, locationId, this.flags.room, true)
+		const prototype = this.flags.local
+			? await chooseLocallyExecutingDevicePrototype(this, this.flags['prototype'])
+			: await chooseDevicePrototype(this, this.flags['prototype'])
+		const hubId = this.flags.local
+			? await chooseHub(this, 'Select hub for local execution', locationId, this.flags.hub, true)
+			: undefined
+		const executionTarget = this.flags.local
+			? (hubId ? 'LOCAL' : 'CLOUD')
+			: 'CLOUD'
 
 		if (name && prototype && locationId) {
 			return {
 				name,
 				roomId,
 				prototype,
+				hubId,
+				executionTarget,
 				owner: {
 					ownerType: 'LOCATION',
 					ownerId: locationId,

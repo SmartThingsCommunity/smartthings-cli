@@ -14,6 +14,7 @@ import { buildTableOutput } from '../../lib/commands/devices-util'
 import { chooseLocation } from '../locations'
 import { chooseDeviceName, chooseDeviceProfileDefinition } from '../../lib/commands/virtualdevices-util'
 import { chooseRoom } from '../../lib/commands/locations/rooms-util'
+import { chooseDriver, chooseHub } from '../../lib/commands/hubs-util'
 
 
 export default class VirtualDeviceCreateCommand extends APIOrganizationCommand<typeof VirtualDeviceCreateCommand.flags> {
@@ -63,6 +64,20 @@ export default class VirtualDeviceCreateCommand extends APIOrganizationCommand<t
 			description: 'a file containing the device profile definition',
 		}),
 		/* eslint-enable @typescript-eslint/naming-convention */
+		local: Flags.boolean({
+			char: 'L',
+			description: 'run this device locally on a SmartThings hub. Requires a hub and driver',
+		}),
+		hub: Flags.string({
+			char: 'H',
+			description: 'hub on which to run locally executing device',
+			helpValue: '<UUID>',
+		}),
+		driver: Flags.string({
+			char: 'D',
+			description: 'driver used for locally executing device',
+			helpValue: '<UUID>',
+		}),
 	}
 
 	async run(): Promise<void> {
@@ -96,6 +111,15 @@ export default class VirtualDeviceCreateCommand extends APIOrganizationCommand<t
 			this.flags['device-profile'], this.flags['device-profile-file'])
 		const locationId = await chooseLocation(this, this.flags.location, true)
 		const [roomId] = await chooseRoom(this, locationId, this.flags.room, true)
+		const hubId = this.flags.local
+			? await chooseHub(this, 'Select hub for local execution', locationId, this.flags.hub, true)
+			: undefined
+		const driverId = hubId
+			? await chooseDriver(this, 'Select driver providing local execution', this.flags.driver)
+			: undefined
+		const executionTarget = this.flags.local
+			? (hubId ? 'LOCAL' : 'CLOUD')
+			: 'CLOUD'
 
 		if (name && locationId && (deviceProfileId || deviceProfile)) {
 			return {
@@ -103,6 +127,9 @@ export default class VirtualDeviceCreateCommand extends APIOrganizationCommand<t
 				roomId,
 				deviceProfileId,
 				deviceProfile,
+				executionTarget,
+				hubId,
+				driverId,
 				owner: {
 					ownerType: 'LOCATION',
 					ownerId: locationId,
