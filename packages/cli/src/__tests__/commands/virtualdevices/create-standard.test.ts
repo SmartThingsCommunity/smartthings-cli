@@ -83,6 +83,7 @@ describe('VirtualDeviceStandardCreateCommand', () => {
 			},
 			roomId: 'room-id',
 			prototype: 'VIRTUAL_SWITCH',
+			executionTarget: 'CLOUD',
 		}
 
 		mockChooseDeviceName.mockResolvedValueOnce('DeviceName')
