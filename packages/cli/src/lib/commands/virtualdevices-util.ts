@@ -16,7 +16,7 @@ import {
 	SelectFromListConfig,
 } from '@smartthings/cli-lib'
 
-import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util.js'
+import { chooseDeviceProfile } from './deviceprofiles-util.js'
 
 
 export type DevicePrototype = {
@@ -26,13 +26,16 @@ export type DevicePrototype = {
 
 export const locallyExecutingPrototypes = [
 	{ name: 'Switch', id: 'VIRTUAL_SWITCH' },
-	{ name: 'Dimmer', id: 'VIRTUAL_DIMMER_SWITCH' },
+	{ name: 'Dimmer Switch', id: 'VIRTUAL_DIMMER_SWITCH' },
+]
+
+export const commonPrototypes = [
+	...locallyExecutingPrototypes,
 	{ name: 'More...', id: 'more' },
 ]
 
 export const allPrototypes = [
-	{ name: 'Switch', id: 'VIRTUAL_SWITCH' },
-	{ name: 'Dimmer Switch', id: 'VIRTUAL_DIMMER_SWITCH' },
+	...locallyExecutingPrototypes,
 	{ name: 'Button', id: 'VIRTUAL_BUTTON' },
 	{ name: 'Camera', id: 'VIRTUAL_CAMERA' },
 	{ name: 'Color Bulb', id: 'VIRTUAL_COLOR_BULB' },
@@ -100,7 +103,7 @@ export async function chooseDevicePrototype(command: APICommand<typeof APIComman
 	}
 	let prototype = await selectFromList(command, config, {
 		preselectedId,
-		listItems: () => Promise.resolve(locallyExecutingPrototypes),
+		listItems: () => Promise.resolve(commonPrototypes),
 	})
 
 	if (prototype === 'more') {
@@ -110,6 +113,18 @@ export async function chooseDevicePrototype(command: APICommand<typeof APIComman
 	}
 
 	return prototype
+}
+
+export async function chooseLocallyExecutingDevicePrototype(command: APICommand<typeof APICommand.flags>, preselectedId?: string): Promise<string> {
+	const config: SelectFromListConfig<DevicePrototype> = {
+		itemName: 'device prototype',
+		primaryKeyName: 'id',
+		listTableFieldDefinitions: ['name', 'id'],
+	}
+	return await selectFromList(command, config, {
+		preselectedId,
+		listItems: () => Promise.resolve(locallyExecutingPrototypes),
+	})
 }
 
 export const chooseComponent = async (command: APICommand<typeof APICommand.flags>, device: Device): Promise<Component> => {
