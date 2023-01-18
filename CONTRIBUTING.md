@@ -25,6 +25,7 @@ This is the monorepo for the SmartThings CLI. Currently, the following
 packages are included:
 
 * [cli](packages/cli/README.md) - the CLI itself; @smartthings/cli node package
+* [edge](packages/edge/README.md) - a plugin for Edge Drivers that is installed by default
 * [lib](packages/lib/README.md) - a library for use in the CLI and its
   extensions; @smartthings/cli-lib node package
 * [testlib](packages/testlib/README.md) - a library for use in the CLI and its
@@ -134,7 +135,7 @@ We're always looking for more opinions on discussions in the issue tracker. It's
   - `npm run lint`
   - `npm run test`
 - Write a convincing description of why we should land your pull request. Answer _why_ it's needed and provide use-cases.
-- Make the pull request from a [topic branch](https://github.com/dchelimsky/rspec/wiki/Topic-Branches) (not main)
+- Make the pull request from a [topic branch](https://alvinalexander.com/git/git-topic-branch-workflow-pattern-pro-git/) (not main)
 - You might be asked to do changes to your pull request. There's never a need to open another pull request – [just update the existing one.](https://github.com/RichardLitt/knowledge/blob/master/github/amending-a-commit-guide.md)
 - Don't forget to generate a [changeset](#changesets)
 
@@ -147,7 +148,7 @@ Look at the existing issues for areas of contribution. Searching for issues labe
 ## More About SmartThings
 
 If you are not familiar with SmartThings, we have
-[extensive online documentation](https://developer-preview.smartthings.com/).
+[extensive online documentation](https://developer.smartthings.com/docs/getting-started/welcome/).
 
 To create and manage your services and devices on SmartThings, create an account in the
 [developer workspace](https://smartthings.developer.samsung.com/workspace/).
@@ -162,4 +163,4 @@ can read and share information.
 
 Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-Copyright 2022 SmartThings, Inc.
+Copyright 2023 SmartThings, Inc.
