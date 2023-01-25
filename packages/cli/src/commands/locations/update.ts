@@ -6,7 +6,8 @@ import { chooseLocation, tableFieldDefinitions } from '../locations'
 
 
 export default class LocationsUpdateCommand extends APICommand<typeof LocationsUpdateCommand.flags> {
-	static description = 'update a location'
+	static description = 'update a location' +
+		this.apiDocsURL('updateLocation')
 
 	static flags = {
 		...APICommand.flags,

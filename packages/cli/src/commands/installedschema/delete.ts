@@ -8,7 +8,8 @@ import { installedSchemaInstances } from '../../lib/commands/installedschema-uti
 
 
 export default class InstalledSchemaAppDeleteCommand extends APICommand<typeof InstalledSchemaAppDeleteCommand.flags> {
-	static description = 'delete the installed schema connector instance'
+	static description = 'delete the installed schema connector instance' +
+		this.apiDocsURL('deleteIsaByIsaId')
 
 	static flags = {
 		...APICommand.flags,

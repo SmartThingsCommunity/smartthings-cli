@@ -4,7 +4,8 @@ import { chooseDevicePreference, tableFieldDefinitions } from '../../lib/command
 
 
 export default class DevicePreferencesUpdateCommand extends APIOrganizationCommand<typeof DevicePreferencesUpdateCommand.flags> {
-	static description = 'update a device preference'
+	static description = 'update a device preference' +
+		this.apiDocsURL('updatePreferenceById')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

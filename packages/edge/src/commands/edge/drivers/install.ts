@@ -9,7 +9,8 @@ import { EdgeCommand } from '../../../lib/edge-command'
 
 
 export default class DriversInstallCommand extends EdgeCommand<typeof DriversInstallCommand.flags> {
-	static description = 'install an edge driver onto a hub'
+	static description = 'install an edge driver onto a hub' +
+		this.apiDocsURL('installDrivers')
 
 	static examples = [
 		'smartthings edge:drivers:install                                         # use Q&A format to enter required values',

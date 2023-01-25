@@ -8,7 +8,8 @@ import { getRulesByLocation, getRuleWithLocation, tableFieldDefinitions } from '
 
 
 export default class RulesCommand extends APICommand<typeof RulesCommand.flags> {
-	static description = 'get a specific rule'
+	static description = 'get a specific rule' +
+		this.apiDocsURL('listRules', 'getRule')
 
 	static flags = {
 		...APICommand.flags,

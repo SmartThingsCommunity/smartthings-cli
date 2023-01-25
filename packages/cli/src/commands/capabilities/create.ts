@@ -35,7 +35,8 @@ function unitOfMeasureValidator(input: string): boolean | string {
 }
 
 export default class CapabilitiesCreateCommand extends APIOrganizationCommand<typeof CapabilitiesCreateCommand.flags> {
-	static description = 'create a capability for a user'
+	static description = 'create a capability for a user' +
+		this.apiDocsURL('createCapability')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

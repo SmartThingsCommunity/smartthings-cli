@@ -83,7 +83,8 @@ export function buildTableOutput(tableGenerator: TableGenerator, presentation: P
 }
 
 export default class PresentationCommand extends APICommand<typeof PresentationCommand.flags> {
-	static description = 'query device presentation by vid'
+	static description = 'query device presentation by vid' +
+		this.apiDocsURL('getDevicePresentation')
 
 	static flags = {
 		...APICommand.flags,

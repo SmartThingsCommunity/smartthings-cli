@@ -9,7 +9,8 @@ import { listChannels, listTableFieldDefinitions, tableFieldDefinitions } from '
 
 
 export default class ChannelsCommand extends EdgeCommand<typeof ChannelsCommand.flags> {
-	static description = 'list all channels owned by you or retrieve a single channel'
+	static description = 'list all channels owned by you or retrieve a single channel' +
+		this.apiDocsURL('listChannels', 'channelById')
 
 	/* eslint-disable @typescript-eslint/naming-convention */
 	static flags = {

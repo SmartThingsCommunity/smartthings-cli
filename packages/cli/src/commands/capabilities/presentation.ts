@@ -67,7 +67,8 @@ export function buildTableOutput(tableGenerator: TableGenerator, presentation: C
 }
 
 export default class PresentationsCommand extends APIOrganizationCommand<typeof PresentationsCommand.flags> {
-	static description = 'get presentation information for a specific capability'
+	static description = 'get presentation information for a specific capability' +
+		this.apiDocsURL('getCapabilityPresentation')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

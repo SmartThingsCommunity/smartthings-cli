@@ -33,7 +33,8 @@ export async function chooseLocation(
 }
 
 export default class LocationsCommand extends APICommand<typeof LocationsCommand.flags> {
-	static description = 'list locations or get information for a specific Location'
+	static description = 'list locations or get information for a specific Location' +
+		this.apiDocsURL('listLocations', 'getLocation')
 
 	static flags = {
 		...APICommand.flags,

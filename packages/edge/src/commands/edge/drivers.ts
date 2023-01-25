@@ -9,13 +9,11 @@ import { buildTableOutput, listDrivers, listTableFieldDefinitions } from '../../
 
 
 export default class DriversCommand extends EdgeCommand<typeof DriversCommand.flags> {
-	static description = `list all drivers owned by you or retrieve a single driver
-Use this command to list all drivers you own, even if they are not yet assigned to a channel.
-
-See also:
-  edge:drivers:installed to list installed drivers
-  edge:channels:drivers to list drivers that are part of a channel you own or have subscribed to
-`
+	static description = 'list all drivers owned by you or retrieve a single driver\n' +
+		'Use this command to list all drivers you own, even if they are not yet assigned to a channel.\n' +
+		'See also edge:drivers:installed to list installed drivers and edge:channels:drivers to list drivers ' +
+		'that are part of a channel you own or have subscribed to' +
+			this.apiDocsURL('listDrivers', 'getDriver', 'getDriverRevision')
 
 	static flags = {
 		...EdgeCommand.flags,

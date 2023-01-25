@@ -17,7 +17,7 @@ https://www.npmjs.com/package/@oclif/dev-cli
 SmartThings CLI
 =======================
 
-The SmartThings CLI is a tool to help with developing applications and drivers for the SmartThings ecosystem.
+The SmartThings CLI is a tool to help with developing SmartApps and drivers for the SmartThings ecosystem.
 
 <!-- toc -->
 * [Overview](#overview)
@@ -717,6 +717,12 @@ COMMON FLAGS
 
 DESCRIPTION
   get a specific capability or a list of capabilities
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listNamespacedCapabilities,
+  https://developer.smartthings.com/docs/api/public/#operation/listCapabilities,
+  https://developer.smartthings.com/docs/api/public/#operation/getCapability
 ```
 
 _See code: [src/commands/capabilities.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/capabilities.ts)_
@@ -747,6 +753,10 @@ COMMON FLAGS
 
 DESCRIPTION
   create a capability for a user
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createCapability
 ```
 
 _See code: [src/commands/capabilities/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/capabilities/create.ts)_
@@ -774,6 +784,10 @@ COMMON FLAGS
 
 DESCRIPTION
   delete a capability
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteCapability
 ```
 
 _See code: [src/commands/capabilities/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/capabilities/delete.ts)_
@@ -833,6 +847,10 @@ COMMON FLAGS
 
 DESCRIPTION
   get presentation information for a specific capability
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getCapabilityPresentation
 ```
 
 _See code: [src/commands/capabilities/presentation.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/capabilities/presentation.ts)_
@@ -866,6 +884,10 @@ COMMON FLAGS
 
 DESCRIPTION
   create presentation model for a capability
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createCustomCapabilityPresentation
 ```
 
 _See code: [src/commands/capabilities/presentation/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/capabilities/presentation/create.ts)_
@@ -899,6 +921,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update presentation information of a capability
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateCustomCapabilityPresentation
 ```
 
 _See code: [src/commands/capabilities/presentation/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/capabilities/presentation/update.ts)_
@@ -933,6 +959,11 @@ COMMON FLAGS
 
 DESCRIPTION
   get list of locales supported by the capability
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listCapabilityLocalizations,
+  https://developer.smartthings.com/docs/api/public/#operation/getCapabilityLocalization
 
 EXAMPLES
   $ smartthings capabilities:translations
@@ -1035,6 +1066,10 @@ COMMON FLAGS
 DESCRIPTION
   create a capability translation
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createCapabilityLocalization
+
 EXAMPLES
   $ smartthings capabilities:translations:create custom1.outputModulation 1 -i en.yaml 
 
@@ -1119,6 +1154,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update a capability translation
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateCapabilityLocalization
 
 EXAMPLES
   $ smartthings capabilities:translations:update custom1.outputModulation 1 -i en.yaml 
@@ -1205,6 +1244,11 @@ COMMON FLAGS
 DESCRIPTION
   create or update a capability translation
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateCapabilityLocalization,
+  https://developer.smartthings.com/docs/api/public/#operation/createCapabilityLocalization
+
 EXAMPLES
   $ smartthings capabilities:translations:upsert custom1.outputModulation 1 -i en.yaml 
 
@@ -1289,6 +1333,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update a capability
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateCapability
 ```
 
 _See code: [src/commands/capabilities/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/capabilities/update.ts)_
@@ -1371,6 +1419,11 @@ COMMON FLAGS
 DESCRIPTION
   list device preferences or get information for a specific device preference
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listPreferences,
+  https://developer.smartthings.com/docs/api/public/#operation/getPreferenceById
+
 EXAMPLES
   $ smartthings devicepreferences                       # list all device preferences, sorted by title
 
@@ -1410,6 +1463,10 @@ COMMON FLAGS
 
 DESCRIPTION
   create a device preference
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createPreference
 
 EXAMPLES
   # create a new device preference by answering questions
@@ -1574,6 +1631,10 @@ COMMON FLAGS
 DESCRIPTION
   update a device preference
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updatePreferenceById
+
 EXAMPLES
   $ smartthings devicepreferences:update -i dp.json                   # update a device preference with data from dp.json, select which preference from a list
 
@@ -1610,6 +1671,11 @@ COMMON FLAGS
 
 DESCRIPTION
   list all device profiles available in a user account or retrieve a single profile
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listDeviceProfiles,
+  https://developer.smartthings.com/docs/api/public/#operation/getDeviceProfile
 
 EXAMPLES
   $ smartthings deviceprofiles                      # list all device profiles
@@ -1653,11 +1719,12 @@ COMMON FLAGS
 DESCRIPTION
   create a new device profile
 
-  Creates a new device profile. If a vid field is not present in the meta
+  Creates a new device profile. If a vid field is not present in the meta then a default device presentation will be
+  created for this profile and the vid set to reference it.
 
-  then a default device presentation will be created for this profile and the
+  For API information, see:
 
-  vid set to reference it.
+  https://developer.smartthings.com/docs/api/public/#operation/createDeviceProfile
 
 EXAMPLES
   $ smartthings deviceprofiles:create -i myprofile.json    # create a device profile from the JSON file definition
@@ -1691,6 +1758,10 @@ COMMON FLAGS
 
 DESCRIPTION
   delete a device profile
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteDeviceProfile
 
 EXAMPLES
   $ smartthings deviceprofiles:delete 63b8c91e-9686-4c43-9afb-fbd9f77e3bb0  # delete profile with this UUID
@@ -1726,6 +1797,11 @@ COMMON FLAGS
 
 DESCRIPTION
   get the device configuration associated with a device profile
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getDeviceProfile,
+  https://developer.smartthings.com/docs/api/public/#operation/getDeviceConfiguration
 ```
 
 _See code: [src/commands/deviceprofiles/device-config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/deviceprofiles/device-config.ts)_
@@ -1756,6 +1832,11 @@ COMMON FLAGS
 
 DESCRIPTION
   get the presentation associated with a device profile
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getDeviceProfile,
+  https://developer.smartthings.com/docs/api/public/#operation/getDevicePresentation
 
 EXAMPLES
   $ smartthings deviceprofiles:presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf
@@ -2132,6 +2213,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update a device profile
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateDeviceProfile
 ```
 
 _See code: [src/commands/deviceprofiles/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/deviceprofiles/update.ts)_
@@ -2162,6 +2247,10 @@ COMMON FLAGS
 
 DESCRIPTION
   show device profile and device configuration in a single, consolidated view
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getDeviceProfile, getDeviceConfiguration
 ```
 
 _See code: [src/commands/deviceprofiles/view.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/deviceprofiles/view.ts)_
@@ -2192,11 +2281,15 @@ COMMON FLAGS
 DESCRIPTION
   create a new device profile and device configuration
 
-  Creates a new device profile and device configuration. Unlike deviceprofiles:create,
+  Creates a new device profile and device configuration. Unlike deviceprofiles:create, this command accepts a
+  consolidated object that can include a device configuration in a property named "view".
 
-  this command accepts a consolidated object that can include a device configuration
+  For API information, see:
 
-  in a property named "view".
+  https://developer.smartthings.com/docs/api/public/#operation/createDeviceProfile,
+  https://developer.smartthings.com/docs/api/public/#operation/createDeviceConfiguration,
+  https://developer.smartthings.com/docs/api/public/#operation/updateDeviceProfile,
+  https://developer.smartthings.com/docs/api/public/#operation/generateDeviceConfig
 
 EXAMPLES
   $ smartthings deviceprofiles:view:create -i test.json
@@ -2271,13 +2364,15 @@ COMMON FLAGS
 DESCRIPTION
   update a device profile and configuration
 
-  Updates a device profile and device configuration and sets the vid of the profile
+  Updates a device profile and device configuration and sets the vid of the profile to the vid of the updated
+  configuration. Unlike deviceprofiles:update this command accepts a consolidated object that can include a device
+  configuration in a property named "view".
 
-  to the vid of the updated configuration. Unlike deviceprofiles:update this
+  For API information, see:
 
-  command accepts a consolidated object that can include a device configuration
-
-  in a property named "view".
+  https://developer.smartthings.com/docs/api/public/#operation/createDeviceConfiguration,
+  https://developer.smartthings.com/docs/api/public/#operation/updateDeviceProfile,
+  https://developer.smartthings.com/docs/api/public/#operation/generateDeviceConfig
 
 EXAMPLES
   $ smartthings deviceprofiles:view:update 84042863-0d34-4c5c-b497-808daf230787 -i test.json
@@ -2350,7 +2445,7 @@ FLAGS
   -d, --device=<UUID>...            filter results by device
   -l, --location=<UUID>...          filter results by location
   -s, --status                      include attribute values in the response
-  -v, --verbose                     include location name in output
+  -v, --verbose                     include location and room name in output
   --type=<option>...                filter results by device type
                                     <options: BLE|BLE_D2D|DTH|ENDPOINT_APP|GROUP|HUB|IR|IR_OCF|LAN|MATTER|MOBILE|MQTT|OC
                                     F|PENGYOU|SHP|VIDEO|VIPER|VIRTUAL|WATCH|ZIGBEE|ZWAVE>
@@ -2366,6 +2461,11 @@ COMMON FLAGS
 
 DESCRIPTION
   list all devices available in a user account or retrieve a single device
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getDevices,
+  https://developer.smartthings.com/docs/api/public/#operation/getDevice
 ```
 
 _See code: [src/commands/devices.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/devices.ts)_
@@ -2395,6 +2495,10 @@ COMMON FLAGS
 
 DESCRIPTION
   get the current status of all of a device capability's attributes
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getDeviceStatusByCapability
 ```
 
 _See code: [src/commands/devices/capability-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/devices/capability-status.ts)_
@@ -2423,6 +2527,10 @@ COMMON FLAGS
 
 DESCRIPTION
   execute a device command
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/executeDeviceCommands
 
 EXAMPLES
   # simple capability and command
@@ -2460,6 +2568,10 @@ COMMON FLAGS
 
 DESCRIPTION
   get the current status of a device component's attributes
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getDeviceComponentStatus
 ```
 
 _See code: [src/commands/devices/component-status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/devices/component-status.ts)_
@@ -2483,6 +2595,10 @@ COMMON FLAGS
 
 DESCRIPTION
   delete a device
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteDevice
 ```
 
 _See code: [src/commands/devices/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/devices/delete.ts)_
@@ -2624,6 +2740,10 @@ COMMON FLAGS
 
 DESCRIPTION
   rename a device
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateDevice
 ```
 
 _See code: [src/commands/devices/rename.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/devices/rename.ts)_
@@ -2650,6 +2770,10 @@ COMMON FLAGS
 
 DESCRIPTION
   get the current status of all of a device's component's attributes
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getDeviceStatus
 ```
 
 _See code: [src/commands/devices/status.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/devices/status.ts)_
@@ -2681,6 +2805,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update a device's label and room
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateDevice
 ```
 
 _See code: [src/commands/devices/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/devices/update.ts)_
@@ -2734,6 +2862,11 @@ COMMON FLAGS
 DESCRIPTION
   list all channels owned by you or retrieve a single channel
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listChannels,
+  https://developer.smartthings.com/docs/api/public/#operation/channelById
+
 EXAMPLES
   # list all user-owned channels
   $ smartthings edge:channels
@@ -2773,6 +2906,10 @@ COMMON FLAGS
 
 DESCRIPTION
   assign a driver to a channel
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createDriverChannel
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/assign.ts)_
@@ -2802,6 +2939,10 @@ COMMON FLAGS
 
 DESCRIPTION
   create a channel
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createChannel
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/create.ts)_
@@ -2828,13 +2969,17 @@ COMMON FLAGS
 
 DESCRIPTION
   delete a channel
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteChannel
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/delete.ts)_
 
 ## `smartthings edge:channels:drivers [IDORINDEX]`
 
-list all drivers assigned to a given channel
+list drivers assigned to a given channel
 
 ```
 USAGE
@@ -2857,7 +3002,12 @@ COMMON FLAGS
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
-  list all drivers assigned to a given channel
+  list drivers assigned to a given channel
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getChannelDrivers,
+  https://developer.smartthings.com/docs/api/public/#operation/getDriverChannel
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/drivers.ts)_
@@ -2916,6 +3066,10 @@ COMMON FLAGS
 
 DESCRIPTION
   list all channels a given hub is enrolled in
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listDriverChannels
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/enrollments.ts)_
@@ -3112,6 +3266,10 @@ COMMON FLAGS
 
 DESCRIPTION
   remove a driver from a channel
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteDriverChannel
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/unassign.ts)_
@@ -3172,6 +3330,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update a channel
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateChannel
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/update.ts)_
@@ -3207,11 +3369,14 @@ DESCRIPTION
 
   Use this command to list all drivers you own, even if they are not yet assigned to a channel.
 
-  See also:
+  See also edge:drivers:installed to list installed drivers and edge:channels:drivers to list drivers that are part of a
+  channel you own or have subscribed to
 
-  edge:drivers:installed to list installed drivers
+  For API information, see:
 
-  edge:channels:drivers to list drivers that are part of a channel you own or have subscribed to
+  https://developer.smartthings.com/docs/api/public/#operation/listDrivers,
+  https://developer.smartthings.com/docs/api/public/#operation/getDriver,
+  https://developer.smartthings.com/docs/api/public/#operation/getDriverRevision
 
 EXAMPLES
   # list all user-owned drivers
@@ -3251,6 +3416,10 @@ COMMON FLAGS
 DESCRIPTION
   list default drivers available to all users
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getDefaultDrivers
+
 EXAMPLES
   # list default drivers
 
@@ -3281,6 +3450,10 @@ COMMON FLAGS
 
 DESCRIPTION
   delete an edge driver
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteDriver
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/drivers/delete.ts)_
@@ -3310,6 +3483,10 @@ COMMON FLAGS
 
 DESCRIPTION
   install an edge driver onto a hub
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/installDrivers
 
 EXAMPLES
   $ smartthings edge:drivers:install                                         # use Q&A format to enter required values
@@ -3350,6 +3527,11 @@ COMMON FLAGS
 
 DESCRIPTION
   list all drivers installed on a given hub
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listHubInstalledDrivers,
+  https://developer.smartthings.com/docs/api/public/#operation/getHubDeviceDriver
 
 EXAMPLES
   list all installed drivers
@@ -3436,6 +3618,10 @@ COMMON FLAGS
 DESCRIPTION
   build and upload an edge package
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/uploadDriverPackage
+
 EXAMPLES
   # build and upload driver found in current directory:
   $ smartthings edge:drivers:package
@@ -3485,6 +3671,10 @@ COMMON FLAGS
 DESCRIPTION
   change the driver used by an installed device
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateHubDevice
+
 EXAMPLES
   # switch driver, prompting user for all necessary input
   $ smartthings edge:drivers:switch
@@ -3522,6 +3712,10 @@ COMMON FLAGS
 
 DESCRIPTION
   uninstall an edge driver from a hub
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/uninstallDriver
 ```
 
 _See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/drivers/uninstall.ts)_
@@ -3573,6 +3767,11 @@ COMMON FLAGS
 
 DESCRIPTION
   get a specific app or a list of apps
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listInstallations,
+  https://developer.smartthings.com/docs/api/public/#operation/getInstallation
 ```
 
 _See code: [src/commands/installedapps.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/installedapps.ts)_
@@ -3600,6 +3799,10 @@ COMMON FLAGS
 
 DESCRIPTION
   delete the installed app instance
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteInstallation
 ```
 
 _See code: [src/commands/installedapps/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/installedapps/delete.ts)_
@@ -3663,6 +3866,11 @@ COMMON FLAGS
 
 DESCRIPTION
   get a specific schema connector instance or a list of instances
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getIsaByLocationId,
+  https://developer.smartthings.com/docs/api/public/#operation/getDevicesByIsaId
 ```
 
 _See code: [src/commands/installedschema.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/installedschema.ts)_
@@ -3690,6 +3898,10 @@ COMMON FLAGS
 
 DESCRIPTION
   delete the installed schema connector instance
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteIsaByIsaId
 ```
 
 _See code: [src/commands/installedschema/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/installedschema/delete.ts)_
@@ -3716,6 +3928,11 @@ COMMON FLAGS
 
 DESCRIPTION
   list locations or get information for a specific Location
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listLocations,
+  https://developer.smartthings.com/docs/api/public/#operation/getLocation
 ```
 
 _See code: [src/commands/locations.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/locations.ts)_
@@ -3744,6 +3961,10 @@ COMMON FLAGS
 
 DESCRIPTION
   create a Location for a user
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createLocation
 ```
 
 _See code: [src/commands/locations/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/locations/create.ts)_
@@ -3767,6 +3988,10 @@ COMMON FLAGS
 
 DESCRIPTION
   delete a location
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteLocation
 
 EXAMPLES
   $ smartthings locations:delete                 # choose the location to delete from a list
@@ -3838,6 +4063,11 @@ COMMON FLAGS
 
 DESCRIPTION
   list rooms or get information for a specific room
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listRooms,
+  https://developer.smartthings.com/docs/api/public/#operation/getRoom
 ```
 
 _See code: [src/commands/locations/rooms.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/locations/rooms.ts)_
@@ -3867,6 +4097,10 @@ COMMON FLAGS
 
 DESCRIPTION
   create a room
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createRoom
 ```
 
 _See code: [src/commands/locations/rooms/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/locations/rooms/create.ts)_
@@ -3893,6 +4127,10 @@ COMMON FLAGS
 
 DESCRIPTION
   delete a room
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteRoom
 ```
 
 _See code: [src/commands/locations/rooms/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/locations/rooms/delete.ts)_
@@ -3925,6 +4163,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update a room
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateRoom
 ```
 
 _See code: [src/commands/locations/rooms/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/locations/rooms/update.ts)_
@@ -3956,6 +4198,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update a location
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateLocation
 ```
 
 _See code: [src/commands/locations/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/locations/update.ts)_
@@ -4293,6 +4539,10 @@ COMMON FLAGS
 DESCRIPTION
   query device presentation by vid
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getDevicePresentation
+
 EXAMPLES
   $ smartthings presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf
 
@@ -4339,6 +4589,10 @@ COMMON FLAGS
 
 DESCRIPTION
   query device config by presentationId
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getDeviceConfiguration
 ```
 
 _See code: [src/commands/presentation/device-config.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/presentation/device-config.ts)_
@@ -4367,6 +4621,10 @@ COMMON FLAGS
 
 DESCRIPTION
   create a device config
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createDeviceConfiguration
 ```
 
 _See code: [src/commands/presentation/device-config/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/presentation/device-config/create.ts)_
@@ -4399,6 +4657,10 @@ COMMON FLAGS
 
 DESCRIPTION
   generate the default device configuration
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/generateDeviceConfig
 ```
 
 _See code: [src/commands/presentation/device-config/generate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/presentation/device-config/generate.ts)_
@@ -4429,6 +4691,11 @@ COMMON FLAGS
 
 DESCRIPTION
   get a specific rule
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listRules,
+  https://developer.smartthings.com/docs/api/public/#operation/getRule
 ```
 
 _See code: [src/commands/rules.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/rules.ts)_
@@ -4444,7 +4711,7 @@ USAGE
 
 FLAGS
   -d, --dry-run          produce JSON but don't actually submit
-  -l, --location=<UUID>  a specific location to query
+  -l, --location=<UUID>  the location for the rule
 
 COMMON FLAGS
   -h, --help             Show CLI help.
@@ -4458,6 +4725,10 @@ COMMON FLAGS
 
 DESCRIPTION
   create a rule
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createRule
 ```
 
 _See code: [src/commands/rules/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/rules/create.ts)_
@@ -4484,6 +4755,10 @@ COMMON FLAGS
 
 DESCRIPTION
   delete a rule
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteRule
 ```
 
 _See code: [src/commands/rules/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/rules/delete.ts)_
@@ -4514,6 +4789,10 @@ COMMON FLAGS
 
 DESCRIPTION
   execute a rule
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/executeRule
 
 EXAMPLES
   # prompt for a rule to execute and then execute it
@@ -4557,6 +4836,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update a rule
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateRule
 ```
 
 _See code: [src/commands/rules/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/rules/update.ts)_
@@ -4587,6 +4870,10 @@ COMMON FLAGS
 
 DESCRIPTION
   list scenes or get information for a specific scene
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listScenes
 ```
 
 _See code: [src/commands/scenes.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/scenes.ts)_
@@ -4613,6 +4900,10 @@ COMMON FLAGS
 
 DESCRIPTION
   execute a scene
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/executeScene
 
 EXAMPLES
   # prompt for a scene to execute and then execute it
@@ -4653,6 +4944,11 @@ COMMON FLAGS
 
 DESCRIPTION
   list all ST Schema Apps currently available in a user account
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getAppsByUserToken,
+  https://developer.smartthings.com/docs/api/public/#operation/getAppsByEndpointAppId
 ```
 
 _See code: [src/commands/schema.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/schema.ts)_
@@ -4728,6 +5024,10 @@ COMMON FLAGS
 
 DESCRIPTION
   create an ST Schema connector
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/postApps
 ```
 
 _See code: [src/commands/schema/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/schema/create.ts)_
@@ -4751,13 +5051,17 @@ COMMON FLAGS
 
 DESCRIPTION
   delete the ST Schema connector
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteAppsByEndpointAppId
 ```
 
 _See code: [src/commands/schema/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/schema/delete.ts)_
 
 ## `smartthings schema:regenerate [ID]`
 
-Regenerate the clientId and clientSecret of the ST Schema connector. The previous values will be invalidated, which may affect existing installations.
+regenerate the clientId and clientSecret of the ST Schema connector
 
 ```
 USAGE
@@ -4776,8 +5080,13 @@ COMMON FLAGS
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
-  Regenerate the clientId and clientSecret of the ST Schema connector. The previous values will be invalidated, which
-  may affect existing installations.
+  regenerate the clientId and clientSecret of the ST Schema connector
+
+  NOTE: The previous values will be invalidated, which may affect existing installations.
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/generateStOauthCredentials
 ```
 
 _See code: [src/commands/schema/regenerate.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/schema/regenerate.ts)_
@@ -4810,6 +5119,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update an ST Schema connector
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/putAppsByEndpointAppId
 ```
 
 _See code: [src/commands/schema/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.0.1/packages/cli/src/commands/schema/update.ts)_

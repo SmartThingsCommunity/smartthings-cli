@@ -7,7 +7,8 @@ import { capabilityIdInputArgs, chooseCapability } from '../../../lib/commands/c
 
 
 export default class CapabilitiesPresentationUpdate extends APIOrganizationCommand<typeof CapabilitiesPresentationUpdate.flags> {
-	static description = 'update presentation information of a capability'
+	static description = 'update presentation information of a capability' +
+		this.apiDocsURL('updateCustomCapabilityPresentation')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

@@ -7,7 +7,8 @@ import { listTableFieldDefinitions, tableFieldDefinitions } from '../lib/command
 
 
 export default class InstalledAppsCommand extends APICommand<typeof InstalledAppsCommand.flags> {
-	static description = 'get a specific app or a list of apps'
+	static description = 'get a specific app or a list of apps' +
+		this.apiDocsURL('listInstallations', 'getInstallation')
 
 	static flags = {
 		...APICommand.flags,

@@ -10,7 +10,8 @@ import { WithNamedChannel, withChannelNames } from '../../../lib/commands/channe
 
 
 export default class DriversInstalledCommand extends EdgeCommand<typeof DriversInstalledCommand.flags> {
-	static description = 'list all drivers installed on a given hub'
+	static description = 'list all drivers installed on a given hub' +
+		this.apiDocsURL('listHubInstalledDrivers', 'getHubDeviceDriver')
 
 	static flags = {
 		...EdgeCommand.flags,

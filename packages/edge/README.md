@@ -95,6 +95,11 @@ COMMON FLAGS
 DESCRIPTION
   list all channels owned by you or retrieve a single channel
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listChannels,
+  https://developer.smartthings.com/docs/api/public/#operation/channelById
+
 EXAMPLES
   # list all user-owned channels
   $ smartthings edge:channels
@@ -134,6 +139,10 @@ COMMON FLAGS
 
 DESCRIPTION
   assign a driver to a channel
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createDriverChannel
 ```
 
 _See code: [src/commands/edge/channels/assign.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/assign.ts)_
@@ -163,6 +172,10 @@ COMMON FLAGS
 
 DESCRIPTION
   create a channel
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/createChannel
 ```
 
 _See code: [src/commands/edge/channels/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/create.ts)_
@@ -189,13 +202,17 @@ COMMON FLAGS
 
 DESCRIPTION
   delete a channel
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteChannel
 ```
 
 _See code: [src/commands/edge/channels/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/delete.ts)_
 
 ## `smartthings edge:channels:drivers [IDORINDEX]`
 
-list all drivers assigned to a given channel
+list drivers assigned to a given channel
 
 ```
 USAGE
@@ -218,7 +235,12 @@ COMMON FLAGS
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
-  list all drivers assigned to a given channel
+  list drivers assigned to a given channel
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getChannelDrivers,
+  https://developer.smartthings.com/docs/api/public/#operation/getDriverChannel
 ```
 
 _See code: [src/commands/edge/channels/drivers.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/drivers.ts)_
@@ -277,6 +299,10 @@ COMMON FLAGS
 
 DESCRIPTION
   list all channels a given hub is enrolled in
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listDriverChannels
 ```
 
 _See code: [src/commands/edge/channels/enrollments.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/enrollments.ts)_
@@ -473,6 +499,10 @@ COMMON FLAGS
 
 DESCRIPTION
   remove a driver from a channel
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteDriverChannel
 ```
 
 _See code: [src/commands/edge/channels/unassign.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/unassign.ts)_
@@ -533,6 +563,10 @@ COMMON FLAGS
 
 DESCRIPTION
   update a channel
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateChannel
 ```
 
 _See code: [src/commands/edge/channels/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/channels/update.ts)_
@@ -568,11 +602,14 @@ DESCRIPTION
 
   Use this command to list all drivers you own, even if they are not yet assigned to a channel.
 
-  See also:
+  See also edge:drivers:installed to list installed drivers and edge:channels:drivers to list drivers that are part of a
+  channel you own or have subscribed to
 
-  edge:drivers:installed to list installed drivers
+  For API information, see:
 
-  edge:channels:drivers to list drivers that are part of a channel you own or have subscribed to
+  https://developer.smartthings.com/docs/api/public/#operation/listDrivers,
+  https://developer.smartthings.com/docs/api/public/#operation/getDriver,
+  https://developer.smartthings.com/docs/api/public/#operation/getDriverRevision
 
 EXAMPLES
   # list all user-owned drivers
@@ -612,6 +649,10 @@ COMMON FLAGS
 DESCRIPTION
   list default drivers available to all users
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getDefaultDrivers
+
 EXAMPLES
   # list default drivers
 
@@ -642,6 +683,10 @@ COMMON FLAGS
 
 DESCRIPTION
   delete an edge driver
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/deleteDriver
 ```
 
 _See code: [src/commands/edge/drivers/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/drivers/delete.ts)_
@@ -671,6 +716,10 @@ COMMON FLAGS
 
 DESCRIPTION
   install an edge driver onto a hub
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/installDrivers
 
 EXAMPLES
   $ smartthings edge:drivers:install                                         # use Q&A format to enter required values
@@ -711,6 +760,11 @@ COMMON FLAGS
 
 DESCRIPTION
   list all drivers installed on a given hub
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/listHubInstalledDrivers,
+  https://developer.smartthings.com/docs/api/public/#operation/getHubDeviceDriver
 
 EXAMPLES
   list all installed drivers
@@ -797,6 +851,10 @@ COMMON FLAGS
 DESCRIPTION
   build and upload an edge package
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/uploadDriverPackage
+
 EXAMPLES
   # build and upload driver found in current directory:
   $ smartthings edge:drivers:package
@@ -846,6 +904,10 @@ COMMON FLAGS
 DESCRIPTION
   change the driver used by an installed device
 
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/updateHubDevice
+
 EXAMPLES
   # switch driver, prompting user for all necessary input
   $ smartthings edge:drivers:switch
@@ -883,6 +945,10 @@ COMMON FLAGS
 
 DESCRIPTION
   uninstall an edge driver from a hub
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/uninstallDriver
 ```
 
 _See code: [src/commands/edge/drivers/uninstall.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge/drivers/uninstall.ts)_

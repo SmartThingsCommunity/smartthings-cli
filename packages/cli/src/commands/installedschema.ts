@@ -12,7 +12,8 @@ import {
 
 
 export default class InstalledSchemaAppsCommand extends APICommand<typeof InstalledSchemaAppsCommand.flags> {
-	static description = 'get a specific schema connector instance or a list of instances'
+	static description = 'get a specific schema connector instance or a list of instances' +
+		this.apiDocsURL('getIsaByLocationId', 'getDevicesByIsaId')
 
 	static flags = {
 		...APICommand.flags,

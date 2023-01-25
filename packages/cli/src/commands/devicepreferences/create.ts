@@ -6,7 +6,8 @@ import { tableFieldDefinitions } from '../../lib/commands/devicepreferences-util
 
 
 export default class DevicePreferencesCreateCommand extends APIOrganizationCommand<typeof DevicePreferencesCreateCommand.flags> {
-	static description = 'create a device preference'
+	static description = 'create a device preference' +
+		this.apiDocsURL('createPreference')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

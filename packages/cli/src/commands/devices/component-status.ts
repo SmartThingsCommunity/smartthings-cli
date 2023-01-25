@@ -22,7 +22,8 @@ function buildTableOutput(tableGenerator: TableGenerator, component: ComponentSt
 }
 
 export default class DeviceComponentStatusCommand extends APICommand<typeof DeviceComponentStatusCommand.flags> {
-	static description = "get the current status of a device component's attributes"
+	static description = "get the current status of a device component's attributes" +
+		this.apiDocsURL('getDeviceComponentStatus')
 
 	static flags = {
 		...APICommand.flags,

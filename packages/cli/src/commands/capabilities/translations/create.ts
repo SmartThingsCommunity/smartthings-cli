@@ -7,7 +7,8 @@ import { capabilityIdInputArgs, chooseCapability } from '../../../lib/commands/c
 
 
 export default class CapabilityTranslationsCreateCommand extends APIOrganizationCommand<typeof CapabilityTranslationsCreateCommand.flags> {
-	static description = 'create a capability translation'
+	static description = 'create a capability translation' +
+		this.apiDocsURL('createCapabilityLocalization')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

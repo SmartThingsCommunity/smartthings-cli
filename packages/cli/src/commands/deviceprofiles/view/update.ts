@@ -11,10 +11,11 @@ import { chooseDeviceProfile, cleanupForUpdate } from '../../../lib/commands/dev
 
 export default class DeviceProfilesViewUpdateCommand extends APIOrganizationCommand<typeof DeviceProfilesViewUpdateCommand.flags> {
 	static description = 'update a device profile and configuration\n' +
-		'Updates a device profile and device configuration and sets the vid of the profile\n' +
-		'to the vid of the updated configuration. Unlike deviceprofiles:update this\n' +
-		'command accepts a consolidated object that can include a device configuration\n' +
-		'in a property named "view".'
+		'Updates a device profile and device configuration and sets the vid of the profile ' +
+		'to the vid of the updated configuration. Unlike deviceprofiles:update this ' +
+		'command accepts a consolidated object that can include a device configuration ' +
+		'in a property named "view".' +
+		this.apiDocsURL('createDeviceConfiguration', 'updateDeviceProfile', 'generateDeviceConfig')
 
 	static examples = [
 		'$ smartthings deviceprofiles:view:update 84042863-0d34-4c5c-b497-808daf230787 -i test.json',

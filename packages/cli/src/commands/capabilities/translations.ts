@@ -45,8 +45,8 @@ export function buildTableOutput(tableGenerator: TableGenerator, data: Capabilit
 export type CapabilitySummaryWithLocales = CapabilitySummaryWithNamespace & WithLocales
 
 export default class CapabilityTranslationsCommand extends APIOrganizationCommand<typeof CapabilityTranslationsCommand.flags> {
-
-	static description = 'get list of locales supported by the capability'
+	static description = 'get list of locales supported by the capability' +
+		this.apiDocsURL('listCapabilityLocalizations', 'getCapabilityLocalization')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

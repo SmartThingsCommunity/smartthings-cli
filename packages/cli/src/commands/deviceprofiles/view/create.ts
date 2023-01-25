@@ -10,9 +10,10 @@ import {
 
 export default class DeviceDefCreateCommand extends APIOrganizationCommand<typeof DeviceDefCreateCommand.flags> {
 	static description = 'create a new device profile and device configuration\n' +
-		'Creates a new device profile and device configuration. Unlike deviceprofiles:create,\n' +
-		'this command accepts a consolidated object that can include a device configuration\n' +
-		'in a property named "view".'
+		'Creates a new device profile and device configuration. Unlike deviceprofiles:create, ' +
+		'this command accepts a consolidated object that can include a device configuration ' +
+		'in a property named "view".' +
+		this.apiDocsURL('createDeviceProfile', 'createDeviceConfiguration', 'updateDeviceProfile', 'generateDeviceConfig')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

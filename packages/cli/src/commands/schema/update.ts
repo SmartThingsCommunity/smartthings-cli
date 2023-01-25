@@ -8,7 +8,8 @@ import { addSchemaPermission } from '../../lib/aws-utils'
 
 
 export default class SchemaUpdateCommand extends APICommand<typeof SchemaUpdateCommand.flags> {
-	static description = 'update an ST Schema connector'
+	static description = 'update an ST Schema connector' +
+		this.apiDocsURL('putAppsByEndpointAppId')
 
 	static flags = {
 		...APICommand.flags,

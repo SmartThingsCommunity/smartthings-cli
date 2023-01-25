@@ -4,7 +4,8 @@ import { chooseScene } from '../../lib/commands/scenes-util'
 
 
 export default class ScenesExecuteCommand extends APICommand<typeof ScenesExecuteCommand.flags> {
-	static description = 'execute a scene'
+	static description = 'execute a scene' +
+		this.apiDocsURL('executeScene')
 
 	static flags = {
 		...APICommand.flags,

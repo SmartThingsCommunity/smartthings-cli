@@ -7,7 +7,8 @@ import { EdgeCommand } from '../../../lib/edge-command'
 
 
 export default class ChannelsUpdateCommand extends EdgeCommand<typeof ChannelsUpdateCommand.flags> {
-	static description = 'update a channel'
+	static description = 'update a channel' +
+		this.apiDocsURL('updateChannel')
 
 	static flags = {
 		...EdgeCommand.flags,

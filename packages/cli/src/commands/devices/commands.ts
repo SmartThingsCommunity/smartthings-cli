@@ -64,7 +64,8 @@ function parseDeviceCommand(str: string, componentId?: string, capabilityId?: st
 }
 
 export default class DeviceCommandsCommand extends APICommand<typeof DeviceCommandsCommand.flags> {
-	static description = 'execute a device command'
+	static description = 'execute a device command' +
+		this.apiDocsURL('executeDeviceCommands')
 
 	static flags = {
 		...APICommand.flags,

@@ -41,7 +41,8 @@ export async function chooseAssignedDriver(command: APICommand<typeof APICommand
 }
 
 export class ChannelsUnassignCommand extends EdgeCommand<typeof ChannelsUnassignCommand.flags> {
-	static description = 'remove a driver from a channel'
+	static description = 'remove a driver from a channel' +
+		this.apiDocsURL('deleteDriverChannel')
 
 	static flags = {
 		...EdgeCommand.flags,

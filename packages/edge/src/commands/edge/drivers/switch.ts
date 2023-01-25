@@ -10,7 +10,8 @@ import { chooseDriver, chooseHub, listAllAvailableDrivers, listMatchingDrivers }
 
 
 export default class DriversSwitchCommand extends EdgeCommand<typeof DriversSwitchCommand.flags> {
-	static description = 'change the driver used by an installed device'
+	static description = 'change the driver used by an installed device' +
+		this.apiDocsURL('updateHubDevice')
 
 	static examples = [`# switch driver, prompting user for all necessary input
 $ smartthings edge:drivers:switch

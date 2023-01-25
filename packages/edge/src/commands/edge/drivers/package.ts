@@ -14,7 +14,8 @@ import { EdgeDriver } from '@smartthings/core-sdk'
 
 
 export default class PackageCommand extends EdgeCommand<typeof PackageCommand.flags> {
-	static description = 'build and upload an edge package'
+	static description = 'build and upload an edge package' +
+		this.apiDocsURL('uploadDriverPackage')
 
 	static args = [{
 		name: 'projectDirectory',

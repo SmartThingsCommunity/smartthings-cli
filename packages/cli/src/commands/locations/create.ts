@@ -6,7 +6,8 @@ import { tableFieldDefinitions } from '../locations'
 
 
 export default class LocationsCreateCommand extends APICommand<typeof LocationsCreateCommand.flags> {
-	static description = 'create a Location for a user'
+	static description = 'create a Location for a user' +
+		this.apiDocsURL('createLocation')
 
 	static flags = {
 		...APICommand.flags,

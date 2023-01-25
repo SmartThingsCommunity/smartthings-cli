@@ -13,7 +13,8 @@ import {
 
 
 export default class DeviceProfileUpdateCommand extends APIOrganizationCommand<typeof DeviceProfileUpdateCommand.flags> {
-	static description = 'update a device profile'
+	static description = 'update a device profile' +
+		this.apiDocsURL('updateDeviceProfile')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

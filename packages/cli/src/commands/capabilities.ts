@@ -23,7 +23,8 @@ import {
 
 
 export default class CapabilitiesCommand extends APIOrganizationCommand<typeof CapabilitiesCommand.flags> {
-	static description = 'get a specific capability'
+	static description = 'get a specific capability or a list of capabilities' +
+		this.apiDocsURL('listNamespacedCapabilities', 'listCapabilities', 'getCapability')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

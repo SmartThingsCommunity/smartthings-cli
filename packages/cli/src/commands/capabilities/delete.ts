@@ -4,7 +4,8 @@ import { capabilityIdInputArgs, chooseCapability } from '../../lib/commands/capa
 
 
 export default class CapabilitiesDeleteCommand extends APIOrganizationCommand<typeof CapabilitiesDeleteCommand.flags> {
-	static description = 'delete a capability'
+	static description = 'delete a capability' +
+		this.apiDocsURL('deleteCapability')
 
 	static flags = APIOrganizationCommand.flags
 

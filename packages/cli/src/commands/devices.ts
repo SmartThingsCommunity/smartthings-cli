@@ -16,7 +16,8 @@ import { buildTableOutput } from '../lib/commands/devices-util'
 
 
 export default class DevicesCommand extends APICommand<typeof DevicesCommand.flags> {
-	static description = 'list all devices available in a user account or retrieve a single device'
+	static description = 'list all devices available in a user account or retrieve a single device' +
+		this.apiDocsURL('getDevices', 'getDevice')
 
 	static flags = {
 		...APICommand.flags,

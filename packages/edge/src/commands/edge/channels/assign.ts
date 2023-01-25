@@ -6,7 +6,8 @@ import { EdgeCommand } from '../../../lib/edge-command'
 
 
 export class ChannelsAssignCommand extends EdgeCommand<typeof ChannelsAssignCommand.flags> {
-	static description = 'assign a driver to a channel'
+	static description = 'assign a driver to a channel' +
+		this.apiDocsURL('createDriverChannel')
 
 	static flags = {
 		...EdgeCommand.flags,
