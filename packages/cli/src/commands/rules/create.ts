@@ -9,14 +9,15 @@ import { tableFieldDefinitions } from '../../lib/commands/rules-util'
 
 
 export default class RulesCreateCommand extends APICommand<typeof RulesCreateCommand.flags> {
-	static description = 'create a rule'
+	static description = 'create a rule' +
+		this.apiDocsURL('createRule')
 
 	static flags = {
 		...APICommand.flags,
 		...inputAndOutputItem.flags,
 		location: Flags.string({
 			char: 'l',
-			description: 'a specific location to query',
+			description: 'the location for the rule',
 			helpValue: '<UUID>',
 		}),
 	}

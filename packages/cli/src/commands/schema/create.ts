@@ -9,7 +9,8 @@ import { SCHEMA_AWS_PRINCIPAL } from '../../lib/commands/schema-util'
 
 
 export default class SchemaAppCreateCommand extends APICommand<typeof SchemaAppCreateCommand.flags> {
-	static description = 'create an ST Schema connector'
+	static description = 'create an ST Schema connector' +
+		this.apiDocsURL('postApps')
 
 	static flags = {
 		...APICommand.flags,

@@ -4,7 +4,8 @@ import { chooseLocation } from '../locations'
 
 
 export default class LocationsDeleteCommand extends APICommand<typeof LocationsDeleteCommand.flags> {
-	static description = 'delete a location'
+	static description = 'delete a location' +
+		this.apiDocsURL('deleteLocation')
 
 	static flags = APICommand.flags
 

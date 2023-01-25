@@ -6,7 +6,8 @@ import { chooseRule, getRuleWithLocation } from '../../lib/commands/rules-util'
 
 
 export default class RulesDeleteCommand extends APICommand<typeof RulesDeleteCommand.flags> {
-	static description = 'delete a rule'
+	static description = 'delete a rule' +
+		this.apiDocsURL('deleteRule')
 
 	static flags = {
 		...APICommand.flags,

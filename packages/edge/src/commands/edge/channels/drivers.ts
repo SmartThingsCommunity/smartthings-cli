@@ -6,7 +6,8 @@ import { EdgeCommand } from '../../../lib/edge-command'
 
 
 export default class ChannelsDriversCommand extends EdgeCommand<typeof ChannelsDriversCommand.flags> {
-	static description = 'list all drivers assigned to a given channel'
+	static description = 'list drivers assigned to a given channel' +
+		this.apiDocsURL('getChannelDrivers', 'getDriverChannel')
 
 	static flags = {
 		...EdgeCommand.flags,

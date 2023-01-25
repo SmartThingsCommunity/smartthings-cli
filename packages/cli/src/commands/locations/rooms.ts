@@ -8,7 +8,8 @@ import { getRoomsByLocation, tableFieldDefinitions, tableFieldDefinitionsWithLoc
 
 
 export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> {
-	static description = 'list rooms or get information for a specific room'
+	static description = 'list rooms or get information for a specific room' +
+		this.apiDocsURL('listRooms', 'getRoom')
 
 	static flags = {
 		...APICommand.flags,

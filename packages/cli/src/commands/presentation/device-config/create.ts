@@ -6,7 +6,8 @@ import { buildTableOutput } from '../device-config'
 
 
 export default class DeviceConfigCreateCommand extends APICommand<typeof DeviceConfigCreateCommand.flags> {
-	static description = 'create a device config'
+	static description = 'create a device config' +
+		this.apiDocsURL('createDeviceConfiguration')
 
 	static flags = {
 		...APICommand.flags,

@@ -7,7 +7,8 @@ import { listTableFieldDefinitions } from '../../../lib/commands/drivers-util'
 
 
 export default class DriversDefaultCommand extends EdgeCommand<typeof DriversDefaultCommand.flags> {
-	static description = 'list default drivers available to all users'
+	static description = 'list default drivers available to all users' +
+		this.apiDocsURL('getDefaultDrivers')
 
 	static flags = {
 		...EdgeCommand.flags,

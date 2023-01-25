@@ -7,7 +7,8 @@ import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
 
 
 export default class DeviceProfileDeviceConfigCommand extends APIOrganizationCommand<typeof DeviceProfileDeviceConfigCommand.flags> {
-	static description = 'get the device configuration associated with a device profile'
+	static description = 'get the device configuration associated with a device profile' +
+		this.apiDocsURL('getDeviceProfile', 'getDeviceConfiguration')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

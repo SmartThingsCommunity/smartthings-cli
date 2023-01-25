@@ -3,7 +3,8 @@ import { chooseDriver } from '../../../lib/commands/drivers-util'
 
 
 export default class DriversDeleteCommand extends EdgeCommand<typeof DriversDeleteCommand.flags> {
-	static description = 'delete an edge driver'
+	static description = 'delete an edge driver' +
+		this.apiDocsURL('deleteDriver')
 
 	static flags = EdgeCommand.flags
 

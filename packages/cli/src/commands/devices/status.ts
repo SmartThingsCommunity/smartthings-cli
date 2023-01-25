@@ -4,7 +4,8 @@ import { buildStatusTableOutput } from '../../lib/commands/devices-util'
 
 
 export default class DeviceStatusCommand extends APICommand<typeof DeviceStatusCommand.flags> {
-	static description = "get the current status of all of a device's component's attributes"
+	static description = "get the current status of all of a device's component's attributes" +
+		this.apiDocsURL('getDeviceStatus')
 
 	static flags = {
 		...APICommand.flags,

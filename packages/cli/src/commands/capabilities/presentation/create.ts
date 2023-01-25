@@ -7,7 +7,8 @@ import { capabilityIdInputArgs, chooseCapability } from '../../../lib/commands/c
 
 
 export default class CapabilitiesPresentationCreate extends APIOrganizationCommand<typeof CapabilitiesPresentationCreate.flags> {
-	static description = 'create presentation model for a capability'
+	static description = 'create presentation model for a capability' +
+		this.apiDocsURL('createCustomCapabilityPresentation')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

@@ -2,7 +2,8 @@ import { APICommand, chooseDevice } from '@smartthings/cli-lib'
 
 
 export default class DeviceDeleteCommand extends APICommand<typeof DeviceDeleteCommand.flags> {
-	static description = 'delete a device'
+	static description = 'delete a device' +
+		this.apiDocsURL('deleteDevice')
 
 	static flags = APICommand.flags
 

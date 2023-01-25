@@ -6,7 +6,8 @@ import { APICommand, outputItemOrList, OutputItemOrListConfig } from '@smartthin
 
 
 export default class SchemaCommand extends APICommand<typeof SchemaCommand.flags> {
-	static description = 'list all ST Schema Apps currently available in a user account'
+	static description = 'list all ST Schema Apps currently available in a user account' +
+		this.apiDocsURL('getAppsByUserToken', 'getAppsByEndpointAppId')
 
 	static flags = {
 		...APICommand.flags,

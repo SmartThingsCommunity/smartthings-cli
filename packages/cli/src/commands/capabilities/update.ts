@@ -6,7 +6,8 @@ import { buildTableOutput, capabilityIdInputArgs, chooseCapability } from '../..
 
 
 export default class CapabilitiesUpdate extends APIOrganizationCommand<typeof CapabilitiesUpdate.flags> {
-	static description = 'update a capability'
+	static description = 'update a capability' +
+		this.apiDocsURL('updateCapability')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

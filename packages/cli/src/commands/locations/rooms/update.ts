@@ -5,7 +5,8 @@ import { chooseRoom, tableFieldDefinitions } from '../../../lib/commands/locatio
 
 
 export default class RoomsUpdateCommand extends APICommand<typeof RoomsUpdateCommand.flags> {
-	static description = 'update a room'
+	static description = 'update a room' +
+		this.apiDocsURL('updateRoom')
 
 	static flags = {
 		...APICommand.flags,

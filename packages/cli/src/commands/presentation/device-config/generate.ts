@@ -8,7 +8,8 @@ import { buildTableOutput } from '../device-config'
 
 
 export default class GeneratePresentationCommand extends APICommand<typeof GeneratePresentationCommand.flags> {
-	static description = 'generate the default device configuration'
+	static description = 'generate the default device configuration' +
+		this.apiDocsURL('generateDeviceConfig')
 
 	static flags = {
 		...APICommand.flags,

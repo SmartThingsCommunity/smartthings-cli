@@ -5,7 +5,8 @@ import { chooseHub, chooseInstalledDriver } from '../../../lib/commands/drivers-
 
 
 export default class DriversUninstallCommand extends EdgeCommand<typeof DriversUninstallCommand.flags> {
-	static description = 'uninstall an edge driver from a hub'
+	static description = 'uninstall an edge driver from a hub' +
+		this.apiDocsURL('uninstallDriver')
 
 	static flags = {
 		...EdgeCommand.flags,

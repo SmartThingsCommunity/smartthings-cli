@@ -7,7 +7,8 @@ import { prunePresentation } from '../../lib/commands/deviceprofiles/view-util'
 
 
 export default class DeviceProfilesViewCommand extends APIOrganizationCommand<typeof DeviceProfilesViewCommand.flags> {
-	static description = 'show device profile and device configuration in a single, consolidated view'
+	static description = 'show device profile and device configuration in a single, consolidated view' +
+		this.apiDocsURL('getDeviceProfile, getDeviceConfiguration')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

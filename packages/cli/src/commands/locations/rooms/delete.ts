@@ -4,7 +4,8 @@ import { chooseRoom } from '../../../lib/commands/locations/rooms-util'
 
 
 export default class RoomsDeleteCommand extends APICommand<typeof RoomsDeleteCommand.flags> {
-	static description = 'delete a room'
+	static description = 'delete a room' +
+		this.apiDocsURL('deleteRoom')
 
 	static flags = {
 		...APICommand.flags,

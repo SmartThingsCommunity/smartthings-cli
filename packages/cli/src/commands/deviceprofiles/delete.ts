@@ -4,7 +4,8 @@ import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
 
 
 export default class DeviceProfileDeleteCommand extends APIOrganizationCommand<typeof DeviceProfileDeleteCommand.flags> {
-	static description = 'delete a device profile'
+	static description = 'delete a device profile' +
+		this.apiDocsURL('deleteDeviceProfile')
 
 	static flags = APIOrganizationCommand.flags
 

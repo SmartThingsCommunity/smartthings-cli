@@ -8,7 +8,8 @@ import { chooseRule, getRuleWithLocation, tableFieldDefinitions } from '../../li
 
 
 export default class RulesUpdateCommand extends APICommand<typeof RulesUpdateCommand.flags> {
-	static description = 'update a rule'
+	static description = 'update a rule' +
+		this.apiDocsURL('updateRule')
 
 	static flags = {
 		...APICommand.flags,

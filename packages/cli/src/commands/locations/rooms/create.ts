@@ -6,7 +6,8 @@ import { tableFieldDefinitions } from '../../../lib/commands/locations/rooms-uti
 
 
 export default class RoomsCreateCommand extends APICommand<typeof RoomsCreateCommand.flags> {
-	static description = 'create a room'
+	static description = 'create a room' +
+		this.apiDocsURL('createRoom')
 
 	static flags = {
 		...APICommand.flags,

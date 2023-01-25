@@ -8,7 +8,8 @@ import { buildExecuteResponseTableOutput, chooseRule, getRuleWithLocation } from
 
 
 export default class RulesExecuteCommand extends APICommand<typeof RulesExecuteCommand.flags> {
-	static description = 'execute a rule'
+	static description = 'execute a rule' +
+		this.apiDocsURL('executeRule')
 
 	static flags = {
 		...APICommand.flags,

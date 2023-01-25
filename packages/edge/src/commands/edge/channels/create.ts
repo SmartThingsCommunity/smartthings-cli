@@ -11,7 +11,8 @@ const tableFieldDefinitions: TableFieldDefinition<Channel>[] = ['channelId', 'na
 	'type', 'termsOfServiceUrl', 'createdDate', 'lastModifiedDate']
 
 export default class ChannelsCreateCommand extends EdgeCommand<typeof ChannelsCreateCommand.flags> {
-	static description = 'create a channel'
+	static description = 'create a channel' +
+		this.apiDocsURL('createChannel')
 
 	static flags = {
 		...EdgeCommand.flags,

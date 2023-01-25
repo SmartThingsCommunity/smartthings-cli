@@ -6,7 +6,8 @@ import { buildTableOutput } from '../../lib/commands/devices-util'
 
 
 export default class DeviceRenameCommand extends APICommand<typeof DeviceRenameCommand.flags> {
-	static description = 'rename a device'
+	static description = 'rename a device' +
+		this.apiDocsURL('updateDevice')
 
 	static flags = {
 		...APICommand.flags,

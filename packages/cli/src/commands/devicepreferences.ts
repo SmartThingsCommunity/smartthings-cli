@@ -37,7 +37,8 @@ export async function preferencesForAllOrganizations(command: APIOrganizationCom
 }
 
 export default class DevicePreferencesCommand extends APIOrganizationCommand<typeof DevicePreferencesCommand.flags> {
-	static description = 'list device preferences or get information for a specific device preference'
+	static description = 'list device preferences or get information for a specific device preference' +
+		this.apiDocsURL('listPreferences', 'getPreferenceById')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

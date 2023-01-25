@@ -6,7 +6,8 @@ import { selectFromList, APICommand, withLocations, SelectFromListConfig, WithNa
 
 
 export default class InstalledAppDeleteCommand extends APICommand<typeof InstalledAppDeleteCommand.flags> {
-	static description = 'delete the installed app instance'
+	static description = 'delete the installed app instance' +
+		this.apiDocsURL('deleteInstallation')
 
 	static flags = {
 		...APICommand.flags,

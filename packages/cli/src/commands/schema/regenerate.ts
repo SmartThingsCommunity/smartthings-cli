@@ -3,7 +3,9 @@ import { SchemaApp } from '@smartthings/core-sdk'
 
 
 export default class SchemaAppRegenerateCommand extends APICommand<typeof SchemaAppRegenerateCommand.flags> {
-	static description = 'Regenerate the clientId and clientSecret of the ST Schema connector. The previous values will be invalidated, which may affect existing installations.'
+	static description = 'regenerate the clientId and clientSecret of the ST Schema connector\n' +
+		'NOTE: The previous values will be invalidated, which may affect existing installations.' +
+		this.apiDocsURL('generateStOauthCredentials')
 
 	static flags = {
 		...APICommand.flags,

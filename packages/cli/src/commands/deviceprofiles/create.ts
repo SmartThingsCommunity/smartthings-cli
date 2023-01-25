@@ -8,9 +8,10 @@ import { createWithDefaultConfig, getInputFromUser } from '../../lib/commands/de
 
 export default class DeviceProfileCreateCommand extends APIOrganizationCommand<typeof DeviceProfileCreateCommand.flags> {
 	static description = 'create a new device profile\n' +
-		'Creates a new device profile. If a vid field is not present in the meta\n' +
-		'then a default device presentation will be created for this profile and the\n' +
-		'vid set to reference it.'
+		'Creates a new device profile. If a vid field is not present in the meta ' +
+		'then a default device presentation will be created for this profile and the ' +
+		'vid set to reference it.' +
+		this.apiDocsURL('createDeviceProfile')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

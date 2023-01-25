@@ -15,7 +15,8 @@ import { buildTableOutput } from '../lib/commands/deviceprofiles-util'
 
 
 export default class DeviceProfilesCommand extends APIOrganizationCommand<typeof DeviceProfilesCommand.flags> {
-	static description = 'list all device profiles available in a user account or retrieve a single profile'
+	static description = 'list all device profiles available in a user account or retrieve a single profile' +
+		this.apiDocsURL('listDeviceProfiles', 'getDeviceProfile')
 
 	static flags = {
 		...APIOrganizationCommand.flags,

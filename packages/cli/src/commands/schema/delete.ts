@@ -4,7 +4,8 @@ import { APICommand, selectFromList, SelectFromListConfig } from '@smartthings/c
 
 
 export default class SchemaAppDeleteCommand extends APICommand<typeof SchemaAppDeleteCommand.flags> {
-	static description = 'delete the ST Schema connector'
+	static description = 'delete the ST Schema connector' +
+		this.apiDocsURL('deleteAppsByEndpointAppId')
 
 	static flags = APICommand.flags
 

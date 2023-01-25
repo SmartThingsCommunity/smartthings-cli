@@ -5,7 +5,8 @@ import { EdgeCommand } from '../../../lib/edge-command'
 
 
 export default class ChannelsDeleteCommand extends EdgeCommand<typeof ChannelsDeleteCommand.flags> {
-	static description = 'delete a channel'
+	static description = 'delete a channel' +
+		this.apiDocsURL('deleteChannel')
 
 	static flags = EdgeCommand.flags
 

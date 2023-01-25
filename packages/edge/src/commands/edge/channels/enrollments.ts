@@ -7,7 +7,8 @@ import { EdgeCommand } from '../../../lib/edge-command'
 
 
 export default class ChannelsEnrollmentsCommand extends EdgeCommand<typeof ChannelsEnrollmentsCommand.flags> {
-	static description = 'list all channels a given hub is enrolled in'
+	static description = 'list all channels a given hub is enrolled in' +
+		this.apiDocsURL('listDriverChannels')
 
 	static flags = {
 		...EdgeCommand.flags,

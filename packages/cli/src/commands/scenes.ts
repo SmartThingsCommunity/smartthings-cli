@@ -8,7 +8,8 @@ import { tableFieldDefinitions } from '../lib/commands/scenes-util'
 
 
 export default class ScenesCommand extends APICommand<typeof ScenesCommand.flags> {
-	static description = 'list scenes or get information for a specific scene'
+	static description = 'list scenes or get information for a specific scene' +
+		this.apiDocsURL('listScenes')
 
 	static flags = {
 		...APICommand.flags,

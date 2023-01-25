@@ -75,7 +75,8 @@ export function buildTableOutput(tableGenerator: TableGenerator, deviceConfig: P
 }
 
 export default class DeviceConfigPresentationCommand extends APICommand<typeof DeviceConfigPresentationCommand.flags> {
-	static description = 'query device config by presentationId'
+	static description = 'query device config by presentationId' +
+		this.apiDocsURL('getDeviceConfiguration')
 
 	static flags = {
 		...APICommand.flags,
