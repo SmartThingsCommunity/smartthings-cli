@@ -49,15 +49,15 @@ jobs:
       # decouple Github Release from library-only publishing
       - name: Check if CLI Published
         id: cli-release
-        run: echo "::set-output name=published::$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq 'any(.name == "@smartthings/cli")')"
+        run: echo "published=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq 'any(.name == "@smartthings/cli")')" >> $GITHUB_OUTPUT
 
       - name: Derive Required Metadata
         id: cli-metadata
         if: steps.cli-release.outputs.published == 'true'
         run: | # derive latest info from changesets output
           PUBLISHED_PACKAGE=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq 'map(select(.name == "@smartthings/cli")) | .[]')
-          echo "::set-output name=tag::$(echo $PUBLISHED_PACKAGE | jq --raw-output '.name + "@" + .version')"
-          echo "::set-output name=version::$(echo $PUBLISHED_PACKAGE | jq --raw-output '.version')"
+          echo "tag=$(echo $PUBLISHED_PACKAGE | jq --raw-output '.name + "@" + .version')" >> $GITHUB_OUTPUT
+          echo "version=$(echo $PUBLISHED_PACKAGE | jq --raw-output '.version')" >> $GITHUB_OUTPUT
 
   package:
     name: Package CLI
@@ -231,7 +231,7 @@ jobs:
       # remove any pre-release labels since WiX doesn't support them
       - name: Sanitize CLI Version String
         id: safe-semver
-        run: echo "::set-output name=version::$('${{ needs.release.outputs.cli-version }}'.Split('-') | Select-Object -Index 0)"
+        run: echo "version=$('${{ needs.release.outputs.cli-version }}'.Split('-') | Select-Object -Index 0)" >> $GITHUB_OUTPUT
 
       - name: Checkout Repo
         uses: actions/checkout@v3
