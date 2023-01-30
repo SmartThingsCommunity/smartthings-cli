@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.1.1
+
+### Patch Changes
+
+- [#470](https://github.com/SmartThingsCommunity/smartthings-cli/pull/470) [`8b5129e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/8b5129edc6595d0f440210e44d34be742fa90b11) Thanks [@rossiam](https://github.com/rossiam)! - fix Windows MSI build
+
 ## 1.1.0
 
 ### Minor Changes
