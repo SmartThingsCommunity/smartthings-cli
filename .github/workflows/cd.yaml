@@ -228,10 +228,16 @@ jobs:
     runs-on: windows-2022
 
     steps:
+      - name: Print needs.release.outputs.cli-version
+        run: Write-Output ${{ needs.release.outputs.cli-version }}
+
       # remove any pre-release labels since WiX doesn't support them
       - name: Sanitize CLI Version String
         id: safe-semver
-        run: echo "version=$('${{ needs.release.outputs.cli-version }}'.Split('-') | Select-Object -Index 0)" >> $GITHUB_OUTPUT
+        run: echo "version=$('${{ needs.release.outputs.cli-version }}'.Split('-') | Select-Object -Index 0)" >> $env:GITHUB_OUTPUT
+
+      - name: Print steps.safe-semver.outputs.version
+        run: Write-Output ${{ steps.safe-semver.outputs.version }}
 
       - name: Checkout Repo
         uses: actions/checkout@v3
