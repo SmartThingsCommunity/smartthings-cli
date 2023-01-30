@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.1.2
+
+### Patch Changes
+
+- [#472](https://github.com/SmartThingsCommunity/smartthings-cli/pull/472) [`0df2ffd`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/0df2ffd012a041955e9841e5d60a6a3cc4a0e7b4) Thanks [@rossiam](https://github.com/rossiam)! - softprops/action-gh-release@v1 action requires / for path separators now
+
 ## 1.1.1
 
 ### Patch Changes
