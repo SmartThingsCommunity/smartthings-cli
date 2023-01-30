@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.1.0
+
+### Minor Changes
+
+- [#462](https://github.com/SmartThingsCommunity/smartthings-cli/pull/462) [`b03292d`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b03292dffcab45dfc8b8fdb915ce5b198824e491) Thanks [@Sitlintac](https://github.com/Sitlintac)! - enable verbose flag when getting a single device
+
+  add helper method to get location and room names for a single item
+
 ## 1.0.1
 
 ### Patch Changes
