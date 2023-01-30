@@ -3596,10 +3596,11 @@ ARGUMENTS
   PROJECTDIRECTORY  [default: .] directory containing project to upload
 
 FLAGS
-  -I, --install               prompt for hub to install to after assigning it to the channel, implies --assign if
-                              --assign or --channel not included
+  -I, --install               prompt for hub (or use default if previously specified) to install to after assigning it
+                              to the channel, implies --assign if --assign or --channel not included
   -O, --organization=<value>  the organization ID to use for this command
-  -a, --assign                prompt for a channel to assign the driver to after upload
+  -a, --assign                prompt for a channel (or use default if previously specified) to assign the driver to
+                              after upload
   -b, --build-only=<value>    save package to specified zip file but skip upload
   -u, --upload=<value>        upload zip file previously built with --build flag
   --channel=<UUID>            automatically assign driver to specified channel after upload
