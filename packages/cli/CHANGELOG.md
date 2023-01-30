@@ -1,5 +1,20 @@
 # Change Log
 
+## 1.1.0
+
+### Minor Changes
+
+- [#462](https://github.com/SmartThingsCommunity/smartthings-cli/pull/462) [`b03292d`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b03292dffcab45dfc8b8fdb915ce5b198824e491) Thanks [@Sitlintac](https://github.com/Sitlintac)! - enable verbose flag when getting a single device
+
+  add helper method to get location and room names for a single item
+
+### Patch Changes
+
+- [#454](https://github.com/SmartThingsCommunity/smartthings-cli/pull/454) [`0e94827`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/0e948270a6638b0b414143ea90963baced08d7ed) Thanks [@rossiam](https://github.com/rossiam)! - allow more history recall when using JSON or YAML output
+
+- Updated dependencies [[`b03292d`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b03292dffcab45dfc8b8fdb915ce5b198824e491)]:
+  - @smartthings/cli-lib@1.1.0
+
 ## 1.0.1
 
 ### Patch Changes
