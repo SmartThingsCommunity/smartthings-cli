@@ -273,4 +273,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.release.outputs.cli-tag }}
-          files: packages\cli\wix\smartthings.msi
+          files: packages/cli/wix/smartthings.msi
