@@ -39,7 +39,8 @@ export default class PackageCommand extends EdgeCommand<typeof PackageCommand.fl
 		}),
 		assign: Flags.boolean({
 			char: 'a',
-			description: 'prompt for a channel to assign the driver to after upload',
+			description: 'prompt for a channel (or use default if previously specified) to assign the driver to ' +
+				'after upload',
 			exclusive: ['channel', 'build-only'],
 		}),
 		channel: Flags.string({
@@ -49,11 +50,13 @@ export default class PackageCommand extends EdgeCommand<typeof PackageCommand.fl
 		}),
 		install: Flags.boolean({
 			char: 'I',
-			description: 'prompt for hub to install to after assigning it to the channel, implies --assign if --assign or --channel not included',
+			description: 'prompt for hub (or use default if previously specified) to install to after assigning it ' +
+				'to the channel, implies --assign if --assign or --channel not included',
 			exclusive: ['hub', 'build-only'],
 		}),
 		hub: Flags.string({
-			description: 'automatically install driver to specified hub, implies --assign if --assign or --channel not included',
+			description: 'automatically install driver to specified hub, implies --assign if --assign or --channel ' +
+				'not included',
 			exclusive: ['install', 'build-only'],
 			helpValue: '<UUID>',
 		}),
