@@ -398,14 +398,14 @@ _See code: [src/commands/apps/create.ts](https://github.com/SmartThingsCommunity
 
 ## `smartthings apps:delete [ID]`
 
-delete the app
+delete an app
 
 ```
 USAGE
   $ smartthings apps:delete [ID] [-h] [-p <value>] [-t <value>] [--language <value>]
 
 ARGUMENTS
-  ID  App profile UUID or number in the list
+  ID  app profile UUID or number in the list
 
 COMMON FLAGS
   -h, --help             Show CLI help.
@@ -414,7 +414,7 @@ COMMON FLAGS
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
-  delete the app
+  delete an app
 
   For API information, see:
 
@@ -458,6 +458,19 @@ DESCRIPTION
   For API information, see:
 
   https://developer.smartthings.com/docs/api/public/#operation/getAppOauth
+
+EXAMPLES
+  prompt for an app and list OAuth information for it
+
+    $ smartthings apps:oauth
+
+  list OAuth information for the second app as listed via "smartthings apps"
+
+    $ smartthings apps:oauth 2
+
+  list OAuth information for app with the given id
+
+    $ smartthings apps:oauth 392bcb11-e251-44f3-b58b-17f93015f3aa
 ```
 
 _See code: [src/commands/apps/oauth.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.1.2/packages/cli/src/commands/apps/oauth.ts)_
@@ -3779,7 +3792,7 @@ _See code: [src/commands/installedapps.ts](https://github.com/SmartThingsCommuni
 
 ## `smartthings installedapps:delete [ID]`
 
-delete the installed app instance
+delete an installed app instance
 
 ```
 USAGE
@@ -3799,7 +3812,7 @@ COMMON FLAGS
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
-  delete the installed app instance
+  delete an installed app instance
 
   For API information, see:
 
@@ -3878,7 +3891,7 @@ _See code: [src/commands/installedschema.ts](https://github.com/SmartThingsCommu
 
 ## `smartthings installedschema:delete [ID]`
 
-delete the installed schema connector instance
+delete an installed schema connector instance
 
 ```
 USAGE
@@ -3898,7 +3911,7 @@ COMMON FLAGS
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
-  delete the installed schema connector instance
+  delete an installed schema connector instance
 
   For API information, see:
 
@@ -5035,7 +5048,7 @@ _See code: [src/commands/schema/create.ts](https://github.com/SmartThingsCommuni
 
 ## `smartthings schema:delete [ID]`
 
-delete the ST Schema connector
+delete an ST Schema connector
 
 ```
 USAGE
@@ -5051,7 +5064,7 @@ COMMON FLAGS
   --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
 
 DESCRIPTION
-  delete the ST Schema connector
+  delete an ST Schema connector
 
   For API information, see:
 

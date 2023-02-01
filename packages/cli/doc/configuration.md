@@ -35,6 +35,16 @@ The following per-profile config options are supported:
 | organization | none | UUID of the organization to use in applicable CLI commands. |
 | edgeDriverTestDirs | `['test/**', 'tests/**']` | String or array of strings representing files to skip when building an edge driver package. See below for more details. |
 | token | none | Use a bearer token (such as a PAT) for authentication instead of the default login flow. |
+| defaultHub | none (see [Default Values](#default-values)) | The default hub to use for edge commands. |
+| defaultChannel | none (see [Default Values](#default-values)) | The default channel to use for edge commands. |
+
+## Default Values
+
+When a default value is configured for a hub or a channel, that value is used without question
+for most commands that need one (delete commands are an exception). You can configure these default
+values yourself by specifying them in your config.yaml file or by answering "Yes" when asked if you
+want to make them the default. You can reset all your answers to these questions by running
+the `config:reset` command.
 
 ## `edgeDriverTestDirs` config option
 
