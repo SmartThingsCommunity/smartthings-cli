@@ -35,7 +35,7 @@ function buildTableOutput(tableGenerator: TableGenerator, data: EventInputOutput
 	return table.toString()
 }
 
-interface EventInputOutput {
+type EventInputOutput = {
 	input: DeviceEvent[]
 	output: VirtualDeviceEventsResponse
 }

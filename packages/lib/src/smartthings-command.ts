@@ -6,7 +6,7 @@ import { outputFlags } from './output-builder'
 import { DefaultTableGenerator, TableGenerator } from './table-generator'
 
 
-export interface Loggable {
+export type Loggable = {
 	readonly logger: log4js.Logger
 }
 

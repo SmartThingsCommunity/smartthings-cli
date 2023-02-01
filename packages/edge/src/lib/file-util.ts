@@ -49,7 +49,7 @@ export const requireDir = async (dirName: string): Promise<string> => {
 	throw new Errors.CLIError(`missing required directory: ${dirName}`)
 }
 
-export interface YAMLFileData {
+export type YAMLFileData = {
 	[key: string]: string | object | number | undefined
 }
 

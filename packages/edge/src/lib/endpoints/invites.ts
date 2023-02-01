@@ -1,14 +1,14 @@
 import { Endpoint, EndpointClient, EndpointClientConfig } from '@smartthings/core-sdk'
 
 
-export interface InvitationMetadata {
+export type InvitationMetadata = {
 	name: string
 	description: string
 	owner: string
 	termsUrl: string
 }
 
-export interface CreateInvitation {
+export type CreateInvitation = {
 	resource: {
 		root: {
 			service: 'core' | 'iam' | 'platform' | 'mdu' | 'developer'
@@ -28,12 +28,12 @@ export interface CreateInvitation {
 	expiration?: number
 }
 
-export interface Invitation extends CreateInvitation {
+export type Invitation = CreateInvitation & {
 	id: string
 	acceptUrl: string
 }
 
-export interface InvitationSummary {
+export type InvitationSummary = {
 	invitationId: string
 	acceptUrl: string
 }

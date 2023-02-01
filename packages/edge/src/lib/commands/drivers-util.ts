@@ -81,7 +81,7 @@ export const listMatchingDrivers = async (client: SmartThingsClient, deviceId: s
  */
 export type DriverChoice = Pick<EdgeDriverSummary, 'driverId' | 'name'>
 
-export interface ChooseDriverOptions extends ChooseOptions {
+export type ChooseDriverOptions = ChooseOptions & {
 	/**
 	 * By default drivers owned by the user are included, using `command.client.drivers.list()`
 	 * but if you need a different list of drivers, you can include your own function here.
@@ -160,7 +160,7 @@ export const chooseHub = async (command: APICommand<typeof APICommand.flags>, pr
 	return selectFromList(command, config, { preselectedId, listItems, promptMessage, defaultValue })
 }
 
-export interface DriverChannelDetailsWithName extends DriverChannelDetails {
+export type DriverChannelDetailsWithName = DriverChannelDetails & {
 	name: string
 }
 

@@ -96,7 +96,7 @@ expect.extend({
 	},
 })
 
-interface SimpleData {
+type SimpleData = {
 	id?: string
 	someNumber: number
 	simpleField?: string

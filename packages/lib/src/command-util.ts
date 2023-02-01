@@ -101,7 +101,7 @@ export async function stringGetIdFromUser<L extends object>(fieldInfo: Sorting<L
  * Note that not all functions that use this interface support all options. Check the
  * `chooseThing` (e.g. `chooseDevice`) method itself.
  */
-export interface ChooseOptions {
+export type ChooseOptions = {
 	allowIndex: boolean
 	verbose: boolean
 	useConfigDefault: boolean

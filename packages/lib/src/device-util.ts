@@ -7,7 +7,7 @@ import { SmartThingsCommandInterface } from './smartthings-command'
 
 
 export type DevicePredicate = (value: Device, index: number, array: Device[]) => boolean
-export interface ChooseDeviceOptions extends ChooseOptions {
+export type ChooseDeviceOptions = ChooseOptions & {
 	deviceListOptions?: DeviceListOptions
 	deviceListFilter?: DevicePredicate
 }

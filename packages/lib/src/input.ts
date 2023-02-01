@@ -30,7 +30,7 @@ export const inputFlag = {
 }
 
 
-export interface InputProcessor<T> {
+export type InputProcessor<T> = {
 	/**
 	 * Return the type of input this processor retrieved. This should not be called until after
 	 * data has been read via `read` so throwing an exception before that is acceptable.
@@ -100,7 +100,7 @@ export function inputProcessor<T>(hasInput: () => boolean | Promise<boolean>, re
 	return { ioFormat, hasInput, read }
 }
 
-export interface CommandLineInputCommand<T> {
+export type CommandLineInputCommand<T> = {
 	hasCommandLineInput(): boolean
 	getInputFromCommandLine(): Promise<T>
 }
@@ -112,7 +112,7 @@ export function commandLineInputProcessor<T>(command: CommandLineInputCommand<T>
 	return inputProcessor(() => command.hasCommandLineInput(), () => command.getInputFromCommandLine())
 }
 
-export interface UserInputCommand<T> {
+export type UserInputCommand<T> = {
 	getInputFromUser(): Promise<T>
 }
 /**

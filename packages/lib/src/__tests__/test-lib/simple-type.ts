@@ -1,5 +1,5 @@
 
-export interface SimpleType {
+export type SimpleType = {
 	num: number
 	str: string
 }

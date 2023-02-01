@@ -8,7 +8,7 @@ import { chooseChannel } from '../../../lib/commands/channels-util'
 import { EdgeCommand } from '../../../lib/edge-command'
 
 
-export interface NamedDriverChannelDetails extends DriverChannelDetails {
+export type NamedDriverChannelDetails = DriverChannelDetails & {
 	name: string
 }
 

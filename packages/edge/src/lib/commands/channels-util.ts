@@ -18,7 +18,7 @@ export const listTableFieldDefinitions: TableFieldDefinition<Channel>[] =
 export const tableFieldDefinitions: TableFieldDefinition<Channel>[] =
 	['channelId', 'name', 'description', 'termsOfServiceUrl', 'createdDate', 'lastModifiedDate']
 
-export interface ChooseChannelOptions extends ChooseOptions {
+export type ChooseChannelOptions = ChooseOptions & {
 	includeReadOnly: boolean
 }
 
@@ -56,7 +56,7 @@ export async function chooseChannel(command: APICommand<typeof APICommand.flags>
 		{ preselectedId, listItems, promptMessage, defaultValue })
 }
 
-export interface ListChannelOptions {
+export type ListChannelOptions = {
 	allOrganizations: boolean
 	includeReadOnly: boolean
 	subscriberType?: SubscriberType
@@ -75,11 +75,11 @@ export async function listChannels(client: SmartThingsClient, options?: Partial<
 	return client.channels.list({ includeReadOnly, subscriberType, subscriberId })
 }
 
-export interface WithChannel {
+export type WithChannel = {
 	channelId: string
 }
 
-export interface WithNamedChannel extends WithChannel {
+export type WithNamedChannel = WithChannel & {
 	channelName?: string
 }
 

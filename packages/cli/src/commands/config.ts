@@ -20,7 +20,7 @@ function reservedKey(key: string): boolean {
 	return key === 'logging'
 }
 
-export interface ConfigData {
+export type ConfigData = {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	[name: string]: any
 }

@@ -15,7 +15,7 @@ function promptFromNaming(config: Naming): string | undefined {
 	return config.itemName ? `Select ${indefiniteArticleFor(config.itemName)} ${config.itemName}.` : undefined
 }
 
-export interface PromptUserOptions<L extends object, ID = string> {
+export type PromptUserOptions<L extends object, ID = string> = {
 	/**
 	 * A function that returns the list of items to display.
 	 */
@@ -73,7 +73,7 @@ export async function promptUser<L extends object, ID = string>(command: SmartTh
 	return await getIdFromUser(config, list, options.promptMessage ?? promptFromNaming(config))
 }
 
-export interface SelectOptions<L extends object, ID = string> extends PromptUserOptions<L, ID> {
+export type SelectOptions<L extends object, ID = string> = PromptUserOptions<L, ID> & {
 	/**
 	 * If the value passed here is truthy, it is simply returned and no further processing is done.
 	 */
