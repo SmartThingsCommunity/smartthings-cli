@@ -10,7 +10,7 @@
 		"clean": "npm run clean --workspaces",
 		"full-clean": "npm run full-clean --workspaces && rimraf node_modules",
 		"compile": "npm run compile --workspaces",
-		"build": "npm run build --workspaces",
+		"build": "npm run clean --workspaces && npm run compile --workspaces && npm run readme",
 		"watch": "npm run watch --workspaces",
 		"lint": "npm run lint --workspaces",
 		"format": "npm run format --workspaces",
