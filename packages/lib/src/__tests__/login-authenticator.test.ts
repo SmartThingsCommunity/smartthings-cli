@@ -96,7 +96,7 @@ describe('LoginAuthenticator', () => {
 		},
 	}
 	const codeVerifierRegex = /\bcode_verifier=[\w|-]+\b/
-	interface AuthTokenResponse {
+	type AuthTokenResponse = {
 		/* eslint-disable @typescript-eslint/naming-convention */
 		access_token: string
 		refresh_token: string

@@ -7,7 +7,7 @@ export const seeConfigDocs = 'see https://github.com/SmartThingsCommunity/smartt
 export type Profile = Record<string, unknown>
 export type ProfilesByName = Record<string, Profile>
 
-export interface CLIConfigDescription {
+export type CLIConfigDescription = {
 	/**
 	 * The name of the user-editable configuration file.
 	 */
@@ -24,7 +24,7 @@ export interface CLIConfigDescription {
 	profileName: string
 }
 
-export interface CLIConfig extends CLIConfigDescription {
+export type CLIConfig = CLIConfigDescription & {
 	profiles: ProfilesByName
 	managedProfiles: ProfilesByName
 	mergedProfiles: ProfilesByName

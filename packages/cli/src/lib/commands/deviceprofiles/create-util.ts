@@ -87,7 +87,7 @@ export const generateDefaultConfig = async (client: SmartThingsClient, devicePro
 	return deviceConfig
 }
 
-export interface DeviceProfileAndConfig {
+export type DeviceProfileAndConfig = {
 	deviceProfile: DeviceProfile
 	deviceConfig: PresentationDeviceConfig
 }

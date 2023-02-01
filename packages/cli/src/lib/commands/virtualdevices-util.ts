@@ -19,7 +19,7 @@ import {
 import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
 
 
-export interface DevicePrototype {
+export type DevicePrototype = {
 	name: string
 	id: string
 }
@@ -50,20 +50,20 @@ export const allPrototypes = [
 	{ name: 'Thermostat', id: 'VIRTUAL_THERMOSTAT' },
 ]
 
-export interface CapabilityAttributeItem {
+export type CapabilityAttributeItem = {
 	attributeName: string
 	attribute: CapabilityAttribute
 }
 
-export interface CapabilityUnitItem {
+export type CapabilityUnitItem = {
 	unit: string
 }
 
-export interface CapabilityValueItem {
+export type CapabilityValueItem = {
 	value: string
 }
 
-export interface DeviceProfileDefinition {
+export type DeviceProfileDefinition = {
 	deviceProfileId?: string
 	deviceProfile?: DeviceProfileCreateRequest
 }

@@ -6,18 +6,18 @@ import { SmartThingsCommandInterface } from './smartthings-command'
 import { TableFieldDefinition } from './table-generator'
 
 
-export interface TableCommonOutputProducer<O extends object> {
+export type TableCommonOutputProducer<O extends object> = {
 	tableFieldDefinitions: TableFieldDefinition<O>[]
 }
-export interface CustomCommonOutputProducer<O extends object> {
+export type CustomCommonOutputProducer<O extends object> = {
 	buildTableOutput(data: O): string
 }
 export type CommonOutputProducer<O extends object> = TableCommonOutputProducer<O> | CustomCommonOutputProducer<O>
 
-export interface TableCommonListOutputProducer<L extends object> {
+export type TableCommonListOutputProducer<L extends object> = {
 	listTableFieldDefinitions: TableFieldDefinition<L>[]
 }
-export interface CustomCommonListOutputProducer<L extends object> {
+export type CustomCommonListOutputProducer<L extends object> = {
 	buildListTableOutput(data: L[]): string
 }
 export type CommonListOutputProducer<L extends object> = TableCommonListOutputProducer<L> | CustomCommonListOutputProducer<L> | Sorting<L>

@@ -11,7 +11,7 @@ import log4js from '@log4js-node/log4js-api'
 import { CliUx } from '@oclif/core'
 
 
-export interface ClientIdProvider extends SmartThingsURLProvider {
+export type ClientIdProvider = SmartThingsURLProvider & {
 	clientId: string
 	baseOAuthInURL: string
 	oauthAuthTokenRefreshURL: string
@@ -27,7 +27,7 @@ export const defaultClientIdProvider: ClientIdProvider = {
 // All the scopes the clientId we are using is configured to use.
 const scopes = ['controller:stCli']
 
-interface AuthenticationInfo {
+type AuthenticationInfo = {
 	accessToken: string
 	refreshToken: string
 	expires: Date
@@ -45,7 +45,7 @@ function credentialsFile(): string {
 	return (global as unknown as { _credentialsFile: string })._credentialsFile
 }
 
-interface CredentialsFileData {
+type CredentialsFileData = {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	[profileName: string]: any
 }

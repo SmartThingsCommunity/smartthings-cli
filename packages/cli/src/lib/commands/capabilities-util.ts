@@ -110,7 +110,7 @@ export const buildTableOutput = (tableGenerator: TableGenerator, capability: Cap
 	return output
 }
 
-export interface CapabilityId {
+export type CapabilityId = {
 	id: string
 	version: number
 }

@@ -5,7 +5,7 @@ import { CliUx } from '@oclif/core'
  */
 const FORMAT_TIME_PREFIX = '%s '
 
-export interface EventFormat {
+export type EventFormat = {
 	/**
 	 * A printf-like format string which can contain zero or more format specifiers.
 	 */

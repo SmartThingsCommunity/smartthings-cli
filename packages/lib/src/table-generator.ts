@@ -5,7 +5,7 @@ import { table } from 'table'
 import { Logger } from '@smartthings/core-sdk'
 
 
-interface TableFieldDefinitionBase<T extends object> {
+type TableFieldDefinitionBase<T extends object> = {
 	/**
 	 * If included, overrides the default label for the column.
 	 */
@@ -44,7 +44,7 @@ export type SimpleTableFieldDefinition<T extends object> = keyof T
  * The default label (when not overridden with the `label` option) is the string version of `prop`
  * with the first letter made uppercase and spaces added before other uppercase letters.
  */
-export interface PropertyTableFieldDefinition<T extends object> extends TableFieldDefinitionBase<T> {
+export type PropertyTableFieldDefinition<T extends object> = TableFieldDefinitionBase<T> & {
 	/**
 	 * The name of the property from which to get data.
 	 */
@@ -58,7 +58,7 @@ export interface PropertyTableFieldDefinition<T extends object> extends TableFie
  * The default label is also derived from the final property of the path when the `label` option is
  * not included.
  */
-export interface PathTableFieldDefinition<T extends object> extends TableFieldDefinitionBase<T> {
+export type PathTableFieldDefinition<T extends object> = TableFieldDefinitionBase<T> & {
 	/**
 	 * The lodash path of property from which to get data. This is used to reference a nested
 	 * property. If you want to reference a non-nested property use `PropertyTableFieldDefinition`
@@ -77,7 +77,7 @@ export interface PathTableFieldDefinition<T extends object> extends TableFieldDe
  * `TableFieldDefinition` to specify a function which calculates the value of the field. Note
  * that for this type of `TableFieldDefinition`, the `label` option is required.
  */
-export interface ValueTableFieldDefinition<T extends object> extends TableFieldDefinitionBase<T> {
+export type ValueTableFieldDefinition<T extends object> = TableFieldDefinitionBase<T> & {
 	/**
 	 * If included, overrides the default label for the column.
 	 */
@@ -106,7 +106,7 @@ export interface ValueTableFieldDefinition<T extends object> extends TableFieldD
  */
 export type TableFieldDefinition<T extends object> = SimpleTableFieldDefinition<T> | PropertyTableFieldDefinition<T> | PathTableFieldDefinition<T> | ValueTableFieldDefinition<T>
 
-export interface TableGenerator {
+export type TableGenerator = {
 	newOutputTable(options?: Partial<TableOptions>): Table
 
 	/**
@@ -124,7 +124,7 @@ export interface TableGenerator {
 	buildTableFromList<T extends object>(items: T[], tableFieldDefinitions: TableFieldDefinition<T>[]): string
 }
 
-export interface TableOptions {
+export type TableOptions = {
 	/**
 	 * Separate groups of four rows by a line to make long rows easier to follow across the screen.
 	 */
@@ -157,7 +157,7 @@ export const stringFromUnknown = (input: unknown): string => {
 }
 
 export type TableCellData = string | number | boolean | undefined
-export interface Table {
+export type Table = {
 	push: (row: TableCellData[]) => void
 
 	toString: () => string

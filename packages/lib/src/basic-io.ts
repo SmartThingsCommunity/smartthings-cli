@@ -26,7 +26,7 @@ export type IdRetrievalFunction<ID, L extends object> = (fieldInfo: Sorting<L>, 
  * results in a consistent order. If the user specifies an index into that list when querying
  * a single location, the sort key specified here is used again to ensure the same ordering.
  */
-export interface Sorting<L extends object> {
+export type Sorting<L extends object> = {
 	/**
 	 * The primary key used to uniquely identify this object.
 	 */
@@ -44,7 +44,7 @@ export interface Sorting<L extends object> {
  * If you're writing code that uses this interface, use `itemName` or `pluralItemName` from
  * command-util to translate a `Naming` instance to a name.
  */
-export interface Naming {
+export type Naming = {
 	/**
 	 * The singular name of your item, using lowercase letters and spaces to separate words.
 	 */

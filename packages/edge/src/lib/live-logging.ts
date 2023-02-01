@@ -21,7 +21,7 @@ export enum LogLevel {
 	PRINT = 1000,
 }
 
-export interface LiveLogMessage {
+export type LiveLogMessage = {
 	/*
 	 * The ISO formatted Local timestamp
 	 */
@@ -61,7 +61,7 @@ export enum DriverInfoStatus {
 	Unknown = 'unknown',
 }
 
-export interface DriverInfo {
+export type DriverInfo = {
 	/**
 	 * A UUID for this driver
 	 * */
@@ -189,7 +189,7 @@ function scrubAuthInfo(obj: unknown): string {
  */
 export type HostVerifier = (cert: PeerCertificate) => Promise<void | never>
 
-export interface LiveLogClientConfig {
+export type LiveLogClientConfig = {
 	/**
 	 * @example 192.168.0.1:9495
 	 */

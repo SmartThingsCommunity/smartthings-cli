@@ -73,7 +73,7 @@ async function promptForDrivers(fieldInfo: Sorting<DriverInfo>, list: DriverInfo
 	return inputId
 }
 
-interface KnownHub {
+type KnownHub = {
 	hostname: string
 	fingerprint: string
 }

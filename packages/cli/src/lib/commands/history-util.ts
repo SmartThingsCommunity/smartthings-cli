@@ -11,7 +11,7 @@ export const maxItemsPerRequest = 300
 
 export const maxRequestsBeforeWarning = 6
 
-export interface DeviceActivityOptions {
+export type DeviceActivityOptions = {
 	includeName?: boolean
 	utcTimeFormat?: boolean
 }
