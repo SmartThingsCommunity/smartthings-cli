@@ -18,7 +18,10 @@ export default class DevicePreferencesTranslationsUpdateCommand extends APIOrgan
 	}]
 
 	static examples = [
-		'$ smartthings devicepreferences:translations:update -i preferenceTranslation.json',
+		{
+			description: 'select a translation from a list and update it with the data in the file preferenceTranslation.json',
+			command: 'smartthings devicepreferences:translations:update -i preferenceTranslation.json',
+		},
 	]
 
 	async run(): Promise<void> {

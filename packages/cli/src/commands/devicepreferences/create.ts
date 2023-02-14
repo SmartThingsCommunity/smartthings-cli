@@ -14,22 +14,24 @@ export default class DevicePreferencesCreateCommand extends APIOrganizationComma
 		...inputAndOutputItem.flags,
 	}
 
-	static examples = [`
-# create a new device preference by answering questions
-$ smartthings devicepreferences:create
-`,
-	`
-# generate a device preference by answering questions but do not actually create it
-$ smartthings devicepreferences:create -d
-`,
-	`
-# create a new device preference defined by the file dp.json
-$ smartthings devicepreferences:create -i dp.json
-`,
-	`
-# create a new device preference defined by the file dp.json and write the results to dp - saved.json
-$ smartthings devicepreferences: create - i dp.json - o dp - saved.json
-`]
+	static examples = [
+		{
+			description: 'create a new device preference by answering questions',
+			command: 'smartthings devicepreferences:create',
+		},
+		{
+			description: 'generate a device preference by answering questions but do not actually create it',
+			command: 'smartthings devicepreferences:create -d',
+		},
+		{
+			description: 'create a new device preference defined by the file dp.json',
+			command: 'smartthings devicepreferences:create -i dp.json',
+		},
+		{
+			description: 'create a new device preference defined by the file dp.json and write the results to dp - saved.json',
+			command: 'smartthings devicepreferences:create - i dp.json - o dp - saved.json',
+		},
+	]
 
 	async run(): Promise<void> {
 		await inputAndOutputItem(this, { tableFieldDefinitions },

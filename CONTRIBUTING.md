@@ -73,7 +73,7 @@ commands. Some ground rules to follow when creating or updating commands:
 * Commands should always include a short one-line description that starts with a lowercase letter
   and does not end with a period. A more detailed description can be included after a newline. This
   description can be split across lines but should not include newlines (oclif will wrap it).
-* Flags are also kebab case and should have a short single-character version only if they ar
+* Flags are also kebab case and should have a short single-character version only if they are
   expected to be used often.
   * Descriptions of flags should be short, start with a lowercase letter, and include no ending
     punctuation.
@@ -85,7 +85,7 @@ commands. Some ground rules to follow when creating or updating commands:
   * Use the [object format](https://oclif.io/docs/commands#other-command-options)
     rather than the simple string format when providing examples.
   * When specifying an id in an example, use a representative example id.
-  * Descriptions should start with a capital letter and end with a period.
+  * One-line descriptions should start with a lowercase letter and not end with a period.
   * There is no need to include `$ ` prefix for command examples because oclif includes it
     automatically.
 

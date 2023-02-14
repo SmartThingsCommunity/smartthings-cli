@@ -18,14 +18,18 @@ export default class DevicePreferencesTranslationsCommand extends APIOrganizatio
 	]
 
 	static examples = [
-		`# let command prompt to choose device preference and list locales
-$ smartthings devicepreferences:translations
-`,
-		`# specify device preference ID and list locales
-$ smartthings devicepreferences:translations motionSensitivity
-`,
-		`# specify device preference ID and locale to get translated device preference values
-$ smartthings devicepreferences:translations motionSensitivity ko`,
+		{
+			description: 'answer a series of questions to choose device preference and list locales',
+			command: 'smartthings devicepreferences:translation',
+		},
+		{
+			description: 'list locales for a specific device preference ID',
+			command: 'smartthings devicepreferences:translations motionSensitivity',
+		},
+		{
+			description: 'specify device preference ID and locale to get translated device preference values',
+			command: 'smartthings devicepreferences:translations motionSensitivity ko',
+		},
 	]
 
 	async run(): Promise<void> {

@@ -59,11 +59,26 @@ export default class DevicePreferencesCommand extends APIOrganizationCommand<typ
 	]
 
 	static examples = [
-		'$ smartthings devicepreferences                       # list all device preferences, sorted by title',
-		'$ smartthings devicepreferences device-preference-id  # display details for preference with specified id',
-		'$ smartthings devicepreferences 2                     # display details for second preference when sorted by title',
-		'$ smartthings devicepreferences 3 -y                  # display details for third preference as YAML',
-		'$ smartthings devicepreferences 3 -o dp.json          # write details as JSON for third preference to dp.json',
+		{
+			description: 'list all device preferences, sorted by title',
+			command: 'smartthings devicepreferences',
+		},
+		{
+			description: 'display details for preference with specified id',
+			command: 'smartthings devicepreferences motionSensitivity',
+		},
+		{
+			description: 'display details for second item in list of preferences when sorted by title',
+			command: 'smartthings devicepreferences 2',
+		},
+		{
+			description: 'display details for third preference as YAML',
+			command: 'smartthings devicepreferences 3 -y',
+		},
+		{
+			description: 'write details as JSON for third preference to dp.json',
+			command: 'smartthings devicepreferences 3 -o dp.json',
+		},
 	]
 
 	async run(): Promise<void> {

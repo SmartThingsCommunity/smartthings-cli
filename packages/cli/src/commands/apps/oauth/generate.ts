@@ -5,7 +5,7 @@ import { chooseApp } from '../../../lib/commands/apps-util'
 
 export default class AppOauthGenerateCommand extends APICommand<typeof AppOauthGenerateCommand.flags> {
 	static description = 'regenerate the OAuth clientId and clientSecret of an app' +
-		this.apiDocsURL('updateAppOauth')
+		this.apiDocsURL('generateAppOauth')
 
 	static flags = {
 		...APICommand.flags,
@@ -16,6 +16,13 @@ export default class AppOauthGenerateCommand extends APICommand<typeof AppOauthG
 		name: 'id',
 		description: 'the app id',
 	}]
+
+	static examples = [
+		{
+			description: 'regenerate the OAuth clientId and clientSecret of the app with the given id',
+			command: 'smartthings apps:oauth:generate 392bcb11-e251-44f3-b58b-17f93015f3aa',
+		},
+	]
 
 	async run(): Promise<void> {
 		const appId = await chooseApp(this, this.args.id)

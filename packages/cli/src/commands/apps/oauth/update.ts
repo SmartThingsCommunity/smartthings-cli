@@ -4,7 +4,8 @@ import { chooseApp, oauthTableFieldDefinitions } from '../../../lib/commands/app
 
 
 export default class AppOauthUpdateCommand extends APICommand<typeof AppOauthUpdateCommand.flags> {
-	static description = 'update the OAuth settings of the app'
+	static description = 'update the OAuth settings of an app' +
+		this.apiDocsURL('updateAppOauth')
 
 	static flags = {
 		...APICommand.flags,
@@ -15,6 +16,17 @@ export default class AppOauthUpdateCommand extends APICommand<typeof AppOauthUpd
 		name: 'id',
 		description: 'the app id',
 	}]
+
+	static examples = [
+		{
+			description: 'update the OAuth settings for the app with the given id using the data in "oauth-settings.json"',
+			command: 'smartthings apps:oauth:update 392bcb11-e251-44f3-b58b-17f93015f3aa -i oauth-settings.json',
+		},
+		{
+			description: 'ask for the ID of an app to update and then update it using the data in "oauth-settings.json"',
+			command: 'smartthings apps:oauth:update -i oauth-settings.json',
+		},
+	]
 
 	async run(): Promise<void> {
 		const appId = await chooseApp(this, this.args.id)
