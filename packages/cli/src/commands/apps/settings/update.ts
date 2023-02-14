@@ -4,7 +4,7 @@ import { buildTableOutput, chooseApp } from '../../../lib/commands/apps-util'
 
 
 export default class AppSettingsUpdateCommand extends APICommand<typeof AppSettingsUpdateCommand.flags> {
-	static description = 'update the settings of the app' +
+	static description = 'update the settings of an app' +
 		this.apiDocsURL('updateAppSettings')
 
 	static flags = {
@@ -16,6 +16,17 @@ export default class AppSettingsUpdateCommand extends APICommand<typeof AppSetti
 		name: 'id',
 		description: 'the app id',
 	}]
+
+	static examples = [
+		{
+			description: 'update the settings of the app with the given id using the data in "app-settings.json"',
+			command: 'smartthings apps:settings:update 392bcb11-e251-44f3-b58b-17f93015f3aa -i app-settings.json',
+		},
+		{
+			description: 'ask for the ID of an app to update and then update it using the data in "app-settings.json"',
+			command: 'smartthings apps:settings:update -i app-settings.json',
+		},
+	]
 
 	async run(): Promise<void> {
 		const appId = await chooseApp(this, this.args.id)

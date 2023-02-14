@@ -18,7 +18,10 @@ export default class DevicePreferencesTranslationsCreateCommand extends APIOrgan
 	}]
 
 	static examples = [
-		'$ smartthings devicepreferences:translations:create -i preferenceTranslation.json',
+		{
+			description: 'create a device preference translation as defined in the file preferenceTranslation.json',
+			command: 'smartthings devicepreferences:translations:create -i preferenceTranslation.json',
+		},
 	]
 
 	async run(): Promise<void> {

@@ -23,6 +23,22 @@ export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand
 		description: 'the app id',
 	}]
 
+	static examples = [
+		{
+			description: 'ask for the ID of an app and update it using the data in "my-app.json"',
+			command: 'smartthings apps:update -i  my-app.json',
+		},
+		{
+			description: 'update the app with the given id using the data in "my-app.json"',
+			command: 'smartthings apps:update 392bcb11-e251-44f3-b58b-17f93015f3aa -i my-app.json',
+		},
+		{
+			description: 'update the given app using the data in "my-app.json" and then authorize it\n' +
+				'(See "smartthings apps:authorize" for more information on authorization.)',
+			command: 'smartthings apps:update 392bcb11-e251-44f3-b58b-17f93015f3aa -i my-app.json --authorize',
+		},
+	]
+
 	async run(): Promise<void> {
 		const appId = await chooseApp(this, this.args.id)
 
