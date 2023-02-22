@@ -139,6 +139,7 @@ export const chooseComponent = async (command: APICommand<typeof APICommand.flag
 export const chooseCapability = async (command: APICommand<typeof APICommand.flags>, component: Component): Promise<CapabilityReference> => {
 	const config: SelectFromListConfig<CapabilityReference> = {
 		itemName: 'capability',
+		pluralItemName: 'capabilities',
 		primaryKeyName: 'id',
 		sortKeyName: 'id',
 		listTableFieldDefinitions: ['id'],
