@@ -57,6 +57,7 @@ export default class DeviceCapabilityStatusCommand extends APICommand<typeof Dev
 
 		const config: SelectFromListConfig<CapabilityReference> = {
 			itemName: 'capability',
+			pluralItemName: 'capabilities',
 			primaryKeyName: 'id',
 			sortKeyName: 'id',
 			listTableFieldDefinitions: ['id'],

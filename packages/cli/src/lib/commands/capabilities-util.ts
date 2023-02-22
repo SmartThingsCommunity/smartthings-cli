@@ -230,6 +230,7 @@ export const chooseCapability = async (command: APICommand<typeof APICommand.fla
 		: undefined
 	const config: SelectFromListConfig<CapabilitySummaryWithNamespace> = {
 		itemName: 'capability',
+		pluralItemName: 'capabilities',
 		primaryKeyName: 'id',
 		sortKeyName: 'id',
 		listTableFieldDefinitions: ['id', 'version', 'status'],
@@ -246,6 +247,7 @@ export const chooseCapabilityFiltered = async (command: APICommand<typeof APICom
 		promptMessage: string, filter: string): Promise<CapabilityId> => {
 	const config: SelectFromListConfig<CapabilitySummaryWithNamespace> = {
 		itemName: 'capability',
+		pluralItemName: 'capabilities',
 		primaryKeyName: 'id',
 		sortKeyName: 'id',
 		listTableFieldDefinitions: ['id', 'version', 'status'],
