@@ -190,7 +190,7 @@ describe('DeviceCommandsCommand', () => {
 			expect(executeCommandsSpy).toBeCalledWith('deviceId', [expectedCommand])
 		})
 
-		test('abort if only capability is entered', async () => {
+		test('cancel if only capability is entered', async () => {
 			getDevicesSpy.mockResolvedValueOnce(OUTLET_DEVICE)
 			const switchLevel: Capability = {
 				name: 'switchLevel',

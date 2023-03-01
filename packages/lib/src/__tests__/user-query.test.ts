@@ -47,6 +47,37 @@ describe('user-query', () => {
 				message: 'prompt message',
 			})
 		})
+
+		it('passes validate to inquirer', async () => {
+			promptSpy.mockResolvedValue({ value: '' })
+
+			const validate = (): true => true
+			const result = await askForString('prompt message', validate)
+
+			expect(result).toBe(undefined)
+			expect(promptSpy).toHaveBeenCalledTimes(1)
+			expect(promptSpy).toHaveBeenCalledWith({
+				type: 'input',
+				name: 'value',
+				message: 'prompt message',
+				validate,
+			})
+		})
+
+		it('passes default to inquirer', async () => {
+			promptSpy.mockResolvedValue({ value: '' })
+
+			const result = await askForString('prompt message', undefined, { default: 'default value' })
+
+			expect(result).toBe(undefined)
+			expect(promptSpy).toHaveBeenCalledTimes(1)
+			expect(promptSpy).toHaveBeenCalledWith({
+				type: 'input',
+				name: 'value',
+				message: 'prompt message',
+				default: 'default value',
+			})
+		})
 	})
 
 	describe('askForRequiredString', () => {
@@ -68,6 +99,33 @@ describe('user-query', () => {
 
 			expect(validateFunction('')).toBe('value is required')
 			expect(validateFunction('a')).toBe(true)
+		})
+
+		it('incorporates supplied validation', async () => {
+			promptSpy.mockResolvedValue({ value: 'entered value' })
+
+			const validate: jest.Mock<true, [string]> = jest.fn()
+			const result = await askForRequiredString('prompt message', validate)
+
+			expect(result).toBe('entered value')
+			expect(promptSpy).toHaveBeenCalledTimes(1)
+			expect(promptSpy).toHaveBeenCalledWith({
+				type: 'input',
+				name: 'value',
+				message: 'prompt message',
+				validate: expect.any(Function),
+			})
+
+			const validateFunction = (promptSpy.mock.calls[0][0] as { validate: ValidateFunction }).validate
+
+			validate.mockReturnValue(true)
+
+			expect(validateFunction('')).toBe('value is required')
+			expect(validate).toHaveBeenCalledTimes(0)
+
+			expect(validateFunction('a')).toBe(true)
+			expect(validate).toHaveBeenCalledTimes(1)
+			expect(validate).toHaveBeenCalledWith('a')
 		})
 	})
 

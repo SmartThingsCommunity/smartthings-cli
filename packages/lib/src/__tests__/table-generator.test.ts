@@ -1,7 +1,7 @@
 import at from 'lodash.at'
 import { URL } from 'url'
 import log4js from '@log4js-node/log4js-api'
-import { DefaultTableGenerator, stringFromUnknown, TableFieldDefinition, TableGenerator } from '../table-generator'
+import { DefaultTableGenerator, TableFieldDefinition, TableGenerator } from '../table-generator'
 
 
 const mockDebug = jest.fn()
@@ -153,23 +153,6 @@ describe('table-generator', () => {
 
 	beforeEach(() => {
 		tableGenerator = new DefaultTableGenerator(false)
-	})
-
-	describe('stringFromUnknown', () => {
-		it.each`
-			input                             | result
-			${'string'}                       | ${'string'}
-			${undefined}                      | ${''}
-			${() => 5}                        | ${'<Function>'}
-			${1}                              | ${'1'}
-			${true}                           | ${'true'}
-			${BigInt(5)}                      | ${'5'}
-			${Symbol('symbol')}               | ${'Symbol(symbol)'}
-			${{ toString: () => 'toString' }} | ${'toString'}
-			${{ simple: 'object' }}           | ${'{"simple":"object"}'}
-		`('converts $input to $result', ({ input, result }) => {
-			expect(stringFromUnknown(input)).toBe(result)
-		})
 	})
 
 	describe('buildTableFromItem', () => {

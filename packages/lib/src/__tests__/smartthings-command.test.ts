@@ -3,6 +3,7 @@ import { CLIConfig, loadConfig, Profile } from '../cli-config'
 import { SmartThingsCommand } from '../smartthings-command'
 import { DefaultTableGenerator } from '../table-generator'
 import log4js from '@log4js-node/log4js-api'
+import { ExitError } from '@oclif/core/lib/errors'
 
 
 jest.mock('../cli-config')
@@ -111,15 +112,21 @@ describe('SmartThingsCommand', () => {
 		expect(DefaultTableGenerator).toBeCalledWith(groupRows)
 	})
 
-	it('should abort command with message and successful exit', () => {
+	it('should cancel command with message and successful exit', () => {
 		const logSpy = jest.spyOn(Command.prototype, 'log').mockImplementation()
-		const exitSpy = jest.spyOn(Command.prototype, 'exit').mockImplementation()
-		const message = 'aborting command'
+		const message = 'canceling command'
 
-		smartThingsCommand.abort(message)
+		expect(() => smartThingsCommand.cancel(message)).toThrow(ExitError)
 
 		expect(logSpy).toBeCalledWith(message)
-		expect(exitSpy).toBeCalledWith(0)
+	})
+
+	it('should cancel command with default message and successful exit', () => {
+		const logSpy = jest.spyOn(Command.prototype, 'log').mockImplementation()
+
+		expect(() => smartThingsCommand.cancel()).toThrow(ExitError)
+
+		expect(logSpy).toBeCalledWith('Action canceled')
 	})
 
 	it('should set logger during setup', async () => {
