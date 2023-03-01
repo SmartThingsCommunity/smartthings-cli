@@ -14,19 +14,22 @@ export const numberTransformer: TransformerFunction = (input, _, { isFinal }) =>
  * Simple wrapper around querying a user for a string. The return value will always be
  * a string with at least one character or undefined.
  */
-export const askForString = async (message: string, validate?: ValidateFunction): Promise<string | undefined> => {
+export const askForString = async (message: string, validate?: ValidateFunction, options?: { default: string }): Promise<string | undefined> => {
 	const value = (await inquirer.prompt({
 		type: 'input',
 		name: 'value',
 		message,
 		validate,
+		default: options?.default,
 	})).value as string
 
 	return value || undefined
 }
 
-export const askForRequiredString = async (message: string): Promise<string> =>
-	askForString(message, (input: string) => input ? true : 'value is required') as Promise<string>
+export const askForRequiredString = async (message: string, validate?: ValidateFunction, options?: { default: string }): Promise<string> =>
+	askForString(message, (input: string) => input
+		? (validate ? validate(input) : true)
+		: 'value is required', options) as Promise<string>
 
 export const askForInteger = async (message: string, min?: number, max?: number): Promise<number | undefined> => {
 	const value = (await inquirer.prompt({

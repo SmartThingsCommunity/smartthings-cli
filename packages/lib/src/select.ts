@@ -75,7 +75,7 @@ export async function promptUser<L extends object, ID = string>(command: SmartTh
 
 export type SelectOptions<L extends object, ID = string> = PromptUserOptions<L, ID> & {
 	/**
-	 * If the value passed here is truthy, it is simply returned and no further processing is done.
+	 * If the value passed here is truthy, it is returned and no further processing is done.
 	 */
 	preselectedId?: ID
 

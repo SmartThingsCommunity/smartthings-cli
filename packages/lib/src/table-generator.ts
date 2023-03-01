@@ -4,6 +4,8 @@ import { table } from 'table'
 
 import { Logger } from '@smartthings/core-sdk'
 
+import { stringFromUnknown } from './util'
+
 
 type TableFieldDefinitionBase<T extends object> = {
 	/**
@@ -131,29 +133,6 @@ export type TableOptions = {
 	groupRows: boolean
 	head: string[]
 	isList?: boolean
-}
-
-export const stringFromUnknown = (input: unknown): string => {
-	if (typeof input === 'string') {
-		return input
-	}
-	if (input == undefined) {
-		return ''
-	}
-	if (typeof input === 'function') {
-		return '<Function>'
-	}
-	if (typeof input === 'number' || typeof input == 'boolean' || typeof input === 'bigint' ||
-			typeof input === 'symbol') {
-		return input.toString()
-	}
-	if (typeof input === 'object') {
-		// For object, only use the toString if it's not the default
-		if (input.toString !== Object.prototype.toString) {
-			return input.toString()
-		}
-	}
-	return JSON.stringify(input)
 }
 
 export type TableCellData = string | number | boolean | undefined

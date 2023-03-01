@@ -1,5 +1,6 @@
 import log4js from '@log4js-node/log4js-api'
 import { Command, Flags, Interfaces } from '@oclif/core'
+import { ExitError } from '@oclif/core/lib/errors'
 import { Input } from '@oclif/core/lib/interfaces'
 import { CLIConfig, loadConfig, Profile } from './cli-config'
 import { outputFlags } from './output-builder'
@@ -58,6 +59,11 @@ export type SmartThingsCommandInterface = Loggable & Pick<Command, 'exit' | 'log
 	 * exists but is not a boolean.
 	 */
 	booleanConfigValue(keyName: string, defaultValue?: boolean): boolean
+
+	/**
+	 * This method is called when the user has decided to not complete a command.
+	 */
+	cancel(message?: string): never
 }
 
 /**
@@ -208,14 +214,9 @@ export abstract class SmartThingsCommand<T extends InputFlags> extends Command i
 		this._tableGenerator = new DefaultTableGenerator(groupRows)
 	}
 
-	/**
-	 * This method is called when the user has decided to not complete a command.
-	 */
-	abort(message?: string): void {
-		if (message) {
-			this.log(message)
-		}
+	cancel(message?: string): never {
+		this.log(message ?? 'Action canceled')
 
-		this.exit(0)
+		throw new ExitError(0)
 	}
 }
