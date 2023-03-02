@@ -1,4 +1,4 @@
-import { clipToMaximum, stringFromUnknown } from '../util'
+import { clipToMaximum, sanitize, stringFromUnknown } from '../util'
 
 
 describe('stringFromUnknown', () => {
@@ -26,5 +26,19 @@ describe('clipToMaximum', () => {
 		${'12345'}        | ${4}          | ${'1...'}
 	`('converts $input to $result', ({ input, maxLength, result }) => {
 		expect(clipToMaximum(input, maxLength)).toBe(result)
+	})
+})
+
+describe('sanitize', () => {
+	it.each`
+		input                             | result
+		${'string'}                       | ${'string'}
+		${undefined}                      | ${''}
+		${'bell bot tom'}                 | ${'bellbottom'}
+		${'air-b-rush'}                   | ${'airbrush'}
+		${'corn/b/all'}                   | ${'cornball'}
+		${'&air*c=raft...85'}             | ${'aircraft85'}
+	`('converts $input to $result', ({ input, result }) => {
+		expect(sanitize(input)).toBe(result)
 	})
 })
