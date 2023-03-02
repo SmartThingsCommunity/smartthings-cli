@@ -28,3 +28,9 @@ export const clipToMaximum = (input: string, maxLength: number): string =>
 	input.length > maxLength
 		? `${input.slice(0, maxLength - 3)}...`
 		: input
+
+/**
+ * Returns a string with any non-word characters (anything but letters, numbers or the underscore)
+ * removed. This function also returns an empty string if the input is undefined.
+ */
+export const sanitize = (input?: string): string => input?.replace(/[\W]/g, '') ?? ''
