@@ -1,4 +1,4 @@
-import { CustomCommonOutputProducer, DefaultTableGenerator, inputAndOutputItem } from '@smartthings/cli-lib'
+import { CustomCommonOutputProducer, DefaultTableGenerator, inputAndOutputItem, IOFormat } from '@smartthings/cli-lib'
 import { AppCreationResponse, AppCreateRequest, AppsEndpoint, AppResponse } from '@smartthings/core-sdk'
 import AppCreateCommand from '../../../commands/apps/create'
 import { tableFieldDefinitions } from '../../../lib/commands/apps-util'
@@ -32,6 +32,11 @@ describe('AppCreateCommand', () => {
 				buildTableOutput: expect.any(Function),
 			}),
 			expect.any(Function),
+			expect.objectContaining({
+				ioFormat: IOFormat.COMMON,
+				hasInput: expect.any(Function),
+				read: expect.any(Function),
+			}),
 		)
 		expect(buildTableSpy).toBeCalledWith(appCreate.app, tableFieldDefinitions)
 	})

@@ -1,7 +1,7 @@
 import inquirer from 'inquirer'
 
 
-export type ValidateFunction = (input: string) => boolean | string | Promise<boolean | string>
+export type ValidateFunction = (input: string) => true | string | Promise<true | string>
 export type TransformerFunction = (input: string, answers: { value: string }, flags: { isFinal?: boolean | undefined }) => string | Promise<string>
 
 /**
@@ -9,6 +9,12 @@ export type TransformerFunction = (input: string, answers: { value: string }, fl
  * optional numbers.
  */
 export const numberTransformer: TransformerFunction = (input, _, { isFinal }) => isFinal && input === '' ? 'none' : input
+
+/**
+ * Adjust the given validate function to always allow an empty value.
+ */
+export const allowEmptyFn = (validate: ValidateFunction): ValidateFunction =>
+	(input: string): true | string | Promise<true | string> => input === '' || validate(input)
 
 /**
  * Simple wrapper around querying a user for a string. The return value will always be
@@ -19,17 +25,24 @@ export const askForString = async (message: string, validate?: ValidateFunction,
 		type: 'input',
 		name: 'value',
 		message,
-		validate,
+		validate: validate ? allowEmptyFn(validate) : undefined,
 		default: options?.default,
 	})).value as string
 
 	return value || undefined
 }
 
-export const askForRequiredString = async (message: string, validate?: ValidateFunction, options?: { default: string }): Promise<string> =>
-	askForString(message, (input: string) => input
-		? (validate ? validate(input) : true)
-		: 'value is required', options) as Promise<string>
+export const askForRequiredString = async (message: string, validate?: ValidateFunction, options?: { default: string }): Promise<string> =>  {
+	const value = (await inquirer.prompt({
+		type: 'input',
+		name: 'value',
+		message,
+		validate: (input: string) => input ? (validate ? validate(input) : true) : 'value is required',
+		default: options?.default,
+	})).value as string
+
+	return value
+}
 
 export const askForInteger = async (message: string, min?: number, max?: number): Promise<number | undefined> => {
 	const value = (await inquirer.prompt({

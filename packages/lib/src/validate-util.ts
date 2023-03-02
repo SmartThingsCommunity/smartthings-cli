@@ -32,7 +32,7 @@ export type StringValidationOptions =
  */
 export const stringValidateFn = (options: StringValidationOptions): ValidateFunction => {
 	if ('regex' in options) {
-		return (input: string): boolean | string => {
+		return (input: string): true | string => {
 			const regex = typeof options.regex === 'string' ? new RegExp(options.regex) : options.regex
 			return regex.test(input) || (options.errorMessage ?? `must match regex ${regex}`)
 		}
@@ -40,7 +40,7 @@ export const stringValidateFn = (options: StringValidationOptions): ValidateFunc
 	if ('minLength' in options && 'maxLength' in options && options.minLength > options.maxLength) {
 		throw Error('maxLength must be >= minLength')
 	}
-	return (input: string): boolean | string => {
+	return (input: string): true | string => {
 		if ('minLength' in options && input.length < options.minLength) {
 			return `must be at least ${options.minLength} characters`
 		}
@@ -51,11 +51,32 @@ export const stringValidateFn = (options: StringValidationOptions): ValidateFunc
 	}
 }
 
-export const urlValidateFn = (options?: { httpsRequired?: boolean }): ValidateFunction => {
-	return (input: string): boolean | string => {
+type URLValidateFnOptions = {
+	httpsRequired?: boolean
+
+	/**
+	 * Setting this to true (along with httpsRequired) will allow http protocol for localhost
+	 * and 127.0.0.1.
+	 */
+	allowLocalhostHTTP?: boolean
+
+	/**
+	 * Required by default.
+	 */
+	required?: boolean
+}
+
+const allowedHTTPHosts = ['localhost', '127.0.0.1']
+const urlValidateFn = (options?: URLValidateFnOptions): ValidateFunction => {
+	return (input: string): true | string => {
 		try {
 			const url = new URL(input)
 			if (options?.httpsRequired) {
+				if (options?.allowLocalhostHTTP) {
+					return url.protocol === 'https:' ||
+						url.protocol === 'http:' && allowedHTTPHosts.includes(url.host) ||
+						'https is required except for localhost'
+				}
 				return url.protocol === 'https:' || 'https protocol is required'
 			}
 			return url.protocol === 'https:' || url.protocol === 'http:' || 'http(s) protocol is required'
@@ -68,3 +89,7 @@ export const urlValidateFn = (options?: { httpsRequired?: boolean }): ValidateFu
 		}
 	}
 }
+
+export const urlValidate = urlValidateFn()
+export const httpsURLValidate = urlValidateFn({ httpsRequired: true })
+export const localhostOrHTTPSValidate = urlValidateFn({ httpsRequired: true, allowLocalhostHTTP: true })

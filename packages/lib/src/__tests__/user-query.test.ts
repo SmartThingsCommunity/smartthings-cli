@@ -51,8 +51,8 @@ describe('user-query', () => {
 		it('passes validate to inquirer', async () => {
 			promptSpy.mockResolvedValue({ value: '' })
 
-			const validate = (): true => true
-			const result = await askForString('prompt message', validate)
+			const validateMock = jest.fn().mockReturnValueOnce(true)
+			const result = await askForString('prompt message', validateMock)
 
 			expect(result).toBe(undefined)
 			expect(promptSpy).toHaveBeenCalledTimes(1)
@@ -60,8 +60,13 @@ describe('user-query', () => {
 				type: 'input',
 				name: 'value',
 				message: 'prompt message',
-				validate,
+				validate: expect.any(Function),
 			})
+
+			const generatedValidate = (promptSpy.mock.calls[0][0] as { validate: ValidateFunction }).validate
+			expect(generatedValidate('input string')).toBe(true)
+			expect(validateMock).toHaveBeenCalledTimes(1)
+			expect(validateMock).toHaveBeenCalledWith('input string')
 		})
 
 		it('passes default to inquirer', async () => {

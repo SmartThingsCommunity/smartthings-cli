@@ -1,9 +1,90 @@
 import { Flags, Errors } from '@oclif/core'
-import { AppCreateRequest, AppCreationResponse } from '@smartthings/core-sdk'
-import { APICommand, inputAndOutputItem, lambdaAuthFlags } from '@smartthings/cli-lib'
+import inquirer from 'inquirer'
+import { v4 as uuid } from 'uuid'
+
+import { AppClassification, AppCreateRequest, AppCreationResponse, AppType, PrincipalType } from '@smartthings/core-sdk'
+
+import {
+	APICommand,
+	arrayDef,
+	checkboxDef,
+	computedDef,
+	createFromUserInput,
+	httpsURLValidate,
+	inputAndOutputItem,
+	lambdaAuthFlags,
+	localhostOrHTTPSValidate,
+	objectDef,
+	optionalStringDef,
+	sanitize,
+	staticDef,
+	stringDef,
+	stringValidateFn,
+	userInputProcessor,
+} from '@smartthings/cli-lib'
+
 import { addPermission } from '../../lib/aws-utils'
 import { tableFieldDefinitions } from '../../lib/commands/apps-util'
 
+
+const appNameDef = computedDef((context?: unknown[]): string => {
+	if (!context || context.length === 0) {
+		throw Error('invalid context for appName computed input definition')
+	}
+	const displayName = (context[0] as Pick<AppCreateRequest, 'displayName'>).displayName
+
+	const retVal = `${sanitize(displayName)}-${uuid()}`.toLowerCase()
+	// the app name has to start with a letter or number
+	return displayName.match(/^[a-z]/) ? retVal : 'a' + retVal
+})
+
+const clientNameDef = computedDef((context?: unknown[]): string => {
+	if (!context || context.length !== 2) {
+		throw Error('invalid context for appName computed input definition')
+	}
+	return (context[1] as Pick<AppCreateRequest, 'displayName'>).displayName
+})
+
+const availableScopes = [
+	'r:devices:*',
+	'w:devices:*',
+	'x:devices:*',
+	'r:hubs:*',
+	'r:locations:*',
+	'w:locations:*',
+	'x:locations:*',
+	'r:scenes:*',
+	'x:scenes:*',
+	'r:rules:*',
+	'w:rules:*',
+	'r:installedapps',
+	'w:installedapps',
+]
+
+const scopeDef = checkboxDef<string>('Scopes', availableScopes)
+
+const oauthAppCreateRequestInputDefinition = objectDef<AppCreateRequest>('OAuth-In SmartApp', {
+	displayName: stringDef('Display Name', stringValidateFn({ maxLength: 75 })),
+	description: stringDef('Description', stringValidateFn({ maxLength: 250 })),
+	appName: appNameDef,
+	appType: staticDef(AppType.API_ONLY),
+	classifications: staticDef([AppClassification.CONNECTED_SERVICE]),
+	singleInstance: staticDef(true),
+	iconImage: objectDef('Icon Image', {
+		url: stringDef('Icon Image URL', httpsURLValidate),
+	}),
+	apiOnly: objectDef('API Only', { targetUrl: optionalStringDef('Target URL', httpsURLValidate) }),
+	principalType: staticDef(PrincipalType.LOCATION),
+	oauth: objectDef('OAuth', {
+		clientName: clientNameDef,
+		scope: scopeDef,
+		redirectUris: arrayDef(
+			'Redirect URIs',
+			stringDef('Redirect URI', localhostOrHTTPSValidate),
+			{ minItems: 0, maxItems: 10 },
+		),
+	}),
+})
 
 export default class AppCreateCommand extends APICommand<typeof AppCreateCommand.flags> {
 	static description = 'create an app' +
@@ -19,6 +100,7 @@ export default class AppCreateCommand extends APICommand<typeof AppCreateCommand
 	}
 
 	static examples = [
+		{ description: 'create an OAuth-In app from prompted input', command: 'smartthings apps:create' },
 		{ description: 'create an app defined in "my-app.yaml"', command: 'smartthings apps:create -i my-app.yaml' },
 		{
 			description: 'create an app defined in "my-app.json" and then authorize it\n' +
@@ -45,8 +127,36 @@ export default class AppCreateCommand extends APICommand<typeof AppCreateCommand
 			return this.client.apps.create(data)
 		}
 
-		await inputAndOutputItem(this,
-			{ buildTableOutput: data => this.tableGenerator.buildTableFromItem(data.app, tableFieldDefinitions) },
-			createApp)
+		const buildTableOutput = (data: AppCreationResponse): string => {
+			const basicInfo = this.tableGenerator.buildTableFromItem(data.app, tableFieldDefinitions)
+
+			const oauthInfo = data.oauthClientId || data.oauthClientSecret
+				? this.tableGenerator.buildTableFromItem(data, ['oauthClientId', 'oauthClientSecret'])
+				: undefined
+			return oauthInfo
+				? `Basic App Data:\n${basicInfo}\n\nOAuth Info (you will not be able to see the OAuth info again so please save it now!):\n${oauthInfo}`
+				: basicInfo
+		}
+
+		await inputAndOutputItem(this, { buildTableOutput }, createApp, userInputProcessor(this))
+	}
+
+	async getInputFromUser(): Promise<AppCreateRequest> {
+		const action = (await inquirer.prompt({
+			type: 'list',
+			name: 'action',
+			message: 'What kind of app do you want to create? (Currently, only OAuth-In apps are supported.)',
+			choices: [
+				{ name: 'OAuth-Inn App', value: 'oauth-in' },
+				{ name: 'Cancel', value: 'cancel' },
+			],
+			default: 'oauth-in',
+		})).action
+
+		if (action === 'oauth-in') {
+			return createFromUserInput(this, oauthAppCreateRequestInputDefinition, { dryRun: this.flags['dry-run'] })
+		} else {
+			this.cancel()
+		}
 	}
 }

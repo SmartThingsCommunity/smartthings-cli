@@ -383,6 +383,10 @@ DESCRIPTION
   https://developer.smartthings.com/docs/api/public/#operation/createApp
 
 EXAMPLES
+  create an OAuth-In app from prompted input
+
+    $ smartthings apps:create
+
   create an app defined in "my-app.yaml"
 
     $ smartthings apps:create -i my-app.yaml

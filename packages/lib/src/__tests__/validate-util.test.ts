@@ -1,4 +1,4 @@
-import { stringValidateFn, urlValidateFn } from '../validate-util'
+import { httpsURLValidate, localhostOrHTTPSValidate, stringValidateFn, urlValidate } from '../validate-util'
 
 
 describe('stringValidateFn', () => {
@@ -62,47 +62,51 @@ describe('stringValidateFn', () => {
 	})
 })
 
-describe('urlValidateFn', () => {
+describe('urlValidate', () => {
 	it.each([
 		'http://example.com',
 		'https://example.com',
 		'https://www.adafruit.com/category/168',
-	])('accepts %s', (input) => {
-		const fn = urlValidateFn()
-		expect(fn(input)).toBe(true)
+	])('accepts "%s"', (input) => {
+		expect(urlValidate(input)).toBe(true)
 	})
 
 	it.each([
 		'I love NeoPixels. I hope you do too.',
 		'74',
-	])('rejects %s', (input) => {
-		const fn = urlValidateFn()
-		expect(fn(input)).toBe('must be a valid URL')
-	})
-
-	it.each([
-		'I love NeoPixels. I hope you do too.',
-		'74',
-	])('rejects %s when https required', (input) => {
-		const fn = urlValidateFn({ httpsRequired: true })
-		expect(fn(input)).toBe('must be a valid URL with https protocol')
+	])('rejects "%s"', (input) => {
+		expect(urlValidate(input)).toBe('must be a valid URL')
 	})
 
 	it.each([
 		'fred://example.com',
 		'ftp://example.com',
 		'ftps://example.com',
-	])('rejects %s with unsupported protocol', (input) => {
-		const fn = urlValidateFn()
-		expect(fn(input)).toBe('http(s) protocol is required')
+	])('rejects "%s" with unsupported protocol', (input) => {
+		expect(urlValidate(input)).toBe('http(s) protocol is required')
+	})
+
+	it('rethrows unexpected error', () => {
+		const urlSpy = jest.spyOn(globalThis, 'URL')
+		urlSpy.mockImplementationOnce(() => { throw Error('unexpected error') })
+		expect(() => urlValidate('could be anything')).toThrow('unexpected error')
+		urlSpy.mockRestore()
+	})
+})
+
+describe('httpsURLValidate', () => {
+	it.each([
+		'I love NeoPixels. I hope you do too.',
+		'74',
+	])('rejects "%s" when https required', (input) => {
+		expect(httpsURLValidate(input)).toBe('must be a valid URL with https protocol')
 	})
 
 	it.each([
 		'https://example.com',
 		'https://www.adafruit.com/category/168',
-	])('accepts %s when https is required', (input) => {
-		const fn = urlValidateFn({ httpsRequired: true })
-		expect(fn(input)).toBe(true)
+	])('accepts "%s" when https is required', (input) => {
+		expect(httpsURLValidate(input)).toBe(true)
 	})
 
 	it.each([
@@ -110,15 +114,27 @@ describe('urlValidateFn', () => {
 		'fred://example.com',
 		'ftp://example.com',
 		'ftps://example.com',
-	])('rejects %s when https required', (input) => {
-		const fn = urlValidateFn({ httpsRequired: true })
-		expect(fn(input)).toBe('https protocol is required')
+	])('rejects "%s" when https required', (input) => {
+		expect(httpsURLValidate(input)).toBe('https protocol is required')
+	})
+})
+
+describe('localhostOrHTTPSValidate', () => {
+	it.each([
+		'https://example.com',
+		'https://www.adafruit.com/category/168',
+		'http://localhost/path/to/fun',
+		'http://127.0.0.1',
+	])('accepts "%s" when https is required', (input) => {
+		expect(localhostOrHTTPSValidate(input)).toBe(true)
 	})
 
-	it('rethrows unexpected error', () => {
-		const urlSpy = jest.spyOn(globalThis, 'URL')
-		urlSpy.mockImplementationOnce(() => { throw Error('unexpected error') })
-		const fn = urlValidateFn()
-		expect(() => fn('could be anything')).toThrow('unexpected error')
+	it.each([
+		'http://adafruit.com',
+		'fred://example.com',
+		'ftp://example.com',
+		'ftps://example.com',
+	])('rejects "%s" when https required', (input) => {
+		expect(localhostOrHTTPSValidate(input)).toBe('https is required except for localhost')
 	})
 })
