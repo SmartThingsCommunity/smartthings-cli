@@ -85,10 +85,6 @@ describe('PackageCommand', () => {
 
 	const logSpy = jest.spyOn(PackageCommand.prototype, 'log').mockImplementation()
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	const mockProjectDirectoryProcessing = (): void => {
 		resolveProjectDirNameMock.mockResolvedValueOnce('project dir')
 		jsZipMock.mockReturnValueOnce(mockJSZip)

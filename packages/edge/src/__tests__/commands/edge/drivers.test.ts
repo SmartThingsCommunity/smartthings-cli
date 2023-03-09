@@ -19,10 +19,6 @@ jest.mock('../../../../src/lib/commands/drivers-util')
 describe('DriversCommand', () => {
 	const outputItemOrListMock = jest.mocked(outputItemOrList)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('uses outputItemOrList', async () => {
 		await expect(DriversCommand.run([])).resolves.not.toThrow()
 

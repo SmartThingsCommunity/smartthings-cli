@@ -107,10 +107,6 @@ describe('LogCatCommand', () => {
 	})
 	jest.spyOn(process.stdout, 'write').mockImplementation(() => true)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('initialization', () => {
 		it('initializes SseCommand correctly', async () => {
 			const initSseSpy = jest.spyOn(SseCommand.prototype, 'init')

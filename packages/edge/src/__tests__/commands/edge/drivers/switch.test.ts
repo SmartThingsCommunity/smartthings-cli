@@ -25,10 +25,6 @@ jest.mock('@smartthings/cli-lib', () => {
 jest.mock('../../../../../src/lib/commands/drivers-util')
 
 describe('DriversSwitchCommand', () => {
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	const switchDriverSpy = jest.spyOn(HubdevicesEndpoint.prototype, 'switchDriver').mockImplementation()
 	const chooseHubMock = jest.mocked(chooseHub).mockResolvedValue('chosen-hub-id')
 	const chooseDeviceMock = jest.mocked(chooseDevice).mockResolvedValue('chosen-device-id')

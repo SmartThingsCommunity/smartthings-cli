@@ -16,10 +16,6 @@ jest.mock('@smartthings/cli-lib', () => {
 jest.mock('../../../../../src/lib/commands/drivers-util')
 
 describe('DriversDefaultCommand', () => {
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	const outputListMock = jest.mocked(outputList)
 
 	it('uses outputList', async () => {

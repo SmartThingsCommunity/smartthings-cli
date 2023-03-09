@@ -28,10 +28,6 @@ describe('DriversInstalledCommand', () => {
 	const apiGetInstalledSpy = jest.spyOn(HubdevicesEndpoint.prototype, 'getInstalled').mockResolvedValue(driver1)
 	const outputItemOrListMock = jest.mocked(outputItemOrList)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('uses outputItemOrList', async () => {
 		await expect(DriversInstalledCommand.run([])).resolves.not.toThrow()
 
