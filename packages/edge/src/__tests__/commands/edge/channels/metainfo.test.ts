@@ -26,10 +26,6 @@ describe('ChannelsMetaInfoCommand', () => {
 	const listAssignedDriversSpy = jest.spyOn(ChannelsEndpoint.prototype, 'listAssignedDrivers')
 	const getDriverChannelMetaInfoSpy = jest.spyOn(ChannelsEndpoint.prototype, 'getDriverChannelMetaInfo')
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('uses outputItemOrList', async () => {
 		await expect(ChannelsMetaInfoCommand.run([])).resolves.not.toThrow()
 

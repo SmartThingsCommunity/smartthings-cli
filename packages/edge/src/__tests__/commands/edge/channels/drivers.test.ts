@@ -26,10 +26,6 @@ describe('ChannelsDriversCommand', () => {
 	const driverChannelDetailsList = [] as DriverChannelDetailsWithName[]
 	outputListMock.mockResolvedValue(driverChannelDetailsList)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('calls outputList to do the work', async () => {
 		await expect(ChannelsDriversCommand.run([])).resolves.not.toThrow()
 

@@ -25,10 +25,6 @@ jest.mock('js-yaml')
 describe('file-util', () => {
 	const statMock = jest.mocked(fs.promises.stat)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('fileExists', () => {
 		it('returns true when file exists', async () => {
 			statMock.mockResolvedValue({} as fs.Stats)

@@ -23,10 +23,6 @@ describe('drivers-util', () => {
 	const selectFromListMock = jest.mocked(selectFromList)
 	const stringTranslateToIdMock = jest.mocked(stringTranslateToId)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('permissionsValue', () => {
 		it('returns none with no permissions at all', () => {
 			expect(permissionsValue({} as EdgeDriver)).toBe('none')

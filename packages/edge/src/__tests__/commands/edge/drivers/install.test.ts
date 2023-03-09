@@ -31,10 +31,6 @@ describe('DriversInstallCommand', () => {
 		// empty
 	})
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('installs driver and logs message', async () => {
 		await expect(DriversInstallCommand.run([])).resolves.not.toThrow()
 

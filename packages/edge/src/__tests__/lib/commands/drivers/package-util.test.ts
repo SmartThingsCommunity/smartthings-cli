@@ -36,10 +36,6 @@ describe('package-utils', () => {
 
 	const errorSpy = jest.spyOn(CliUx.ux, 'error').mockImplementation()
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	describe('resolveProjectDirName', () => {
 		it('returns directory from arg if it exists', async () => {
 			isDirMock.mockResolvedValueOnce(true)

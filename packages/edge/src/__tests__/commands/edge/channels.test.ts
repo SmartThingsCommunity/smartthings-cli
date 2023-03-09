@@ -19,10 +19,6 @@ jest.mock('../../../../src/lib/commands/channels-util')
 describe('ChannelsCommand', () => {
 	const outputItemOrListMock = jest.mocked(outputItemOrList)
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('uses outputItemOrList', async () => {
 		await expect(ChannelsCommand.run([])).resolves.not.toThrow()
 

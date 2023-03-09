@@ -128,10 +128,6 @@ describe('live-logging', () => {
 			testClient = new LiveLogClient(config)
 		})
 
-		afterEach(() => {
-			jest.clearAllMocks()
-		})
-
 		it('returns log source for all drivers', () => {
 			const sourceURL = testClient.getLogSource()
 			expect(sourceURL).not.toContain('?')

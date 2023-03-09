@@ -10,10 +10,6 @@ describe('DriversDeleteCommand', () => {
 	const chooseDriverMock = jest.mocked(chooseDriver).mockResolvedValue('chosen-driver-id')
 	const apiDriversDeleteSpy = jest.spyOn(DriversEndpoint.prototype, 'delete').mockImplementation()
 
-	afterEach(() => {
-		jest.clearAllMocks()
-	})
-
 	it('deletes driver', async () => {
 		await expect(DriversDeleteCommand.run(['cmd-line-driver-id'])).resolves.not.toThrow()
 
