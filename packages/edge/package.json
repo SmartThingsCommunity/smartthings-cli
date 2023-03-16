@@ -37,7 +37,12 @@
 		"repositoryPrefix": "<%- repo %>/blob/@smartthings/plugin-cli-edge@<%- version %>/packages/edge/<%- commandPath %>",
 		"devPlugins": [
 			"@oclif/plugin-help"
-		]
+		],
+		"topics": {
+			"edge": {
+				"description": ""
+			}
+		}
 	},
 	"dependencies": {
 		"@log4js-node/log4js-api": "^1.0.2",

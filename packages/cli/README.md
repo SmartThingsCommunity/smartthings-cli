@@ -174,7 +174,6 @@ that map to the API spec.
 * [`smartthings devices:rename [ID] [LABEL]`](#smartthings-devicesrename-id-label)
 * [`smartthings devices:status [ID]`](#smartthings-devicesstatus-id)
 * [`smartthings devices:update [ID]`](#smartthings-devicesupdate-id)
-* [`smartthings edge`](#smartthings-edge)
 * [`smartthings edge:channels [IDORINDEX]`](#smartthings-edgechannels-idorindex)
 * [`smartthings edge:channels:assign [DRIVERID] [VERSION]`](#smartthings-edgechannelsassign-driverid-version)
 * [`smartthings edge:channels:create`](#smartthings-edgechannelscreate)
@@ -2902,23 +2901,6 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/devices/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.1.2/packages/cli/src/commands/devices/update.ts)_
-
-## `smartthings edge`
-
-edge topic
-
-```
-USAGE
-  $ smartthings edge [-h]
-
-COMMON FLAGS
-  -h, --help  Show CLI help.
-
-DESCRIPTION
-  edge topic
-```
-
-_See code: [@smartthings/plugin-cli-edge](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@2.0.1/packages/edge/src/commands/edge.ts)_
 
 ## `smartthings edge:channels [IDORINDEX]`
 
