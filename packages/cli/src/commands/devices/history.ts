@@ -1,3 +1,5 @@
+import { DeviceActivity } from '@smartthings/core-sdk'
+
 import {
 	APICommand,
 	buildOutputFormatter,
@@ -53,8 +55,8 @@ export default class DeviceHistoryCommand extends APICommand<typeof DeviceHistor
 			const history = await this.client.history.devices(params)
 			await writeDeviceEventsTable(this, history, { utcTimeFormat: this.flags.utc })
 		} else {
-			const items = getHistory(this.client, limit, perRequestLimit, params)
-			const outputFormatter = buildOutputFormatter(this)
+			const items = await getHistory(this.client, limit, perRequestLimit, params)
+			const outputFormatter = buildOutputFormatter<DeviceActivity[]>(this)
 			await writeOutput(outputFormatter(items), this.flags.output)
 		}
 	}

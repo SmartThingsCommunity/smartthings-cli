@@ -1,25 +1,27 @@
+import { DeviceActivity, HistoryEndpoint, PaginatedList, SmartThingsClient } from '@smartthings/core-sdk'
+
 import {
 	buildOutputFormatter,
 	calculateOutputFormat,
 	IOFormat,
-	jsonFormatter,
 	writeOutput,
 } from '@smartthings/cli-lib'
-import { DeviceActivity, HistoryEndpoint, PaginatedList, SmartThingsClient } from '@smartthings/core-sdk'
+
 import LocationHistoryCommand from '../../../commands/locations/history'
 import { calculateRequestLimit, getHistory, writeDeviceEventsTable } from '../../../lib/commands/history-util'
 import { chooseLocation } from '../../../commands/locations'
+import LocationDeviceHistoryCommand from '../../../commands/locations/history'
 
 
 jest.mock('../../../lib/commands/history-util')
 jest.mock('../../../commands/locations')
 
 describe('LocationHistoryCommand', () => {
-	const mockChooseLocation = jest.mocked(chooseLocation).mockResolvedValue('locationId')
+	const chooseLocationMock = jest.mocked(chooseLocation).mockResolvedValue('locationId')
 	const historySpy = jest.spyOn(HistoryEndpoint.prototype, 'devices').mockImplementation()
 	const calculateOutputFormatMock = jest.mocked(calculateOutputFormat).mockReturnValue(IOFormat.COMMON)
 	const writeDeviceEventsTableMock = jest.mocked(writeDeviceEventsTable)
-	const calculateHistoryRequestLimitMock = jest.mocked(calculateRequestLimit)
+	const calculateRequestLimitMock = jest.mocked(calculateRequestLimit)
 	const getHistoryMock = jest.mocked(getHistory)
 
 	it('queries history and writes event table interactively', async () => {
@@ -30,7 +32,10 @@ describe('LocationHistoryCommand', () => {
 
 		await expect(LocationHistoryCommand.run(['locationId'])).resolves.not.toThrow()
 
-		expect(mockChooseLocation).toHaveBeenCalledTimes(1)
+		expect(calculateRequestLimitMock).toHaveBeenCalledTimes(1)
+		expect(calculateRequestLimitMock).toHaveBeenCalledWith(20)
+		expect(chooseLocationMock).toHaveBeenCalledTimes(1)
+		expect(chooseLocationMock).toHaveBeenCalledWith(expect.any(LocationDeviceHistoryCommand), 'locationId', true, true)
 		expect(calculateOutputFormatMock).toHaveBeenCalledTimes(1)
 		expect(historySpy).toHaveBeenCalledTimes(1)
 		expect(historySpy).toHaveBeenCalledWith({
@@ -41,18 +46,23 @@ describe('LocationHistoryCommand', () => {
 	})
 
 	it('queries history and write event table directly', async () => {
-		const buildOutputFormatterMock = jest.mocked(buildOutputFormatter)
+		const outputFormatterMock = jest.fn().mockReturnValueOnce('formatted output')
+		const buildOutputFormatterMock = jest.mocked(buildOutputFormatter<DeviceActivity[]>)
 		const writeOutputMock = jest.mocked(writeOutput)
 
-		calculateHistoryRequestLimitMock.mockReturnValueOnce(20)
+		const items = [{ deviceId: 'device-1' }] as DeviceActivity[]
+
+		calculateRequestLimitMock.mockReturnValueOnce(20)
 		calculateOutputFormatMock.mockReturnValueOnce(IOFormat.JSON)
-		buildOutputFormatterMock.mockReturnValueOnce(jsonFormatter(4))
+		buildOutputFormatterMock.mockReturnValueOnce(outputFormatterMock)
+		getHistoryMock.mockResolvedValueOnce(items)
 
 		await expect(LocationHistoryCommand.run(['locationId'])).resolves.not.toThrow()
 
-		expect(calculateHistoryRequestLimitMock).toHaveBeenCalledTimes(1)
-		expect(calculateHistoryRequestLimitMock).toHaveBeenCalledWith(20)
-		expect(mockChooseLocation).toHaveBeenCalledTimes(1)
+		expect(calculateRequestLimitMock).toHaveBeenCalledTimes(1)
+		expect(calculateRequestLimitMock).toHaveBeenCalledWith(20)
+		expect(chooseLocationMock).toHaveBeenCalledTimes(1)
+		expect(chooseLocationMock).toHaveBeenCalledWith(expect.any(LocationDeviceHistoryCommand), 'locationId', true, true)
 		expect(calculateOutputFormatMock).toHaveBeenCalledTimes(1)
 		expect(getHistoryMock).toHaveBeenCalledTimes(1)
 		expect(getHistoryMock).toHaveBeenCalledWith(
@@ -63,9 +73,11 @@ describe('LocationHistoryCommand', () => {
 				locationId: 'locationId',
 			}),
 		)
-		expect(writeDeviceEventsTableMock).toHaveBeenCalledTimes(0)
 		expect(buildOutputFormatterMock).toHaveBeenCalledTimes(1)
+		expect(outputFormatterMock).toHaveBeenCalledTimes(1)
+		expect(outputFormatterMock).toHaveBeenCalledWith(items)
 		expect(writeOutputMock).toHaveBeenCalledTimes(1)
+		expect(writeOutputMock).toHaveBeenCalledWith('formatted output', undefined)
 
 		expect(historySpy).toHaveBeenCalledTimes(0)
 		expect(writeDeviceEventsTableMock).toHaveBeenCalledTimes(0)
