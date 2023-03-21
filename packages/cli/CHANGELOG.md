@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.1.3
+
+### Patch Changes
+
+- [#492](https://github.com/SmartThingsCommunity/smartthings-cli/pull/492) [`0b7934b`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/0b7934b3c0628a8f05e449fbfa4c34041bd766e8) Thanks [@rossiam](https://github.com/rossiam)! - fixed bug when outputting JSON or YAML device or location history
+
 ## 1.1.2
 
 ### Patch Changes
