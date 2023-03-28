@@ -1,6 +1,6 @@
 import { DriverInfo, DriverInfoStatus, handleConnectionErrors, LiveLogClient, LiveLogClientConfig, LiveLogMessage, liveLogMessageFormatter, LogLevel, parseIpAndPort } from '../../lib/live-logging'
 import stripAnsi from 'strip-ansi'
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosHeaders, AxiosResponse } from 'axios'
 import { BearerTokenAuthenticator, NoOpAuthenticator } from '@smartthings/core-sdk'
 import { PeerCertificate, TLSSocket } from 'tls'
 import { Socket } from 'net'
@@ -152,7 +152,7 @@ describe('live-logging', () => {
 				status: 200,
 				statusText: 'OK',
 				headers: {},
-				config: {},
+				config: { headers: {} as AxiosHeaders },
 				data: [
 					/* eslint-disable @typescript-eslint/naming-convention */
 					{
@@ -254,7 +254,7 @@ describe('live-logging', () => {
 				status: 200,
 				statusText: 'OK',
 				headers: {},
-				config: {},
+				config: { headers: {} as AxiosHeaders },
 				request: request,
 			}
 

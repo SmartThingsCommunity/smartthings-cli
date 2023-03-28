@@ -11,8 +11,8 @@
 	"main": "dist/index",
 	"types": "dist/index",
 	"engines": {
-		"node": ">=16.14.2 <17",
-		"npm": ">=8"
+		"node": ">=18.15.0 <19",
+		"npm": ">=9.5"
 	},
 	"files": [
 		"dist",
@@ -29,7 +29,7 @@
 	},
 	"dependencies": {
 		"@smartthings/cli-lib": "^1.1.0",
-		"@smartthings/core-sdk": "^5.2.1"
+		"@smartthings/core-sdk": "^6.0.0"
 	},
 	"devDependencies": {
 		"@types/jest": "^28.1.5",
