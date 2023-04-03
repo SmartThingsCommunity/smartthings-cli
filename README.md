@@ -208,6 +208,12 @@ that map to the API spec.
 * [`smartthings locations:create`](#smartthings-locationscreate)
 * [`smartthings locations:delete [ID]`](#smartthings-locationsdelete-id)
 * [`smartthings locations:history [ID]`](#smartthings-locationshistory-id)
+* [`smartthings locations:modes [IDORINDEX]`](#smartthings-locationsmodes-idorindex)
+* [`smartthings locations:modes:create`](#smartthings-locationsmodescreate)
+* [`smartthings locations:modes:delete [ID]`](#smartthings-locationsmodesdelete-id)
+* [`smartthings locations:modes:getcurrent`](#smartthings-locationsmodesgetcurrent)
+* [`smartthings locations:modes:setcurrent [ID]`](#smartthings-locationsmodessetcurrent-id)
+* [`smartthings locations:modes:update [ID]`](#smartthings-locationsmodesupdate-id)
 * [`smartthings locations:rooms [IDORINDEX]`](#smartthings-locationsrooms-idorindex)
 * [`smartthings locations:rooms:create`](#smartthings-locationsroomscreate)
 * [`smartthings locations:rooms:delete [ID]`](#smartthings-locationsroomsdelete-id)
@@ -4143,6 +4149,260 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/locations/history.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.4.1/packages/cli/src/commands/locations/history.ts)_
+
+## `smartthings locations:modes [IDORINDEX]`
+
+list modes or get information for a specific mode
+
+```
+USAGE
+  $ smartthings locations:modes [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>] [-v]
+    [-j] [-y] [-o <value>]
+
+ARGUMENTS
+  IDORINDEX  mode UUID or index
+
+FLAGS
+  -l, --location=<UUID>  a specific location to query
+  -v, --verbose          include location name in output
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  list modes or get information for a specific mode
+
+EXAMPLES
+  list all modes in your location(s)
+
+    $ smartthings locations:modes
+
+  get details of the third mode in the list retrieved by running "smartthings locations:modes"
+
+    $ smartthings locations:modes 3
+
+  get details of a mode by its id
+
+    $ smartthings locations:modes 636169e4-8b9f-4438-a941-953b0d617231
+
+  include location name and ID in the output
+
+    $ smartthings locations:modes --verbose
+
+  list all modes in a particular location
+
+    $ smartthings locations:modes --location=5dfd6626-ab1d-42da-bb76-90def3153998
+```
+
+_See code: [src/commands/locations/modes.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.1.3/packages/cli/src/commands/locations/modes.ts)_
+
+## `smartthings locations:modes:create`
+
+create a mode
+
+```
+USAGE
+  $ smartthings locations:modes:create [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d] [-l <value>]
+
+FLAGS
+  -d, --dry-run          produce JSON but don't actually submit
+  -l, --location=<UUID>  a specific location to create the mode in
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  create a mode
+
+EXAMPLES
+  create a new mode using the data in new-data.json
+
+    $ smartthings locations:modes:create -i=new-data.json
+
+  create a new mode in a specified location using the data in new-data.json
+
+    $ smartthings locations:modes:create --location=5dfd6626-ab1d-42da-bb76-90def3153998 -i=new-data.json
+```
+
+_See code: [src/commands/locations/modes/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.1.3/packages/cli/src/commands/locations/modes/create.ts)_
+
+## `smartthings locations:modes:delete [ID]`
+
+delete a mode
+
+```
+USAGE
+  $ smartthings locations:modes:delete [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>]
+
+ARGUMENTS
+  ID  mode UUID
+
+FLAGS
+  -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  delete a mode
+
+EXAMPLES
+  select a mode from a list of all modes and delete it
+
+    $ smartthings locations:modes:delete
+
+  select a mode from a list of modes in a specified location and delete it
+
+    $ smartthings locations:modes:delete --location=5dfd6626-ab1d-42da-bb76-90def3153998
+
+  delete a specified mode
+
+    $ smartthings locations:modes:delete 636169e4-8b9f-4438-a941-953b0d617231
+```
+
+_See code: [src/commands/locations/modes/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.1.3/packages/cli/src/commands/locations/modes/delete.ts)_
+
+## `smartthings locations:modes:getcurrent`
+
+get details of current mode
+
+```
+USAGE
+  $ smartthings locations:modes:getcurrent [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>] [-v] [-j] [-y] [-o
+    <value>]
+
+FLAGS
+  -l, --location=<UUID>  a specific location to query
+  -v, --verbose          include location name in output
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  get details of current mode
+
+EXAMPLES
+  get details of current mode
+
+    $ smartthings locations:modes:getcurrent
+
+  include location name and ID in the output
+
+    $ smartthings locations:modes:getcurrent --verbose
+
+  get the current mode for a specified location
+
+    $ smartthings locations:modes:getcurrent --location=5dfd6626-ab1d-42da-bb76-90def3153998
+```
+
+_See code: [src/commands/locations/modes/getcurrent.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.1.3/packages/cli/src/commands/locations/modes/getcurrent.ts)_
+
+## `smartthings locations:modes:setcurrent [ID]`
+
+set the current mode
+
+```
+USAGE
+  $ smartthings locations:modes:setcurrent [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-l <value>]
+
+ARGUMENTS
+  ID  mode UUID
+
+FLAGS
+  -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  set the current mode
+
+EXAMPLES
+  select a mode from a list of all modes and set it to be current for its location
+
+    $ smartthings locations:modes:setcurrent
+
+  select a mode from a list of modes in a specified location and set it to be current
+
+    $ smartthings locations:modes:setcurrent --location=5dfd6626-ab1d-42da-bb76-90def3153998
+
+  set the specified mode to be current for its location
+
+    $ smartthings locations:modes:setcurrent 636169e4-8b9f-4438-a941-953b0d617231
+```
+
+_See code: [src/commands/locations/modes/setcurrent.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.1.3/packages/cli/src/commands/locations/modes/setcurrent.ts)_
+
+## `smartthings locations:modes:update [ID]`
+
+update a mode
+
+```
+USAGE
+  $ smartthings locations:modes:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d] [-l <value>]
+
+ARGUMENTS
+  ID  mode UUID
+
+FLAGS
+  -d, --dry-run          produce JSON but don't actually submit
+  -l, --location=<UUID>  a specific location to query
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  update a mode
+
+EXAMPLES
+  select a mode from a list of all modes and update it using the data in new-data.json
+
+    $ smartthings locations:modes:update -i=new-data.json
+
+  select a mode from a list of modes in a specified location and update it using the data in new-data.json
+
+    $ smartthings locations:modes:update --location=5dfd6626-ab1d-42da-bb76-90def3153998 -i=new-data.json
+
+  update a specified mode using the data in new-data.json
+
+    $ smartthings locations:modes:update 636169e4-8b9f-4438-a941-953b0d617231 -i=new-data.json
+```
+
+_See code: [src/commands/locations/modes/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.1.3/packages/cli/src/commands/locations/modes/update.ts)_
 
 ## `smartthings locations:rooms [IDORINDEX]`
 
