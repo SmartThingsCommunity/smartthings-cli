@@ -1,6 +1,6 @@
 import fs, { NoParamCallback, PathLike } from 'fs'
 
-import axios, { AxiosHeaders, AxiosResponse } from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { Request, Response } from 'express'
 import getPort from 'get-port'
 import open from 'open'
@@ -120,7 +120,7 @@ describe('LoginAuthenticator', () => {
 		status: 200,
 		statusText: 'OK',
 		headers: {},
-		config: { headers: {} as AxiosHeaders },
+		config: {},
 	}
 
 	const mockServer = {
