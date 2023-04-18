@@ -8,6 +8,8 @@ import {
 	editOption,
 	finishAction,
 	InputDefinition,
+	previewJSONAction,
+	previewYAMLAction,
 } from './defs'
 
 
@@ -15,24 +17,13 @@ export type CreateFromUserInputOptions = {
 	dryRun: boolean
 }
 
-/**
- * Convenience method that makes it easy to use an input definition to create an object in a
- * command's `getInputFromUser` method.
- */
-export const createFromUserInput = async <T extends object>(command: SmartThingsCommandInterface, inputDefinition: InputDefinition<T>, options: CreateFromUserInputOptions): Promise<T> => {
-	const wizardResult = await inputDefinition.buildFromUserInput()
-	if (wizardResult === cancelAction) {
-		command.cancel()
-	}
-
-	let retVal = wizardResult
-
-	const previewJSONAction = Symbol('previewJSON')
-	const previewYAMLAction = Symbol('previewYAML')
+export const updateFromUserInput = async <T extends object>(command: SmartThingsCommandInterface, inputDefinition: InputDefinition<T>, previousValue: T, options: CreateFromUserInputOptions): Promise<T> => {
+	let retVal = previousValue
 
 	const preview = async (formatter: (indent: number) => OutputFormatter<T>): Promise<void> => {
-		const indent: number | undefined = command.flags.indent || command.cliConfig.profile.indent
-		const output = formatter(indent ?? formatter === yamlFormatter ? 2 : 4)(retVal)
+		// TODO: this should probably be moved to someplace more common
+		const indent = command.flags.indent ?? command.cliConfig.profile.indent ?? (formatter === yamlFormatter ? 2 : 4)
+		const output = formatter(indent)(retVal)
 		const editAgain = (await inquirer.prompt({
 			type: 'confirm',
 			name: 'editAgain',
@@ -82,4 +73,15 @@ export const createFromUserInput = async <T extends object>(command: SmartThings
 	}
 }
 
-// TODO: updateFromUserInput
+/**
+ * Convenience method that makes it easy to use an input definition to create an object in a
+ * command's `getInputFromUser` method.
+ */
+export const createFromUserInput = async <T extends object>(command: SmartThingsCommandInterface, inputDefinition: InputDefinition<T>, options: CreateFromUserInputOptions): Promise<T> => {
+	const wizardResult = await inputDefinition.buildFromUserInput()
+	if (wizardResult === cancelAction) {
+		command.cancel()
+	}
+
+	return updateFromUserInput(command, inputDefinition, wizardResult, options)
+}

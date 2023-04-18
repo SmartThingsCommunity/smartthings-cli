@@ -83,5 +83,8 @@ export const finishAction = Symbol('finish')
 export type FinishAction = typeof finishAction
 export const finishOption = (name: string): DistinctChoice => ({ name: `Finish editing ${name}.`, value: finishAction })
 
+export const previewJSONAction = Symbol('previewJSON')
+export const previewYAMLAction = Symbol('previewYAML')
+
 export const maxItemValueLength = 60
 export const inquirerPageSize = 20
