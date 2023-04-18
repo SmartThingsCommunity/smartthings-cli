@@ -1,4 +1,4 @@
-import { inputAndOutputItem } from '@smartthings/cli-lib'
+import { inputAndOutputItem, IOFormat } from '@smartthings/cli-lib'
 import { GenerateAppOAuthRequest, AppsEndpoint } from '@smartthings/core-sdk'
 import AppOauthGenerateCommand from '../../../../commands/apps/oauth/generate'
 import { chooseApp } from '../../../../lib/commands/apps-util'
@@ -30,6 +30,7 @@ describe('AppOauthGenerateCommand', () => {
 				tableFieldDefinitions: expect.arrayContaining(['oauthClientId', 'oauthClientSecret']),
 			}),
 			expect.any(Function),
+			expect.objectContaining({ ioFormat: IOFormat.COMMON }),
 		)
 	})
 

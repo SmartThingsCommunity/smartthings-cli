@@ -2,6 +2,7 @@ import { AppListOptions, AppOAuthRequest, AppResponse, AppSettingsResponse, Page
 
 import {
 	APICommand,
+	checkboxDef,
 	ChooseOptions,
 	chooseOptionsWithDefaults,
 	selectFromList,
@@ -85,3 +86,21 @@ export const shortARNorURL = (app: PagedApp & Partial<AppResponse>): string => {
 
 	return uri.length < 96 ? uri : uri.slice(0, 95) + '...'
 }
+
+const availableScopes = [
+	'r:devices:*',
+	'w:devices:*',
+	'x:devices:*',
+	'r:hubs:*',
+	'r:locations:*',
+	'w:locations:*',
+	'x:locations:*',
+	'r:scenes:*',
+	'x:scenes:*',
+	'r:rules:*',
+	'w:rules:*',
+	'r:installedapps',
+	'w:installedapps',
+]
+
+export const oauthAppScopeDef = checkboxDef<string>('Scopes', availableScopes)

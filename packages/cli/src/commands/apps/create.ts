@@ -7,7 +7,6 @@ import { AppClassification, AppCreateRequest, AppCreationResponse, AppType, Prin
 import {
 	APICommand,
 	arrayDef,
-	checkboxDef,
 	computedDef,
 	createFromUserInput,
 	httpsURLValidate,
@@ -24,7 +23,7 @@ import {
 } from '@smartthings/cli-lib'
 
 import { addPermission } from '../../lib/aws-utils'
-import { tableFieldDefinitions } from '../../lib/commands/apps-util'
+import { oauthAppScopeDef, tableFieldDefinitions } from '../../lib/commands/apps-util'
 
 
 const appNameDef = computedDef((context?: unknown[]): string => {
@@ -45,24 +44,6 @@ const clientNameDef = computedDef((context?: unknown[]): string => {
 	return (context[1] as Pick<AppCreateRequest, 'displayName'>).displayName
 })
 
-const availableScopes = [
-	'r:devices:*',
-	'w:devices:*',
-	'x:devices:*',
-	'r:hubs:*',
-	'r:locations:*',
-	'w:locations:*',
-	'x:locations:*',
-	'r:scenes:*',
-	'x:scenes:*',
-	'r:rules:*',
-	'w:rules:*',
-	'r:installedapps',
-	'w:installedapps',
-]
-
-const scopeDef = checkboxDef<string>('Scopes', availableScopes)
-
 const oauthAppCreateRequestInputDefinition = objectDef<AppCreateRequest>('OAuth-In SmartApp', {
 	displayName: stringDef('Display Name', stringValidateFn({ maxLength: 75 })),
 	description: stringDef('Description', stringValidateFn({ maxLength: 250 })),
@@ -77,7 +58,7 @@ const oauthAppCreateRequestInputDefinition = objectDef<AppCreateRequest>('OAuth-
 	principalType: staticDef(PrincipalType.LOCATION),
 	oauth: objectDef('OAuth', {
 		clientName: clientNameDef,
-		scope: scopeDef,
+		scope: oauthAppScopeDef,
 		redirectUris: arrayDef(
 			'Redirect URIs',
 			stringDef('Redirect URI', localhostOrHTTPSValidate),
