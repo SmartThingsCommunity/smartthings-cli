@@ -3,19 +3,20 @@ import { clipToMaximum, stringFromUnknown } from '../util'
 
 import {
 	addAction,
+	addOption,
 	cancelAction,
 	CancelAction,
 	cancelOption,
-	finishAction,
-	InputDefinition,
-	editAction,
 	deleteAction,
-	editOption,
 	deleteOption,
+	editAction,
+	editOption,
 	FinishAction,
-	maxItemValueLength,
-	inquirerPageSize,
+	finishAction,
 	finishOption,
+	InputDefinition,
+	inquirerPageSize,
+	maxItemValueLength,
 	uneditable,
 } from './defs'
 
@@ -52,8 +53,10 @@ export type ArrayDefOptions<T> = {
  * @param options See definition of `ArrayDefOptions` for more details.
  */
 export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?: ArrayDefOptions<T>): InputDefinition<T[]> {
-	const checkForDuplicate = (list: T[], value: T): boolean => {
-		if (!options?.allowDuplicates && list.includes(value)) {
+	const minItems = options?.minItems ?? 1
+
+	const checkForDuplicate = (list: T[], value: T, index: number): boolean => {
+		if (!options?.allowDuplicates && list.includes(value) && (index === -1 || list[index] !== value)) {
 			console.log('Duplicate values are not allowed.')
 			return false
 		}
@@ -70,11 +73,11 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 
 	const editItem = async (itemDef: InputDefinition<T>, list: T[], index: number, context: unknown[]): Promise<void> => {
 		const currentValue = itemSummary(list[index])
-		const choices: ChoiceCollection = [
-			editOption(currentValue),
-			deleteOption(currentValue),
-			cancelOption,
-		]
+		const choices: ChoiceCollection = [editOption(currentValue)]
+		if (list.length > minItems) {
+			choices.push(deleteOption(currentValue))
+		}
+		choices.push(cancelOption)
 
 		const action = (await inquirer.prompt({
 			type: 'list',
@@ -87,7 +90,7 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 		if (action === editAction) {
 			const response = await itemDef.updateFromUserInput(list[index], context)
 			if (response !== cancelAction) {
-				if (checkForDuplicate(list, response)) {
+				if (checkForDuplicate(list, response, index)) {
 					list[index] = response
 				}
 			}
@@ -98,15 +101,11 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 	}
 
 	// Common code from build and edit
-	const editList = async (list: T[], context: unknown[] = []): Promise<FinishAction | CancelAction> => {
-		const contextForChildren = [list, ...context]
-
-		const minNumItems = options?.minItems ?? 1
-
+	const editList = async (list: T[], context: unknown[]): Promise<FinishAction | CancelAction> => {
 		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			const choices: ChoiceCollection = list.map((item, index) => ({
-				name: `Edit ${itemSummary(item)}`,
+				name: `Edit ${itemSummary(item)}.`,
 				value: index,
 			}))
 
@@ -115,9 +114,9 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 			}
 
 			if (!options?.maxItems || list.length < options.maxItems) {
-				choices.push({ name: `Add ${itemDef.name}.`, value: addAction })
+				choices.push(addOption(itemDef.name))
 			}
-			if (list.length >= minNumItems) {
+			if (list.length >= minItems) {
 				choices.push(finishOption(name))
 			}
 			choices.push(cancelOption)
@@ -127,13 +126,13 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 				name: 'action',
 				message: `Add or edit ${name}.`,
 				choices,
-				default: list.length >= minNumItems ? finishAction : addAction,
+				default: list.length >= minItems ? finishAction : addAction,
 				pageSize: inquirerPageSize,
 			})).action
 
 			if (action === addAction) {
-				const newValue = await itemDef.buildFromUserInput(contextForChildren)
-				if (newValue !== cancelAction && checkForDuplicate(list, newValue)) {
+				const newValue = await itemDef.buildFromUserInput([[...list], ...context])
+				if (newValue !== cancelAction && checkForDuplicate(list, newValue, -1)) {
 					list.push(newValue)
 				}
 			} else if (typeof action === 'number') {
@@ -205,17 +204,17 @@ export function checkboxDef<T>(name: string, items: CheckboxDefItem<T>[], option
 			}
 			return item
 		})
-		const scopes = (await inquirer.prompt({
+		const updatedValues = (await inquirer.prompt({
 			type: 'checkbox',
-			name: 'scopes',
+			name: 'values',
 			message: `Select ${name}.`,
 			choices,
 			default: finishAction,
 			pageSize: inquirerPageSize,
 			validate: options?.validate,
-		})).scopes
+		})).values
 
-		return scopes as T[]
+		return updatedValues as T[]
 	}
 
 	const buildFromUserInput = async (): Promise<T[] | CancelAction> => editValues(options?.default ?? [])
@@ -224,7 +223,6 @@ export function checkboxDef<T>(name: string, items: CheckboxDefItem<T>[], option
 		?? ((value: T[]) => clipToMaximum(value.map(item => stringFromUnknown(item)).join(', '), maxItemValueLength))
 
 	const updateFromUserInput = (original: T[]): Promise<T[] | CancelAction> => editValues(original)
-
 
 	return { name, buildFromUserInput, summarizeForEdit, updateFromUserInput }
 }
