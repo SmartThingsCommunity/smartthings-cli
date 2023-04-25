@@ -1,5 +1,17 @@
 # Change Log
 
+## 1.2.0
+
+### Minor Changes
+
+- [#487](https://github.com/SmartThingsCommunity/smartthings-cli/pull/487) [`79da49f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/79da49feaa09d0552cc0829f5e00873842e65944) Thanks [@rossiam](https://github.com/rossiam)! - add support for creating OAuth-In SmartApps via user Q&A
+
+### Patch Changes
+
+- Updated dependencies [[`7c64fea`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/7c64fea72ec3af69155e594bb30de0898e716281), [`f7a3a23`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/f7a3a23c636de50d20f1b640e0c82496c8adcc40), [`79da49f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/79da49feaa09d0552cc0829f5e00873842e65944)]:
+  - @smartthings/plugin-cli-edge@3.0.0
+  - @smartthings/cli-lib@2.0.0
+
 ## 1.1.3
 
 ### Patch Changes
