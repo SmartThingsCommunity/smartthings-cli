@@ -71,7 +71,7 @@ const oauthAppCreateRequestInputDefinition = objectDef<AppCreateRequest>('OAuth-
 	classifications: staticDef([AppClassification.CONNECTED_SERVICE]),
 	singleInstance: staticDef(true),
 	iconImage: objectDef('Icon Image', {
-		url: stringDef('Icon Image URL', httpsURLValidate),
+		url: optionalStringDef('Icon Image URL', httpsURLValidate),
 	}),
 	apiOnly: objectDef('API Only', { targetUrl: optionalStringDef('Target URL', httpsURLValidate) }),
 	principalType: staticDef(PrincipalType.LOCATION),
