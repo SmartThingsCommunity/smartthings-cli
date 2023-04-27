@@ -33,7 +33,7 @@ export type ObjectDefOptions<T> = {
 }
 
 const defaultSummarizeForEditFn = (name: string) => (): string => { throw Error(`missing implementation of summarizeForEdit for objectDef ${name}`) }
-type ItemTypeData<T> = {
+export type ObjectItemTypeData<T> = {
 	type: 'object'
 	inputDefsByProperty: InputDefsByProperty<T>
 	rolledUp: boolean
@@ -59,10 +59,15 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 		options?: ObjectDefOptions<T>): InputDefinition<T> {
 	const buildFromUserInput = async (context: unknown[] = []): Promise<T | CancelAction> => {
 		const retVal = {} as Partial<T>
-		const contextForChildren = [retVal, ...context]
 		for (const propertyName in inputDefsByProperty) {
 			const propertyInputDefinition = inputDefsByProperty[propertyName]
-			const value = await propertyInputDefinition.buildFromUserInput(contextForChildren)
+			// Allow `undefined` definitions, but do nothing with them. This allows callers of
+			// `objectDef` to have a field skipped by setting it to `undefined` as well as by leaving
+			// it out.
+			if (!propertyInputDefinition) {
+				continue
+			}
+			const value = await propertyInputDefinition.buildFromUserInput([{ ...retVal }, ...context])
 			if (value !== cancelAction) {
 				retVal[propertyName] = value
 			} else {
@@ -76,17 +81,20 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 
 	const updateFromUserInput = async (original: T, context: unknown[] = []): Promise<T | CancelAction> => {
 		const updated = { ...original }
-		const contextForChildren = [updated, ...context]
 		// eslint-disable-next-line no-constant-condition
 		while (true) {
+			const contextForChildren = [{ ...updated }, ...context]
 			const choices = [] as ChoiceCollection
 			for (const propertyName in inputDefsByProperty) {
 				const propertyInputDefinition = inputDefsByProperty[propertyName]
+				if (!propertyInputDefinition) {
+					continue
+				}
 				const propertyValue = updated[propertyName]
-				if (propertyInputDefinition?.itemTypeData?.type === 'object' &&
-						(propertyInputDefinition.itemTypeData as ItemTypeData<unknown>).rolledUp) {
+				if (propertyInputDefinition.itemTypeData?.type === 'object' &&
+						(propertyInputDefinition.itemTypeData as ObjectItemTypeData<unknown>).rolledUp) {
 					// nested property that is rolled up
-					const itemTypeData = propertyInputDefinition.itemTypeData as ItemTypeData<unknown>
+					const itemTypeData = propertyInputDefinition.itemTypeData as ObjectItemTypeData<unknown>
 					for (const nestedPropertyName in itemTypeData.inputDefsByProperty) {
 						const nestedPropertyInputDefinition =
 							(itemTypeData.inputDefsByProperty as { [key: string]: InputDefinition<unknown> })[nestedPropertyName]
@@ -143,7 +151,7 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 			} else {
 				// nested property that is rolled up
 				const nestedPropertyName = props[1]
-				const itemTypeData = propertyInputDefinition.itemTypeData as ItemTypeData<unknown>
+				const itemTypeData = propertyInputDefinition.itemTypeData as ObjectItemTypeData<unknown>
 
 				const objectValue = updated[propertyName] as { [key: string]: unknown }
 
@@ -161,11 +169,9 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 		}
 	}
 
-	const itemTypeData: ItemTypeData<T> = {
-		type: 'object',
-		inputDefsByProperty,
-		rolledUp: options?.rollup ?? Object.keys(inputDefsByProperty).length <= maxPropertiesForDefaultRollup,
-	}
+	const rolledUp = options?.rollup
+		?? Object.values(inputDefsByProperty).filter(value => !!value).length <= maxPropertiesForDefaultRollup
+	const itemTypeData: ObjectItemTypeData<T> = { type: 'object', inputDefsByProperty, rolledUp }
 
 	return { name, buildFromUserInput, summarizeForEdit, updateFromUserInput, itemTypeData }
 }
