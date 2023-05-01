@@ -1,5 +1,7 @@
 import { GenerateAppOAuthRequest, GenerateAppOAuthResponse } from '@smartthings/core-sdk'
+
 import { APICommand, inputAndOutputItem, InputAndOutputItemConfig, inputProcessor, objectDef, stringDef, TableFieldDefinition, updateFromUserInput } from '@smartthings/cli-lib'
+
 import { chooseApp, oauthAppScopeDef } from '../../../lib/commands/apps-util'
 
 
@@ -26,6 +28,7 @@ export default class AppOauthGenerateCommand extends APICommand<typeof AppOauthG
 
 	async run(): Promise<void> {
 		const appId = await chooseApp(this, this.args.id)
+
 		const tableFieldDefinitions: TableFieldDefinition<GenerateAppOAuthResponse>[] = [
 			{ path: 'oauthClientDetails.clientName' },
 			{ path: 'oauthClientDetails.scope' },
@@ -37,10 +40,10 @@ export default class AppOauthGenerateCommand extends APICommand<typeof AppOauthG
 			tableFieldDefinitions,
 		}
 		const getInputFromUser = async (): Promise<GenerateAppOAuthRequest> => {
-			const oauth = await this.client.apps.getOauth(appId)
+			const origOauth = await this.client.apps.getOauth(appId)
 			const startingRequest: GenerateAppOAuthRequest = {
-				clientName: oauth.clientName,
-				scope: oauth.scope,
+				clientName: origOauth.clientName,
+				scope: origOauth.scope,
 			}
 			const inputDef = objectDef('Generate Request', {
 				clientName: stringDef('Client Name'),
@@ -49,6 +52,7 @@ export default class AppOauthGenerateCommand extends APICommand<typeof AppOauthG
 
 			return updateFromUserInput(this, inputDef, startingRequest, { dryRun: this.flags['dry-run'] })
 		}
+
 		await inputAndOutputItem(this, config,
 			(_, data: GenerateAppOAuthRequest) => this.client.apps.regenerateOauth(appId, data),
 			inputProcessor(() => true, getInputFromUser))

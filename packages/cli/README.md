@@ -551,13 +551,17 @@ DESCRIPTION
   https://developer.smartthings.com/docs/api/public/#operation/updateAppOauth
 
 EXAMPLES
+  prompt for an app and update its OAuth settings interactively"
+
+    $ smartthings apps:oauth:update
+
+  prompt for an app and update its OAuth settings using the data in "oauth-settings.json"
+
+    $ smartthings apps:oauth:update -i oauth-settings.json
+
   update the OAuth settings for the app with the given id using the data in "oauth-settings.json"
 
     $ smartthings apps:oauth:update 392bcb11-e251-44f3-b58b-17f93015f3aa -i oauth-settings.json
-
-  ask for the ID of an app to update and then update it using the data in "oauth-settings.json"
-
-    $ smartthings apps:oauth:update -i oauth-settings.json
 ```
 
 _See code: [src/commands/apps/oauth/update.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.2.0/packages/cli/src/commands/apps/oauth/update.ts)_
@@ -712,14 +716,20 @@ COMMON FLAGS
 DESCRIPTION
   update the settings of the app
 
+  See apps:oauth:update and apps:oauth:generate for updating oauth-related data.
+
   For API information, see:
 
   https://developer.smartthings.com/docs/api/public/#operation/updateApp
 
 EXAMPLES
-  ask for the ID of an app and update it using the data in "my-app.json"
+  prompt for an app and edit it interactively
 
-    $ smartthings apps:update -i  my-app.json
+    $ smartthings apps:update
+
+  prompt for an app and update it using the data in "my-app.json"
+
+    $ smartthings apps:update -i my-app.json
 
   update the app with the given id using the data in "my-app.json"
 

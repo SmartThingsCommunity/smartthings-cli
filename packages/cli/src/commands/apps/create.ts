@@ -6,13 +6,11 @@ import { AppClassification, AppCreateRequest, AppCreationResponse, AppType, Prin
 
 import {
 	APICommand,
-	arrayDef,
 	computedDef,
 	createFromUserInput,
 	httpsURLValidate,
 	inputAndOutputItem,
 	lambdaAuthFlags,
-	localhostOrHTTPSValidate,
 	objectDef,
 	optionalStringDef,
 	sanitize,
@@ -23,7 +21,7 @@ import {
 } from '@smartthings/cli-lib'
 
 import { addPermission } from '../../lib/aws-utils'
-import { oauthAppScopeDef, tableFieldDefinitions } from '../../lib/commands/apps-util'
+import { oauthAppScopeDef, redirectUrisDef, tableFieldDefinitions } from '../../lib/commands/apps-util'
 
 
 const appNameDef = computedDef((context?: unknown[]): string => {
@@ -59,11 +57,7 @@ const oauthAppCreateRequestInputDefinition = objectDef<AppCreateRequest>('OAuth-
 	oauth: objectDef('OAuth', {
 		clientName: clientNameDef,
 		scope: oauthAppScopeDef,
-		redirectUris: arrayDef(
-			'Redirect URIs',
-			stringDef('Redirect URI', localhostOrHTTPSValidate),
-			{ minItems: 0, maxItems: 10 },
-		),
+		redirectUris: redirectUrisDef,
 	}),
 })
 

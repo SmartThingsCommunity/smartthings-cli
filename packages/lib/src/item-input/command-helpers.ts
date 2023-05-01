@@ -13,11 +13,20 @@ import {
 } from './defs'
 
 
-export type CreateFromUserInputOptions = {
+export type UpdateFromUserInputOptions = {
+	/**
+	 * Set this to true to use "output" for the finish verb. The value passed here normally comes
+	 * from the `dry-run` flag for commands that use `updateFromUserInput`.
+	 */
 	dryRun: boolean
+
+	/**
+	 * The verb to use when indicating completion. The default is 'update'.
+	 */
+	finishVerb?: string
 }
 
-export const updateFromUserInput = async <T extends object>(command: SmartThingsCommandInterface, inputDefinition: InputDefinition<T>, previousValue: T, options: CreateFromUserInputOptions): Promise<T> => {
+export const updateFromUserInput = async <T extends object>(command: SmartThingsCommandInterface, inputDefinition: InputDefinition<T>, previousValue: T, options: UpdateFromUserInputOptions): Promise<T> => {
 	let retVal = previousValue
 
 	const preview = async (formatter: (indent: number) => OutputFormatter<T>): Promise<void> => {
@@ -44,14 +53,14 @@ export const updateFromUserInput = async <T extends object>(command: SmartThings
 			editOption(inputDefinition.name),
 			{ name: 'Preview JSON.', value: previewJSONAction },
 			{ name: 'Preview YAML.', value: previewYAMLAction },
-			{ name: `Finish and ${options.dryRun ? 'output' : 'create'} ${inputDefinition.name}.`, value: finishAction },
+			{ name: `Finish and ${options.dryRun ? 'output' : (options.finishVerb ?? 'update')} ${inputDefinition.name}.`, value: finishAction },
 			{ name: `Cancel creating ${inputDefinition.name}.`, value: cancelAction },
 		]
 
 		const action = (await inquirer.prompt({
 			type: 'list',
 			name: 'action',
-			message: `Create ${inputDefinition.name}.`,
+			message: 'Choose an action.',
 			choices,
 			default: finishAction,
 		})).action
@@ -74,6 +83,12 @@ export const updateFromUserInput = async <T extends object>(command: SmartThings
 }
 
 /**
+ * Same as `UpdateFromUserInputOptions` but as used in `createFromUserInput`, the default
+ * `finishVerb` is `create` instead of `update`.
+ */
+export type CreateFromUserInputOptions = UpdateFromUserInputOptions
+
+/**
  * Convenience method that makes it easy to use an input definition to create an object in a
  * command's `getInputFromUser` method.
  */
@@ -82,6 +97,5 @@ export const createFromUserInput = async <T extends object>(command: SmartThings
 	if (wizardResult === cancelAction) {
 		command.cancel()
 	}
-
-	return updateFromUserInput(command, inputDefinition, wizardResult, options)
+	return updateFromUserInput(command, inputDefinition, wizardResult, { finishVerb: 'create', ...options })
 }
