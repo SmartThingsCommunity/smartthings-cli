@@ -2,11 +2,14 @@ import { AppListOptions, AppOAuthRequest, AppResponse, AppSettingsResponse, Page
 
 import {
 	APICommand,
+	arrayDef,
 	checkboxDef,
 	ChooseOptions,
 	chooseOptionsWithDefaults,
+	localhostOrHTTPSValidate,
 	selectFromList,
 	SelectFromListConfig,
+	stringDef,
 	stringTranslateToId,
 	TableFieldDefinition,
 	TableGenerator,
@@ -104,3 +107,9 @@ const availableScopes = [
 ]
 
 export const oauthAppScopeDef = checkboxDef<string>('Scopes', availableScopes)
+
+export const redirectUrisDef = arrayDef(
+	'Redirect URIs',
+	stringDef('Redirect URI', localhostOrHTTPSValidate),
+	{ minItems: 0, maxItems: 10 },
+)

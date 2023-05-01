@@ -1,4 +1,4 @@
-import { inputAndOutputItem } from '@smartthings/cli-lib'
+import { inputAndOutputItem, IOFormat } from '@smartthings/cli-lib'
 import { AppUpdateRequest, AppsEndpoint } from '@smartthings/core-sdk'
 import AppUpdateCommand from '../../../commands/apps/update'
 import { chooseApp, tableFieldDefinitions } from '../../../lib/commands/apps-util'
@@ -38,6 +38,11 @@ describe('AppUpdateCommand', () => {
 				tableFieldDefinitions,
 			}),
 			expect.any(Function),
+			{
+				ioFormat: IOFormat.COMMON,
+				hasInput: expect.any(Function),
+				read: expect.any(Function),
+			},
 		)
 	})
 

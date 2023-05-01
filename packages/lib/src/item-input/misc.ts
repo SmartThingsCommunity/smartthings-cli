@@ -2,7 +2,6 @@ import { askForRequiredString, askForString, ValidateFunction } from '../user-qu
 import { InputDefinition, InputDefinitionValidateFunction, Uneditable, uneditable } from './defs'
 
 
-
 export const validateWithContextFn = (validate?: InputDefinitionValidateFunction, context?: unknown[]): ValidateFunction | undefined =>
 	validate
 		? (input: string): true | string | Promise<string | true> => validate(input, context)
@@ -21,7 +20,7 @@ export const optionalStringDef = (name: string, validate?: InputDefinitionValida
 export const stringDef = (name: string, validate?: InputDefinitionValidateFunction): InputDefinition<string> => {
 	const buildFromUserInput = async (context?: unknown[]): Promise<string> =>
 		askForRequiredString(name, validateWithContextFn(validate, context))
-	const summarizeForEdit = (original: string): string => original
+	const summarizeForEdit = (value: string): string => value
 	const updateFromUserInput = (original: string, context?: unknown[]): Promise<string> =>
 		askForRequiredString(name, validateWithContextFn(validate, context), { default: original })
 
