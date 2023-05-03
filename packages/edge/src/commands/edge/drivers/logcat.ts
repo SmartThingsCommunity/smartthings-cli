@@ -14,7 +14,6 @@ import {
 	parseIpAndPort,
 } from '../../../lib/live-logging'
 import {
-	askForRequiredString,
 	convertToId,
 	EventSourceError,
 	green,
@@ -29,6 +28,7 @@ import {
 } from '@smartthings/cli-lib'
 import { inspect } from 'util'
 import { runForever } from '../../../lib/commands/drivers/logcat-util'
+import { chooseHub } from '../../../lib/commands/drivers-util'
 
 
 const DEFAULT_ALL_TEXT = 'all'
@@ -174,7 +174,17 @@ export default class LogCatCommand extends SseCommand<typeof LogCatCommand.flags
 	async init(): Promise<void> {
 		await super.init()
 
-		const hubIpAddress = this.flags['hub-address'] ?? await askForRequiredString('Enter hub IP address with optionally appended port number:')
+		const askUserForHub = async (): Promise<string> => {
+			const hubId = await chooseHub(this, 'Select a hub.', undefined, { useConfigDefault: true })
+			const hubDevice = await this.client.devices.get(hubId)
+			const localIP = hubDevice.hub?.hubData.localIP
+			if (!localIP) {
+				throw new Errors.CLIError('Could not find hub IP address.')
+			}
+			return localIP
+		}
+
+		const hubIpAddress = this.flags['hub-address'] ?? await askUserForHub()
 		const [ipv4, port] = parseIpAndPort(hubIpAddress)
 		const liveLogPort = port ?? DEFAULT_LIVE_LOG_PORT
 		this.authority = `${ipv4}:${liveLogPort}`

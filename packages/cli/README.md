@@ -2523,7 +2523,7 @@ list all devices available in a user account or retrieve a single device
 USAGE
   $ smartthings devices [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>] [-l
     <value>] [-C and|or -c <value>] [-d <value>] [-a <value>] [-s] [-H] [--type BLE|BLE_D2D|DTH|ENDPOINT_APP|GROUP|HUB|I
-    R|IR_OCF|LAN|MATTER|MOBILE|MQTT|OCF|PENGYOU|SHP|VIDEO|VIPER|VIRTUAL|WATCH|ZIGBEE|ZWAVE] [-v]
+    R|IR_OCF|LAN|MATTER|MOBILE|MQTT|OCF|PENGYOU|SHP|VIDEO|VIPER|VIRTUAL|WATCH|ZIGBEE|ZWAVE|EDGE_CHILD] [-v]
 
 ARGUMENTS
   ID  device to retrieve; UUID or the number of the device from list
@@ -2541,7 +2541,7 @@ FLAGS
   -v, --verbose                     include location and room name in output
   --type=<option>...                filter results by device type
                                     <options: BLE|BLE_D2D|DTH|ENDPOINT_APP|GROUP|HUB|IR|IR_OCF|LAN|MATTER|MOBILE|MQTT|OC
-                                    F|PENGYOU|SHP|VIDEO|VIPER|VIRTUAL|WATCH|ZIGBEE|ZWAVE>
+                                    F|PENGYOU|SHP|VIDEO|VIPER|VIRTUAL|WATCH|ZIGBEE|ZWAVE|EDGE_CHILD>
 
 COMMON FLAGS
   -h, --help             Show CLI help.
