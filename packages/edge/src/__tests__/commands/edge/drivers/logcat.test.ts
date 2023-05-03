@@ -1,12 +1,17 @@
-import LogCatCommand from '../../../../commands/edge/drivers/logcat'
+import { CliUx, Errors } from '@oclif/core'
+import EventSource from 'eventsource'
 import { promises as fs } from 'fs'
 import inquirer from 'inquirer'
-import { DriverInfo, handleConnectionErrors, LiveLogClient, liveLogMessageFormatter, parseIpAndPort } from '../../../../lib/live-logging'
 import { PeerCertificate } from 'tls'
-import { askForRequiredString, convertToId, logEvent, selectFromList, Sorting, SseCommand, stringTranslateToId } from '@smartthings/cli-lib'
-import EventSource from 'eventsource'
-import { CliUx, Errors } from '@oclif/core'
+
+import { Device, DevicesEndpoint } from '@smartthings/core-sdk'
+
+import { convertToId, logEvent, selectFromList, Sorting, SseCommand, stringTranslateToId } from '@smartthings/cli-lib'
+
+import LogCatCommand from '../../../../commands/edge/drivers/logcat'
+import { DriverInfo, handleConnectionErrors, LiveLogClient, liveLogMessageFormatter, parseIpAndPort } from '../../../../lib/live-logging'
 import { runForever } from '../../../../lib/commands/drivers/logcat-util'
+import { chooseHub } from '../../../../lib/commands/drivers-util'
 
 
 
@@ -80,11 +85,12 @@ jest.mock('../../../../../src/lib/live-logging', () => ({
 }))
 
 jest.mock('../../../../../src/lib/commands/drivers/logcat-util')
+jest.mock('../../../../lib/commands/drivers-util')
 
 describe('LogCatCommand', () => {
 	const mockStringTranslateToId = jest.mocked(stringTranslateToId).mockResolvedValue('all')
 	const mockSelectFromList = jest.mocked(selectFromList).mockRejectedValue(new Errors.ExitError(0))
-	const mockAskForRequiredString = jest.mocked(askForRequiredString).mockResolvedValue(MOCK_IPV4)
+	const chooseHubMock = jest.mocked(chooseHub)
 	const mockPrompt = jest.mocked(inquirer.prompt)
 	const mockReadFile = jest.mocked(fs.readFile)
 	const mockGetLogSource = jest.mocked(mockLiveLogClient.getLogSource)
@@ -99,6 +105,7 @@ describe('LogCatCommand', () => {
 	const errorSpy = jest.spyOn(LogCatCommand.prototype, 'error').mockImplementation()
 	const warnSpy = jest.spyOn(LogCatCommand.prototype, 'warn').mockImplementation()
 	const parseEventSpy = jest.spyOn(LogCatCommand.prototype, 'parseEvent').mockImplementation()
+	const getDeviceSpy = jest.spyOn(DevicesEndpoint.prototype, 'get').mockResolvedValue({ hub: { hubData: { localIP: 'chosen-local-ip-addr' } } } as Device)
 
 	jest.spyOn(CliUx.ux.action, 'start').mockImplementation()
 	jest.spyOn(CliUx.ux.action, 'stop').mockImplementation()
@@ -299,9 +306,26 @@ describe('LogCatCommand', () => {
 	})
 
 	it('prompts user for hub address when not specified', async () => {
+		chooseHubMock.mockResolvedValueOnce('chosen-hub-id')
+
 		await expect(LogCatCommand.run(['--all'])).resolves.not.toThrow()
 
-		expect(mockAskForRequiredString).toBeCalledWith('Enter hub IP address with optionally appended port number:')
+		expect(chooseHubMock).toBeCalledWith(expect.any(LogCatCommand), 'Select a hub.', undefined,
+			{ useConfigDefault: true })
+		expect(getDeviceSpy).toHaveBeenCalledTimes(1)
+		expect(getDeviceSpy).toHaveBeenCalledWith('chosen-hub-id')
+	})
+
+	it('throws error when localIP not found in chosen hub', async () => {
+		chooseHubMock.mockResolvedValueOnce('chosen-hub-id')
+		getDeviceSpy.mockResolvedValueOnce({} as Device)
+
+		await expect(LogCatCommand.run(['--all'])).rejects.toThrow(new Errors.CLIError('Could not find hub IP address.'))
+
+		expect(chooseHubMock).toBeCalledWith(expect.any(LogCatCommand), 'Select a hub.', undefined,
+			{ useConfigDefault: true })
+		expect(getDeviceSpy).toHaveBeenCalledTimes(1)
+		expect(getDeviceSpy).toHaveBeenCalledWith('chosen-hub-id')
 	})
 
 	it('uses correct source URL when driverId is specified', async () => {
