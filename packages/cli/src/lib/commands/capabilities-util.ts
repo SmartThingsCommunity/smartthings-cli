@@ -224,7 +224,7 @@ export const translateToId = async (sortKeyName: Extract<keyof CapabilitySummary
 }
 
 export const chooseCapability = async (command: APICommand<typeof APICommand.flags>, idFromArgs?: string,
-		versionFromArgs?: number, promptMessage?: string): Promise<CapabilityId> => {
+		versionFromArgs?: number, promptMessage?: string, namespace?: string): Promise<CapabilityId> => {
 	const preselectedId: CapabilityId | undefined = idFromArgs
 		? { id: idFromArgs, version: versionFromArgs ?? 1 }
 		: undefined
@@ -237,7 +237,7 @@ export const chooseCapability = async (command: APICommand<typeof APICommand.fla
 	}
 	return selectFromList(command, config, {
 		preselectedId,
-		listItems: () => getCustomByNamespace(command.client),
+		listItems: () => getCustomByNamespace(command.client, namespace),
 		getIdFromUser,
 		promptMessage,
 	})
