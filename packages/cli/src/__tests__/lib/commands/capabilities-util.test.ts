@@ -568,6 +568,30 @@ describe('chooseCapability', () => {
 		)
 	})
 
+	it('passes on namespace', async () => {
+		expect(await chooseCapability(command, undefined, undefined, undefined, 'namespace')).toBe(selectedCapabilityId)
+
+		expect(selectFromListMock).toHaveBeenCalledTimes(1)
+		expect(selectFromListMock).toHaveBeenCalledWith(
+			command,
+			expect.objectContaining({ itemName: 'capability' }),
+			expect.objectContaining({
+				preselectedId: undefined,
+				getIdFromUser,
+				promptMessage: undefined,
+			}),
+		)
+
+		const getCustomByNamespaceSpy = jest.spyOn(capabilitiesUtil, 'getCustomByNamespace')
+			.mockResolvedValueOnce(customCapabilitiesWithNamespaces)
+		const listItems = selectFromListMock.mock.calls[0][2].listItems
+
+		expect(await listItems()).toBe(customCapabilitiesWithNamespaces)
+
+		expect(getCustomByNamespaceSpy).toHaveBeenCalledTimes(1)
+		expect(getCustomByNamespaceSpy).toHaveBeenCalledWith(client, 'namespace')
+	})
+
 	it('uses list function that returns custom capabilities', async () => {
 		expect(await chooseCapability(command)).toBe(selectedCapabilityId)
 
@@ -585,7 +609,7 @@ describe('chooseCapability', () => {
 		expect(await listItems()).toBe(customCapabilitiesWithNamespaces)
 
 		expect(getCustomByNamespaceSpy).toHaveBeenCalledTimes(1)
-		expect(getCustomByNamespaceSpy).toHaveBeenCalledWith(client)
+		expect(getCustomByNamespaceSpy).toHaveBeenCalledWith(client, undefined)
 	})
 })
 
