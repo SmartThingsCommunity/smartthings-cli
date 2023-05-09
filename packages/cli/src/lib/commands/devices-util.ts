@@ -138,6 +138,73 @@ export const buildTableOutput = (tableGenerator: TableGenerator, device: Device 
 		infoFrom = 'zwave'
 		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.zwave,
 			['networkId', 'driverId', 'executingLocally', 'hubId', 'networkSecurityLevel', 'provisioningState'])
+	} else if (device.matter) {
+		infoFrom = 'matter'
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.matter, [
+			'driverId', 'hubId', 'provisioningState', 'networkId', 'executingLocally', 'uniqueId',
+			'vendorId', 'supportedNetworkInterfaces',
+			{
+				value: matter => matter.version
+					? `${matter.version.hardwareLabel ?? 'n/a'} (${matter.version.hardware ?? 'n/a'})`
+					: 'n/a',
+				label: 'Hardware Version',
+			},
+			{
+				value: matter => matter.version
+					? `${matter.version.softwareLabel ?? 'n/a'} (${matter.version.software ?? 'n/a'})`
+					: 'n/a',
+				label: 'Software Version',
+			},
+			{
+				value: matter => matter.endpoints
+					?.map(endpoint =>
+						`${endpoint.endpointId}: ${endpoint.deviceTypes
+							?.map(deviceType => deviceType.deviceTypeId).join(', ') ?? ''}`)
+					.join('\n') ?? '',
+				label: 'Endpoints',
+			},
+		])
+	} else if (device.hub) {
+		infoFrom = 'hub'
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.hub, [
+			'hubEui', 'firmwareVersion',
+			{ path: 'hubData.zwaveS2' },
+			{ path: 'hubData.zigbee3' },
+			{ path: 'hubData.hardwareType' },
+			{ path: 'hubData.zigbeeUnsecureRejoin' },
+			{ path: 'hubData.zwaveStaticDsk' },
+			{ path: 'hubData.hardwareId' },
+			{ path: 'hubData.zigbeeFirmware' },
+			{ path: 'hubData.zigbeeOta' },
+			{ path: 'hubData.otaEnable' },
+			{ path: 'hubData.primarySupportAvailability' },
+			{ path: 'hubData.secondarySupportAvailability' },
+			{ path: 'hubData.zigbeeAvailability' },
+			{ path: 'hubData.zwaveAvailability' },
+			{ path: 'hubData.threadAvailability' },
+			{ path: 'hubData.lanAvailability' },
+			{ path: 'hubData.matterAvailability' },
+			{ path: 'hubData.localVirtualDeviceAvailability' },
+			{ path: 'hubData.primaryHubDeviceId' },
+			{ path: 'hubData.zigbeeChannel' },
+			{ path: 'hubData.zigbeePanId' },
+			{ path: 'hubData.zigbeeEui' },
+			{ path: 'hubData.zigbeeNodeID' },
+			{ path: 'hubData.zwaveNodeID' },
+			{ path: 'hubData.zwaveHomeID' },
+			{ path: 'hubData.zwaveSucID' },
+			{ path: 'hubData.zwaveVersion' },
+			{ path: 'hubData.zwaveRegion' },
+			{ path: 'hubData.macAddress' },
+			{ path: 'hubData.localIP' },
+			{ path: 'hubData.zigbeeRadioFunctional' },
+			{ path: 'hubData.zwaveRadioFunctional' },
+			{ label: 'Installed Drivers', value: hub => hub.hubDrivers.map(driver => driver.driverId).join('\n') },
+		])
+	} else if (device.edgeChild) {
+		infoFrom = 'edgeChild'
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.edgeChild,
+			['driverId', 'hubId', 'provisioningState', 'networkId', 'executingLocally', 'parentAssignedChildKey'])
 	} else if (device.ir) {
 		infoFrom = 'ir'
 		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.ir,
@@ -148,10 +215,11 @@ export const buildTableOutput = (tableGenerator: TableGenerator, device: Device 
 			['parentDeviceId', 'profileId', 'ocfDeviceType', 'irCode'])
 	} else if (device.ocf) {
 		infoFrom = 'ocf'
-		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.ocf,
-			['deviceId', 'ocfDeviceType', 'name', 'specVersion', 'verticalDomainSpecVersion',
-				'manufacturerName', 'modelNumber', 'platformVersion', 'platformOS', 'hwVersion',
-				'firmwareVersion', 'vendorId', 'vendorResourceClientServerVersion', 'locale'])
+		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.ocf, [
+			'deviceId', 'ocfDeviceType', 'name', 'specVersion', 'verticalDomainSpecVersion',
+			'manufacturerName', 'modelNumber', 'platformVersion', 'platformOS', 'hwVersion',
+			'firmwareVersion', 'vendorId', 'vendorResourceClientServerVersion', 'locale',
+		])
 	} else if (device.viper) {
 		infoFrom = 'viper'
 		deviceIntegrationInfo = tableGenerator.buildTableFromItem(device.viper,
