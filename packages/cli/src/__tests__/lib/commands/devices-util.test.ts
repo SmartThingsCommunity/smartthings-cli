@@ -1,6 +1,6 @@
-import { Device, DeviceStatus } from '@smartthings/core-sdk'
+import { Device, DeviceStatus, HubDeviceDetails, MatterDeviceDetails } from '@smartthings/core-sdk'
 
-import { Table, TableGenerator } from '@smartthings/cli-lib'
+import { Table, TableFieldDefinition, TableGenerator, ValueTableFieldDefinition } from '@smartthings/cli-lib'
 
 import {
 	buildEmbeddedStatusTableOutput,
@@ -410,6 +410,173 @@ describe('devices-util', () => {
 			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
 			expect(buildTableFromItemMock).toHaveBeenCalledWith(zwave,
 				['networkId', 'driverId', 'executingLocally', 'hubId', 'networkSecurityLevel', 'provisioningState'])
+		})
+
+		describe('matter info', () => {
+			const matter = { driverId: 'matter-driver-id' }
+			const device = { matter } as unknown as Device
+
+			it('includes basic info', () => {
+				tableToStringMock.mockReturnValueOnce('main table')
+				buildTableFromItemMock.mockReturnValue('matter info')
+
+				expect(buildTableOutput(tableGeneratorMock, device))
+					.toEqual('Main Info\nmain table\n\nDevice Integration Info (from matter)\nmatter info')
+
+				expect(tablePushMock).toHaveBeenCalledTimes(8)
+				expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
+				expect(buildTableFromItemMock).toHaveBeenCalledWith(matter, expect.arrayContaining([
+					'driverId', 'hubId', 'provisioningState', 'networkId', 'executingLocally', 'uniqueId',
+					'vendorId', 'supportedNetworkInterfaces',
+					{ label: 'Hardware Version', value: expect.any(Function) },
+					{ label: 'Software Version', value: expect.any(Function) },
+					{ label: 'Endpoints', value: expect.any(Function) },
+				]))
+			})
+
+			test.each`
+				hardwareLabel | hardware     | expected
+				${undefined}  | ${undefined} | ${'n/a (n/a)'}
+				${'1.0.0'}    | ${undefined} | ${'1.0.0 (n/a)'}
+				${undefined}  | ${72}        | ${'n/a (72)'}
+				${'1.0.0'}    | ${72}        | ${'1.0.0 (72)'}
+			`('hardware version function maps label "$hardwareLabel" and version "$hardware" to "$expected"', ({ hardwareLabel, hardware, expected }) => {
+				tableToStringMock.mockReturnValueOnce('main table')
+				buildTableFromItemMock.mockReturnValue('matter info')
+
+				expect(buildTableOutput(tableGeneratorMock, device))
+					.toEqual('Main Info\nmain table\n\nDevice Integration Info (from matter)\nmatter info')
+
+				const tableDefinitions = buildTableFromItemMock.mock.calls[0][1] as TableFieldDefinition<MatterDeviceDetails>[]
+				const hardwareVersionFunc = (tableDefinitions[8] as ValueTableFieldDefinition<MatterDeviceDetails>).value
+
+				const matterDeviceDetails = { version: { hardwareLabel, hardware } } as MatterDeviceDetails
+				expect(hardwareVersionFunc(matterDeviceDetails)).toBe(expected)
+			})
+
+			test('hardware version function maps undefined version to "n/a"', () => {
+				tableToStringMock.mockReturnValueOnce('main table')
+				buildTableFromItemMock.mockReturnValue('matter info')
+
+				expect(buildTableOutput(tableGeneratorMock, device))
+					.toEqual('Main Info\nmain table\n\nDevice Integration Info (from matter)\nmatter info')
+
+				const tableDefinitions = buildTableFromItemMock.mock.calls[0][1] as TableFieldDefinition<MatterDeviceDetails>[]
+				const hardwareVersionFunc = (tableDefinitions[8] as ValueTableFieldDefinition<MatterDeviceDetails>).value
+
+				const matterDeviceDetails = {} as MatterDeviceDetails
+				expect(hardwareVersionFunc(matterDeviceDetails)).toBe('n/a')
+			})
+
+			test.each`
+				softwareLabel | software     | expected
+				${undefined}  | ${undefined} | ${'n/a (n/a)'}
+				${'1.0.0'}    | ${undefined} | ${'1.0.0 (n/a)'}
+				${undefined}  | ${72}        | ${'n/a (72)'}
+				${'1.0.0'}    | ${72}        | ${'1.0.0 (72)'}
+			`('software version function maps label "$softwareLabel" and version "$software" to "$expected"', ({ softwareLabel, software, expected }) => {
+				tableToStringMock.mockReturnValueOnce('main table')
+				buildTableFromItemMock.mockReturnValue('matter info')
+
+				expect(buildTableOutput(tableGeneratorMock, device))
+					.toEqual('Main Info\nmain table\n\nDevice Integration Info (from matter)\nmatter info')
+
+				const tableDefinitions = buildTableFromItemMock.mock.calls[0][1] as TableFieldDefinition<MatterDeviceDetails>[]
+				const softwareVersionFunc = (tableDefinitions[9] as ValueTableFieldDefinition<MatterDeviceDetails>).value
+
+				const matterDeviceDetails = { version: { softwareLabel, software } } as MatterDeviceDetails
+				expect(softwareVersionFunc(matterDeviceDetails)).toBe(expected)
+			})
+
+			test('software version function maps undefined version to "n/a"', () => {
+				tableToStringMock.mockReturnValueOnce('main table')
+				buildTableFromItemMock.mockReturnValue('matter info')
+
+				expect(buildTableOutput(tableGeneratorMock, device))
+					.toEqual('Main Info\nmain table\n\nDevice Integration Info (from matter)\nmatter info')
+
+				const tableDefinitions = buildTableFromItemMock.mock.calls[0][1] as TableFieldDefinition<MatterDeviceDetails>[]
+				const softwareVersionFunc = (tableDefinitions[9] as ValueTableFieldDefinition<MatterDeviceDetails>).value
+
+				const matterDeviceDetails = {} as MatterDeviceDetails
+				expect(softwareVersionFunc(matterDeviceDetails)).toBe('n/a')
+			})
+
+			test.each`
+				desc | endpoints | expected
+				${'undefined'}   | ${undefined}                                                                       | ${''}
+				${'empty array'} | ${[]}                                                                              | ${''}
+				${'no types'}    | ${[{ endpointId: 'id' }]}                                                          | ${'id: '}
+				${'empty types'} | ${[{ endpointId: 'id', deviceTypes: [] }]}                                         | ${'id: '}
+				${'one type'}    | ${[{ endpointId: 'id', deviceTypes: [{ deviceTypeId: 1 }] }]}                      | ${'id: 1'}
+				${'2 types'}     | ${[{ endpointId: 'id', deviceTypes: [{ deviceTypeId: 1 }, { deviceTypeId: 2 }] }]} | ${'id: 1, 2'}
+			`('endpoints function maps $desc map to "$expected"', ({ endpoints, expected }) => {
+				tableToStringMock.mockReturnValueOnce('main table')
+				buildTableFromItemMock.mockReturnValue('matter info')
+
+				expect(buildTableOutput(tableGeneratorMock, device))
+					.toEqual('Main Info\nmain table\n\nDevice Integration Info (from matter)\nmatter info')
+
+				const tableDefinitions = buildTableFromItemMock.mock.calls[0][1] as TableFieldDefinition<MatterDeviceDetails>[]
+				const endpointsFunc = (tableDefinitions[10] as ValueTableFieldDefinition<MatterDeviceDetails>).value
+
+				const matterDeviceDetails = { endpoints } as MatterDeviceDetails
+				expect(endpointsFunc(matterDeviceDetails)).toBe(expected)
+			})
+		})
+
+		describe('hub info', () => {
+			it('includes basic info', () => {
+				const hub = { hubEui: 'hub-eui' }
+				const device = { hub } as unknown as Device
+				tableToStringMock.mockReturnValueOnce('main table')
+				buildTableFromItemMock.mockReturnValue('hub info')
+
+				expect(buildTableOutput(tableGeneratorMock, device))
+					.toEqual('Main Info\nmain table\n\nDevice Integration Info (from hub)\nhub info')
+
+				expect(tablePushMock).toHaveBeenCalledTimes(8)
+				expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
+				expect(buildTableFromItemMock).toHaveBeenCalledWith(hub, expect.arrayContaining([
+					'hubEui', 'firmwareVersion', { path: 'hubData.zwaveS2' },
+				]))
+			})
+
+			test.each`
+				desc             | hubDrivers                                              | expected
+				${'empty array'} | ${[]}                                                   | ${''}
+				${'one driver'}  | ${[{ driverId: 'driver-1' }]}                           | ${'driver-1'}
+				${'two drivers'} | ${[{ driverId: 'driver-1' }, { driverId: 'driver-2' }]} | ${'driver-1\ndriver-2'}
+			`('hubDrivers function maps $desc to $expected', ({ hubDrivers, expected }) => {
+				const hub = { hubEui: 'hub-eui' }
+				const device = { hub } as unknown as Device
+				tableToStringMock.mockReturnValueOnce('main table')
+				buildTableFromItemMock.mockReturnValue('hub info')
+
+				expect(buildTableOutput(tableGeneratorMock, device))
+					.toEqual('Main Info\nmain table\n\nDevice Integration Info (from hub)\nhub info')
+
+				const tableDefinitions = buildTableFromItemMock.mock.calls[0][1] as TableFieldDefinition<HubDeviceDetails>[]
+				const hubDriversFunc = (tableDefinitions[33] as ValueTableFieldDefinition<HubDeviceDetails>).value
+
+				const hubDeviceDetails = { hubDrivers } as HubDeviceDetails
+				expect(hubDriversFunc(hubDeviceDetails)).toBe(expected)
+			})
+
+		})
+		it('includes edgeChild info', () => {
+			const edgeChild = { driverId: 'edge-child-driver-id' }
+			const device = { edgeChild } as unknown as Device
+			tableToStringMock.mockReturnValueOnce('main table')
+			buildTableFromItemMock.mockReturnValue('edgeChild info')
+
+			expect(buildTableOutput(tableGeneratorMock, device))
+				.toEqual('Main Info\nmain table\n\nDevice Integration Info (from edgeChild)\nedgeChild info')
+
+			expect(tablePushMock).toHaveBeenCalledTimes(8)
+			expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
+			expect(buildTableFromItemMock).toHaveBeenCalledWith(edgeChild,
+				['driverId', 'hubId', 'provisioningState', 'networkId', 'executingLocally', 'parentAssignedChildKey'])
 		})
 
 		it('includes ir info', () => {
