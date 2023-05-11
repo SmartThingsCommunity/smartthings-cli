@@ -81,18 +81,10 @@ export const listMatchingDrivers = async (client: SmartThingsClient, deviceId: s
  */
 export type DriverChoice = Pick<EdgeDriverSummary, 'driverId' | 'name'>
 
-export type ChooseDriverOptions = ChooseOptions & {
-	/**
-	 * By default drivers owned by the user are included, using `command.client.drivers.list()`
-	 * but if you need a different list of drivers, you can include your own function here.
-	 */
-	listItems: () => Promise<DriverChoice[]>
-}
-
 export async function chooseDriver(command: APICommand<typeof APICommand.flags>, promptMessage: string, commandLineDriverId?: string,
-		options?: Partial<ChooseDriverOptions>): Promise<string> {
+		options?: Partial<ChooseOptions<DriverChoice>>): Promise<string> {
 	const opts = {
-		...chooseOptionsDefaults,
+		...chooseOptionsDefaults(),
 		listItems: (): Promise<DriverChoice[]> => command.client.drivers.list(),
 		...options,
 	}
@@ -107,10 +99,39 @@ export async function chooseDriver(command: APICommand<typeof APICommand.flags>,
 	return selectFromList(command, config, { preselectedId, listItems: opts.listItems, promptMessage })
 }
 
+/**
+ * List hubs owned by the user. Hubs in locations shared with the user are not included because edge
+ * drivers cannot be managed on them.
+ */
+export const listHubs = async (command: APICommand<typeof APICommand.flags>): Promise<Device[]> => {
+	const hubs = await command.client.devices.list({ type: DeviceIntegrationType.HUB })
+	const locationIds = new Set<string>()
+	hubs.forEach(hub => {
+		if (hub.locationId !== undefined) {
+			locationIds.add(hub.locationId)
+		} else {
+			command.logger.warn('hub record found without locationId', hub)
+		}
+	})
+
+	// remove shared locations
+	for (const locationId of locationIds) {
+		const location = await command.client.locations.get(locationId, { allowed: true })
+
+		if (!location.allowed?.includes('d:locations')) {
+			command.logger.warn('filtering out location', location)
+			locationIds.delete(location.locationId)
+		}
+	}
+
+	return hubs.filter(hub => hub.locationId && locationIds.has(hub.locationId))
+}
+
 export const chooseHub = async (command: APICommand<typeof APICommand.flags>, promptMessage: string,
 		commandLineHubId: string | undefined,
-		options?: Partial<ChooseOptions>): Promise<string> => {
+		options?: Partial<ChooseOptions<Device>>): Promise<string> => {
 	const opts = chooseOptionsWithDefaults(options)
+
 	const config: SelectFromListConfig<Device> = {
 		itemName: 'hub',
 		primaryKeyName: 'deviceId',
@@ -118,31 +139,7 @@ export const chooseHub = async (command: APICommand<typeof APICommand.flags>, pr
 		listTableFieldDefinitions: ['label', 'name', 'deviceId'],
 	}
 
-	const listItems = async (): Promise<Device[]> => {
-		const hubs = await command.client.devices.list({ type: DeviceIntegrationType.HUB })
-		const locationIds = new Set<string>()
-		hubs.forEach(hub => {
-			if (hub.locationId !== undefined) {
-				locationIds.add(hub.locationId)
-			} else {
-				command.logger.warn('hub record found without locationId', hub)
-			}
-		})
-
-		// remove shared locations
-		for (const locationId of locationIds) {
-			const location = await command.client.locations.get(locationId, { allowed: true })
-
-			if (!location.allowed?.includes('d:locations')) {
-				command.logger.warn('filtering out location', location)
-				locationIds.delete(location.locationId)
-			}
-		}
-
-		const ownHubs = hubs.filter(hub => hub.locationId && locationIds.has(hub.locationId))
-
-		return ownHubs
-	}
+	const listItems = options?.listItems ?? (() => listHubs(command))
 
 	const preselectedId = commandLineHubId
 		? (opts.allowIndex

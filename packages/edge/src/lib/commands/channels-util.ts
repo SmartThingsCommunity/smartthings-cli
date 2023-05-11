@@ -1,4 +1,4 @@
-import { Channel, SmartThingsClient, SubscriberType } from '@smartthings/core-sdk'
+import { Channel, EnrolledChannel, SmartThingsClient, SubscriberType } from '@smartthings/core-sdk'
 
 import {
 	APICommand,
@@ -18,7 +18,13 @@ export const listTableFieldDefinitions: TableFieldDefinition<Channel>[] =
 export const tableFieldDefinitions: TableFieldDefinition<Channel>[] =
 	['channelId', 'name', 'description', 'termsOfServiceUrl', 'createdDate', 'lastModifiedDate']
 
-export type ChooseChannelOptions = ChooseOptions & {
+/**
+ * Both Channel and Enrolled channel have all the fields necessary for choosing a channel. Using
+ * this allows callers of `chooseChannel` to supply a `listItems` that returns a list of either.
+ */
+export type ChannelChoice = Channel | EnrolledChannel
+
+export type ChooseChannelOptions = ChooseOptions<ChannelChoice> & {
 	includeReadOnly: boolean
 }
 
@@ -31,13 +37,13 @@ export async function chooseChannel(command: APICommand<typeof APICommand.flags>
 		channelFromArg?: string,
 		options?: Partial<ChooseChannelOptions>): Promise<string> {
 	const opts = chooseChannelOptionsWithDefaults(options)
-	const config: SelectFromListConfig<Channel> = {
+	const config: SelectFromListConfig<ChannelChoice> = {
 		itemName: 'channel',
 		primaryKeyName: 'channelId',
 		sortKeyName: 'name',
 	}
 
-	const listItems = (): Promise<Channel[]> => listChannels(command.client, { includeReadOnly: opts.includeReadOnly })
+	const listItems = options?.listItems ?? ((): Promise<ChannelChoice[]> => listChannels(command.client, { includeReadOnly: opts.includeReadOnly }))
 
 	const preselectedId = channelFromArg
 		? (opts.allowIndex
@@ -48,8 +54,8 @@ export async function chooseChannel(command: APICommand<typeof APICommand.flags>
 	const defaultValue = opts.useConfigDefault
 		? {
 			configKey: 'defaultChannel',
-			getItem: (id: string): Promise<Channel> => command.client.channels.get(id),
-			userMessage: (channel: Channel): string => `using previously specified default channel named "${channel.name}" (${channel.channelId})`,
+			getItem: (id: string): Promise<ChannelChoice> => command.client.channels.get(id),
+			userMessage: (channel: ChannelChoice): string => `using previously specified default channel named "${channel.name}" (${channel.channelId})`,
 		}
 		: undefined
 	return selectFromList(command, config,

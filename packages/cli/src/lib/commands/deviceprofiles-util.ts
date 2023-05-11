@@ -96,7 +96,7 @@ export const buildTableOutput = (tableGenerator: TableGenerator, data: DevicePro
 }
 
 export const chooseDeviceProfile = async (command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>,
-		deviceProfileFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> => {
+		deviceProfileFromArg?: string, options?: Partial<ChooseOptions<DeviceProfile & WithLocales>>): Promise<string> => {
 	const opts = chooseOptionsWithDefaults(options)
 	const config: SelectFromListConfig<DeviceProfile & WithLocales> = {
 		itemName: 'device profile',

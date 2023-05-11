@@ -27,15 +27,15 @@ describe('chooseApp', () => {
 	const command = new MockCommand([], new Config({ root: '' }))
 
 	it('sets defaults for passed options', async () => {
-		const opts: Partial<ChooseOptions> = {}
+		const opts: Partial<ChooseOptions<PagedApp>> = {}
 		await chooseApp(command, undefined, opts)
 
 		expect(chooseOptionsWithDefaults).toBeCalledWith(opts)
 	})
 
 	it('resolves id from index when allowed', async () => {
-		const opts: ChooseOptions = {
-			...chooseOptionsDefaults,
+		const opts: ChooseOptions<PagedApp> = {
+			...chooseOptionsDefaults(),
 			allowIndex: true,
 		}
 		mockChooseOptionsWithDefaults.mockReturnValueOnce(opts)
@@ -63,7 +63,7 @@ describe('chooseApp', () => {
 	})
 
 	it('uses app id arg when index not allowed', async () => {
-		const opts: Partial<ChooseOptions> = {
+		const opts: Partial<ChooseOptions<PagedApp>> = {
 			allowIndex: false,
 		}
 		const expectedConfig = {
@@ -83,8 +83,8 @@ describe('chooseApp', () => {
 	})
 
 	it('uses same list function for index resolution and app selection', async () => {
-		const opts: ChooseOptions = {
-			...chooseOptionsDefaults,
+		const opts: ChooseOptions<PagedApp> = {
+			...chooseOptionsDefaults(),
 			allowIndex: true,
 		}
 		mockChooseOptionsWithDefaults.mockReturnValueOnce(opts)
