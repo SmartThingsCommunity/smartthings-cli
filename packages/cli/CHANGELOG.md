@@ -1,5 +1,30 @@
 # Change Log
 
+## 1.3.0
+
+### Minor Changes
+
+- [#511](https://github.com/SmartThingsCommunity/smartthings-cli/pull/511) [`5cea11f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/5cea11f8c63e8a38d92a8503ac17f1d87ba4cd7d) Thanks [@rossiam](https://github.com/rossiam)! - add new device fields to standard output
+
+- [#502](https://github.com/SmartThingsCommunity/smartthings-cli/pull/502) [`fc9f67f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/fc9f67f8f95e07eacddfc7e558bb00888111cb85) Thanks [@rossiam](https://github.com/rossiam)! - add Q&A mode to apps:oauth:generate command
+
+- [#509](https://github.com/SmartThingsCommunity/smartthings-cli/pull/509) [`9b9b398`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/9b9b398984fb9c51c112d3a11192f0ea5318c6d0) Thanks [@rossiam](https://github.com/rossiam)! - query user for hub in `edge:drivers:logcat` command
+
+### Patch Changes
+
+- [#509](https://github.com/SmartThingsCommunity/smartthings-cli/pull/509) [`9b9b398`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/9b9b398984fb9c51c112d3a11192f0ea5318c6d0) Thanks [@rossiam](https://github.com/rossiam)! - bump core SDK version
+
+- [#503](https://github.com/SmartThingsCommunity/smartthings-cli/pull/503) [`736fc1f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/736fc1f4bc1a1871dd827f427cb0edddfb787f6e) Thanks [@rossiam](https://github.com/rossiam)! - make icon optional in apps:create command
+
+- [#508](https://github.com/SmartThingsCommunity/smartthings-cli/pull/508) [`31e99c7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/31e99c77c1a92624fc5c5dd26aa847d812e8bfd1) Thanks [@rossiam](https://github.com/rossiam)! - support Q&A input for apps and app OAuth data
+
+- [#510](https://github.com/SmartThingsCommunity/smartthings-cli/pull/510) [`8abbb07`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/8abbb074b9026fe98459180f69cceac00ac38618) Thanks [@Sitlintac](https://github.com/Sitlintac)! - fix commands to prompt for required inputs when not supplied on the command line
+  - `capabilities:presentation` asks for a capability
+  - `deviceprofiles:view` asks for a deviceprofile
+- Updated dependencies [[`9b9b398`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/9b9b398984fb9c51c112d3a11192f0ea5318c6d0), [`9b9b398`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/9b9b398984fb9c51c112d3a11192f0ea5318c6d0)]:
+  - @smartthings/plugin-cli-edge@3.1.0
+  - @smartthings/cli-lib@2.0.1
+
 ## 1.2.0
 
 ### Minor Changes
