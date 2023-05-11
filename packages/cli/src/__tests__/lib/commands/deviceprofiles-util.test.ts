@@ -284,7 +284,7 @@ describe('chooseDeviceProfile', () => {
 	})
 
 	it('includes locales when verbose is requested', async () => {
-		chooseOptionsWithDefaultsMock.mockReturnValueOnce({ ...chooseOptionsDefaults, verbose: true })
+		chooseOptionsWithDefaultsMock.mockReturnValueOnce({ ...chooseOptionsDefaults(), verbose: true })
 
 		expect(await chooseDeviceProfile(command, undefined, { verbose: true })).toBe('chosen-profile-id')
 
@@ -317,7 +317,7 @@ describe('chooseDeviceProfile', () => {
 	})
 
 	it('translates id from arg when `allowIndex` specified', async () => {
-		chooseOptionsWithDefaultsMock.mockReturnValueOnce({ ...chooseOptionsDefaults, allowIndex: true })
+		chooseOptionsWithDefaultsMock.mockReturnValueOnce({ ...chooseOptionsDefaults(), allowIndex: true })
 
 		expect(await chooseDeviceProfile(command, 'profile-arg', { allowIndex: true })).toBe('chosen-profile-id')
 
@@ -353,7 +353,7 @@ describe('chooseDeviceProfile', () => {
 		})
 
 		it('sorts and joins locales', async () => {
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ ...chooseOptionsDefaults, verbose: true })
+			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ ...chooseOptionsDefaults(), verbose: true })
 
 			expect(await chooseDeviceProfile(command)).toBe('chosen-profile-id')
 
@@ -371,7 +371,7 @@ describe('chooseDeviceProfile', () => {
 		})
 
 		it('handles 404 from listLocales', async () => {
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ ...chooseOptionsDefaults, verbose: true })
+			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ ...chooseOptionsDefaults(), verbose: true })
 
 			expect(await chooseDeviceProfile(command)).toBe('chosen-profile-id')
 
@@ -389,7 +389,7 @@ describe('chooseDeviceProfile', () => {
 		})
 
 		it('rethrows non-404 error', async () => {
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ ...chooseOptionsDefaults, verbose: true })
+			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ ...chooseOptionsDefaults(), verbose: true })
 
 			expect(await chooseDeviceProfile(command)).toBe('chosen-profile-id')
 

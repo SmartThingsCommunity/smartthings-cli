@@ -1,6 +1,6 @@
 import { Channel, OrganizationResponse, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, ChooseOptions, chooseOptionsWithDefaults, forAllOrganizations, selectFromList,
+import { APICommand, chooseOptionsWithDefaults, forAllOrganizations, selectFromList,
 	stringTranslateToId } from '@smartthings/cli-lib'
 
 import { chooseChannel, listChannels, ChooseChannelOptions, chooseChannelOptionsWithDefaults, withChannelNames }
@@ -22,7 +22,7 @@ describe('channels-util', () => {
 		const chooseOptionsWithDefaultsMock = jest.mocked(chooseOptionsWithDefaults)
 
 		it('has a reasonable default', () => {
-			chooseOptionsWithDefaultsMock.mockReturnValue({} as unknown as ChooseOptions)
+			chooseOptionsWithDefaultsMock.mockReturnValue({} as ChooseChannelOptions)
 
 			expect(chooseChannelOptionsWithDefaults())
 				.toEqual(expect.objectContaining({ includeReadOnly: false }))
@@ -32,7 +32,7 @@ describe('channels-util', () => {
 		})
 
 		it('accepts true value', () => {
-			chooseOptionsWithDefaultsMock.mockReturnValue({ includeReadOnly: true } as unknown as ChooseOptions)
+			chooseOptionsWithDefaultsMock.mockReturnValue({ includeReadOnly: true } as ChooseChannelOptions)
 
 			expect(chooseChannelOptionsWithDefaults({ includeReadOnly: true }))
 				.toEqual(expect.objectContaining({ includeReadOnly: true }))
@@ -96,6 +96,23 @@ describe('channels-util', () => {
 			expect(selectFromListMock).toHaveBeenCalledWith(command,
 				expect.objectContaining({ primaryKeyName: 'channelId', sortKeyName: 'name' }),
 				expect.objectContaining({ preselectedId: 'translated-id' }))
+		})
+
+		it('uses listItems from options', async () => {
+			const listItemsMock = jest.fn()
+
+			chooseChannelOptionsWithDefaultsSpy.mockReturnValueOnce({} as ChooseChannelOptions)
+			selectFromListMock.mockImplementation(async () => 'chosen-channel-id')
+
+			expect(await chooseChannel(command, 'prompt message', 'command-line-channel-id',
+				{ listItems: listItemsMock })).toBe('chosen-channel-id')
+
+			expect(chooseChannelOptionsWithDefaultsSpy).toHaveBeenCalledTimes(1)
+			expect(chooseChannelOptionsWithDefaultsSpy).toHaveBeenCalledWith({ listItems: listItemsMock })
+			expect(selectFromListMock).toHaveBeenCalledTimes(1)
+			expect(selectFromListMock).toHaveBeenCalledWith(command,
+				expect.objectContaining({ primaryKeyName: 'channelId', sortKeyName: 'name' }),
+				expect.objectContaining({ listItems: listItemsMock }))
 		})
 
 		it('uses list function that lists channels', async () => {

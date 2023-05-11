@@ -13,6 +13,7 @@ import * as driversUtil from '../../../lib/commands/drivers-util'
 
 
 jest.mock('@smartthings/cli-lib', () => ({
+	chooseOptionsDefaults: jest.fn(),
 	chooseOptionsWithDefaults: jest.fn(),
 	stringTranslateToId: jest.fn(),
 	selectFromList: jest.fn(),
@@ -349,7 +350,7 @@ describe('drivers-util', () => {
 		const stringTranslateToIdMock = jest.mocked(stringTranslateToId)
 
 		it('uses default hub if specified', async () => {
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false, useConfigDefault: true } as ChooseOptions)
+			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false, useConfigDefault: true } as ChooseOptions<Device>)
 			selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
 
 			expect(await chooseHub(command, 'prompt message', undefined,
@@ -368,7 +369,7 @@ describe('drivers-util', () => {
 		})
 
 		it('prefers command line over default', async () => {
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false, useConfigDefault: true } as ChooseOptions)
+			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false, useConfigDefault: true } as ChooseOptions<Device>)
 			selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
 
 			expect(await chooseHub(command, 'prompt message', 'command-line-hub-id',
@@ -388,7 +389,7 @@ describe('drivers-util', () => {
 		})
 
 		it('translates id from index if allowed', async () => {
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: true } as ChooseOptions)
+			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: true } as ChooseOptions<Device>)
 			stringTranslateToIdMock.mockResolvedValueOnce('translated-id')
 			selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
 
@@ -409,7 +410,7 @@ describe('drivers-util', () => {
 		})
 
 		it('uses list function that specifies hubs', async () => {
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions)
+			chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions<Device>)
 			selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
 
 			expect(await chooseHub(command, 'prompt message', 'command-line-hub-id')).toBe('chosen-hub-id')
@@ -439,9 +440,26 @@ describe('drivers-util', () => {
 			expect(listDevicesMock).toHaveBeenCalledWith({ type: DeviceIntegrationType.HUB })
 		})
 
+		it('uses listItems from options', async () => {
+			const listItemsMock = jest.fn()
+
+			chooseOptionsWithDefaultsMock.mockReturnValueOnce({} as ChooseOptions<Device>)
+			selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
+
+			expect(await chooseHub(command, 'prompt message', 'command-line-hub-id',
+				{ listItems: listItemsMock })).toBe('chosen-hub-id')
+
+			expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledTimes(1)
+			expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledWith({ listItems: listItemsMock })
+			expect(selectFromListMock).toHaveBeenCalledTimes(1)
+			expect(selectFromListMock).toHaveBeenCalledWith(command,
+				expect.objectContaining({ primaryKeyName: 'deviceId', sortKeyName: 'name' }),
+				expect.objectContaining({ listItems: listItemsMock }))
+		})
+
 		describe('listItems', () => {
 			it('checks hub locations for ownership', async () => {
-				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions)
+				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions<Device>)
 				selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
 
 				expect(await chooseHub(command, 'prompt message', 'command-line-hub-id')).toBe('chosen-hub-id')
@@ -471,7 +489,7 @@ describe('drivers-util', () => {
 			})
 
 			it('filters out devices on shared locations or when allowed is null, undefined', async () => {
-				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions)
+				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions<Device>)
 				selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
 
 				expect(await chooseHub(command, 'prompt message', 'command-line-hub-id')).toBe('chosen-hub-id')
@@ -525,7 +543,7 @@ describe('drivers-util', () => {
 			})
 
 			it('warns when hub does not have locationId', async () => {
-				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions)
+				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false } as ChooseOptions<Device>)
 				selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
 
 				expect(await chooseHub(command, 'prompt message', 'command-line-hub-id')).toBe('chosen-hub-id')
@@ -544,7 +562,7 @@ describe('drivers-util', () => {
 
 		describe('defaultConfig', () => {
 			test('getItem uses devices.get', async () => {
-				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false, useConfigDefault: true } as ChooseOptions)
+				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false, useConfigDefault: true } as ChooseOptions<Device>)
 				selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
 
 				expect(await chooseHub(command, 'prompt message', undefined,
@@ -564,7 +582,7 @@ describe('drivers-util', () => {
 			})
 
 			test('userMessage returns expected message', async () => {
-				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false, useConfigDefault: true } as ChooseOptions)
+				chooseOptionsWithDefaultsMock.mockReturnValueOnce({ allowIndex: false, useConfigDefault: true } as ChooseOptions<Device>)
 				selectFromListMock.mockImplementation(async () => 'chosen-hub-id')
 
 				expect(await chooseHub(command, 'prompt message', undefined,

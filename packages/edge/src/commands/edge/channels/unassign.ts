@@ -13,7 +13,7 @@ export type NamedDriverChannelDetails = DriverChannelDetails & {
 }
 
 export async function chooseAssignedDriver(command: APICommand<typeof APICommand.flags>, promptMessage: string,
-		channelId: string, commandLineDriverId?: string, options?: Partial<ChooseOptions>): Promise<string> {
+		channelId: string, commandLineDriverId?: string, options?: Partial<ChooseOptions<NamedDriverChannelDetails>>): Promise<string> {
 	const opts = chooseOptionsWithDefaults(options)
 	const config: SelectFromListConfig<NamedDriverChannelDetails> = {
 		itemName: 'driver',

@@ -513,6 +513,20 @@ COMMON FLAGS
 
 DESCRIPTION
   unenroll a hub from a channel
+
+EXAMPLES
+  prompt user for hub and channel and then unenroll hub from channel
+
+    $ smartthings edge:channels:unenroll
+
+  prompt user for a channel the given hub is enrolled in and then unenroll it
+
+    $ smartthings edge:channels:unenroll 2fa0912f-cb73-424e-97f9-ffff76ea4f2a
+
+  unenroll the specified hub from the specified channel
+
+    $ smartthings edge:channels:unenroll 2fa0912f-cb73-424e-97f9-ffff76ea4f2a --channel \
+      fcd6ca9c-2764-4dbb-9bbe-d40c900c960f
 ```
 
 _See code: [src/commands/edge/channels/unenroll.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@3.1.0/packages/edge/src/commands/edge/channels/unenroll.ts)_

@@ -37,7 +37,7 @@ const buildListFunction = (command: EdgeCommand<typeof EdgeCommand.flags>, chann
 	return (await Promise.all(channelIds.map(async channelId => await command.edgeClient.invites.list(channelId)))).flat()
 }
 
-export async function chooseInvite(command: EdgeCommand<typeof EdgeCommand.flags>, promptMessage: string, channelId?: string, inviteFromArg?: string, options?: Partial<ChooseOptions>): Promise<string> {
+export async function chooseInvite(command: EdgeCommand<typeof EdgeCommand.flags>, promptMessage: string, channelId?: string, inviteFromArg?: string, options?: Partial<ChooseOptions<Invitation>>): Promise<string> {
 	const opts = chooseOptionsWithDefaults(options)
 	const config: SelectFromListConfig<Invitation> = {
 		itemName: 'invitation',

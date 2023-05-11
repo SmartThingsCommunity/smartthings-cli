@@ -215,11 +215,11 @@ describe('command-util', () => {
 
 	describe('chooseOptionsWithDefaults', () => {
 		it('uses defaults with undefined input', () => {
-			expect(chooseOptionsWithDefaults(undefined)).toEqual(chooseOptionsDefaults)
+			expect(chooseOptionsWithDefaults(undefined)).toStrictEqual(chooseOptionsDefaults())
 		})
 
 		it('uses defaults with empty input', () => {
-			expect(chooseOptionsWithDefaults({})).toEqual(chooseOptionsDefaults)
+			expect(chooseOptionsWithDefaults({})).toStrictEqual(chooseOptionsDefaults())
 		})
 
 		it('input overrides default', () => {
@@ -233,7 +233,7 @@ describe('command-util', () => {
 		})
 
 		it('passes on other values unchanged', () => {
-			expect(chooseOptionsWithDefaults({ someOtherKey: 'some other value' } as Partial<ChooseOptions>))
+			expect(chooseOptionsWithDefaults({ someOtherKey: 'some other value' } as Partial<ChooseOptions<{ someOtherKey: string }>>))
 				.toEqual(expect.objectContaining({ someOtherKey: 'some other value' }))
 		})
 	})

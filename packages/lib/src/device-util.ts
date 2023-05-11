@@ -7,13 +7,13 @@ import { SmartThingsCommandInterface } from './smartthings-command'
 
 
 export type DevicePredicate = (value: Device, index: number, array: Device[]) => boolean
-export type ChooseDeviceOptions = ChooseOptions & {
+export type ChooseDeviceOptions = ChooseOptions<Device> & {
 	deviceListOptions?: DeviceListOptions
 	deviceListFilter?: DevicePredicate
 }
 export const chooseDevice = async (command: APICommand<typeof APICommand.flags>, deviceFromArg?: string,
 		options?: Partial<ChooseDeviceOptions>): Promise<string> => {
-	const opts = { ...chooseOptionsDefaults, ...options }
+	const opts = { ...chooseOptionsDefaults(), ...options }
 	const config: SelectFromListConfig<Device> = {
 		itemName: 'device',
 		primaryKeyName: 'deviceId',
