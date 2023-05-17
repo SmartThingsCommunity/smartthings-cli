@@ -55,7 +55,7 @@ jest.mock('@smartthings/cli-lib', () => {
 		...originalLib,
 		stringTranslateToId: jest.fn(),
 		selectFromList: jest.fn(),
-		askForRequiredString: jest.fn(),
+		askForString: jest.fn(),
 		logEvent: jest.fn(),
 		convertToId: jest.fn().mockResolvedValue('driverId'),
 		handleSignals: jest.fn(),

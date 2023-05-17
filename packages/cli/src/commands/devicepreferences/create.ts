@@ -1,7 +1,7 @@
 import inquirer from 'inquirer'
 
 import { DevicePreferenceCreate, PreferenceType } from '@smartthings/core-sdk'
-import { APIOrganizationCommand, askForInteger, askForNumber, askForRequiredString, askForString, inputAndOutputItem, userInputProcessor } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, askForInteger, askForNumber, askForString, askForOptionalString, inputAndOutputItem, userInputProcessor, ValidateFunction } from '@smartthings/cli-lib'
 import { tableFieldDefinitions } from '../../lib/commands/devicepreferences-util'
 
 
@@ -40,10 +40,12 @@ export default class DevicePreferencesCreateCommand extends APIOrganizationComma
 	}
 
 	async getInputFromUser(): Promise<DevicePreferenceCreate> {
-		const name = await askForString('Preference name:',
-			input => !input || input.match(/^[a-z][a-zA-Z0-9]{2,23}$/) ? true : 'must be camelCase starting with a lowercase letter and 3-24 characters')
-		const title = await askForRequiredString('Preference title:')
-		const description = await askForString('Preference description:')
+		const validateName: ValidateFunction = input => !input || input.match(/^[a-z][a-zA-Z0-9]{2,23}$/)
+			? true
+			: 'must be camelCase starting with a lowercase letter and 3-24 characters'
+		const name = await askForOptionalString('Preference name:', { validate: validateName })
+		const title = await askForString('Preference title:')
+		const description = await askForOptionalString('Preference description:')
 
 		const required = (await inquirer.prompt({
 			type: 'confirm',
@@ -115,8 +117,8 @@ export default class DevicePreferencesCreateCommand extends APIOrganizationComma
 				choices: ['text', 'password', 'paragraph'],
 				default: 'text',
 			})).stringType as 'text' | 'password' | 'paragraph'
-			const defaultValue = await askForString('Optional default value.',
-				input => {
+			const defaultValue = await askForOptionalString('Optional default value.', {
+				validate: input => {
 					if (minLength !== undefined && input.length < minLength) {
 						return `default must be no less than minLength (${minLength}) characters`
 					}
@@ -124,7 +126,8 @@ export default class DevicePreferencesCreateCommand extends APIOrganizationComma
 						return `default must be no more than maxLength (${maxLength}) characters`
 					}
 					return true
-				})
+				},
+			})
 			return {
 				...base, preferenceType, definition: {
 					minLength: minLength ?? undefined,
@@ -136,16 +139,16 @@ export default class DevicePreferencesCreateCommand extends APIOrganizationComma
 		}
 
 		if (preferenceType === 'enumeration') {
-			const firstName = await askForRequiredString('Enter a name (key) for the first option.')
-			let value = await askForRequiredString('Enter a value for the first option.')
+			const firstName = await askForString('Enter a name (key) for the first option.')
+			let value = await askForString('Enter a value for the first option.')
 
 			const options: { [name: string]: string } = { [firstName]: value }
 
 			let name: string | undefined
 			do {
-				name = await askForString('Enter a name (key) for the next option or press enter to continue.')
+				name = await askForOptionalString('Enter a name (key) for the next option or press enter to continue.')
 				if (name) {
-					value = await askForRequiredString('Enter a value for the option.')
+					value = await askForString('Enter a value for the option.')
 					options[name] = value
 				}
 			} while (name)

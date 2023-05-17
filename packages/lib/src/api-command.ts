@@ -28,8 +28,15 @@ export abstract class APICommand<T extends typeof APICommand.flags> extends Smar
 		}),
 	}
 
+	static toURL = (nameOrURL: string): string => nameOrURL.startsWith('http')
+		? nameOrURL
+		: `https://developer.smartthings.com/docs/api/public/#operation/${nameOrURL}`
+
 	static apiDocsURL = (...names: string[]): string => '\nFor API information, see:\n\n' +
-		names.map(name => `https://developer.smartthings.com/docs/api/public/#operation/${name}`).join(', ')
+		names.map(name => APICommand.toURL(name)).join(', ')
+
+	static itemInputHelpText = (...namesOrURLs: string[]): string => 'More information can be found at:\n  ' +
+		namesOrURLs.map(nameOrURL => APICommand.toURL(nameOrURL)).join('\n  ')
 
 	protected clientIdProvider = defaultClientIdProvider
 	protected token?: string

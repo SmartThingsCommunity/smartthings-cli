@@ -106,10 +106,20 @@ const availableScopes = [
 	'w:installedapps',
 ]
 
-export const oauthAppScopeDef = checkboxDef<string>('Scopes', availableScopes)
+export const oauthAppScopeDef = checkboxDef<string>('Scopes', availableScopes, {
+	helpText: 'More information on OAuth 2 Scopes can be found at:\n' +
+	'  https://www.oauth.com/oauth2-servers/scope/\n\n' +
+	'To determine which scopes you need for the application, see documentation for the individual endpoints you will use in your app:\n' +
+	'  https://developer.smartthings.com/docs/api/public/',
+})
 
+const redirectUriHelpText = 'More information on redirect URIs can be found at:\n' +
+	'  https://www.oauth.com/oauth2-servers/redirect-uris/'
 export const redirectUrisDef = arrayDef(
 	'Redirect URIs',
-	stringDef('Redirect URI', localhostOrHTTPSValidate),
-	{ minItems: 0, maxItems: 10 },
+	stringDef('Redirect URI', { validate: localhostOrHTTPSValidate, helpText: redirectUriHelpText }),
+	{ minItems: 0, maxItems: 10, helpText: redirectUriHelpText },
 )
+
+export const smartAppHelpText = 'More information on writing SmartApps can be found at\n' +
+	'  https://developer.smartthings.com/docs/connected-services/smartapp-basics'

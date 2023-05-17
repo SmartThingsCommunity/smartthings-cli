@@ -21,7 +21,7 @@ import {
 } from '@smartthings/cli-lib'
 
 import { addPermission } from '../../lib/aws-utils'
-import { oauthAppScopeDef, redirectUrisDef, tableFieldDefinitions } from '../../lib/commands/apps-util'
+import { oauthAppScopeDef, redirectUrisDef, smartAppHelpText, tableFieldDefinitions } from '../../lib/commands/apps-util'
 
 
 const appNameDef = computedDef((context?: unknown[]): string => {
@@ -43,23 +43,23 @@ const clientNameDef = computedDef((context?: unknown[]): string => {
 })
 
 const oauthAppCreateRequestInputDefinition = objectDef<AppCreateRequest>('OAuth-In SmartApp', {
-	displayName: stringDef('Display Name', stringValidateFn({ maxLength: 75 })),
-	description: stringDef('Description', stringValidateFn({ maxLength: 250 })),
+	displayName: stringDef('Display Name', { validate: stringValidateFn({ maxLength: 75 }) }),
+	description: stringDef('Description', { validate: stringValidateFn({ maxLength: 250 }) }),
 	appName: appNameDef,
 	appType: staticDef(AppType.API_ONLY),
 	classifications: staticDef([AppClassification.CONNECTED_SERVICE]),
 	singleInstance: staticDef(true),
 	iconImage: objectDef('Icon Image', {
-		url: optionalStringDef('Icon Image URL', httpsURLValidate),
+		url: optionalStringDef('Icon Image URL', { validate: httpsURLValidate }),
 	}),
-	apiOnly: objectDef('API Only', { targetUrl: optionalStringDef('Target URL', httpsURLValidate) }),
+	apiOnly: objectDef('API Only', { targetUrl: optionalStringDef('Target URL', { validate: httpsURLValidate }) }),
 	principalType: staticDef(PrincipalType.LOCATION),
 	oauth: objectDef('OAuth', {
 		clientName: clientNameDef,
 		scope: oauthAppScopeDef,
 		redirectUris: redirectUrisDef,
 	}),
-})
+}, { helpText: smartAppHelpText })
 
 export default class AppCreateCommand extends APICommand<typeof AppCreateCommand.flags> {
 	static description = 'create an app' +

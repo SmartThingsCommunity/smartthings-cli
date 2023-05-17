@@ -4,8 +4,9 @@ import { chooseApp, oauthAppScopeDef, oauthTableFieldDefinitions, redirectUrisDe
 
 
 export default class AppOauthUpdateCommand extends APICommand<typeof AppOauthUpdateCommand.flags> {
+	static docNames = 'updateAppOauth'
 	static description = 'update the OAuth settings of an app' +
-		this.apiDocsURL('updateAppOauth')
+		this.apiDocsURL(AppOauthUpdateCommand.docNames)
 
 	static flags = {
 		...APICommand.flags,
@@ -37,11 +38,11 @@ export default class AppOauthUpdateCommand extends APICommand<typeof AppOauthUpd
 
 		const getInputFromUser = async (): Promise<AppOAuthRequest> => {
 			const startingRequest: AppOAuthRequest = await this.client.apps.getOauth(appId)
-			const inputDef = objectDef('Generate Request', {
+			const inputDef = objectDef('OAuth Settings', {
 				clientName: stringDef('Client Name'),
 				scope: oauthAppScopeDef,
 				redirectUris: redirectUrisDef,
-			})
+			}, { helpText: APICommand.itemInputHelpText(AppOauthUpdateCommand.docNames) })
 
 			return updateFromUserInput(this, inputDef, startingRequest, { dryRun: this.flags['dry-run'] })
 		}

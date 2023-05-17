@@ -1,6 +1,6 @@
 import inquirer, { Separator } from 'inquirer'
 
-import { cancelAction, finishAction, InputDefinition, inquirerPageSize } from '../../item-input/defs'
+import { cancelAction, finishAction, helpAction, InputDefinition, inquirerPageSize } from '../../item-input/defs'
 import { objectDef, ObjectItemTypeData } from '../../item-input/object'
 
 
@@ -13,6 +13,7 @@ type InputtedThing = {
 	prop4: string
 }
 describe('objectDef', () => {
+	const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => true)
 	const promptMock = jest.mocked(inquirer.prompt)
 
 	const input1BuildFromUserInputMock = jest.fn()
@@ -158,6 +159,20 @@ describe('objectDef', () => {
 				prop2: 'Input Value 2',
 				prop4: 'Input Value 4',
 			})
+		})
+
+		it('displays help text before prompting for inputs', async () => {
+			input1BuildFromUserInputMock.mockResolvedValueOnce('Entered Name')
+
+			const def = objectDef('Object Def', simpleInputDefsByProperty, { helpText: 'help text' })
+
+			expect(await def.buildFromUserInput()).toEqual({ name: 'Entered Name' })
+
+			expect(consoleLogSpy).toHaveBeenCalledTimes(1)
+			expect(consoleLogSpy).toHaveBeenCalledWith('\nhelp text\n')
+
+			expect(input1BuildFromUserInputMock).toHaveBeenCalledTimes(1)
+			expect(input1BuildFromUserInputMock).toHaveBeenCalledWith([{}])
 		})
 	})
 
@@ -350,6 +365,20 @@ describe('objectDef', () => {
 			expect(input1SummarizeForEditMock).toHaveBeenCalled()
 			expect(input2SummarizeForEditMock).toHaveBeenCalled()
 			expect(input3SummarizeForEditMock).toHaveBeenCalled()
+		})
+
+		it('includes help option when helpText is supplied', async () => {
+			promptMock.mockResolvedValueOnce({ action: helpAction })
+			promptMock.mockResolvedValueOnce({ action: finishAction })
+
+			const def = objectDef('Object Def', simpleInputDefsByProperty, { helpText: 'help text' })
+
+			const original = { name: 'Thing Name' }
+			expect(await def.updateFromUserInput(original)).toStrictEqual({ name: 'Thing Name' })
+
+			expect(promptMock).toHaveBeenCalledTimes(2)
+			expect(consoleLogSpy).toHaveBeenCalledTimes(1)
+			expect(consoleLogSpy).toHaveBeenCalledWith('\nhelp text\n')
 		})
 	})
 })

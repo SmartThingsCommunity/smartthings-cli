@@ -4,9 +4,10 @@ import {
 	cancelAction,
 	CancelAction,
 	cancelOption,
-	FinishAction,
 	finishAction,
 	finishOption,
+	helpAction,
+	helpOption,
 	InputDefinition,
 	inquirerPageSize,
 	uneditable,
@@ -30,6 +31,8 @@ export type ObjectDefOptions<T> = {
 	 * The default is to roll up if this object contains up to three properties.
 	 */
 	rollup?: boolean
+
+	helpText?: string
 }
 
 const defaultSummarizeForEditFn = (name: string) => (): string => { throw Error(`missing implementation of summarizeForEdit for objectDef ${name}`) }
@@ -58,6 +61,12 @@ const maxPropertiesForDefaultRollup = 3
 export function objectDef<T extends object>(name: string, inputDefsByProperty: InputDefsByProperty<T>,
 		options?: ObjectDefOptions<T>): InputDefinition<T> {
 	const buildFromUserInput = async (context: unknown[] = []): Promise<T | CancelAction> => {
+		// Since we're just going to run through all the options and ask for their value, we don't
+		// have a menu or any place to put help for the whole object so we'll just display it
+		// before asking the questions.
+		if (options?.helpText) {
+			console.log(`\n${options.helpText}\n`)
+		}
 		const retVal = {} as Partial<T>
 		for (const propertyName in inputDefsByProperty) {
 			const propertyInputDefinition = inputDefsByProperty[propertyName]
@@ -119,6 +128,9 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 				}
 			}
 			choices.push(new Separator())
+			if (options?.helpText) {
+				choices.push(helpOption)
+			}
 			choices.push(finishOption(name))
 			choices.push(cancelOption)
 
@@ -129,41 +141,42 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 				choices,
 				default: finishAction,
 				pageSize: inquirerPageSize,
-			})).action as string | CancelAction | FinishAction
+			})).action
 
-			if (action === cancelAction) {
+			if (action === helpAction) {
+				console.log(`\n${options?.helpText}\n`)
+			} else if (action === cancelAction) {
 				return original
-			}
-			if (action === finishAction) {
+			} else if (action === finishAction) {
 				return updated
-			}
-
-			const props = action.split('.')
-
-			const propertyName = props[0] as keyof T
-			const propertyInputDefinition = inputDefsByProperty[propertyName]
-			if (props.length === 1) {
-				// top-level property
-				const updatedProperty = await propertyInputDefinition.updateFromUserInput(updated[propertyName], contextForChildren)
-				if (updatedProperty !== cancelAction) {
-					updated[propertyName] = updatedProperty
-				}
 			} else {
-				// nested property that is rolled up
-				const nestedPropertyName = props[1]
-				const itemTypeData = propertyInputDefinition.itemTypeData as ObjectItemTypeData<unknown>
+				const props = action.split('.')
 
-				const objectValue = updated[propertyName] as { [key: string]: unknown }
+				const propertyName = props[0] as keyof T
+				const propertyInputDefinition = inputDefsByProperty[propertyName]
+				if (props.length === 1) {
+					// top-level property
+					const updatedProperty = await propertyInputDefinition.updateFromUserInput(updated[propertyName], contextForChildren)
+					if (updatedProperty !== cancelAction) {
+						updated[propertyName] = updatedProperty
+					}
+				} else {
+					// nested property that is rolled up
+					const nestedPropertyName = props[1]
+					const itemTypeData = propertyInputDefinition.itemTypeData as ObjectItemTypeData<unknown>
 
-				const nestedPropertyInputDefinition =
-					(itemTypeData.inputDefsByProperty as { [key: string]: InputDefinition<unknown> })[nestedPropertyName]
+					const objectValue = updated[propertyName] as { [key: string]: unknown }
 
-				const updatedProperty = await nestedPropertyInputDefinition.updateFromUserInput(
-					objectValue[nestedPropertyName],
-					contextForChildren,
-				)
-				if (updatedProperty !== cancelAction) {
-					objectValue[nestedPropertyName] = updatedProperty
+					const nestedPropertyInputDefinition =
+						(itemTypeData.inputDefsByProperty as { [key: string]: InputDefinition<unknown> })[nestedPropertyName]
+
+					const updatedProperty = await nestedPropertyInputDefinition.updateFromUserInput(
+						objectValue[nestedPropertyName],
+						contextForChildren,
+					)
+					if (updatedProperty !== cancelAction) {
+						objectValue[nestedPropertyName] = updatedProperty
+					}
 				}
 			}
 		}
