@@ -1,9 +1,14 @@
 import inquirer from 'inquirer'
-import { askForInteger, askForNumber, askForRequiredString, askForString, numberTransformer, ValidateFunction } from '../user-query'
+import { askForInteger, askForNumber, askForString, askForOptionalString, numberTransformer, ValidateFunction } from '../user-query'
 
+
+jest.mock('inquirer')
 
 describe('user-query', () => {
-	const promptSpy = jest.spyOn(inquirer, 'prompt')
+	const promptMock = jest.mocked(inquirer.prompt)
+
+	const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => true)
+
 
 	describe('numberTransformer', () => {
 		it.each(['', 'input value', '7'])('returns input value unchanged when not final', value => {
@@ -19,15 +24,15 @@ describe('user-query', () => {
 		})
 	})
 
-	describe('askForString', () => {
+	describe('askForOptionalString', () => {
 		it('ask user correct question', async () => {
-			promptSpy.mockResolvedValue({ value: 'entered value' })
+			promptMock.mockResolvedValue({ value: 'entered value' })
 
-			const result = await askForString('prompt message')
+			const result = await askForOptionalString('prompt message')
 
 			expect(result).toBe('entered value')
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith({
 				type: 'input',
 				name: 'value',
 				message: 'prompt message',
@@ -35,13 +40,13 @@ describe('user-query', () => {
 		})
 
 		it('returns nothing entered as undefined', async () => {
-			promptSpy.mockResolvedValue({ value: '' })
+			promptMock.mockResolvedValue({ value: '' })
 
-			const result = await askForString('prompt message')
+			const result = await askForOptionalString('prompt message')
 
 			expect(result).toBe(undefined)
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith({
 				type: 'input',
 				name: 'value',
 				message: 'prompt message',
@@ -49,88 +54,129 @@ describe('user-query', () => {
 		})
 
 		it('passes validate to inquirer', async () => {
-			promptSpy.mockResolvedValue({ value: '' })
+			promptMock.mockResolvedValue({ value: '' })
 
 			const validateMock = jest.fn().mockReturnValueOnce(true)
-			const result = await askForString('prompt message', validateMock)
+			const result = await askForOptionalString('prompt message', { validate: validateMock })
 
 			expect(result).toBe(undefined)
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith({
 				type: 'input',
 				name: 'value',
 				message: 'prompt message',
 				validate: expect.any(Function),
 			})
 
-			const generatedValidate = (promptSpy.mock.calls[0][0] as { validate: ValidateFunction }).validate
+			const generatedValidate = (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
 			expect(generatedValidate('input string')).toBe(true)
 			expect(validateMock).toHaveBeenCalledTimes(1)
 			expect(validateMock).toHaveBeenCalledWith('input string')
 		})
 
 		it('passes default to inquirer', async () => {
-			promptSpy.mockResolvedValue({ value: '' })
+			promptMock.mockResolvedValue({ value: '' })
 
-			const result = await askForString('prompt message', undefined, { default: 'default value' })
+			const result = await askForOptionalString('prompt message', { default: 'default value' })
 
 			expect(result).toBe(undefined)
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith({
 				type: 'input',
 				name: 'value',
 				message: 'prompt message',
 				default: 'default value',
 			})
 		})
-	})
 
-	describe('askForRequiredString', () => {
-		it('requires input', async () => {
-			promptSpy.mockResolvedValue({ value: 'entered value' })
+		it('displays help text when "?" entered', async () => {
+			promptMock.mockResolvedValueOnce({ value: '?' })
+			promptMock.mockResolvedValueOnce({ value: 'entered value' })
 
-			const result = await askForRequiredString('prompt message')
+			const result = await askForOptionalString('prompt message', { helpText: 'help text' })
 
 			expect(result).toBe('entered value')
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({
+			expect(promptMock).toHaveBeenCalledWith({
+				type: 'input',
+				name: 'value',
+				message: 'prompt message (? for help)',
+			})
+			expect(consoleLogSpy).toHaveBeenLastCalledWith('help text')
+		})
+
+		it('allows "?" even with custom validate function', async () => {
+			const validateMock = jest.fn().mockReturnValue(true)
+			promptMock.mockResolvedValueOnce({ value: '?' })
+			promptMock.mockResolvedValueOnce({ value: 'entered value' })
+
+			const result = await askForOptionalString('prompt message', { helpText: 'help text', validate: validateMock })
+
+			expect(result).toBe('entered value')
+			expect(promptMock).toHaveBeenCalledWith({
+				type: 'input',
+				name: 'value',
+				message: 'prompt message (? for help)',
+				validate: expect.any(Function),
+			})
+			expect(consoleLogSpy).toHaveBeenLastCalledWith('help text')
+
+			const generatedValidate = (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
+			expect(generatedValidate('?')).toBeTrue()
+			expect(validateMock).toHaveBeenCalledTimes(0)
+
+			validateMock.mockReturnValueOnce('please enter better input')
+			expect(generatedValidate('bad input')).toBe('please enter better input')
+			expect(validateMock).toHaveBeenCalledTimes(1)
+			expect(validateMock).toHaveBeenCalledWith('bad input')
+		})
+	})
+
+	describe('askForString', () => {
+		it('requires input', async () => {
+			promptMock.mockResolvedValue({ value: 'entered value' })
+
+			const result = await askForString('prompt message')
+
+			expect(result).toBe('entered value')
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith({
 				type: 'input',
 				name: 'value',
 				message: 'prompt message',
 				validate: expect.any(Function),
 			})
 
-			const validateFunction = (promptSpy.mock.calls[0][0] as { validate: ValidateFunction }).validate
+			const validateFunction = (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
 
 			expect(validateFunction('')).toBe('value is required')
 			expect(validateFunction('a')).toBe(true)
 		})
 
 		it('incorporates supplied validation', async () => {
-			promptSpy.mockResolvedValue({ value: 'entered value' })
+			promptMock.mockResolvedValue({ value: 'entered value' })
 
-			const validate: jest.Mock<true, [string]> = jest.fn()
-			const result = await askForRequiredString('prompt message', validate)
+			const validateMock: jest.Mock<true, [string]> = jest.fn()
+			const result = await askForString('prompt message', { validate: validateMock })
 
 			expect(result).toBe('entered value')
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith({
 				type: 'input',
 				name: 'value',
 				message: 'prompt message',
 				validate: expect.any(Function),
 			})
 
-			const validateFunction = (promptSpy.mock.calls[0][0] as { validate: ValidateFunction }).validate
+			const validateFunction = (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
 
-			validate.mockReturnValue(true)
+			validateMock.mockReturnValue(true)
 
 			expect(validateFunction('')).toBe('value is required')
-			expect(validate).toHaveBeenCalledTimes(0)
+			expect(validateMock).toHaveBeenCalledTimes(0)
 
 			expect(validateFunction('a')).toBe(true)
-			expect(validate).toHaveBeenCalledTimes(1)
-			expect(validate).toHaveBeenCalledWith('a')
+			expect(validateMock).toHaveBeenCalledTimes(1)
+			expect(validateMock).toHaveBeenCalledWith('a')
 		})
 	})
 
@@ -142,13 +188,13 @@ describe('user-query', () => {
 			${'7'}  | ${7}
 			${''}   | ${undefined}
 		`('returns number entered', async ({ input, expected }) => {
-			promptSpy.mockResolvedValue({ value: input })
+			promptMock.mockResolvedValue({ value: input })
 
 			const result = await askForInteger('prompt message')
 
 			expect(result).toBe(expected)
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith({
 				type: 'input',
 				name: 'value',
 				message: 'prompt message',
@@ -158,13 +204,13 @@ describe('user-query', () => {
 		})
 
 		const getValidateFunction = async (min?: number, max?: number): Promise<ValidateFunction> => {
-			promptSpy.mockResolvedValue({ value: '' })
+			promptMock.mockResolvedValue({ value: '' })
 
 			const result = await askForInteger('prompt message', min, max)
 
 			expect(result).toBe(undefined)
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith({
 				type: 'input',
 				name: 'value',
 				message: 'prompt message',
@@ -172,7 +218,7 @@ describe('user-query', () => {
 				validate: expect.any(Function),
 			})
 
-			return (promptSpy.mock.calls[0][0] as { validate: ValidateFunction }).validate
+			return (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
 		}
 
 		it('validates empty as acceptable', async () => {
@@ -229,13 +275,13 @@ describe('user-query', () => {
 			${'3.141592'} | ${3.141592}
 			${''}         | ${undefined}
 		`('returns number entered', async ({ input, expected }) => {
-			promptSpy.mockResolvedValue({ value: input })
+			promptMock.mockResolvedValue({ value: input })
 
 			const result = await askForNumber('prompt message')
 
 			expect(result).toBe(expected)
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith({
 				type: 'input',
 				name: 'value',
 				message: 'prompt message',
@@ -245,13 +291,13 @@ describe('user-query', () => {
 		})
 
 		const getValidateFunction = async (min?: number, max?: number): Promise<ValidateFunction> => {
-			promptSpy.mockResolvedValue({ value: '' })
+			promptMock.mockResolvedValue({ value: '' })
 
 			const result = await askForNumber('prompt message', min, max)
 
 			expect(result).toBe(undefined)
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith({
 				type: 'input',
 				name: 'value',
 				message: 'prompt message',
@@ -259,7 +305,7 @@ describe('user-query', () => {
 				validate: expect.any(Function),
 			})
 
-			return (promptSpy.mock.calls[0][0] as { validate: ValidateFunction }).validate
+			return (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
 		}
 
 		it('validates empty as acceptable', async () => {

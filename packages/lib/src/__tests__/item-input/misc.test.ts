@@ -1,5 +1,5 @@
 import { computedDef, optionalStringDef, staticDef, stringDef, uneditable, validateWithContextFn } from '../../item-input'
-import { askForRequiredString, askForString, ValidateFunction } from '../../user-query'
+import { askForString, askForOptionalString, ValidateFunction } from '../../user-query'
 
 
 jest.mock('../../user-query')
@@ -28,7 +28,7 @@ describe('validateWithContext', () => {
 })
 
 describe('optionalStringDef', () => {
-	const askForStringMock = jest.mocked(askForString)
+	const askForOptionalStringMock = jest.mocked(askForOptionalString)
 
 	describe('without validation', () => {
 		const def = optionalStringDef('String Def')
@@ -38,12 +38,13 @@ describe('optionalStringDef', () => {
 		})
 
 		test('build', async () => {
-			askForStringMock.mockResolvedValueOnce('user input')
+			askForOptionalStringMock.mockResolvedValueOnce('user input')
 
 			expect(await def.buildFromUserInput()).toBe('user input')
 
-			expect(askForStringMock).toHaveBeenCalledTimes(1)
-			expect(askForStringMock).toHaveBeenCalledWith('String Def (optional)', undefined)
+			expect(askForOptionalStringMock).toHaveBeenCalledTimes(1)
+			expect(askForOptionalStringMock).toHaveBeenCalledWith('String Def (optional)',
+				{ validate: undefined })
 		})
 
 		test('summarize', async () => {
@@ -51,29 +52,31 @@ describe('optionalStringDef', () => {
 		})
 
 		test('update', async () => {
-			askForStringMock.mockResolvedValueOnce('updated')
+			askForOptionalStringMock.mockResolvedValueOnce('updated')
 
 			expect(await def.updateFromUserInput('original')).toBe('updated')
 
-			expect(askForStringMock).toHaveBeenCalledTimes(1)
-			expect(askForStringMock).toHaveBeenCalledWith('String Def (optional)', undefined, { default: 'original' })
+			expect(askForOptionalStringMock).toHaveBeenCalledTimes(1)
+			expect(askForOptionalStringMock).toHaveBeenCalledWith('String Def (optional)',
+				{ default: 'original', validate: undefined })
 		})
 	})
 
 	describe('with validation', () => {
 		const validateMock = jest.fn()
-		const def = optionalStringDef('String Def', validateMock)
+		const def = optionalStringDef('String Def', { validate: validateMock })
 
 		test('build', async () => {
 			const context = ['context item']
-			askForStringMock.mockResolvedValueOnce('user input')
+			askForOptionalStringMock.mockResolvedValueOnce('user input')
 
 			expect(await def.buildFromUserInput(context)).toBe('user input')
 
-			expect(askForStringMock).toHaveBeenCalledTimes(1)
-			expect(askForStringMock).toHaveBeenCalledWith('String Def (optional)', expect.any(Function))
+			expect(askForOptionalStringMock).toHaveBeenCalledTimes(1)
+			expect(askForOptionalStringMock).toHaveBeenCalledWith('String Def (optional)',
+				{ validate: expect.any(Function) })
 
-			const validateFn = askForStringMock.mock.calls[0][1] as ValidateFunction
+			const validateFn = askForOptionalStringMock.mock.calls[0][1]?.validate as ValidateFunction
 			validateMock.mockReturnValueOnce('validation answer')
 			expect(validateFn('input string')).toBe('validation answer')
 			expect(validateMock).toHaveBeenCalledTimes(1)
@@ -82,14 +85,15 @@ describe('optionalStringDef', () => {
 
 		test('update', async () => {
 			const context = ['context item']
-			askForStringMock.mockResolvedValueOnce('updated')
+			askForOptionalStringMock.mockResolvedValueOnce('updated')
 
 			expect(await def.updateFromUserInput('original', context)).toBe('updated')
 
-			expect(askForStringMock).toHaveBeenCalledTimes(1)
-			expect(askForStringMock).toHaveBeenCalledWith('String Def (optional)', expect.any(Function), { default: 'original' })
+			expect(askForOptionalStringMock).toHaveBeenCalledTimes(1)
+			expect(askForOptionalStringMock).toHaveBeenCalledWith('String Def (optional)',
+				{ default: 'original', validate: expect.any(Function) })
 
-			const validateFn = askForStringMock.mock.calls[0][1] as ValidateFunction
+			const validateFn = askForOptionalStringMock.mock.calls[0][1]?.validate as ValidateFunction
 			validateMock.mockReturnValueOnce('validation answer')
 			expect(validateFn('input string')).toBe('validation answer')
 			expect(validateMock).toHaveBeenCalledTimes(1)
@@ -99,7 +103,7 @@ describe('optionalStringDef', () => {
 })
 
 describe('stringDef', () => {
-	const askForRequiredStringMock = jest.mocked(askForRequiredString)
+	const askForStringMock = jest.mocked(askForString)
 
 	describe('without validation', () => {
 		const def = stringDef('String Def')
@@ -109,12 +113,12 @@ describe('stringDef', () => {
 		})
 
 		test('build', async () => {
-			askForRequiredStringMock.mockResolvedValueOnce('user input')
+			askForStringMock.mockResolvedValueOnce('user input')
 
 			expect(await def.buildFromUserInput()).toBe('user input')
 
-			expect(askForRequiredStringMock).toHaveBeenCalledTimes(1)
-			expect(askForRequiredStringMock).toHaveBeenCalledWith('String Def', undefined)
+			expect(askForStringMock).toHaveBeenCalledTimes(1)
+			expect(askForStringMock).toHaveBeenCalledWith('String Def', { validate: undefined })
 		})
 
 		test('summarize', async () => {
@@ -122,29 +126,30 @@ describe('stringDef', () => {
 		})
 
 		test('update', async () => {
-			askForRequiredStringMock.mockResolvedValueOnce('updated')
+			askForStringMock.mockResolvedValueOnce('updated')
 
 			expect(await def.updateFromUserInput('original')).toBe('updated')
 
-			expect(askForRequiredStringMock).toHaveBeenCalledTimes(1)
-			expect(askForRequiredStringMock).toHaveBeenCalledWith('String Def', undefined, { default: 'original' })
+			expect(askForStringMock).toHaveBeenCalledTimes(1)
+			expect(askForStringMock).toHaveBeenCalledWith('String Def', { default: 'original' })
 		})
 	})
 
 	describe('with validation', () => {
 		const validateMock = jest.fn()
-		const def = stringDef('String Def', validateMock)
+		const def = stringDef('String Def', { validate: validateMock })
 
 		test('build', async () => {
 			const context = ['context item']
-			askForRequiredStringMock.mockResolvedValueOnce('user input')
+			askForStringMock.mockResolvedValueOnce('user input')
 
 			expect(await def.buildFromUserInput(context)).toBe('user input')
 
-			expect(askForRequiredStringMock).toHaveBeenCalledTimes(1)
-			expect(askForRequiredStringMock).toHaveBeenCalledWith('String Def', expect.any(Function))
+			expect(askForStringMock).toHaveBeenCalledTimes(1)
+			expect(askForStringMock).toHaveBeenCalledWith('String Def',
+				{ validate: expect.any(Function) })
 
-			const validateFn = askForRequiredStringMock.mock.calls[0][1] as ValidateFunction
+			const validateFn = askForStringMock.mock.calls[0][1]?.validate as ValidateFunction
 			validateMock.mockReturnValueOnce('validation answer')
 			expect(validateFn('input string')).toBe('validation answer')
 			expect(validateMock).toHaveBeenCalledTimes(1)
@@ -153,14 +158,15 @@ describe('stringDef', () => {
 
 		test('update', async () => {
 			const context = ['context item']
-			askForRequiredStringMock.mockResolvedValueOnce('updated')
+			askForStringMock.mockResolvedValueOnce('updated')
 
 			expect(await def.updateFromUserInput('original', context)).toBe('updated')
 
-			expect(askForRequiredStringMock).toHaveBeenCalledTimes(1)
-			expect(askForRequiredStringMock).toHaveBeenCalledWith('String Def', expect.any(Function), { default: 'original' })
+			expect(askForStringMock).toHaveBeenCalledTimes(1)
+			expect(askForStringMock).toHaveBeenCalledWith('String Def',
+				{ default: 'original', validate: expect.any(Function) })
 
-			const validateFn = askForRequiredStringMock.mock.calls[0][1] as ValidateFunction
+			const validateFn = askForStringMock.mock.calls[0][1]?.validate as ValidateFunction
 			validateMock.mockReturnValueOnce('validation answer')
 			expect(validateFn('input string')).toBe('validation answer')
 			expect(validateMock).toHaveBeenCalledTimes(1)

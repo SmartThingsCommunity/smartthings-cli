@@ -1,4 +1,4 @@
-import { askForRequiredString, askForString, ValidateFunction } from '../user-query'
+import { askForString, askForOptionalString, AskForStringOptions, ValidateFunction } from '../user-query'
 import { InputDefinition, InputDefinitionValidateFunction, Uneditable, uneditable } from './defs'
 
 
@@ -7,22 +7,29 @@ export const validateWithContextFn = (validate?: InputDefinitionValidateFunction
 		? (input: string): true | string | Promise<string | true> => validate(input, context)
 		: undefined
 
-export const optionalStringDef = (name: string, validate?: InputDefinitionValidateFunction): InputDefinition<string | undefined> => {
+export type StringDefOptions = Omit<AskForStringOptions, 'validate'> & {
+	validate?: InputDefinitionValidateFunction
+}
+export const optionalStringDef = (name: string, options?: StringDefOptions): InputDefinition<string | undefined> => {
 	const buildFromUserInput = async (context?: unknown[]): Promise<string | undefined> =>
-		askForString(`${name} (optional)`, validateWithContextFn(validate, context))
+		askForOptionalString(`${name} (optional)`,
+			{ ...options, validate: validateWithContextFn(options?.validate, context) })
 	const summarizeForEdit = (original: string): string => original
 	const updateFromUserInput = (original: string, context?: unknown[]): Promise<string | undefined> =>
-		askForString(`${name} (optional)`, validateWithContextFn(validate, context), { default: original })
+		askForOptionalString(`${name} (optional)`,
+			{ ...options, default: original, validate: validateWithContextFn(options?.validate, context) })
 
 	return { name, buildFromUserInput, summarizeForEdit, updateFromUserInput }
 }
 
-export const stringDef = (name: string, validate?: InputDefinitionValidateFunction): InputDefinition<string> => {
+export const stringDef = (name: string, options?: StringDefOptions): InputDefinition<string> => {
 	const buildFromUserInput = async (context?: unknown[]): Promise<string> =>
-		askForRequiredString(name, validateWithContextFn(validate, context))
+		askForString(name,
+			{ ...options, validate: validateWithContextFn(options?.validate, context) })
 	const summarizeForEdit = (value: string): string => value
 	const updateFromUserInput = (original: string, context?: unknown[]): Promise<string> =>
-		askForRequiredString(name, validateWithContextFn(validate, context), { default: original })
+		askForString(name,
+			{ ...options, default: original, validate: validateWithContextFn(options?.validate, context) })
 
 	return { name, buildFromUserInput, summarizeForEdit, updateFromUserInput }
 }

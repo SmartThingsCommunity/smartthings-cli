@@ -7,6 +7,8 @@ import {
 	deleteAction,
 	editAction,
 	finishAction,
+	helpAction,
+	helpOption,
 	InputDefinition,
 	maxItemValueLength,
 	uneditable,
@@ -324,6 +326,29 @@ describe('arrayDef', () => {
 			expect(promptMock).toHaveBeenCalledTimes(1)
 			expect(itemBuildFromUserInputMock).toHaveBeenCalledTimes(0)
 		})
+
+		it('includes help option when helpText is supplied', async () => {
+			promptMock.mockResolvedValueOnce({ action: helpAction })
+			promptMock.mockResolvedValueOnce({ action: cancelAction })
+
+			const def = arrayDef('Array Def', itemDefMock, { helpText: 'help text' })
+
+			expect(await def.buildFromUserInput()).toBe(cancelAction)
+
+			expect(promptMock).toHaveBeenCalledTimes(2)
+			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+				message: 'Add or edit Array Def.',
+				default: addAction,
+				choices: [
+					helpOption,
+					{ name: 'Add Item Def.', value: addAction },
+					cancelOption,
+				],
+			}))
+
+			expect(consoleLogSpy).toHaveBeenCalledTimes(1)
+			expect(consoleLogSpy).toHaveBeenCalledWith('\nhelp text\n')
+		})
 	})
 
 	describe('summarizeForEdit', () => {
@@ -548,6 +573,26 @@ describe('checkboxDef', () => {
 			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
 				validate,
 			}))
+		})
+
+		it('includes help option when helpText is supplied', async () => {
+			const def = checkboxDef<string>('Checkbox Def', ['Item 1', 'Item 2'], { helpText: 'help text' })
+			promptMock.mockResolvedValueOnce({ values: ['Item 1'] })
+
+			expect(await def.buildFromUserInput()).toStrictEqual(['Item 1'])
+
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+				type: 'checkbox',
+				name: 'values',
+				message: 'Select Checkbox Def.',
+				choices: ['Item 1', 'Item 2'],
+				default: finishAction,
+				validate: undefined,
+			}))
+
+			expect(consoleLogSpy).toHaveBeenCalledTimes(1)
+			expect(consoleLogSpy).toHaveBeenCalledWith('\nhelp text\n')
 		})
 	})
 

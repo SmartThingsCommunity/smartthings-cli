@@ -17,7 +17,7 @@ import {
 	InputDefsByProperty,
 } from '@smartthings/cli-lib'
 import { addPermission } from '../../lib/aws-utils'
-import { chooseApp, tableFieldDefinitions } from '../../lib/commands/apps-util'
+import { chooseApp, smartAppHelpText, tableFieldDefinitions } from '../../lib/commands/apps-util'
 
 
 export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand.flags> {
@@ -77,13 +77,15 @@ export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand
 				appType: staticDef(appType),
 				classifications: staticDef(startingRequest.classifications),
 				singleInstance: staticDef(startingRequest.singleInstance),
-				iconImage: objectDef('Icon Image URL', { url: optionalStringDef('Icon Image URL', httpsURLValidate) }),
+				iconImage: objectDef('Icon Image URL', { url: optionalStringDef('Icon Image URL', { validate: httpsURLValidate }) }),
 				ui: staticDef(ui),
 			}
 			if (appType === AppType.LAMBDA_SMART_APP) {
 				startingRequest.lambdaSmartApp = lambdaSmartApp
+				const helpText = 'More information on AWS Lambdas can be found at:\n' +
+					'  https://docs.aws.amazon.com/lambda/latest/dg/welcome.html'
 				propertyInputDefs.lambdaSmartApp = objectDef('Lambda SmartApp',
-					{ functions: arrayDef('Lambda Functions', stringDef('Lambda Function')) })
+					{ functions: arrayDef('Lambda Functions', stringDef('Lambda Function', { helpText }), { helpText }) })
 			}
 			if (appType === AppType.WEBHOOK_SMART_APP) {
 				startingRequest.webhookSmartApp = { targetUrl: webhookSmartApp?.targetUrl ?? '' }
@@ -93,7 +95,7 @@ export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand
 				startingRequest.apiOnly = { targetUrl: apiOnly?.subscription?.targetUrl }
 				propertyInputDefs.apiOnly = objectDef('API-Only SmartApp', { targetUrl: stringDef('Target URL') })
 			}
-			const appInputDef = objectDef('App Update', propertyInputDefs)
+			const appInputDef = objectDef('App Update', propertyInputDefs, { helpText: smartAppHelpText })
 
 			return updateFromUserInput(this, appInputDef, startingRequest, { dryRun: this.flags['dry-run'] })
 		}

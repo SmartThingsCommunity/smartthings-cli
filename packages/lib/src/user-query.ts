@@ -16,32 +16,61 @@ export const numberTransformer: TransformerFunction = (input, _, { isFinal }) =>
 export const allowEmptyFn = (validate: ValidateFunction): ValidateFunction =>
 	(input: string): true | string | Promise<true | string> => input === '' || validate(input)
 
-/**
- * Simple wrapper around querying a user for a string. The return value will always be
- * a string with at least one character or undefined.
- */
-export const askForString = async (message: string, validate?: ValidateFunction, options?: { default: string }): Promise<string | undefined> => {
-	const value = (await inquirer.prompt({
-		type: 'input',
-		name: 'value',
-		message,
-		validate: validate ? allowEmptyFn(validate) : undefined,
-		default: options?.default,
-	})).value as string
-
-	return value || undefined
+export type AskForStringOptions = {
+	default?: string
+	validate?: ValidateFunction
+	helpText?: string
 }
 
-export const askForRequiredString = async (message: string, validate?: ValidateFunction, options?: { default: string }): Promise<string> =>  {
-	const value = (await inquirer.prompt({
+const promptForString = async (message: string, options: AskForStringOptions): Promise<string | undefined> => {
+	const buildValidateFunction = (): ValidateFunction | undefined => {
+		// When there is a validate method defined and we have help text, we have to allow '?'.
+		if (options.helpText && options.validate) {
+			return input => input === '?' || options.validate === undefined || options.validate(input)
+		}
+
+		return options.validate
+	}
+
+	const prompt = async (): Promise<string | undefined> => (await inquirer.prompt({
 		type: 'input',
 		name: 'value',
-		message,
-		validate: (input: string) => input ? (validate ? validate(input) : true) : 'value is required',
-		default: options?.default,
-	})).value as string
+		message: options.helpText ? `${message} (? for help)` : message,
+		validate: buildValidateFunction(),
+		default: options.default,
+	})).value as string | undefined
 
-	return value
+	let entered = await prompt()
+	while (options.helpText && entered === '?') {
+		console.log(options.helpText)
+		entered = await prompt()
+	}
+
+	return entered
+}
+
+/**
+ * Simple wrapper around querying a user for a string. The return value will always be a string
+ * with at least one character or undefined.
+ */
+export const askForOptionalString = async (message: string, options?: AskForStringOptions): Promise<string | undefined> => {
+	const updatedOptions = {
+		...options,
+		validate: options?.validate ? allowEmptyFn(options.validate) : undefined,
+	}
+	return await promptForString(message, updatedOptions) || undefined
+}
+
+/**
+ * Simple wrapper around querying a user for a string. The return value will always be a string
+ * which may be empty (unless a validation function is specified which disallows it).
+ */
+export const askForString = async (message: string, options?: AskForStringOptions): Promise<string> =>  {
+	const updatedOptions = {
+		...options,
+		validate: (input: string) => input ? (options?.validate ? options.validate(input) : true) : 'value is required',
+	}
+	return await promptForString(message, updatedOptions) as string
 }
 
 export const askForInteger = async (message: string, min?: number, max?: number): Promise<number | undefined> => {

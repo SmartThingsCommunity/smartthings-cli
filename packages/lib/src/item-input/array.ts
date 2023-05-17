@@ -14,6 +14,8 @@ import {
 	FinishAction,
 	finishAction,
 	finishOption,
+	helpAction,
+	helpOption,
 	InputDefinition,
 	inquirerPageSize,
 	maxItemValueLength,
@@ -44,6 +46,8 @@ export type ArrayDefOptions<T> = {
 	 * The maximum number of items allowed. The default is to not have a limit.
 	 */
 	maxItems?: number
+
+	helpText?: string
 }
 
 /**
@@ -113,6 +117,9 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 				choices.push(new Separator())
 			}
 
+			if (options?.helpText) {
+				choices.push(helpOption)
+			}
 			if (!options?.maxItems || list.length < options.maxItems) {
 				choices.push(addOption(itemDef.name))
 			}
@@ -135,6 +142,8 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 				if (newValue !== cancelAction && checkForDuplicate(list, newValue, -1)) {
 					list.push(newValue)
 				}
+			} else if (action === helpAction) {
+				console.log(`\n${options?.helpText}\n`)
 			} else if (typeof action === 'number') {
 				await editItem(itemDef, list, action, context)
 			} else if (action === finishAction) {
@@ -185,6 +194,8 @@ export type CheckboxDefOptions<T> = {
 	validate?: (item: T[]) => string | true
 
 	default?: T[]
+
+	helpText?: string
 }
 
 type ComplexCheckboxDefItem<T> = {
@@ -195,6 +206,11 @@ export type CheckboxDefItem<T> = T extends string ? string | ComplexCheckboxDefI
 
 export function checkboxDef<T>(name: string, items: CheckboxDefItem<T>[], options?: CheckboxDefOptions<T>): InputDefinition<T[]> {
 	const editValues = async (values: T[]): Promise<T[] | CancelAction> => {
+		// We can't add help to the inquirer `checkbox` so, at least for now, we'll just display
+		// the help before we display the checkbox.
+		if (options?.helpText) {
+			console.log(`\n${options.helpText}\n`)
+		}
 		const choices: ChoiceCollection = items.map(item => {
 			const value = typeof item === 'string' ? item as T : item.value
 			if (values.includes(value)) {
