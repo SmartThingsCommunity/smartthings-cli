@@ -1,5 +1,15 @@
 # @smartthings/plugin-cli-edge
 
+## 3.1.1
+
+### Patch Changes
+
+- [#513](https://github.com/SmartThingsCommunity/smartthings-cli/pull/513) [`13167bd`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/13167bd407156731bfc8baf62a6deba10e2423b0) Thanks [@rossiam](https://github.com/rossiam)! - edge:channels:unenroll
+  - don't include hubs not enrolled in any channel when asking user for a hub
+  - present only enrolled channels when asking the user to choose a channel
+- Updated dependencies [[`c391bb5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c391bb5387662db7b767d34434779d8e8cbaeb5e), [`13167bd`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/13167bd407156731bfc8baf62a6deba10e2423b0)]:
+  - @smartthings/cli-lib@2.1.0
+
 ## 3.1.0
 
 ### Minor Changes

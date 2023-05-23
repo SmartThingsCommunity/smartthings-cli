@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.1.0
+
+### Minor Changes
+
+- [#515](https://github.com/SmartThingsCommunity/smartthings-cli/pull/515) [`c391bb5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c391bb5387662db7b767d34434779d8e8cbaeb5e) Thanks [@rossiam](https://github.com/rossiam)! - add support for help text to item input definitions
+
+### Patch Changes
+
+- [#513](https://github.com/SmartThingsCommunity/smartthings-cli/pull/513) [`13167bd`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/13167bd407156731bfc8baf62a6deba10e2423b0) Thanks [@rossiam](https://github.com/rossiam)! - allow custom `listItems` in base `ChooseOptions`
+
 ## 2.0.1
 
 ### Patch Changes
