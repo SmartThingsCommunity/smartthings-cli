@@ -29,7 +29,6 @@
 	},
 	"dependencies": {
 		"@log4js-node/log4js-api": "^1.0.2",
-		"@oclif/core": "^1.16.3",
 		"@smartthings/core-sdk": "^7.1.0",
 		"@types/eventsource": "^1.1.9",
 		"axios": "^0.27.2",
@@ -65,7 +64,6 @@
 		"jest-html-reporters": "^3.0.11",
 		"log4js": "^6.6.0",
 		"mock-stdin": "^1.0.0",
-		"oclif": "^3.1.2",
 		"rimraf": "^3.0.2",
 		"ts-jest": "^28.0.6",
 		"ts-node": "^10.9.1",

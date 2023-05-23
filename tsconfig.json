@@ -25,10 +25,6 @@
 		{
 			"path": "packages/lib",
 			"name": "@smartthings/cli-lib"
-		},
-		{
-			"path": "packages/testlib",
-			"name": "@smartthings/cli-testlib"
 		}
 	]
 }

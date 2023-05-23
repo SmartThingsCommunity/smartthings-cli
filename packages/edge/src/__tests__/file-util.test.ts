@@ -1,6 +1,5 @@
 import fs from 'fs'
 
-import { Errors } from '@oclif/core'
 import yaml from 'js-yaml'
 
 import { fileExists, findYAMLFilename, isDir, isFile, readYAMLFile, requireDir, YAMLFileData }
@@ -210,7 +209,7 @@ describe('file-util', () => {
 			readFileSyncMock.mockImplementation(() => { throw Error('read failure') })
 
 			expect(() => readYAMLFile('filename'))
-				.toThrow(new Errors.CLIError('error "read failure" reading filename'))
+				.toThrow('error "read failure" reading filename')
 
 			expect(readFileSyncMock).toHaveBeenCalledTimes(1)
 			expect(readFileSyncMock).toHaveBeenCalledWith('filename', 'utf-8')
@@ -226,7 +225,7 @@ describe('file-util', () => {
 			readFileSyncMock.mockReturnValueOnce('file contents')
 			yamlLoadMock.mockReturnValueOnce(invalidYaml)
 
-			expect(() => readYAMLFile('filename')).toThrow(new Errors.CLIError(errorMessage))
+			expect(() => readYAMLFile('filename')).toThrow(errorMessage)
 		})
 	})
 })

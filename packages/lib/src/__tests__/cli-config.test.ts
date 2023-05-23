@@ -1,6 +1,6 @@
 import yaml from 'js-yaml'
 
-import { loadConfigFile, mergeProfiles, ProfilesByName } from '..'
+import { loadConfigFile, mergeProfiles, ProfilesByName } from '../cli-config'
 import {
 	CLIConfig,
 	CLIConfigDescription,
