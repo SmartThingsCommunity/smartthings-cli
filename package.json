@@ -23,7 +23,6 @@
 	},
 	"workspaces": [
 		"packages/lib",
-		"packages/testlib",
 		"packages/edge",
 		"packages/cli"
 	],

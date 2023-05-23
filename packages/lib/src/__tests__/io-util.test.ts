@@ -2,10 +2,7 @@ import { stdin as mockStdin } from 'mock-stdin'
 import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, stdinIsTTY, yamlExists } from '../io-util'
 import { validData, validYAML, SimpleType } from './test-lib/simple-type'
 import { existsSync } from 'fs'
-import { CliUx } from '@oclif/core'
 
-
-jest.mock('@oclif/core')
 
 jest.mock('fs', () => {
 	// if this isn't done, something breaks with sub-dependency 'fs-extra'
@@ -79,6 +76,7 @@ describe('stdinIsTTY', () => {
 
 describe('yamlExists', () => {
 	const mockExistsSync = jest.mocked(existsSync)
+	const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { /* do nothing */})
 
 	it.each([
 		'config.ini',
@@ -111,6 +109,6 @@ describe('yamlExists', () => {
 			.mockReturnValueOnce(true)
 
 		expect(yamlExists(path)).toBe(false)
-		expect(CliUx.ux.warn).toBeCalledWith(expect.stringContaining('Please use ".yaml" extension instead'))
+		expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Please use ".yaml" extension instead'))
 	})
 })

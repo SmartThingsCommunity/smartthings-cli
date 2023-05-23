@@ -1,11 +1,12 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
 import { Configuration as Log4jsConfig, FileAppender, StandardErrorAppender } from 'log4js'
+
 import { yamlExists } from '@smartthings/cli-lib'
 
 
-const DEFAULT_LOG_FILE_SIZE = 1_000_000 // bytes
-const LOGGING_DOCS_URL = 'https://github.com/SmartThingsCommunity/smartthings-cli/' +
+const defaultLogFileSize = 1_000_000 // bytes
+const loggingDocsURL = 'https://github.com/SmartThingsCommunity/smartthings-cli/' +
 	'blob/main/packages/cli/doc/configuration.md#logging'
 
 
@@ -20,7 +21,7 @@ export function buildDefaultLog4jsConfig(logFilename: string): Log4jsConfig {
 	const fileAppender: FileAppender = {
 		type: 'file',
 		filename: logFilename,
-		maxLogSize: DEFAULT_LOG_FILE_SIZE,
+		maxLogSize: defaultLogFileSize,
 		backups: 1,
 		keepFileExt: true,
 	}
@@ -54,5 +55,5 @@ export function loadLog4jsConfig(configFilename: string, defaultConfig: Log4jsCo
 		return parsedConfig
 	}
 
-	throw new Error(`invalid or unreadable logging config file format; see ${LOGGING_DOCS_URL}`)
+	throw new Error(`invalid or unreadable logging config file format; see ${loggingDocsURL}`)
 }

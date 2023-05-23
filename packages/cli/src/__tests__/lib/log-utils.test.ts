@@ -1,17 +1,24 @@
 import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../../lib/log-utils'
 import log4js from 'log4js'
 import yaml from 'js-yaml'
+
 import { yamlExists } from '@smartthings/cli-lib'
 
 
-jest.mock('fs')
+jest.mock('fs', () => {
+	// if this isn't done, something breaks with sub-dependency 'fs-extra'
+	const originalLib = jest.requireActual('fs')
+
+	return {
+		...originalLib,
+		readFileSync: jest.fn(),
+	}
+})
 jest.mock('js-yaml')
 
-describe('log-utils', () => {
-	afterEach(() => {
-		jest.resetAllMocks()
-	})
+jest.mock('@smartthings/cli-lib')
 
+describe('log-utils', () => {
 	describe('buildDefaultLog4jsConfig', () => {
 		it('returns "default" category configured at warn level with file appender', () => {
 			expect(buildDefaultLog4jsConfig('filename')).toStrictEqual({
@@ -30,7 +37,6 @@ describe('log-utils', () => {
 			})
 		})
 	})
-
 	it('lowers "default" category level to debug and adds stderr appender when debug env variable is set', () => {
 		process.env.SMARTTHINGS_DEBUG = 'true'
 
