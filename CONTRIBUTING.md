@@ -28,9 +28,6 @@ packages are included:
 * [edge](packages/edge/README.md) - a plugin for Edge Drivers that is installed by default
 * [lib](packages/lib/README.md) - a library for use in the CLI and its
   extensions; @smartthings/cli-lib node package
-* [testlib](packages/testlib/README.md) - a library for use in the CLI and its
-  extensions with utility methods to make testing with Jest easier;
-  @smartthings/cli-testlib node package
 
 ### Build
 

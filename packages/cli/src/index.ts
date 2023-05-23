@@ -1,1 +1,3 @@
-export { run } from '@oclif/core'
+console.log('TODO: yargs CLI run here')
+
+export {}

@@ -1,6 +1,5 @@
 import fs from 'fs'
 
-import { Errors } from '@oclif/core'
 import yaml from 'js-yaml'
 
 
@@ -46,7 +45,8 @@ export const requireDir = async (dirName: string): Promise<string> => {
 	if (await isDir(dirName)) {
 		return dirName
 	}
-	throw new Errors.CLIError(`missing required directory: ${dirName}`)
+	// TODO: fix for yargs
+	throw Error(`missing required directory: ${dirName}`)
 }
 
 export type YAMLFileData = {
@@ -68,11 +68,12 @@ export const readYAMLFile = (filename: string): YAMLFileData => {
 		}
 
 		if (data == null) {
-			throw new Error('empty file')
+			throw Error('empty file')
 		}
 
-		throw new Error('invalid file')
+		throw Error('invalid file')
 	} catch (error) {
-		throw new Errors.CLIError(`error "${error.message}" reading ${filename}`)
+		// TODO: fix for yargs
+		throw Error(`error "${error.message}" reading ${filename}`)
 	}
 }
