@@ -1,5 +1,14 @@
 # Change Log
 
+## 2.0.2
+
+### Patch Changes
+
+- [#513](https://github.com/SmartThingsCommunity/smartthings-cli/pull/513) [`13167bd`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/13167bd407156731bfc8baf62a6deba10e2423b0) Thanks [@rossiam](https://github.com/rossiam)! - allow custom `listItems` in base `ChooseOptions`
+
+- Updated dependencies [[`c391bb5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c391bb5387662db7b767d34434779d8e8cbaeb5e), [`13167bd`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/13167bd407156731bfc8baf62a6deba10e2423b0)]:
+  - @smartthings/cli-lib@2.1.0
+
 ## 2.0.1
 
 ### Patch Changes
