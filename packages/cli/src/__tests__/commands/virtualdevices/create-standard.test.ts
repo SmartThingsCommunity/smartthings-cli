@@ -3,10 +3,10 @@ import {
 	VirtualDeviceStandardCreateRequest,
 	VirtualDevicesEndpoint,
 } from '@smartthings/core-sdk'
-import VirtualDeviceCreateStandardCommand from '../../../commands/virtualdevices/create-standard'
-import { chooseLocation } from '../../../commands/locations'
-import { chooseRoom } from '../../../lib/commands/locations/rooms-util'
-import { chooseDeviceName, chooseDevicePrototype } from '../../../lib/commands/virtualdevices-util'
+import VirtualDeviceCreateStandardCommand from '../../../commands/virtualdevices/create-standard.js'
+import { chooseLocation } from '../../../commands/locations.js'
+import { chooseRoom } from '../../../lib/commands/locations/rooms-util.js'
+import { chooseDeviceName, chooseDevicePrototype } from '../../../lib/commands/virtualdevices-util.js'
 
 
 jest.mock('../../../commands/locations')

@@ -1,9 +1,9 @@
-import * as ioUtil from '../io-util'
-import { calculateOutputFormat, itemTableFormatter, jsonFormatter, listTableFormatter, sort, writeOutput, yamlFormatter } from '../output'
-import { DefaultTableGenerator, TableFieldDefinition, TableGenerator } from '../table-generator'
+import * as ioUtil from '../io-util.js'
+import { calculateOutputFormat, itemTableFormatter, jsonFormatter, listTableFormatter, sort, writeOutput, yamlFormatter } from '../output.js'
+import { DefaultTableGenerator, TableFieldDefinition, TableGenerator } from '../table-generator.js'
 
-import { buildMockCommand } from './test-lib/mock-command'
-import { SimpleType } from './test-lib/simple-type'
+import { buildMockCommand } from './test-lib/mock-command.js'
+import { SimpleType } from './test-lib/simple-type.js'
 
 
 afterEach(() => {

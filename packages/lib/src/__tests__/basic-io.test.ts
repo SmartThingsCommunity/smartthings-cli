@@ -1,14 +1,14 @@
 import { Errors } from '@oclif/core'
 
-import { inputAndOutputItem, inputItem, outputItem, outputList, OutputListConfig } from '../basic-io'
-import * as format from '../format'
-import { InputProcessor } from '../input'
-import * as inputBuilder from '../input-builder'
-import { IOFormat } from '../io-util'
-import * as output from '../output'
-import * as outputBuilder from '../output-builder'
-import { buildMockCommand } from './test-lib/mock-command'
-import { SimpleType } from './test-lib/simple-type'
+import { inputAndOutputItem, inputItem, outputItem, outputList, OutputListConfig } from '../basic-io.js'
+import * as format from '../format.js'
+import { InputProcessor } from '../input.js'
+import * as inputBuilder from '../input-builder.js'
+import { IOFormat } from '../io-util.js'
+import * as output from '../output.js'
+import * as outputBuilder from '../output-builder.js'
+import { buildMockCommand } from './test-lib/mock-command.js'
+import { SimpleType } from './test-lib/simple-type.js'
 
 
 describe('basic-io', () => {

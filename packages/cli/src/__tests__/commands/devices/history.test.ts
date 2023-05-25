@@ -6,8 +6,8 @@ import {
 	writeOutput,
 } from '@smartthings/cli-lib'
 import { Device, DeviceActivity, DevicesEndpoint, HistoryEndpoint, PaginatedList, SmartThingsClient } from '@smartthings/core-sdk'
-import DeviceHistoryCommand from '../../../commands/devices/history'
-import { calculateRequestLimit, getHistory, writeDeviceEventsTable } from '../../../lib/commands/history-util'
+import DeviceHistoryCommand from '../../../commands/devices/history.js'
+import { calculateRequestLimit, getHistory, writeDeviceEventsTable } from '../../../lib/commands/history-util.js'
 
 
 jest.mock('../../../lib/commands/history-util')

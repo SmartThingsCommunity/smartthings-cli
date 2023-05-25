@@ -1,6 +1,6 @@
 import { stdin as mockStdin } from 'mock-stdin'
-import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, stdinIsTTY, yamlExists } from '../io-util'
-import { validData, validYAML, SimpleType } from './test-lib/simple-type'
+import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, stdinIsTTY, yamlExists } from '../io-util.js'
+import { validData, validYAML, SimpleType } from './test-lib/simple-type.js'
 import { existsSync } from 'fs'
 
 

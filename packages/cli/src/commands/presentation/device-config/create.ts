@@ -2,7 +2,7 @@ import { PresentationDeviceConfigCreate, PresentationDeviceConfig } from '@smart
 
 import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../device-config'
+import { buildTableOutput } from '../device-config.js'
 
 
 export default class DeviceConfigCreateCommand extends APICommand<typeof DeviceConfigCreateCommand.flags> {

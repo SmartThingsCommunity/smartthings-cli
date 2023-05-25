@@ -2,8 +2,8 @@ import { EnrolledChannel, HubdevicesEndpoint } from '@smartthings/core-sdk'
 
 import { selectFromList } from '@smartthings/cli-lib'
 
-import { chooseDriverFromChannel, chooseHub } from '../../../../lib/commands/drivers-util'
-import DriversInstallCommand from '../../../../commands/edge/drivers/install'
+import { chooseDriverFromChannel, chooseHub } from '../../../../lib/commands/drivers-util.js'
+import DriversInstallCommand from '../../../../commands/edge/drivers/install.js'
 
 
 jest.mock('@smartthings/cli-lib', () => {

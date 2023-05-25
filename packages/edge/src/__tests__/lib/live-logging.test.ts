@@ -1,4 +1,4 @@
-import { DriverInfo, DriverInfoStatus, handleConnectionErrors, LiveLogClient, LiveLogClientConfig, LiveLogMessage, liveLogMessageFormatter, LogLevel, parseIpAndPort } from '../../lib/live-logging'
+import { DriverInfo, DriverInfoStatus, handleConnectionErrors, LiveLogClient, LiveLogClientConfig, LiveLogMessage, liveLogMessageFormatter, LogLevel, parseIpAndPort } from '../../lib/live-logging.js'
 import stripAnsi from 'strip-ansi'
 import axios, { AxiosResponse } from 'axios'
 import { BearerTokenAuthenticator, NoOpAuthenticator } from '@smartthings/core-sdk'

@@ -1,7 +1,7 @@
 import inquirer from 'inquirer'
 
-import { ListDataFunction, Naming, Sorting } from './basic-io'
-import { sort } from './output'
+import { ListDataFunction, Naming, Sorting } from './basic-io.js'
+import { sort } from './output.js'
 
 
 const indexPattern = /^[1-9][0-9]*$/

@@ -14,7 +14,7 @@ import {
 	WithNamedRoom,
 } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../lib/commands/devices-util'
+import { buildTableOutput } from '../lib/commands/devices-util.js'
 
 
 export default class VirtualDevicesCommand extends APICommand<typeof VirtualDevicesCommand.flags> {

@@ -17,7 +17,7 @@ import {
 	InputDefsByProperty,
 } from '@smartthings/cli-lib'
 import { addPermission } from '../../lib/aws-utils'
-import { chooseApp, smartAppHelpText, tableFieldDefinitions } from '../../lib/commands/apps-util'
+import { chooseApp, tableFieldDefinitions } from '../../lib/commands/apps-util'
 
 
 export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand.flags> {

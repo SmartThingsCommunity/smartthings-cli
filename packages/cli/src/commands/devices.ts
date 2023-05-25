@@ -12,7 +12,7 @@ import {
 	WithNamedRoom,
 } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../lib/commands/devices-util'
+import { buildTableOutput } from '../lib/commands/devices-util.js'
 
 
 export default class DevicesCommand extends APICommand<typeof DevicesCommand.flags> {

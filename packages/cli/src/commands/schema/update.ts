@@ -4,7 +4,7 @@ import { SchemaApp, SchemaAppRequest } from '@smartthings/core-sdk'
 
 import { APICommand, inputItem, selectFromList, lambdaAuthFlags, SelectFromListConfig } from '@smartthings/cli-lib'
 
-import { addSchemaPermission } from '../../lib/aws-utils'
+import { addSchemaPermission } from '../../lib/aws-utils.js'
 
 
 export default class SchemaUpdateCommand extends APICommand<typeof SchemaUpdateCommand.flags> {

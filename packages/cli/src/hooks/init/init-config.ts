@@ -2,7 +2,7 @@ import type { Hook } from '@oclif/core'
 import log4js from 'log4js'
 
 import { LoginAuthenticator } from '@smartthings/cli-lib'
-import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../../lib/log-utils'
+import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../../lib/log-utils.js'
 
 
 const hook: Hook<'init'> = async function (opts) {

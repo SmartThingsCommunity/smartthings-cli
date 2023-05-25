@@ -1,7 +1,7 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
 import { AppsEndpoint, AppSettingsRequest } from '@smartthings/core-sdk'
-import AppSettingsUpdateCommand from '../../../../commands/apps/settings/update'
-import { chooseApp } from '../../../../lib/commands/apps-util'
+import AppSettingsUpdateCommand from '../../../../commands/apps/settings/update.js'
+import { chooseApp } from '../../../../lib/commands/apps-util.js'
 
 
 jest.mock('../../../../lib/commands/apps-util')

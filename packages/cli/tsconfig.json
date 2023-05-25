@@ -18,6 +18,7 @@
 	"exclude": [
 		"node_modules",
 		"lib",
+		"./jest.config.ts",
 
 		"./src/__tests__/commands/apps.test.ts",
 		"./src/__tests__/commands/apps/authorize.test.ts",

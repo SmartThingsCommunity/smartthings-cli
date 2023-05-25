@@ -2,7 +2,7 @@ import { LocaleReference } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
 
-import { chooseDeviceProfile } from '../../../lib/commands/deviceprofiles-util'
+import { chooseDeviceProfile } from '../../../lib/commands/deviceprofiles-util.js'
 
 
 export default class DeviceProfileTranslationsDeleteCommand extends APIOrganizationCommand<typeof DeviceProfileTranslationsDeleteCommand.flags> {

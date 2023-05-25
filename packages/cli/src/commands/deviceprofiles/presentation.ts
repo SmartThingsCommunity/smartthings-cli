@@ -2,8 +2,8 @@ import { Errors } from '@oclif/core'
 
 import { APIOrganizationCommand, formatAndWriteItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../presentation'
-import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
+import { buildTableOutput } from '../presentation.js'
+import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util.js'
 
 
 export default class DeviceProfilePresentationCommand extends APIOrganizationCommand<typeof DeviceProfilePresentationCommand.flags> {

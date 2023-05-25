@@ -2,8 +2,8 @@ import { InstalledApp, InstalledAppsEndpoint, SmartThingsClient } from '@smartth
 
 import { outputItemOrList, withLocation, withLocations, WithNamedLocation } from '@smartthings/cli-lib'
 
-import InstalledAppsCommand from '../../commands/installedapps'
-import { listTableFieldDefinitions, tableFieldDefinitions } from '../../lib/commands/installedapps-util'
+import InstalledAppsCommand from '../../commands/installedapps.js'
+import { listTableFieldDefinitions, tableFieldDefinitions } from '../../lib/commands/installedapps-util.js'
 
 
 const MOCK_INSTALLED_APP = { installedAppId: 'installedAppId' } as InstalledApp

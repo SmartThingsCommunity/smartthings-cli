@@ -2,7 +2,7 @@ import { DeviceProfileStatus } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, formatAndWriteItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput, chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
+import { buildTableOutput, chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util.js'
 
 
 export default class DeviceProfilePublishCommand extends APIOrganizationCommand<typeof DeviceProfilePublishCommand.flags> {

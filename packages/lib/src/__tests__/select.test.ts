@@ -1,11 +1,11 @@
 import inquirer from 'inquirer'
 
-import { outputList } from '../basic-io'
-import { Profile, resetManagedConfigKey, setConfigKey } from '../cli-config'
-import { stringGetIdFromUser } from '../command-util'
-import { indefiniteArticleFor, promptUser, selectFromList } from '../select'
-import { SmartThingsCommandInterface } from '../smartthings-command'
-import { buildMockCommand, exitMock } from './test-lib/mock-command'
+import { outputList } from '../basic-io.js'
+import { Profile, resetManagedConfigKey, setConfigKey } from '../cli-config.js'
+import { stringGetIdFromUser } from '../command-util.js'
+import { indefiniteArticleFor, promptUser, selectFromList } from '../select.js'
+import { SmartThingsCommandInterface } from '../smartthings-command.js'
+import { buildMockCommand, exitMock } from './test-lib/mock-command.js'
 
 
 jest.mock('inquirer')

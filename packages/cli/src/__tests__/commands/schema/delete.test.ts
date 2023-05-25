@@ -1,6 +1,6 @@
 import { selectFromList } from '@smartthings/cli-lib'
 import { SchemaEndpoint } from '@smartthings/core-sdk'
-import SchemaAppDeleteCommand from '../../../commands/schema/delete'
+import SchemaAppDeleteCommand from '../../../commands/schema/delete.js'
 
 
 describe('SchemaAppDeleteCommand', () => {

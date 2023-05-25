@@ -1,7 +1,7 @@
 import { LocationsEndpoint, LocationUpdate } from '@smartthings/core-sdk'
-import LocationsUpdateCommand from '../../../commands/locations/update'
+import LocationsUpdateCommand from '../../../commands/locations/update.js'
 import { inputAndOutputItem } from '@smartthings/cli-lib'
-import { chooseLocation } from '../../../commands/locations'
+import { chooseLocation } from '../../../commands/locations.js'
 
 
 jest.mock('../../../commands/locations')

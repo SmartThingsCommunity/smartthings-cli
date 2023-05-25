@@ -1,6 +1,6 @@
 import { APICommand, chooseDevice, formatAndWriteItem } from '@smartthings/cli-lib'
 
-import { buildStatusTableOutput } from '../../lib/commands/devices-util'
+import { buildStatusTableOutput } from '../../lib/commands/devices-util.js'
 
 
 export default class DeviceStatusCommand extends APICommand<typeof DeviceStatusCommand.flags> {

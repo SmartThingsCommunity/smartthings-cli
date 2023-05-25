@@ -1,7 +1,7 @@
 import { outputItem } from '@smartthings/cli-lib'
 import { AppOAuthResponse, AppsEndpoint } from '@smartthings/core-sdk'
-import AppOauthCommand from '../../../commands/apps/oauth'
-import { chooseApp } from '../../../lib/commands/apps-util'
+import AppOauthCommand from '../../../commands/apps/oauth.js'
+import { chooseApp } from '../../../lib/commands/apps-util.js'
 
 
 jest.mock('../../../lib/commands/apps-util')

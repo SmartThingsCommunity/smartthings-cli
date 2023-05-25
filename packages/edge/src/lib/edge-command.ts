@@ -1,7 +1,7 @@
 import log4js from '@log4js-node/log4js-api'
 import { APIOrganizationCommand } from '@smartthings/cli-lib'
 
-import { EdgeClient } from './edge-client'
+import { EdgeClient } from './edge-client.js'
 
 
 export abstract class EdgeCommand<T extends typeof EdgeCommand.flags> extends APIOrganizationCommand<T> {

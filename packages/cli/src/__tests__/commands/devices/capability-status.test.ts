@@ -1,6 +1,6 @@
 import { chooseComponent, chooseDevice, formatAndWriteItem, selectFromList, stringTranslateToId } from '@smartthings/cli-lib'
 import { CapabilityStatus, Device, DevicesEndpoint } from '@smartthings/core-sdk'
-import DeviceCapabilityStatusCommand from '../../../commands/devices/capability-status'
+import DeviceCapabilityStatusCommand from '../../../commands/devices/capability-status.js'
 
 
 const DEVICE = {

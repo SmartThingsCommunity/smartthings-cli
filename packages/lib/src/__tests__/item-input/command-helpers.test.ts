@@ -1,12 +1,12 @@
 import { Interfaces } from '@oclif/core'
 import inquirer from 'inquirer'
 
-import { Profile } from '../../cli-config'
-import { cancelAction, editAction, finishAction, previewJSONAction, previewYAMLAction } from '../../item-input/defs'
-import { createFromUserInput, updateFromUserInput } from '../../item-input/command-helpers'
-import * as commandHelpers from '../../item-input/command-helpers'
-import { jsonFormatter, yamlFormatter } from '../../output'
-import { SmartThingsCommandInterface } from '../../smartthings-command'
+import { Profile } from '../../cli-config.js'
+import { cancelAction, editAction, finishAction, previewJSONAction, previewYAMLAction } from '../../item-input/defs.js'
+import { createFromUserInput, updateFromUserInput } from '../../item-input/command-helpers.js'
+import * as commandHelpers from '../../item-input/command-helpers.js'
+import { jsonFormatter, yamlFormatter } from '../../output.js'
+import { SmartThingsCommandInterface } from '../../smartthings-command.js'
 
 
 jest.mock('inquirer')

@@ -1,8 +1,8 @@
 import { resetManagedConfigKey } from '@smartthings/cli-lib'
 import { ChannelsEndpoint } from '@smartthings/core-sdk'
 
-import ChannelsDeleteCommand from '../../../../commands/edge/channels/delete'
-import { chooseChannel } from '../../../../lib/commands/channels-util'
+import ChannelsDeleteCommand from '../../../../commands/edge/channels/delete.js'
+import { chooseChannel } from '../../../../lib/commands/channels-util.js'
 
 
 jest.mock('../../../../../src/lib/commands/channels-util')

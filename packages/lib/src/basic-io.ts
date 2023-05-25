@@ -1,12 +1,12 @@
 import { Flags, Errors } from '@oclif/core'
 
-import { formatAndWriteItem, formatAndWriteList, FormatAndWriteItemConfig, FormatAndWriteListConfig } from './format'
-import { InputProcessor } from './input'
-import { buildInputProcessor } from './input-builder'
-import { IOFormat } from './io-util'
-import { sort, writeOutput } from './output'
-import { buildOutputFormatter } from './output-builder'
-import { SmartThingsCommandInterface } from './smartthings-command'
+import { formatAndWriteItem, formatAndWriteList, FormatAndWriteItemConfig, FormatAndWriteListConfig } from './format.js'
+import { InputProcessor } from './input.js'
+import { buildInputProcessor } from './input-builder.js'
+import { IOFormat } from './io-util.js'
+import { sort, writeOutput } from './output.js'
+import { buildOutputFormatter } from './output-builder.js'
+import { SmartThingsCommandInterface } from './smartthings-command.js'
 
 
 export type GetDataFunction<O extends object> = () => Promise<O>

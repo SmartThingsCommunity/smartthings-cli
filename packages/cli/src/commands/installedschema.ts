@@ -8,7 +8,7 @@ import {
 	installedSchemaInstances,
 	listTableFieldDefinitions,
 	tableFieldDefinitions,
-} from '../lib/commands/installedschema-util'
+} from '../lib/commands/installedschema-util.js'
 
 
 export default class InstalledSchemaAppsCommand extends APICommand<typeof InstalledSchemaAppsCommand.flags> {

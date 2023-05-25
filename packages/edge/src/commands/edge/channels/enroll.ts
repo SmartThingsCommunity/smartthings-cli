@@ -1,8 +1,8 @@
 import { Flags } from '@oclif/core'
 
-import { chooseChannel } from '../../../lib/commands/channels-util'
-import { chooseHub } from '../../../lib/commands/drivers-util'
-import { EdgeCommand } from '../../../lib/edge-command'
+import { chooseChannel } from '../../../lib/commands/channels-util.js'
+import { chooseHub } from '../../../lib/commands/drivers-util.js'
+import { EdgeCommand } from '../../../lib/edge-command.js'
 
 
 export class ChannelsEnrollCommand extends EdgeCommand<typeof ChannelsEnrollCommand.flags> {

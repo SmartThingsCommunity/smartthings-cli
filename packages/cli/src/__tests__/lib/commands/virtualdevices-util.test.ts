@@ -14,8 +14,8 @@ import {
 	chooseComponent,
 	chooseUnit,
 	chooseValue,
-} from '../../../lib/commands/virtualdevices-util'
-import { chooseDeviceProfile } from '../../../lib/commands/deviceprofiles-util'
+} from '../../../lib/commands/virtualdevices-util.js'
+import { chooseDeviceProfile } from '../../../lib/commands/deviceprofiles-util.js'
 import { Device, DeviceIntegrationType, DeviceProfile, DeviceProfileStatus } from '@smartthings/core-sdk'
 
 

@@ -2,9 +2,9 @@ import { Device, DeviceIntegrationType, HubdevicesEndpoint, SmartThingsClient } 
 
 import { chooseDevice } from '@smartthings/cli-lib'
 
-import DriversSwitchCommand from '../../../../commands/edge/drivers/switch'
+import DriversSwitchCommand from '../../../../commands/edge/drivers/switch.js'
 import { chooseDriver, chooseHub, listAllAvailableDrivers, listMatchingDrivers }
-	from '../../../../lib/commands/drivers-util'
+	from '../../../../lib/commands/drivers-util.js'
 
 
 const edgeDeviceIntegrationTypes = [

@@ -1,10 +1,10 @@
 import { CliUx } from '@oclif/core'
 import inquirer from 'inquirer'
 
-import { IdRetrievalFunction, ListDataFunction, LookupDataFunction, Naming, outputList, OutputListConfig, Sorting } from './basic-io'
-import { resetManagedConfigKey, setConfigKey } from './cli-config'
-import { stringGetIdFromUser } from './command-util'
-import { SmartThingsCommandInterface } from './smartthings-command'
+import { IdRetrievalFunction, ListDataFunction, LookupDataFunction, Naming, outputList, OutputListConfig, Sorting } from './basic-io.js'
+import { resetManagedConfigKey, setConfigKey } from './cli-config.js'
+import { stringGetIdFromUser } from './command-util.js'
+import { SmartThingsCommandInterface } from './smartthings-command.js'
 
 
 export type SelectFromListConfig<L extends object> = Sorting<L> & Naming & OutputListConfig<L>

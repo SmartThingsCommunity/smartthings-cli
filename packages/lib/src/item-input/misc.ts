@@ -1,5 +1,5 @@
-import { askForString, askForOptionalString, AskForStringOptions, ValidateFunction } from '../user-query'
-import { InputDefinition, InputDefinitionValidateFunction, Uneditable, uneditable } from './defs'
+import { askForString, askForOptionalString, AskForStringOptions, ValidateFunction } from '../user-query.js'
+import { InputDefinition, InputDefinitionValidateFunction, Uneditable, uneditable } from './defs.js'
 
 
 export const validateWithContextFn = (validate?: InputDefinitionValidateFunction, context?: unknown[]): ValidateFunction | undefined =>

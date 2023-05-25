@@ -6,9 +6,9 @@ import {
 	withLocationsAndRooms, WithNamedRoom,
 } from '@smartthings/cli-lib'
 
-import DevicesCommand from '../../commands/devices'
+import DevicesCommand from '../../commands/devices.js'
 
-import { buildTableOutput } from '../../lib/commands/devices-util'
+import { buildTableOutput } from '../../lib/commands/devices-util.js'
 
 
 jest.mock('../../lib/commands/devices-util')

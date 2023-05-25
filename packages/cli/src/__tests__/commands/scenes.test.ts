@@ -1,5 +1,5 @@
 import { outputItemOrList } from '@smartthings/cli-lib'
-import ScenesCommand from '../../commands/scenes'
+import ScenesCommand from '../../commands/scenes.js'
 import { ScenesEndpoint } from '@smartthings/core-sdk'
 
 

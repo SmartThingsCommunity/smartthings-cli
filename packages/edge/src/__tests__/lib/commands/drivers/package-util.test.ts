@@ -4,9 +4,9 @@ import { CliUx, Errors } from '@oclif/core'
 import JSZip from 'jszip'
 import picomatch from 'picomatch'
 
-import { fileExists, findYAMLFilename, isDir, isFile, isSymbolicLink, readYAMLFile, realPathForSymbolicLink, requireDir } from '../../../../lib/file-util'
+import { fileExists, findYAMLFilename, isDir, isFile, isSymbolicLink, readYAMLFile, realPathForSymbolicLink, requireDir } from '../../../../lib/file-util.js'
 import { buildTestFileMatchers, processConfigFile, processFingerprintsFile, processProfiles,
-	processSrcDir, resolveProjectDirName } from '../../../../lib/commands/drivers/package-util'
+	processSrcDir, resolveProjectDirName } from '../../../../lib/commands/drivers/package-util.js'
 
 
 jest.mock('fs')

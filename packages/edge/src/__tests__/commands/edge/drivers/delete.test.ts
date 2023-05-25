@@ -1,7 +1,7 @@
 import { DriversEndpoint } from '@smartthings/core-sdk'
 
-import DriversDeleteCommand from '../../../../commands/edge/drivers/delete'
-import { chooseDriver } from '../../../../lib/commands/drivers-util'
+import DriversDeleteCommand from '../../../../commands/edge/drivers/delete.js'
+import { chooseDriver } from '../../../../lib/commands/drivers-util.js'
 
 
 jest.mock('../../../../../src/lib/commands/drivers-util')

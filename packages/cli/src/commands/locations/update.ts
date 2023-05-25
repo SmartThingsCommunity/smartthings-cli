@@ -2,7 +2,7 @@ import { Location, LocationUpdate } from '@smartthings/core-sdk'
 
 import { APICommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { chooseLocation, tableFieldDefinitions } from '../locations'
+import { chooseLocation, tableFieldDefinitions } from '../locations.js'
 
 
 export default class LocationsUpdateCommand extends APICommand<typeof LocationsUpdateCommand.flags> {

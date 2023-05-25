@@ -6,10 +6,10 @@ import JSZip from 'jszip'
 import { outputItem, OutputItemConfig, readFile } from '@smartthings/cli-lib'
 
 import { buildTestFileMatchers, processConfigFile, processFingerprintsFile, processProfiles,
-	processSrcDir, resolveProjectDirName } from '../../../lib/commands/drivers/package-util'
-import { chooseChannel } from '../../../lib/commands/channels-util'
-import { chooseHub } from '../../../lib/commands/drivers-util'
-import { EdgeCommand } from '../../../lib/edge-command'
+	processSrcDir, resolveProjectDirName } from '../../../lib/commands/drivers/package-util.js'
+import { chooseChannel } from '../../../lib/commands/channels-util.js'
+import { chooseHub } from '../../../lib/commands/drivers-util.js'
+import { EdgeCommand } from '../../../lib/edge-command.js'
 import { EdgeDriver } from '@smartthings/core-sdk'
 
 

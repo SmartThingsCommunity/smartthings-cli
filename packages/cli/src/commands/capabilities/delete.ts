@@ -1,6 +1,6 @@
 import { APIOrganizationCommand } from '@smartthings/cli-lib'
 
-import { capabilityIdInputArgs, chooseCapability } from '../../lib/commands/capabilities-util'
+import { capabilityIdInputArgs, chooseCapability } from '../../lib/commands/capabilities-util.js'
 
 
 export default class CapabilitiesDeleteCommand extends APIOrganizationCommand<typeof CapabilitiesDeleteCommand.flags> {

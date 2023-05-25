@@ -9,11 +9,11 @@ import {
 	inputAndOutputItem,
 	userInputProcessor,
 } from '@smartthings/cli-lib'
-import { buildTableOutput } from '../../lib/commands/devices-util'
+import { buildTableOutput } from '../../lib/commands/devices-util.js'
 
-import { chooseLocation } from '../locations'
-import { chooseDeviceName, chooseDeviceProfileDefinition } from '../../lib/commands/virtualdevices-util'
-import { chooseRoom } from '../../lib/commands/locations/rooms-util'
+import { chooseLocation } from '../locations.js'
+import { chooseDeviceName, chooseDeviceProfileDefinition } from '../../lib/commands/virtualdevices-util.js'
+import { chooseRoom } from '../../lib/commands/locations/rooms-util.js'
 
 
 export default class VirtualDeviceCreateCommand extends APIOrganizationCommand<typeof VirtualDeviceCreateCommand.flags> {

@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core'
 
-import { EdgeCommand } from '../../../lib/edge-command'
-import { chooseHub, chooseInstalledDriver } from '../../../lib/commands/drivers-util'
+import { EdgeCommand } from '../../../lib/edge-command.js'
+import { chooseHub, chooseInstalledDriver } from '../../../lib/commands/drivers-util.js'
 
 
 export default class DriversUninstallCommand extends EdgeCommand<typeof DriversUninstallCommand.flags> {

@@ -4,9 +4,9 @@ import { EdgeDriver } from '@smartthings/core-sdk'
 
 import { outputItemOrList, OutputItemOrListConfig } from '@smartthings/cli-lib'
 
-import { EdgeCommand } from '../../../lib/edge-command'
-import { chooseChannel } from '../../../lib/commands/channels-util'
-import { buildTableOutput, listTableFieldDefinitions } from '../../../lib/commands/drivers-util'
+import { EdgeCommand } from '../../../lib/edge-command.js'
+import { chooseChannel } from '../../../lib/commands/channels-util.js'
+import { buildTableOutput, listTableFieldDefinitions } from '../../../lib/commands/drivers-util.js'
 
 
 export default class ChannelsMetaInfoCommand extends EdgeCommand<typeof ChannelsMetaInfoCommand.flags> {

@@ -2,8 +2,8 @@ import { CapabilityPresentation, CapabilityPresentationUpdate } from '@smartthin
 
 import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../presentation'
-import { capabilityIdInputArgs, chooseCapability } from '../../../lib/commands/capabilities-util'
+import { buildTableOutput } from '../presentation.js'
+import { capabilityIdInputArgs, chooseCapability } from '../../../lib/commands/capabilities-util.js'
 
 
 export default class CapabilitiesPresentationUpdate extends APIOrganizationCommand<typeof CapabilitiesPresentationUpdate.flags> {

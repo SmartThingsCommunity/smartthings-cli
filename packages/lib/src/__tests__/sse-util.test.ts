@@ -1,4 +1,4 @@
-import { handleSignals, sseSignals } from '../sse-util'
+import { handleSignals, sseSignals } from '../sse-util.js'
 
 
 describe('sse-util', () => {

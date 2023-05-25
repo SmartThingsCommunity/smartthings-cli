@@ -1,5 +1,5 @@
 import { outputItemOrList } from '@smartthings/cli-lib'
-import VirtualDevicesCommand from '../../commands/virtualdevices'
+import VirtualDevicesCommand from '../../commands/virtualdevices.js'
 import { Device, DeviceIntegrationType, DevicesEndpoint } from '@smartthings/core-sdk'
 
 

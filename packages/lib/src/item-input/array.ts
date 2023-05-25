@@ -1,5 +1,5 @@
 import inquirer, { ChoiceCollection, DistinctChoice, Separator } from 'inquirer'
-import { clipToMaximum, stringFromUnknown } from '../util'
+import { clipToMaximum, stringFromUnknown } from '../util.js'
 
 import {
 	addAction,
@@ -20,7 +20,7 @@ import {
 	inquirerPageSize,
 	maxItemValueLength,
 	uneditable,
-} from './defs'
+} from './defs.js'
 
 
 export type ArrayDefOptions<T> = {

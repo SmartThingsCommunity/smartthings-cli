@@ -2,7 +2,7 @@ import { DriversEndpoint, EdgeDriverSummary } from '@smartthings/core-sdk'
 
 import { outputList } from '@smartthings/cli-lib'
 
-import DriversDefaultCommand from '../../../../commands/edge/drivers/default'
+import DriversDefaultCommand from '../../../../commands/edge/drivers/default.js'
 
 
 jest.mock('@smartthings/cli-lib', () => {

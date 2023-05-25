@@ -1,6 +1,6 @@
 import { LocationsEndpoint } from '@smartthings/core-sdk'
-import LocationsDeleteCommand from '../../../commands/locations/delete'
-import { chooseLocation } from '../../../commands/locations'
+import LocationsDeleteCommand from '../../../commands/locations/delete.js'
+import { chooseLocation } from '../../../commands/locations.js'
 
 
 jest.mock('../../../commands/locations')

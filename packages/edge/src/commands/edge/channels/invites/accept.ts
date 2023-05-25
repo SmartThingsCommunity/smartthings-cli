@@ -1,4 +1,4 @@
-import { EdgeCommand } from '../../../../lib/edge-command'
+import { EdgeCommand } from '../../../../lib/edge-command.js'
 
 
 export default class ChannelsInvitesAcceptCommand extends EdgeCommand<typeof ChannelsInvitesAcceptCommand.flags> {

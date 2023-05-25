@@ -2,8 +2,8 @@ import { EdgeDriverSummary } from '@smartthings/core-sdk'
 
 import { outputList, OutputListConfig } from '@smartthings/cli-lib'
 
-import { EdgeCommand } from '../../../lib/edge-command'
-import { listTableFieldDefinitions } from '../../../lib/commands/drivers-util'
+import { EdgeCommand } from '../../../lib/edge-command.js'
+import { listTableFieldDefinitions } from '../../../lib/commands/drivers-util.js'
 
 
 export default class DriversDefaultCommand extends EdgeCommand<typeof DriversDefaultCommand.flags> {

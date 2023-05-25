@@ -1,12 +1,12 @@
 import { ActionFunction, APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { generateDefaultConfig } from '../../../lib/commands/deviceprofiles/create-util'
-import { buildTableOutput, DeviceDefinition, DeviceDefinitionRequest } from '../../../lib/commands/deviceprofiles-util'
+import { generateDefaultConfig } from '../../../lib/commands/deviceprofiles/create-util.js'
+import { buildTableOutput, DeviceDefinition, DeviceDefinitionRequest } from '../../../lib/commands/deviceprofiles-util.js'
 import {
 	augmentPresentation,
 	prunePresentation,
-} from '../../../lib/commands/deviceprofiles/view-util'
-import { chooseDeviceProfile, cleanupForUpdate } from '../../../lib/commands/deviceprofiles-util'
+} from '../../../lib/commands/deviceprofiles/view-util.js'
+import { chooseDeviceProfile, cleanupForUpdate } from '../../../lib/commands/deviceprofiles-util.js'
 
 
 export default class DeviceProfilesViewUpdateCommand extends APIOrganizationCommand<typeof DeviceProfilesViewUpdateCommand.flags> {

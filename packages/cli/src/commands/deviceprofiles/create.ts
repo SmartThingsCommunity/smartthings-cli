@@ -2,8 +2,8 @@ import { DeviceProfile } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, inputAndOutputItem, inputProcessor } from '@smartthings/cli-lib'
 
-import { buildTableOutput, cleanupForCreate, DeviceDefinitionRequest } from '../../lib/commands/deviceprofiles-util'
-import { createWithDefaultConfig, getInputFromUser } from '../../lib/commands/deviceprofiles/create-util'
+import { buildTableOutput, cleanupForCreate, DeviceDefinitionRequest } from '../../lib/commands/deviceprofiles-util.js'
+import { createWithDefaultConfig, getInputFromUser } from '../../lib/commands/deviceprofiles/create-util.js'
 
 
 export default class DeviceProfileCreateCommand extends APIOrganizationCommand<typeof DeviceProfileCreateCommand.flags> {

@@ -1,5 +1,5 @@
-import SchemaAppAuthorizeCommand from '../../../commands/schema/authorize'
-import { addSchemaPermission } from '../../../lib/aws-utils'
+import SchemaAppAuthorizeCommand from '../../../commands/schema/authorize.js'
+import { addSchemaPermission } from '../../../lib/aws-utils.js'
 
 
 jest.mock('../../../lib/aws-utils')

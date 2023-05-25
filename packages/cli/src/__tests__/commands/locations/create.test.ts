@@ -1,5 +1,5 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
-import LocationsCreateCommand from '../../../commands/locations/create'
+import LocationsCreateCommand from '../../../commands/locations/create.js'
 import { LocationCreate, LocationsEndpoint } from '@smartthings/core-sdk'
 
 

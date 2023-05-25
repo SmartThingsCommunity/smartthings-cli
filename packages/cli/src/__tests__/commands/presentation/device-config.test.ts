@@ -1,4 +1,4 @@
-import DeviceConfigPresentationCommand from '../../../commands/presentation/device-config'
+import DeviceConfigPresentationCommand from '../../../commands/presentation/device-config.js'
 import { outputItem } from '@smartthings/cli-lib'
 import { PresentationEndpoint } from '@smartthings/core-sdk'
 

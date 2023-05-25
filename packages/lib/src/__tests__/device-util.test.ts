@@ -1,9 +1,9 @@
 import { Component, Device } from '@smartthings/core-sdk'
 
-import { APICommand } from '../api-command'
-import { stringTranslateToId } from '../command-util'
-import { chooseComponent, chooseDevice } from '../device-util'
-import { selectFromList } from '../select'
+import { APICommand } from '../api-command.js'
+import { stringTranslateToId } from '../command-util.js'
+import { chooseComponent, chooseDevice } from '../device-util.js'
+import { selectFromList } from '../select.js'
 
 
 jest.mock('../command-util')

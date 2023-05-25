@@ -1,7 +1,7 @@
 import inquirer, { Separator } from 'inquirer'
 
-import { cancelAction, finishAction, helpAction, InputDefinition, inquirerPageSize } from '../../item-input/defs'
-import { objectDef, ObjectItemTypeData } from '../../item-input/object'
+import { cancelAction, finishAction, helpAction, InputDefinition, inquirerPageSize } from '../../item-input/defs.js'
+import { objectDef, ObjectItemTypeData } from '../../item-input/object.js'
 
 
 jest.mock('inquirer')

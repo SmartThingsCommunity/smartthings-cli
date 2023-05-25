@@ -1,6 +1,6 @@
 import { APICommand, formatAndWriteItem } from '@smartthings/cli-lib'
 import { SuccessStatusValue } from '@smartthings/core-sdk'
-import { chooseScene } from '../../lib/commands/scenes-util'
+import { chooseScene } from '../../lib/commands/scenes-util.js'
 
 
 export default class ScenesExecuteCommand extends APICommand<typeof ScenesExecuteCommand.flags> {

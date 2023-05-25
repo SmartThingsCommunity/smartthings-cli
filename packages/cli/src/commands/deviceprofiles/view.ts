@@ -1,7 +1,7 @@
 import { APIOrganizationCommand, formatAndWriteItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput, chooseDeviceProfile, DeviceDefinition } from '../../lib/commands/deviceprofiles-util'
-import { prunePresentation } from '../../lib/commands/deviceprofiles/view-util'
+import { buildTableOutput, chooseDeviceProfile, DeviceDefinition } from '../../lib/commands/deviceprofiles-util.js'
+import { prunePresentation } from '../../lib/commands/deviceprofiles/view-util.js'
 
 
 export default class DeviceProfilesViewCommand extends APIOrganizationCommand<typeof DeviceProfilesViewCommand.flags> {

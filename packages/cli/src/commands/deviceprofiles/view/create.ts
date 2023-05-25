@@ -1,11 +1,11 @@
 import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { createWithDefaultConfig } from '../../../lib/commands/deviceprofiles/create-util'
-import { buildTableOutput, cleanupForCreate, DeviceDefinition, DeviceDefinitionRequest } from '../../../lib/commands/deviceprofiles-util'
+import { createWithDefaultConfig } from '../../../lib/commands/deviceprofiles/create-util.js'
+import { buildTableOutput, cleanupForCreate, DeviceDefinition, DeviceDefinitionRequest } from '../../../lib/commands/deviceprofiles-util.js'
 import {
 	prunePresentation,
 	augmentPresentation,
-} from '../../../lib/commands/deviceprofiles/view-util'
+} from '../../../lib/commands/deviceprofiles/view-util.js'
 
 
 export default class DeviceDefCreateCommand extends APIOrganizationCommand<typeof DeviceDefCreateCommand.flags> {

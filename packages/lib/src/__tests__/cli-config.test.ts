@@ -1,6 +1,6 @@
 import yaml from 'js-yaml'
 
-import { loadConfigFile, mergeProfiles, ProfilesByName } from '../cli-config'
+import { loadConfigFile, mergeProfiles, ProfilesByName } from '../cli-config.js'
 import {
 	CLIConfig,
 	CLIConfigDescription,
@@ -9,9 +9,9 @@ import {
 	resetManagedConfigKey,
 	seeConfigDocs,
 	setConfigKey,
-} from '../cli-config'
-import * as cliConfigModule from '../cli-config'
-import { readFile, writeFile, yamlExists } from '../io-util'
+} from '../cli-config.js'
+import * as cliConfigModule from '../cli-config.js'
+import { readFile, writeFile, yamlExists } from '../io-util.js'
 
 
 jest.mock('js-yaml')

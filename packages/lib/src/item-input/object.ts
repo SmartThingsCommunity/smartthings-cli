@@ -11,7 +11,7 @@ import {
 	InputDefinition,
 	inquirerPageSize,
 	uneditable,
-} from './defs'
+} from './defs.js'
 
 
 export type InputDefsByProperty<T> = { [Property in keyof T]: InputDefinition<T[Property]> }

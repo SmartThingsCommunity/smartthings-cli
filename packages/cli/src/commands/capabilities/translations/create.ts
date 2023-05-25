@@ -2,8 +2,8 @@ import { CapabilityLocalization } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../translations'
-import { capabilityIdInputArgs, chooseCapability } from '../../../lib/commands/capabilities-util'
+import { buildTableOutput } from '../translations.js'
+import { capabilityIdInputArgs, chooseCapability } from '../../../lib/commands/capabilities-util.js'
 
 
 export default class CapabilityTranslationsCreateCommand extends APIOrganizationCommand<typeof CapabilityTranslationsCreateCommand.flags> {

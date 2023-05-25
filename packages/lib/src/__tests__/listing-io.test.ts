@@ -1,8 +1,8 @@
-import * as basicIO from '../basic-io'
-import * as commandUtil from '../command-util'
-import { OutputItemOrListConfig, outputItemOrListGeneric, outputItemOrList } from '../listing-io'
-import { buildMockCommand } from './test-lib/mock-command'
-import { SimpleType } from './test-lib/simple-type'
+import * as basicIO from '../basic-io.js'
+import * as commandUtil from '../command-util.js'
+import { OutputItemOrListConfig, outputItemOrListGeneric, outputItemOrList } from '../listing-io.js'
+import { buildMockCommand } from './test-lib/mock-command.js'
+import { SimpleType } from './test-lib/simple-type.js'
 
 
 describe('listing-io', () => {

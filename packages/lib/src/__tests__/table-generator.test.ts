@@ -1,7 +1,7 @@
 import at from 'lodash.at'
 import { URL } from 'url'
 import log4js from '@log4js-node/log4js-api'
-import { DefaultTableGenerator, TableFieldDefinition, TableGenerator } from '../table-generator'
+import { DefaultTableGenerator, TableFieldDefinition, TableGenerator } from '../table-generator.js'
 
 
 const mockDebug = jest.fn()

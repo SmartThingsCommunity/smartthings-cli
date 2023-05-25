@@ -12,7 +12,7 @@ import {
 	liveLogMessageFormatter,
 	LogLevel,
 	parseIpAndPort,
-} from '../../../lib/live-logging'
+} from '../../../lib/live-logging.js'
 import {
 	convertToId,
 	EventSourceError,
@@ -27,8 +27,8 @@ import {
 	TableFieldDefinition,
 } from '@smartthings/cli-lib'
 import { inspect } from 'util'
-import { runForever } from '../../../lib/commands/drivers/logcat-util'
-import { chooseHub } from '../../../lib/commands/drivers-util'
+import { runForever } from '../../../lib/commands/drivers/logcat-util.js'
+import { chooseHub } from '../../../lib/commands/drivers-util.js'
 
 
 const DEFAULT_ALL_TEXT = 'all'

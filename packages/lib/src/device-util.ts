@@ -1,9 +1,9 @@
 import { Component, Device, DeviceListOptions } from '@smartthings/core-sdk'
 
-import { APICommand } from './api-command'
-import { ChooseOptions, chooseOptionsDefaults, stringTranslateToId } from './command-util'
-import { selectFromList, SelectFromListConfig } from './select'
-import { SmartThingsCommandInterface } from './smartthings-command'
+import { APICommand } from './api-command.js'
+import { ChooseOptions, chooseOptionsDefaults, stringTranslateToId } from './command-util.js'
+import { selectFromList, SelectFromListConfig } from './select.js'
+import { SmartThingsCommandInterface } from './smartthings-command.js'
 
 
 export type DevicePredicate = (value: Device, index: number, array: Device[]) => boolean
