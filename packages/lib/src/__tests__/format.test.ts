@@ -1,10 +1,10 @@
-import { Naming } from '../basic-io'
-import { CommonListOutputProducer, formatAndWriteItem, formatAndWriteList } from '../format'
-import { IOFormat } from '../io-util'
-import * as output from '../output'
-import * as outputBuilder from '../output-builder'
-import { buildMockCommand } from './test-lib/mock-command'
-import { SimpleType } from './test-lib/simple-type'
+import { Naming } from '../basic-io.js'
+import { CommonListOutputProducer, formatAndWriteItem, formatAndWriteList } from '../format.js'
+import { IOFormat } from '../io-util.js'
+import * as output from '../output.js'
+import * as outputBuilder from '../output-builder.js'
+import { buildMockCommand } from './test-lib/mock-command.js'
+import { SimpleType } from './test-lib/simple-type.js'
 
 
 describe('format', () => {

@@ -2,8 +2,8 @@ import { Rule, RuleRequest, RulesEndpoint } from '@smartthings/core-sdk'
 
 import { inputAndOutputItem } from '@smartthings/cli-lib'
 
-import RulesCreateCommand from '../../../commands/rules/create'
-import { chooseLocation } from '../../../commands/locations'
+import RulesCreateCommand from '../../../commands/rules/create.js'
+import { chooseLocation } from '../../../commands/locations.js'
 
 
 jest.mock('../../../commands/locations')

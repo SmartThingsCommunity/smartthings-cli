@@ -23,8 +23,8 @@ import {
 	cleanupForCreate,
 	cleanupForUpdate,
 	entryValues,
-} from '../../../lib/commands/deviceprofiles-util'
-import * as deviceprofilesUtil from '../../../lib/commands/deviceprofiles-util'
+} from '../../../lib/commands/deviceprofiles-util.js'
+import * as deviceprofilesUtil from '../../../lib/commands/deviceprofiles-util.js'
 
 
 describe('entryValues', () => {

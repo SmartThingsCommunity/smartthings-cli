@@ -12,7 +12,7 @@ import {
 	WithOrganization,
 } from '@smartthings/cli-lib'
 
-import { tableFieldDefinitions } from '../lib/commands/devicepreferences-util'
+import { tableFieldDefinitions } from '../lib/commands/devicepreferences-util.js'
 
 
 export async function standardPreferences(command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>): Promise<DevicePreference[]> {

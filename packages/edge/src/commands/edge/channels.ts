@@ -4,8 +4,8 @@ import { Channel, SubscriberType } from '@smartthings/core-sdk'
 
 import { allOrganizationsFlags, outputItemOrList, OutputItemOrListConfig, WithOrganization } from '@smartthings/cli-lib'
 
-import { EdgeCommand } from '../../lib/edge-command'
-import { listChannels, listTableFieldDefinitions, tableFieldDefinitions } from '../../lib/commands/channels-util'
+import { EdgeCommand } from '../../lib/edge-command.js'
+import { listChannels, listTableFieldDefinitions, tableFieldDefinitions } from '../../lib/commands/channels-util.js'
 
 
 export default class ChannelsCommand extends EdgeCommand<typeof ChannelsCommand.flags> {

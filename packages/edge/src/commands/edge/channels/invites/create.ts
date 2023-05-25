@@ -3,9 +3,9 @@ import inquirer from 'inquirer'
 
 import { inputAndOutputItem, TableFieldDefinition, userInputProcessor } from '@smartthings/cli-lib'
 
-import { chooseChannel } from '../../../../lib/commands/channels-util'
-import { EdgeCommand } from '../../../../lib/edge-command'
-import { CreateInvitation, Invitation } from '../../../../lib/endpoints/invites'
+import { chooseChannel } from '../../../../lib/commands/channels-util.js'
+import { EdgeCommand } from '../../../../lib/edge-command.js'
+import { CreateInvitation, Invitation } from '../../../../lib/endpoints/invites.js'
 
 
 const tableFieldDefinitions: TableFieldDefinition<Invitation>[] = [

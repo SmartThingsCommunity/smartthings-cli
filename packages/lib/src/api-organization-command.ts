@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core'
 
 import { HttpClientHeaders } from '@smartthings/core-sdk'
 
-import { APICommand } from './api-command'
+import { APICommand } from './api-command.js'
 
 
 const ORGANIZATION_HEADER = 'X-ST-Organization'

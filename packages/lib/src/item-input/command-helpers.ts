@@ -1,7 +1,7 @@
 import inquirer, { ChoiceCollection } from 'inquirer'
 
-import { jsonFormatter, OutputFormatter, yamlFormatter } from '../output'
-import { SmartThingsCommandInterface } from '../smartthings-command'
+import { jsonFormatter, OutputFormatter, yamlFormatter } from '../output.js'
+import { SmartThingsCommandInterface } from '../smartthings-command.js'
 import {
 	cancelAction,
 	editAction,
@@ -10,7 +10,7 @@ import {
 	InputDefinition,
 	previewJSONAction,
 	previewYAMLAction,
-} from './defs'
+} from './defs.js'
 
 
 export type UpdateFromUserInputOptions = {

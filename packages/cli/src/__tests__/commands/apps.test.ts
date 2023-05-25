@@ -1,7 +1,7 @@
 import { ListDataFunction, outputItemOrList } from '@smartthings/cli-lib'
 import { AppResponse, AppClassification, AppsEndpoint, AppType, PagedApp, SmartThingsClient } from '@smartthings/core-sdk'
-import AppsCommand from '../../commands/apps'
-import { shortARNorURL, verboseApps } from '../../lib/commands/apps-util'
+import AppsCommand from '../../commands/apps.js'
+import { shortARNorURL, verboseApps } from '../../lib/commands/apps-util.js'
 
 
 jest.mock('../../lib/commands/apps-util')

@@ -1,4 +1,4 @@
-import { ValidateFunction } from './user-query'
+import { ValidateFunction } from './user-query.js'
 
 
 export type RegExStringValidationOptions = {

@@ -2,9 +2,9 @@ import { RulesEndpoint, RuleExecutionResponse, SmartThingsClient, Rule } from '@
 
 import { CustomCommonOutputProducer, DefaultTableGenerator, formatAndWriteItem, WithNamedLocation } from '@smartthings/cli-lib'
 
-import RulesExecuteCommand from '../../../commands/rules/execute'
+import RulesExecuteCommand from '../../../commands/rules/execute.js'
 import { buildExecuteResponseTableOutput, chooseRule, getRuleWithLocation }
-	from '../../../lib/commands/rules-util'
+	from '../../../lib/commands/rules-util.js'
 
 
 jest.mock('../../../lib/commands/rules-util')

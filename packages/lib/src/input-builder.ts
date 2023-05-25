@@ -1,5 +1,5 @@
-import { SmartThingsCommandInterface } from './smartthings-command'
-import { CombinedInputProcessor, commonIOFlags, FileInputProcessor, inputFlag, InputProcessor, StdinInputProcessor } from './input'
+import { SmartThingsCommandInterface } from './smartthings-command.js'
+import { CombinedInputProcessor, commonIOFlags, FileInputProcessor, inputFlag, InputProcessor, StdinInputProcessor } from './input.js'
 
 /**
  * Build the most common type of input processor, which can handle data from stdin, a specified

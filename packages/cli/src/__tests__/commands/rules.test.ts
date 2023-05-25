@@ -1,8 +1,8 @@
 import { outputItemOrList, WithNamedLocation } from '@smartthings/cli-lib'
 import { Rule, SmartThingsClient } from '@smartthings/core-sdk'
 
-import RulesCommand from '../../commands/rules'
-import { getRulesByLocation, getRuleWithLocation } from '../../lib/commands/rules-util'
+import RulesCommand from '../../commands/rules.js'
+import { getRulesByLocation, getRuleWithLocation } from '../../lib/commands/rules-util.js'
 
 
 jest.mock('../../lib/commands/rules-util')

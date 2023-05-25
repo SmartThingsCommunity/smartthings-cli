@@ -1,7 +1,7 @@
 import { HubdevicesEndpoint } from '@smartthings/core-sdk'
 
-import DriversUninstallCommand from '../../../../commands/edge/drivers/uninstall'
-import { chooseHub, chooseInstalledDriver } from '../../../../lib/commands/drivers-util'
+import DriversUninstallCommand from '../../../../commands/edge/drivers/uninstall.js'
+import { chooseHub, chooseInstalledDriver } from '../../../../lib/commands/drivers-util.js'
 
 
 jest.mock('../../../../../src/lib/commands/drivers-util')

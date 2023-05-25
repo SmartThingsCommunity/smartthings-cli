@@ -4,8 +4,8 @@ import { APICommand, chooseOptionsWithDefaults, forAllOrganizations, selectFromL
 	stringTranslateToId } from '@smartthings/cli-lib'
 
 import { chooseChannel, listChannels, ChooseChannelOptions, chooseChannelOptionsWithDefaults, withChannelNames }
-	from '../../../lib/commands/channels-util'
-import * as channelsUtil from '../../../lib/commands/channels-util'
+	from '../../../lib/commands/channels-util.js'
+import * as channelsUtil from '../../../lib/commands/channels-util.js'
 
 
 jest.mock('@smartthings/cli-lib', () => ({

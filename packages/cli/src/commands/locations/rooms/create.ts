@@ -1,8 +1,8 @@
 import { Flags } from '@oclif/core'
 import { Room, RoomRequest } from '@smartthings/core-sdk'
 import { APICommand, CommonOutputProducer, inputAndOutputItem } from '@smartthings/cli-lib'
-import { chooseLocation } from '../../locations'
-import { tableFieldDefinitions } from '../../../lib/commands/locations/rooms-util'
+import { chooseLocation } from '../../locations.js'
+import { tableFieldDefinitions } from '../../../lib/commands/locations/rooms-util.js'
 
 
 export default class RoomsCreateCommand extends APICommand<typeof RoomsCreateCommand.flags> {

@@ -7,11 +7,11 @@ import { ChannelsEndpoint, DriverChannelDetails, DriversEndpoint, EdgeDriver, Hu
 
 import { outputItem, readFile } from '@smartthings/cli-lib'
 
-import PackageCommand from '../../../../commands/edge/drivers/package'
-import { chooseChannel } from '../../../../lib/commands/channels-util'
-import { chooseHub } from '../../../../lib/commands/drivers-util'
+import PackageCommand from '../../../../commands/edge/drivers/package.js'
+import { chooseChannel } from '../../../../lib/commands/channels-util.js'
+import { chooseHub } from '../../../../lib/commands/drivers-util.js'
 import { buildTestFileMatchers, processConfigFile, processFingerprintsFile, processProfiles,
-	processSrcDir, resolveProjectDirName } from '../../../../lib/commands/drivers/package-util'
+	processSrcDir, resolveProjectDirName } from '../../../../lib/commands/drivers/package-util.js'
 
 
 jest.mock('fs', () => {

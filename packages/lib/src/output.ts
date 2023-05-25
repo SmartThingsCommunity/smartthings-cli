@@ -1,8 +1,8 @@
 import yaml from 'js-yaml'
 
-import { formatFromFilename, IOFormat, stdoutIsTTY, writeFile } from './io-util'
-import { SmartThingsCommandInterface } from './smartthings-command'
-import { TableFieldDefinition, TableGenerator } from './table-generator'
+import { formatFromFilename, IOFormat, stdoutIsTTY, writeFile } from './io-util.js'
+import { SmartThingsCommandInterface } from './smartthings-command.js'
+import { TableFieldDefinition, TableGenerator } from './table-generator.js'
 
 
 export function sort<L extends object>(list: L[], keyName?: Extract<keyof L, string>): L[] {

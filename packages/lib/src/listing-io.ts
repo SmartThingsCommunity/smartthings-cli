@@ -1,6 +1,6 @@
-import { IdTranslationFunction, ListDataFunction, LookupDataFunction, outputItem, OutputItemConfig, outputList, OutputListConfig } from './basic-io'
-import { stringTranslateToId } from './command-util'
-import { SmartThingsCommandInterface } from './smartthings-command'
+import { IdTranslationFunction, ListDataFunction, LookupDataFunction, outputItem, OutputItemConfig, outputList, OutputListConfig } from './basic-io.js'
+import { stringTranslateToId } from './command-util.js'
+import { SmartThingsCommandInterface } from './smartthings-command.js'
 
 
 export type OutputItemOrListConfig<O extends object, L extends object = O> = OutputItemConfig<O> & OutputListConfig<L>

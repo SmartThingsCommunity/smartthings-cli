@@ -14,7 +14,7 @@ import {
 	inputAndOutputItem,
 } from '@smartthings/cli-lib'
 
-import VirtualDeviceEventsCommand from '../../../commands/virtualdevices/events'
+import VirtualDeviceEventsCommand from '../../../commands/virtualdevices/events.js'
 import {
 	CapabilityAttributeItem,
 	chooseAttribute,
@@ -22,7 +22,7 @@ import {
 	chooseComponent,
 	chooseUnit,
 	chooseValue,
-} from '../../../lib/commands/virtualdevices-util'
+} from '../../../lib/commands/virtualdevices-util.js'
 
 
 jest.mock('../../../lib/commands/virtualdevices-util')

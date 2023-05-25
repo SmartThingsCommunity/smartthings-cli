@@ -1,5 +1,5 @@
 import { outputItemOrList, selectFromList } from '@smartthings/cli-lib'
-import LocationsCommand, { chooseLocation } from '../../commands/locations'
+import LocationsCommand, { chooseLocation } from '../../commands/locations.js'
 import { LocationsEndpoint } from '@smartthings/core-sdk'
 import { Config } from '@oclif/core'
 

@@ -2,8 +2,8 @@ import { EnrolledChannel } from '@smartthings/core-sdk'
 
 import { outputList, OutputListConfig } from '@smartthings/cli-lib'
 
-import { chooseHub } from '../../../lib/commands/drivers-util'
-import { EdgeCommand } from '../../../lib/edge-command'
+import { chooseHub } from '../../../lib/commands/drivers-util.js'
+import { EdgeCommand } from '../../../lib/edge-command.js'
 
 
 export default class ChannelsEnrollmentsCommand extends EdgeCommand<typeof ChannelsEnrollmentsCommand.flags> {

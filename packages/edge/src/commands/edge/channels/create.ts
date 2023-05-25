@@ -4,7 +4,7 @@ import { Channel, ChannelCreate } from '@smartthings/core-sdk'
 
 import { inputAndOutputItem, TableFieldDefinition, userInputProcessor } from '@smartthings/cli-lib'
 
-import { EdgeCommand } from '../../../lib/edge-command'
+import { EdgeCommand } from '../../../lib/edge-command.js'
 
 
 const tableFieldDefinitions: TableFieldDefinition<Channel>[] = ['channelId', 'name', 'description',

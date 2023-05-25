@@ -1,5 +1,5 @@
 import { APICommand, outputItem, outputItemOrList } from '@smartthings/cli-lib'
-import { chooseApp, oauthTableFieldDefinitions } from '../../lib/commands/apps-util'
+import { chooseApp, oauthTableFieldDefinitions } from '../../lib/commands/apps-util.js'
 
 
 export default class AppOauthCommand extends APICommand<typeof AppOauthCommand.flags> {

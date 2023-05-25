@@ -16,8 +16,8 @@ import {
 	maxItemsPerRequest,
 	toEpochTime,
 	writeDeviceEventsTable,
-} from '../../lib/commands/history-util'
-import { chooseLocation } from '../locations'
+} from '../../lib/commands/history-util.js'
+import { chooseLocation } from '../locations.js'
 
 
 export default class LocationDeviceHistoryCommand extends APICommand<typeof LocationDeviceHistoryCommand.flags> {

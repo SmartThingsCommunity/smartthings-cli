@@ -1,6 +1,6 @@
 import { chooseDevice } from '@smartthings/cli-lib'
 import { DevicesEndpoint } from '@smartthings/core-sdk'
-import DeviceDeleteCommand from '../../../commands/devices/delete'
+import DeviceDeleteCommand from '../../../commands/devices/delete.js'
 
 
 describe('DeviceDeleteCommand', () => {

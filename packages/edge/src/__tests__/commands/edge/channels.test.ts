@@ -2,8 +2,8 @@ import { Channel, ChannelsEndpoint, SmartThingsClient } from '@smartthings/core-
 
 import { outputItemOrList } from '@smartthings/cli-lib'
 
-import ChannelsCommand from '../../../commands/edge/channels'
-import { listChannels } from '../../../lib/commands/channels-util'
+import ChannelsCommand from '../../../commands/edge/channels.js'
+import { listChannels } from '../../../lib/commands/channels-util.js'
 
 
 jest.mock('@smartthings/cli-lib', () => {

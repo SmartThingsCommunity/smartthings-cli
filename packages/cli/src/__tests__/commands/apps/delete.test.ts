@@ -1,6 +1,6 @@
 import { AppsEndpoint } from '@smartthings/core-sdk'
-import AppDeleteCommand from '../../../commands/apps/delete'
-import { chooseApp } from '../../../lib/commands/apps-util'
+import AppDeleteCommand from '../../../commands/apps/delete.js'
+import { chooseApp } from '../../../lib/commands/apps-util.js'
 
 
 jest.mock('../../../lib/commands/apps-util')

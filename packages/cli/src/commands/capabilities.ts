@@ -19,7 +19,7 @@ import {
 	getCustomByNamespace,
 	getStandard,
 	translateToId,
-} from '../lib/commands/capabilities-util'
+} from '../lib/commands/capabilities-util.js'
 
 
 export default class CapabilitiesCommand extends APIOrganizationCommand<typeof CapabilitiesCommand.flags> {

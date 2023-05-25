@@ -1,4 +1,4 @@
-import { httpsURLValidate, localhostOrHTTPSValidate, stringValidateFn, urlValidate } from '../validate-util'
+import { httpsURLValidate, localhostOrHTTPSValidate, stringValidateFn, urlValidate } from '../validate-util.js'
 
 
 describe('stringValidateFn', () => {

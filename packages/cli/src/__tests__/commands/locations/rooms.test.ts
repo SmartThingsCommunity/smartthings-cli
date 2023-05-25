@@ -2,8 +2,8 @@ import { Room, RoomsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
 import { outputItemOrList, withLocations, WithNamedLocation } from '@smartthings/cli-lib'
 
-import RoomsCommand from '../../../commands/locations/rooms'
-import { getRoomsByLocation } from '../../../lib/commands/locations/rooms-util'
+import RoomsCommand from '../../../commands/locations/rooms.js'
+import { getRoomsByLocation } from '../../../lib/commands/locations/rooms-util.js'
 
 
 jest.mock('../../../lib/commands/locations/rooms-util', () => {

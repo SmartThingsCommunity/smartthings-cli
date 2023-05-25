@@ -1,4 +1,4 @@
-import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../../lib/log-utils'
+import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../../lib/log-utils.js'
 import log4js from 'log4js'
 import yaml from 'js-yaml'
 

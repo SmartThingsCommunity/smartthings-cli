@@ -2,7 +2,7 @@ import { Capability, CapabilityUpdate } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput, capabilityIdInputArgs, chooseCapability } from '../../lib/commands/capabilities-util'
+import { buildTableOutput, capabilityIdInputArgs, chooseCapability } from '../../lib/commands/capabilities-util.js'
 
 
 export default class CapabilitiesUpdate extends APIOrganizationCommand<typeof CapabilitiesUpdate.flags> {

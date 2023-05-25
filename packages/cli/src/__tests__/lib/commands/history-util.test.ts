@@ -13,7 +13,7 @@ import {
 	getHistory,
 	maxItemsPerRequest,
 	maxRequestsBeforeWarning,
-} from '../../../lib/commands/history-util'
+} from '../../../lib/commands/history-util.js'
 
 
 jest.mock('inquirer')

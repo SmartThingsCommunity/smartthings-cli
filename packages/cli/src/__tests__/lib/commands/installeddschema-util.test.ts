@@ -2,7 +2,7 @@ import { InstalledSchemaApp, LocationsEndpoint, SchemaEndpoint, SmartThingsClien
 
 import { withLocations } from '@smartthings/cli-lib'
 
-import { installedSchemaInstances } from '../../../lib/commands/installedschema-util'
+import { installedSchemaInstances } from '../../../lib/commands/installedschema-util.js'
 
 
 describe('installedSchemaInstances', () => {

@@ -1,7 +1,7 @@
 import { ActionFunction, chooseDevice, CustomCommonOutputProducer, DefaultTableGenerator, inputAndOutputItem } from '@smartthings/cli-lib'
 import { Device, DevicesEndpoint, DeviceUpdate } from '@smartthings/core-sdk'
-import DeviceUpdateCommand from '../../../commands/devices/update'
-import { buildTableOutput } from '../../../lib/commands/devices-util'
+import DeviceUpdateCommand from '../../../commands/devices/update.js'
+import { buildTableOutput } from '../../../lib/commands/devices-util.js'
 
 
 jest.mock('../../../lib/commands/devices-util')

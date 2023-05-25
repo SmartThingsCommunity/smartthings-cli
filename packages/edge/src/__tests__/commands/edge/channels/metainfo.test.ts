@@ -2,9 +2,9 @@ import { ChannelsEndpoint, DriverChannelDetails, EdgeDriver } from '@smartthings
 
 import { CustomCommonOutputProducer, DefaultTableGenerator, outputItemOrList } from '@smartthings/cli-lib'
 
-import ChannelsMetaInfoCommand from '../../../../commands/edge/channels/metainfo'
-import { buildTableOutput } from '../../../../lib/commands/drivers-util'
-import { chooseChannel } from '../../../../lib/commands/channels-util'
+import ChannelsMetaInfoCommand from '../../../../commands/edge/channels/metainfo.js'
+import { buildTableOutput } from '../../../../lib/commands/drivers-util.js'
+import { chooseChannel } from '../../../../lib/commands/channels-util.js'
 
 
 jest.mock('@smartthings/cli-lib', () => {

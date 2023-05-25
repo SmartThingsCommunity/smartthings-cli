@@ -4,7 +4,7 @@ import { SceneSummary, SceneListOptions } from '@smartthings/core-sdk'
 
 import { APICommand, outputItemOrList, OutputItemOrListConfig } from '@smartthings/cli-lib'
 
-import { tableFieldDefinitions } from '../lib/commands/scenes-util'
+import { tableFieldDefinitions } from '../lib/commands/scenes-util.js'
 
 
 export default class ScenesCommand extends APICommand<typeof ScenesCommand.flags> {

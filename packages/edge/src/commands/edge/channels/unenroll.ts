@@ -2,9 +2,9 @@ import { Flags } from '@oclif/core'
 
 import { Device } from '@smartthings/core-sdk'
 
-import { chooseChannel } from '../../../lib/commands/channels-util'
-import { chooseHub, listHubs } from '../../../lib/commands/drivers-util'
-import { EdgeCommand } from '../../../lib/edge-command'
+import { chooseChannel } from '../../../lib/commands/channels-util.js'
+import { chooseHub, listHubs } from '../../../lib/commands/drivers-util.js'
+import { EdgeCommand } from '../../../lib/edge-command.js'
 
 
 export const maxHubsToCheckForEnrollments = 15

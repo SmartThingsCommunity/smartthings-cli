@@ -1,7 +1,7 @@
 import { Command, Config, Interfaces } from '@oclif/core'
-import { CLIConfig, loadConfig, Profile } from '../cli-config'
-import { SmartThingsCommand } from '../smartthings-command'
-import { DefaultTableGenerator } from '../table-generator'
+import { CLIConfig, loadConfig, Profile } from '../cli-config.js'
+import { SmartThingsCommand } from '../smartthings-command.js'
+import { DefaultTableGenerator } from '../table-generator.js'
 import log4js from '@log4js-node/log4js-api'
 import { ExitError } from '@oclif/core/lib/errors'
 

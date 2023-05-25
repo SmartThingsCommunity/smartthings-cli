@@ -1,5 +1,5 @@
-import AppsAuthorizeCommand from '../../../commands/apps/authorize'
-import { addPermission } from '../../../lib/aws-utils'
+import AppsAuthorizeCommand from '../../../commands/apps/authorize.js'
+import { addPermission } from '../../../lib/aws-utils.js'
 
 
 jest.mock('../../../lib/aws-utils')

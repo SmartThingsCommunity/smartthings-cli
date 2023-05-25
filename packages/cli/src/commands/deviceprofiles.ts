@@ -11,7 +11,7 @@ import {
 	OutputItemOrListConfig,
 } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../lib/commands/deviceprofiles-util'
+import { buildTableOutput } from '../lib/commands/deviceprofiles-util.js'
 
 
 export default class DeviceProfilesCommand extends APIOrganizationCommand<typeof DeviceProfilesCommand.flags> {

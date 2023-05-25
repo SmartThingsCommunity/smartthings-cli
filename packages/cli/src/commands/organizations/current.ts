@@ -1,6 +1,6 @@
 import { APIOrganizationCommand, formatAndWriteItem, outputItem } from '@smartthings/cli-lib'
 
-import { tableFieldDefinitions } from '../organizations'
+import { tableFieldDefinitions } from '../organizations.js'
 
 
 export default class OrganizationCurrentCommand extends APIOrganizationCommand<typeof OrganizationCurrentCommand.flags> {

@@ -7,7 +7,7 @@ import {
 	editOption,
 	finishAction,
 	finishOption,
-} from '../../item-input/defs'
+} from '../../item-input/defs.js'
 
 
 test('addOption', () => {

@@ -1,5 +1,5 @@
 import inquirer from 'inquirer'
-import { askForInteger, askForNumber, askForString, askForOptionalString, numberTransformer, ValidateFunction } from '../user-query'
+import { askForInteger, askForNumber, askForString, askForOptionalString, numberTransformer, ValidateFunction } from '../user-query.js'
 
 
 jest.mock('inquirer')

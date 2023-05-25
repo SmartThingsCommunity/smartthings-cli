@@ -1,6 +1,6 @@
 import inquirer from 'inquirer'
 
-import ConfigResetCommand from '../../../commands/config/reset'
+import ConfigResetCommand from '../../../commands/config/reset.js'
 
 import { resetManagedConfig, SmartThingsCommand } from '@smartthings/cli-lib'
 

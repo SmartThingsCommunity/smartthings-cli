@@ -7,7 +7,7 @@ import {
 	selectFromList, stringTranslateToId, Table,
 } from '@smartthings/cli-lib'
 
-import { buildTableOutput, chooseApp, shortARNorURL, verboseApps } from '../../../lib/commands/apps-util'
+import { buildTableOutput, chooseApp, shortARNorURL, verboseApps } from '../../../lib/commands/apps-util.js'
 
 
 describe('chooseApp', () => {

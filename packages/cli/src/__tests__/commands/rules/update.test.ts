@@ -2,8 +2,8 @@ import { Rule, RuleRequest, RulesEndpoint, SmartThingsClient } from '@smartthing
 
 import { inputAndOutputItem, WithNamedLocation } from '@smartthings/cli-lib'
 
-import { chooseRule, getRuleWithLocation } from '../../../lib/commands/rules-util'
-import RulesUpdateCommand from '../../../commands/rules/update'
+import { chooseRule, getRuleWithLocation } from '../../../lib/commands/rules-util.js'
+import RulesUpdateCommand from '../../../commands/rules/update.js'
 
 
 jest.mock('../../../lib/commands/rules-util', () => {

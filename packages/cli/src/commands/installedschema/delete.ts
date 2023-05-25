@@ -4,7 +4,7 @@ import { InstalledSchemaApp } from '@smartthings/core-sdk'
 
 import { APICommand, selectFromList, SelectFromListConfig, WithNamedLocation } from '@smartthings/cli-lib'
 
-import { installedSchemaInstances } from '../../lib/commands/installedschema-util'
+import { installedSchemaInstances } from '../../lib/commands/installedschema-util.js'
 
 
 export default class InstalledSchemaAppDeleteCommand extends APICommand<typeof InstalledSchemaAppDeleteCommand.flags> {

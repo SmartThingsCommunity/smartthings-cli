@@ -1,4 +1,4 @@
-const shared = require('../../.eslintrc.js')
+const shared = require('../../.eslintrc.cjs')
 
 shared.parserOptions.tsconfigRootDir = __dirname
 shared.ignorePatterns = [

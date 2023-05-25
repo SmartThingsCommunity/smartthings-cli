@@ -2,9 +2,9 @@ import { HubdevicesEndpoint, InstalledDriver, SmartThingsClient } from '@smartth
 
 import { outputItemOrList } from '@smartthings/cli-lib'
 
-import DriversInstalledCommand from '../../../../commands/edge/drivers/installed'
-import { withChannelNames, WithNamedChannel } from '../../../../lib/commands/channels-util'
-import { chooseHub } from '../../../../lib/commands/drivers-util'
+import DriversInstalledCommand from '../../../../commands/edge/drivers/installed.js'
+import { withChannelNames, WithNamedChannel } from '../../../../lib/commands/channels-util.js'
+import { chooseHub } from '../../../../lib/commands/drivers-util.js'
 
 
 jest.mock('@smartthings/cli-lib', () => {

@@ -2,10 +2,10 @@ import { SmartThingsClient } from '@smartthings/core-sdk'
 
 import { outputList } from '@smartthings/cli-lib'
 
-import { chooseChannel } from '../../../../lib/commands/channels-util'
-import { DriverChannelDetailsWithName } from '../../../../lib/commands/drivers-util'
-import * as driversUtil from '../../../../lib/commands/drivers-util'
-import ChannelsDriversCommand from '../../../../commands/edge/channels/drivers'
+import { chooseChannel } from '../../../../lib/commands/channels-util.js'
+import { DriverChannelDetailsWithName } from '../../../../lib/commands/drivers-util.js'
+import * as driversUtil from '../../../../lib/commands/drivers-util.js'
+import ChannelsDriversCommand from '../../../../commands/edge/channels/drivers.js'
 
 
 jest.mock('@smartthings/cli-lib', () => {

@@ -1,8 +1,8 @@
 import { outputList, OutputListConfig } from '@smartthings/cli-lib'
 
-import { DriverChannelDetailsWithName, listAssignedDriversWithNames } from '../../../lib/commands/drivers-util'
-import { chooseChannel } from '../../../lib/commands/channels-util'
-import { EdgeCommand } from '../../../lib/edge-command'
+import { DriverChannelDetailsWithName, listAssignedDriversWithNames } from '../../../lib/commands/drivers-util.js'
+import { chooseChannel } from '../../../lib/commands/channels-util.js'
+import { EdgeCommand } from '../../../lib/edge-command.js'
 
 
 export default class ChannelsDriversCommand extends EdgeCommand<typeof ChannelsDriversCommand.flags> {

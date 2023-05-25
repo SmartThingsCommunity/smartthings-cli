@@ -1,7 +1,7 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
 import { Room, RoomRequest, RoomsEndpoint } from '@smartthings/core-sdk'
-import { chooseLocation } from '../../../../commands/locations'
-import RoomsCreateCommand from '../../../../commands/locations/rooms/create'
+import { chooseLocation } from '../../../../commands/locations.js'
+import RoomsCreateCommand from '../../../../commands/locations/rooms/create.js'
 
 
 jest.mock('../../../../commands/locations')

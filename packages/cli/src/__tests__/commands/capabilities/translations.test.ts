@@ -1,5 +1,5 @@
 import { outputItemOrList, selectFromList } from '@smartthings/cli-lib'
-import CapabilityTranslationsCommand from '../../../commands/capabilities/translations'
+import CapabilityTranslationsCommand from '../../../commands/capabilities/translations.js'
 import { LocaleReference, CapabilitiesEndpoint } from '@smartthings/core-sdk'
 
 

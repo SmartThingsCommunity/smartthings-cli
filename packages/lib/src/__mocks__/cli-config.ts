@@ -1,4 +1,4 @@
-import { CLIConfig, CLIConfigDescription } from '../cli-config'
+import { CLIConfig, CLIConfigDescription } from '../cli-config.js'
 
 
 export const mergeProfiles = jest.fn()

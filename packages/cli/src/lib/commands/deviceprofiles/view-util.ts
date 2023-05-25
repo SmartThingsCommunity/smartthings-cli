@@ -1,6 +1,6 @@
 import { PresentationDeviceConfig, PresentationDeviceConfigCreate, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
 
-import { DeviceView, ViewPresentationDeviceConfigEntry } from '../deviceprofiles-util'
+import { DeviceView, ViewPresentationDeviceConfigEntry } from '../deviceprofiles-util.js'
 
 
 export const prunePresentationEntries = (entries: PresentationDeviceConfigEntry[]): ViewPresentationDeviceConfigEntry[] => {

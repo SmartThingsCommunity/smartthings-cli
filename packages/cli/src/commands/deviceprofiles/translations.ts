@@ -3,8 +3,8 @@ import { Flags } from '@oclif/core'
 import { DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, OutputItemOrListConfig, outputItemOrList } from '@smartthings/cli-lib'
-import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
-import { buildTableOutput } from '../../lib/commands/deviceprofiles/translations-util'
+import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util.js'
+import { buildTableOutput } from '../../lib/commands/deviceprofiles/translations-util.js'
 
 
 export default class DeviceProfileTranslationsCommand extends APIOrganizationCommand<typeof DeviceProfileTranslationsCommand.flags> {

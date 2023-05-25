@@ -1,5 +1,6 @@
-import { computedDef, optionalStringDef, staticDef, stringDef, uneditable, validateWithContextFn } from '../../item-input'
-import { askForString, askForOptionalString, ValidateFunction } from '../../user-query'
+import { uneditable } from '../../item-input/defs.js'
+import { computedDef, optionalStringDef, staticDef, stringDef, validateWithContextFn } from '../../item-input/misc.js'
+import { askForString, askForOptionalString, ValidateFunction } from '../../user-query.js'
 
 
 jest.mock('../../user-query')

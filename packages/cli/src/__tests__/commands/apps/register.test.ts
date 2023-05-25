@@ -1,6 +1,6 @@
 import { selectFromList } from '@smartthings/cli-lib'
 import { PagedApp, AppsEndpoint, AppType } from '@smartthings/core-sdk'
-import AppRegisterCommand from '../../../commands/apps/register'
+import AppRegisterCommand from '../../../commands/apps/register.js'
 
 
 describe('AppRegisterCommand', () => {

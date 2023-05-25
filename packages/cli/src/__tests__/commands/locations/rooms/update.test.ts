@@ -1,7 +1,7 @@
 import { RoomRequest, RoomsEndpoint } from '@smartthings/core-sdk'
 import { inputAndOutputItem } from '@smartthings/cli-lib'
-import RoomsUpdateCommand from '../../../../commands/locations/rooms/update'
-import { chooseRoom } from '../../../../lib/commands/locations/rooms-util'
+import RoomsUpdateCommand from '../../../../commands/locations/rooms/update.js'
+import { chooseRoom } from '../../../../lib/commands/locations/rooms-util.js'
 
 
 jest.mock('../../../../lib/commands/locations/rooms-util')

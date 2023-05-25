@@ -1,9 +1,9 @@
-import { IOFormat } from '../io-util'
-import * as output from '../output'
-import { buildOutputFormatter } from '../output-builder'
+import { IOFormat } from '../io-util.js'
+import * as output from '../output.js'
+import { buildOutputFormatter } from '../output-builder.js'
 
-import { buildMockCommand } from './test-lib/mock-command'
-import { SimpleType } from './test-lib/simple-type'
+import { buildMockCommand } from './test-lib/mock-command.js'
+import { SimpleType } from './test-lib/simple-type.js'
 
 
 describe('buildOutputFormatter', () => {

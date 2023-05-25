@@ -1,6 +1,6 @@
 import { selectFromList } from '@smartthings/cli-lib'
 import { InstalledAppsEndpoint } from '@smartthings/core-sdk'
-import InstalledAppDeleteCommand from '../../../commands/installedapps/delete'
+import InstalledAppDeleteCommand from '../../../commands/installedapps/delete.js'
 
 
 describe('InstalledAppDeleteCommand', () => {

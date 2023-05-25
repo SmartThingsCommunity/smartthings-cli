@@ -2,8 +2,8 @@ import { DriversEndpoint, EdgeDriver, SmartThingsClient } from '@smartthings/cor
 
 import { CustomCommonOutputProducer, DefaultTableGenerator, outputItemOrList } from '@smartthings/cli-lib'
 
-import DriversCommand from '../../../commands/edge/drivers'
-import { buildTableOutput, listDrivers } from '../../../lib/commands/drivers-util'
+import DriversCommand from '../../../commands/edge/drivers.js'
+import { buildTableOutput, listDrivers } from '../../../lib/commands/drivers-util.js'
 
 
 jest.mock('@smartthings/cli-lib', () => {
