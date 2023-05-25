@@ -4,8 +4,8 @@ import { EnrolledChannel } from '@smartthings/core-sdk'
 
 import { selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
 
-import { chooseDriverFromChannel, chooseHub } from '../../../lib/commands/drivers-util'
-import { EdgeCommand } from '../../../lib/edge-command'
+import { chooseDriverFromChannel, chooseHub } from '../../../lib/commands/drivers-util.js'
+import { EdgeCommand } from '../../../lib/edge-command.js'
 
 
 export default class DriversInstallCommand extends EdgeCommand<typeof DriversInstallCommand.flags> {

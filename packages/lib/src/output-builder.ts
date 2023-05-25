@@ -1,9 +1,9 @@
 import { Flags } from '@oclif/core'
 
-import { commonIOFlags } from './input'
-import { IOFormat } from './io-util'
-import { calculateOutputFormat, jsonFormatter, OutputFormatter, yamlFormatter } from './output'
-import { SmartThingsCommandInterface } from './smartthings-command'
+import { commonIOFlags } from './input.js'
+import { IOFormat } from './io-util.js'
+import { calculateOutputFormat, jsonFormatter, OutputFormatter, yamlFormatter } from './output.js'
+import { SmartThingsCommandInterface } from './smartthings-command.js'
 
 
 export function buildOutputFormatter<T extends object>(command: SmartThingsCommandInterface,

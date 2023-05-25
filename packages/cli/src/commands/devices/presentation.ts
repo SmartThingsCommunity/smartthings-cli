@@ -1,6 +1,6 @@
 import { APICommand, chooseDevice, formatAndWriteItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../presentation'
+import { buildTableOutput } from '../presentation.js'
 
 
 export const tableFieldDefinitions = ['clientName', 'scope', 'redirectUris']

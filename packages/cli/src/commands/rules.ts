@@ -4,7 +4,7 @@ import { Rule } from '@smartthings/core-sdk'
 
 import { APICommand, outputItemOrList, OutputItemOrListConfig, WithNamedLocation } from '@smartthings/cli-lib'
 
-import { getRulesByLocation, getRuleWithLocation, tableFieldDefinitions } from '../lib/commands/rules-util'
+import { getRulesByLocation, getRuleWithLocation, tableFieldDefinitions } from '../lib/commands/rules-util.js'
 
 
 export default class RulesCommand extends APICommand<typeof RulesCommand.flags> {

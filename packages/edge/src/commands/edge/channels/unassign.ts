@@ -4,8 +4,8 @@ import { DriverChannelDetails } from '@smartthings/core-sdk'
 
 import { APICommand, ChooseOptions, chooseOptionsWithDefaults, selectFromList, SelectFromListConfig, stringTranslateToId } from '@smartthings/cli-lib'
 
-import { chooseChannel } from '../../../lib/commands/channels-util'
-import { EdgeCommand } from '../../../lib/edge-command'
+import { chooseChannel } from '../../../lib/commands/channels-util.js'
+import { EdgeCommand } from '../../../lib/edge-command.js'
 
 
 export type NamedDriverChannelDetails = DriverChannelDetails & {

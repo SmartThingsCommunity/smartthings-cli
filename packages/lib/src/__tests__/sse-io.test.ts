@@ -2,7 +2,7 @@
  * @jest-environment jsdom // required due to use of MessageEvent
  */
 
-import { logEvent } from '../sse-io'
+import { logEvent } from '../sse-io.js'
 import { CliUx } from '@oclif/core'
 
 

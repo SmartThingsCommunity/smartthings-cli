@@ -1,6 +1,6 @@
 import { APICommand } from '@smartthings/cli-lib'
 
-import { chooseLocation } from '../locations'
+import { chooseLocation } from '../locations.js'
 
 
 export default class LocationsDeleteCommand extends APICommand<typeof LocationsDeleteCommand.flags> {

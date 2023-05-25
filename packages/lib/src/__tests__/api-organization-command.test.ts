@@ -2,8 +2,8 @@ import { Config, Interfaces } from '@oclif/core'
 
 import * as coreSDK from '@smartthings/core-sdk'
 
-import { APIOrganizationCommand } from '../api-organization-command'
-import { CLIConfig, loadConfig, Profile } from '../cli-config'
+import { APIOrganizationCommand } from '../api-organization-command.js'
+import { CLIConfig, loadConfig, Profile } from '../cli-config.js'
 
 
 jest.mock('@smartthings/core-sdk')

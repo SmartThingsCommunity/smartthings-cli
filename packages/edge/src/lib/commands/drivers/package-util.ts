@@ -5,7 +5,7 @@ import JSZip from 'jszip'
 import picomatch from 'picomatch'
 
 import { fileExists, findYAMLFilename, isDir, isFile, isSymbolicLink, readYAMLFile,
-	realPathForSymbolicLink, requireDir, YAMLFileData } from '../../file-util'
+	realPathForSymbolicLink, requireDir, YAMLFileData } from '../../file-util.js'
 
 
 // Utility methods specific to the `edge:drivers:package` command. Split out here to make

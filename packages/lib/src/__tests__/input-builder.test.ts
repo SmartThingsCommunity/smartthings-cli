@@ -1,8 +1,8 @@
-import * as input from '../input'
-import { buildInputProcessor } from '../input-builder'
-import { IOFormat } from '../io-util'
-import { SimpleType } from './test-lib/simple-type'
-import { buildMockCommand } from './test-lib/mock-command'
+import * as input from '../input.js'
+import { buildInputProcessor } from '../input-builder.js'
+import { IOFormat } from '../io-util.js'
+import { SimpleType } from './test-lib/simple-type.js'
+import { buildMockCommand } from './test-lib/mock-command.js'
 
 
 jest.mock('../input')

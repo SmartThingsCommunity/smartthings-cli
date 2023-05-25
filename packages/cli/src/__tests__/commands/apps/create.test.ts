@@ -1,8 +1,8 @@
 import { CustomCommonOutputProducer, DefaultTableGenerator, inputAndOutputItem, IOFormat } from '@smartthings/cli-lib'
 import { AppCreationResponse, AppCreateRequest, AppsEndpoint, AppResponse } from '@smartthings/core-sdk'
-import AppCreateCommand from '../../../commands/apps/create'
-import { tableFieldDefinitions } from '../../../lib/commands/apps-util'
-import { addPermission } from '../../../lib/aws-utils'
+import AppCreateCommand from '../../../commands/apps/create.js'
+import { tableFieldDefinitions } from '../../../lib/commands/apps-util.js'
+import { addPermission } from '../../../lib/aws-utils.js'
 
 
 jest.mock('../../../lib/aws-utils')

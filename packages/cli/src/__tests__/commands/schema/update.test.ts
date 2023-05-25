@@ -1,7 +1,7 @@
 import { inputItem, IOFormat, selectFromList } from '@smartthings/cli-lib'
 import { SchemaApp, SchemaAppRequest, SchemaEndpoint } from '@smartthings/core-sdk'
-import { addSchemaPermission } from '../../../lib/aws-utils'
-import SchemaUpdateCommand from '../../../commands/schema/update'
+import { addSchemaPermission } from '../../../lib/aws-utils.js'
+import SchemaUpdateCommand from '../../../commands/schema/update.js'
 
 
 jest.mock('../../../lib/aws-utils')

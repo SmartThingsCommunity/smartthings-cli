@@ -4,8 +4,8 @@ import { Location, LocationsEndpoint, NoOpAuthenticator, Room, RoomsEndpoint, Sm
 
 import { APICommand, selectFromList } from '@smartthings/cli-lib'
 
-import { getRoomsByLocation, chooseRoom } from '../../../../lib/commands/locations/rooms-util'
-import * as roomsUtil from '../../../../lib/commands/locations/rooms-util'
+import { getRoomsByLocation, chooseRoom } from '../../../../lib/commands/locations/rooms-util.js'
+import * as roomsUtil from '../../../../lib/commands/locations/rooms-util.js'
 
 
 describe('rooms-util', () => {

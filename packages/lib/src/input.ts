@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core'
 
-import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, readFile, stdinIsTTY } from './io-util'
+import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, readFile, stdinIsTTY } from './io-util.js'
 
 
 // Flags common to both input and output.

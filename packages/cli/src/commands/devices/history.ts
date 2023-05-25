@@ -17,7 +17,7 @@ import {
 	maxItemsPerRequest,
 	toEpochTime,
 	writeDeviceEventsTable,
-} from '../../lib/commands/history-util'
+} from '../../lib/commands/history-util.js'
 
 
 export default class DeviceHistoryCommand extends APICommand<typeof DeviceHistoryCommand.flags> {

@@ -11,8 +11,8 @@ import {
 
 import { APICommand } from '@smartthings/cli-lib'
 
-import { CapabilityId, chooseCapabilityFiltered } from '../capabilities-util'
-import { cleanupForCreate, cleanupForUpdate, DeviceDefinitionRequest } from '../deviceprofiles-util'
+import { CapabilityId, chooseCapabilityFiltered } from '../capabilities-util.js'
+import { cleanupForCreate, cleanupForUpdate, DeviceDefinitionRequest } from '../deviceprofiles-util.js'
 
 
 const capabilitiesWithoutPresentations = ['healthCheck', 'execute']

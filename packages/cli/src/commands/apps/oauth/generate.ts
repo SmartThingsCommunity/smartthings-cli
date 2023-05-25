@@ -2,7 +2,7 @@ import { GenerateAppOAuthRequest, GenerateAppOAuthResponse } from '@smartthings/
 
 import { APICommand, inputAndOutputItem, InputAndOutputItemConfig, inputProcessor, objectDef, stringDef, TableFieldDefinition, updateFromUserInput } from '@smartthings/cli-lib'
 
-import { chooseApp, oauthAppScopeDef } from '../../../lib/commands/apps-util'
+import { chooseApp, oauthAppScopeDef } from '../../../lib/commands/apps-util.js'
 
 
 export default class AppOauthGenerateCommand extends APICommand<typeof AppOauthGenerateCommand.flags> {

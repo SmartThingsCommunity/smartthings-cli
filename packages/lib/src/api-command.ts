@@ -4,8 +4,8 @@ import osLocale from 'os-locale'
 
 import { Authenticator, BearerTokenAuthenticator, HttpClientHeaders, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
 
-import { ClientIdProvider, defaultClientIdProvider, LoginAuthenticator } from './login-authenticator'
-import { SmartThingsCommand } from './smartthings-command'
+import { ClientIdProvider, defaultClientIdProvider, LoginAuthenticator } from './login-authenticator.js'
+import { SmartThingsCommand } from './smartthings-command.js'
 
 
 const LANGUAGE_HEADER = 'Accept-Language'

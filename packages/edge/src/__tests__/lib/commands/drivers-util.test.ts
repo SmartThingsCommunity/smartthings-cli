@@ -8,8 +8,8 @@ import { APICommand, ChooseOptions, chooseOptionsWithDefaults, forAllOrganizatio
 import { buildTableOutput, chooseDriver, chooseDriverFromChannel, chooseHub,
 	DriverChannelDetailsWithName, listAllAvailableDrivers, listAssignedDriversWithNames,
 	listDrivers, listMatchingDrivers, permissionsValue, withoutCurrentDriver }
-	from '../../../lib/commands/drivers-util'
-import * as driversUtil from '../../../lib/commands/drivers-util'
+	from '../../../lib/commands/drivers-util.js'
+import * as driversUtil from '../../../lib/commands/drivers-util.js'
 
 
 jest.mock('@smartthings/cli-lib', () => ({

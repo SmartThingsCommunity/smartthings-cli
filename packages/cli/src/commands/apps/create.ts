@@ -20,8 +20,8 @@ import {
 	userInputProcessor,
 } from '@smartthings/cli-lib'
 
-import { addPermission } from '../../lib/aws-utils'
-import { oauthAppScopeDef, redirectUrisDef, smartAppHelpText, tableFieldDefinitions } from '../../lib/commands/apps-util'
+import { addPermission } from '../../lib/aws-utils.js'
+import { oauthAppScopeDef, redirectUrisDef, smartAppHelpText, tableFieldDefinitions } from '../../lib/commands/apps-util.js'
 
 
 const appNameDef = computedDef((context?: unknown[]): string => {

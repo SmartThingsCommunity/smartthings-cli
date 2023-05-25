@@ -1,6 +1,6 @@
 import { outputItemOrList } from '@smartthings/cli-lib'
 
-import DeviceProfilesCommand from '../../commands/deviceprofiles'
+import DeviceProfilesCommand from '../../commands/deviceprofiles.js'
 
 
 describe('DevicesProfilesCommand', () => {

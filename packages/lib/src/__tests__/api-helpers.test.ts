@@ -8,9 +8,9 @@ import {
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { forAllNamespaces, forAllOrganizations, withLocation, withLocations, withLocationAndRoom, withLocationsAndRooms } from '../api-helpers'
-import * as apiHelpers from '../api-helpers'
-import { SimpleType } from './test-lib/simple-type'
+import { forAllNamespaces, forAllOrganizations, withLocation, withLocations, withLocationAndRoom, withLocationsAndRooms } from '../api-helpers.js'
+import * as apiHelpers from '../api-helpers.js'
+import { SimpleType } from './test-lib/simple-type.js'
 
 
 describe('api-helpers', () => {

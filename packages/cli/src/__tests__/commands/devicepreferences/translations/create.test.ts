@@ -1,8 +1,8 @@
 import { inputAndOutputItem } from '@smartthings/cli-lib'
 import { DevicePreferencesEndpoint, PreferenceLocalization } from '@smartthings/core-sdk'
-import DevicePreferencesTranslationsCreateCommand from '../../../../commands/devicepreferences/translations/create'
-import { chooseDevicePreference } from '../../../../lib/commands/devicepreferences-util'
-import { tableFieldDefinitions } from '../../../../lib/commands/devicepreferences/translations-util'
+import DevicePreferencesTranslationsCreateCommand from '../../../../commands/devicepreferences/translations/create.js'
+import { chooseDevicePreference } from '../../../../lib/commands/devicepreferences-util.js'
+import { tableFieldDefinitions } from '../../../../lib/commands/devicepreferences/translations-util.js'
 
 
 jest.mock('../../../../lib/commands/devicepreferences-util')

@@ -9,7 +9,7 @@ import {
 	chooseDeviceProfile,
 	cleanupForUpdate,
 	DeviceDefinitionRequest,
-} from '../../lib/commands/deviceprofiles-util'
+} from '../../lib/commands/deviceprofiles-util.js'
 
 
 export default class DeviceProfileUpdateCommand extends APIOrganizationCommand<typeof DeviceProfileUpdateCommand.flags> {

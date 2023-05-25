@@ -4,7 +4,7 @@ import { table } from 'table'
 
 import { Logger } from '@smartthings/core-sdk'
 
-import { stringFromUnknown } from './util'
+import { stringFromUnknown } from './util.js'
 
 
 type TableFieldDefinitionBase<T extends object> = {

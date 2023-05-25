@@ -11,8 +11,8 @@ import {
 	TableFieldDefinition,
 } from '@smartthings/cli-lib'
 
-import { EdgeCommand } from '../../../lib/edge-command'
-import { Invitation } from '../../../lib/endpoints/invites'
+import { EdgeCommand } from '../../../lib/edge-command.js'
+import { Invitation } from '../../../lib/endpoints/invites.js'
 
 
 export const listTableFieldDefinitions: TableFieldDefinition<Invitation>[] = [

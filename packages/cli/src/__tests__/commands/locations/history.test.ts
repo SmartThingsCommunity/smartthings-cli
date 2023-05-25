@@ -7,10 +7,10 @@ import {
 	writeOutput,
 } from '@smartthings/cli-lib'
 
-import LocationHistoryCommand from '../../../commands/locations/history'
-import { calculateRequestLimit, getHistory, writeDeviceEventsTable } from '../../../lib/commands/history-util'
-import { chooseLocation } from '../../../commands/locations'
-import LocationDeviceHistoryCommand from '../../../commands/locations/history'
+import LocationHistoryCommand from '../../../commands/locations/history.js'
+import { calculateRequestLimit, getHistory, writeDeviceEventsTable } from '../../../lib/commands/history-util.js'
+import { chooseLocation } from '../../../commands/locations.js'
+import LocationDeviceHistoryCommand from '../../../commands/locations/history.js'
 
 
 jest.mock('../../../lib/commands/history-util')

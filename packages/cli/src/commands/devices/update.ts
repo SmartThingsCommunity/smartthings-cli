@@ -2,7 +2,7 @@ import { Device, DeviceUpdate } from '@smartthings/core-sdk'
 
 import { APICommand, chooseDevice, inputAndOutputItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../../lib/commands/devices-util'
+import { buildTableOutput } from '../../lib/commands/devices-util.js'
 
 
 export default class DeviceUpdateCommand extends APICommand<typeof DeviceUpdateCommand.flags> {

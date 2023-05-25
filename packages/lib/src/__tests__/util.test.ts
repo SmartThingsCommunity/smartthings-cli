@@ -1,4 +1,4 @@
-import { clipToMaximum, sanitize, stringFromUnknown } from '../util'
+import { clipToMaximum, sanitize, stringFromUnknown } from '../util.js'
 
 
 describe('stringFromUnknown', () => {

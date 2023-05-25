@@ -13,7 +13,7 @@ import {
 	readYAMLFile,
 	realPathForSymbolicLink,
 	requireDir,
-} from '../../../../lib/file-util'
+} from '../../../../lib/file-util.js'
 import {
 	buildTestFileMatchers,
 	processConfigFile,
@@ -23,8 +23,7 @@ import {
 	processSearchParametersFile,
 	processSrcDir,
 	resolveProjectDirName,
-} from '../../../../lib/commands/drivers/package-util'
-import * as packageUtilModule from '../../../../lib/commands/drivers/package-util'
+} from '../../../../lib/commands/drivers/package-util.js'
 
 
 jest.mock('fs')

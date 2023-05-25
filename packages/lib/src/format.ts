@@ -1,9 +1,9 @@
-import { Naming, Sorting } from './basic-io'
-import { IOFormat } from './io-util'
-import { itemTableFormatter, listTableFormatter, writeOutput, OutputFormatter } from './output'
-import { buildOutputFormatter } from './output-builder'
-import { SmartThingsCommandInterface } from './smartthings-command'
-import { TableFieldDefinition } from './table-generator'
+import { Naming, Sorting } from './basic-io.js'
+import { IOFormat } from './io-util.js'
+import { itemTableFormatter, listTableFormatter, writeOutput, OutputFormatter } from './output.js'
+import { buildOutputFormatter } from './output-builder.js'
+import { SmartThingsCommandInterface } from './smartthings-command.js'
+import { TableFieldDefinition } from './table-generator.js'
 
 
 export type TableCommonOutputProducer<O extends object> = {

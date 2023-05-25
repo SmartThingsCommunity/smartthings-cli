@@ -4,9 +4,9 @@ import { Device, DeviceIntegrationType } from '@smartthings/core-sdk'
 
 import { chooseDevice } from '@smartthings/cli-lib'
 
-import { EdgeCommand } from '../../../lib/edge-command'
+import { EdgeCommand } from '../../../lib/edge-command.js'
 import { chooseDriver, chooseHub, listAllAvailableDrivers, listMatchingDrivers }
-	from '../../../lib/commands/drivers-util'
+	from '../../../lib/commands/drivers-util.js'
 
 
 export default class DriversSwitchCommand extends EdgeCommand<typeof DriversSwitchCommand.flags> {

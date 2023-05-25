@@ -5,7 +5,7 @@ import { CapabilitiesEndpoint, Capability, Command, Device, DevicesEndpoint } fr
 
 import { chooseDevice, StdinInputProcessor } from '@smartthings/cli-lib'
 
-import DeviceCommandsCommand from '../../../commands/devices/commands'
+import DeviceCommandsCommand from '../../../commands/devices/commands.js'
 
 
 // restore inputItem implementation for testing this command

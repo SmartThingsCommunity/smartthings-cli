@@ -7,7 +7,7 @@ import {
 	buildStatusTableOutput,
 	buildTableOutput,
 	prettyPrintAttribute,
-} from '../../../lib/commands/devices-util'
+} from '../../../lib/commands/devices-util.js'
 
 
 describe('devices-util', () => {

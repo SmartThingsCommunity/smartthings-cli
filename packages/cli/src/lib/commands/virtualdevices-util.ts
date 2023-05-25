@@ -16,7 +16,7 @@ import {
 	SelectFromListConfig,
 } from '@smartthings/cli-lib'
 
-import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util'
+import { chooseDeviceProfile } from '../../lib/commands/deviceprofiles-util.js'
 
 
 export type DevicePrototype = {

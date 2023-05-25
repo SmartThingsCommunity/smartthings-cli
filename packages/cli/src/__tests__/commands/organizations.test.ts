@@ -1,5 +1,5 @@
 import { outputItemOrList } from '@smartthings/cli-lib'
-import OrganizationsCommand from '../../commands/organizations'
+import OrganizationsCommand from '../../commands/organizations.js'
 import { OrganizationsEndpoint } from '@smartthings/core-sdk'
 
 

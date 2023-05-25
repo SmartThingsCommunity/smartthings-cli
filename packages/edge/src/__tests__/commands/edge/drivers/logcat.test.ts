@@ -8,10 +8,10 @@ import { Device, DevicesEndpoint } from '@smartthings/core-sdk'
 
 import { convertToId, logEvent, selectFromList, Sorting, SseCommand, stringTranslateToId } from '@smartthings/cli-lib'
 
-import LogCatCommand from '../../../../commands/edge/drivers/logcat'
-import { DriverInfo, handleConnectionErrors, LiveLogClient, liveLogMessageFormatter, parseIpAndPort } from '../../../../lib/live-logging'
-import { runForever } from '../../../../lib/commands/drivers/logcat-util'
-import { chooseHub } from '../../../../lib/commands/drivers-util'
+import LogCatCommand from '../../../../commands/edge/drivers/logcat.js'
+import { DriverInfo, handleConnectionErrors, LiveLogClient, liveLogMessageFormatter, parseIpAndPort } from '../../../../lib/live-logging.js'
+import { runForever } from '../../../../lib/commands/drivers/logcat-util.js'
+import { chooseHub } from '../../../../lib/commands/drivers-util.js'
 
 
 

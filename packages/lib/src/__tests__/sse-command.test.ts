@@ -1,6 +1,6 @@
 import { Config, Interfaces } from '@oclif/core'
-import { SseCommand } from '../sse-command'
-import * as sseUtil from '../sse-util'
+import { SseCommand } from '../sse-command.js'
+import * as sseUtil from '../sse-util.js'
 import EventSource from 'eventsource'
 
 

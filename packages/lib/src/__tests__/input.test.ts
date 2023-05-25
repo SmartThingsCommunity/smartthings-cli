@@ -8,9 +8,9 @@ import {
 	StdinInputProcessor,
 	UserInputCommand,
 	userInputProcessor,
-} from '../input'
-import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, readFile, stdinIsTTY } from '../io-util'
-import { SimpleType, validData } from './test-lib/simple-type'
+} from '../input.js'
+import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, readFile, stdinIsTTY } from '../io-util.js'
+import { SimpleType, validData } from './test-lib/simple-type.js'
 
 
 jest.mock('../io-util')

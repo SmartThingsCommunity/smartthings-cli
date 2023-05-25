@@ -2,7 +2,7 @@ import inquirer from 'inquirer'
 
 import { APICommand, chooseDevice, outputItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../../lib/commands/devices-util'
+import { buildTableOutput } from '../../lib/commands/devices-util.js'
 
 
 export default class DeviceRenameCommand extends APICommand<typeof DeviceRenameCommand.flags> {

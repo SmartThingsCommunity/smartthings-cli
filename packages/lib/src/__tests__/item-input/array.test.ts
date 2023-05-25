@@ -12,9 +12,9 @@ import {
 	InputDefinition,
 	maxItemValueLength,
 	uneditable,
-} from '../../item-input/defs'
-import { arrayDef, checkboxDef } from '../../item-input/array'
-import { clipToMaximum, stringFromUnknown } from '../../util'
+} from '../../item-input/defs.js'
+import { arrayDef, checkboxDef } from '../../item-input/array.js'
+import { clipToMaximum, stringFromUnknown } from '../../util.js'
 
 
 jest.mock('inquirer')

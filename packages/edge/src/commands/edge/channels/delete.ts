@@ -1,7 +1,7 @@
 import { resetManagedConfigKey } from '@smartthings/cli-lib'
 
-import { chooseChannel } from '../../../lib/commands/channels-util'
-import { EdgeCommand } from '../../../lib/edge-command'
+import { chooseChannel } from '../../../lib/commands/channels-util.js'
+import { EdgeCommand } from '../../../lib/edge-command.js'
 
 
 export default class ChannelsDeleteCommand extends EdgeCommand<typeof ChannelsDeleteCommand.flags> {

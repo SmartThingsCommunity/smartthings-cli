@@ -6,7 +6,7 @@ import getPort from 'get-port'
 import open from 'open'
 import log4js from 'log4js'
 
-import { LoginAuthenticator } from '../login-authenticator'
+import { LoginAuthenticator } from '../login-authenticator.js'
 import { CliUx } from '@oclif/core'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

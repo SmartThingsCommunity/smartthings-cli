@@ -1,8 +1,8 @@
 import { outputList } from '@smartthings/cli-lib'
 import { EnrolledChannel, HubdevicesEndpoint } from '@smartthings/core-sdk'
 
-import ChannelsEnrollmentsCommand from '../../../../commands/edge/channels/enrollments'
-import { chooseHub } from '../../../../lib/commands/drivers-util'
+import ChannelsEnrollmentsCommand from '../../../../commands/edge/channels/enrollments.js'
+import { chooseHub } from '../../../../lib/commands/drivers-util.js'
 
 
 jest.mock('@smartthings/cli-lib', () => {

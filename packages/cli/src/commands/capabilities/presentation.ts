@@ -4,7 +4,7 @@ import { CapabilityPresentation } from '@smartthings/core-sdk'
 
 import { APIOrganizationCommand, formatAndWriteItem, TableGenerator } from '@smartthings/cli-lib'
 
-import { capabilityIdOrIndexInputArgs, chooseCapability } from '../../lib/commands/capabilities-util'
+import { capabilityIdOrIndexInputArgs, chooseCapability } from '../../lib/commands/capabilities-util.js'
 
 
 export function buildTableOutput(tableGenerator: TableGenerator, presentation: CapabilityPresentation): string {

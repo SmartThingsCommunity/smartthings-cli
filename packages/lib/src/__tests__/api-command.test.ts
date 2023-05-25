@@ -4,10 +4,10 @@ import * as osLocale from 'os-locale'
 import { BearerTokenAuthenticator, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
 import * as coreSDK from '@smartthings/core-sdk'
 
-import { APICommand } from '../api-command'
-import { CLIConfig, loadConfig, Profile } from '../cli-config'
-import { ClientIdProvider, LoginAuthenticator } from '../login-authenticator'
-import { TableGenerator } from '..'
+import { APICommand } from '../api-command.js'
+import { CLIConfig, loadConfig, Profile } from '../cli-config.js'
+import { ClientIdProvider, LoginAuthenticator } from '../login-authenticator.js'
+import { TableGenerator } from '...js'
 
 
 jest.mock('os-locale')

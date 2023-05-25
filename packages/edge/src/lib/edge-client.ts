@@ -1,6 +1,6 @@
 import { Authenticator, RESTClient, RESTClientConfig } from '@smartthings/core-sdk'
 
-import { InvitesEndpoint } from './endpoints/invites'
+import { InvitesEndpoint } from './endpoints/invites.js'
 import { HttpClientHeaders } from '@smartthings/core-sdk'
 
 

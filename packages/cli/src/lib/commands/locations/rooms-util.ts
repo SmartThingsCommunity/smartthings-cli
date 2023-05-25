@@ -2,7 +2,7 @@ import { Errors } from '@oclif/core'
 
 import { LocationItem, Room, SmartThingsClient } from '@smartthings/core-sdk'
 
-import * as roomsUtil from './rooms-util'
+import * as roomsUtil from './rooms-util.js'
 import { APICommand, selectFromList, SelectFromListConfig, TableFieldDefinition, WithNamedLocation } from '@smartthings/cli-lib'
 
 

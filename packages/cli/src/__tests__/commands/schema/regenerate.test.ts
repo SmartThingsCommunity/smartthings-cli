@@ -1,6 +1,6 @@
 import { outputItem, selectFromList } from '@smartthings/cli-lib'
 import { SchemaEndpoint, SchemaCreateResponse, SchemaApp } from '@smartthings/core-sdk'
-import SchemaAppRegenerateCommand from '../../../commands/schema/regenerate'
+import SchemaAppRegenerateCommand from '../../../commands/schema/regenerate.js'
 
 
 describe('SchemaAppRegenerateCommand', () => {

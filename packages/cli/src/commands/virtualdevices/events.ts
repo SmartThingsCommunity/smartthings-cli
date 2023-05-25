@@ -19,7 +19,7 @@ import {
 	chooseComponent,
 	chooseUnit,
 	chooseValue,
-} from '../../lib/commands/virtualdevices-util'
+} from '../../lib/commands/virtualdevices-util.js'
 
 
 function buildTableOutput(tableGenerator: TableGenerator, data: EventInputOutput): string {

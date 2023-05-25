@@ -1,12 +1,12 @@
 import inquirer from 'inquirer'
-import { Sorting } from '../basic-io'
+import { Sorting } from '../basic-io.js'
 import {
 	ChooseOptions, chooseOptionsDefaults, chooseOptionsWithDefaults, convertToId,
 	isIndexArgument, itemName, pluralItemName, stringGetIdFromUser,
 	stringTranslateToId,
-} from '../command-util'
-import * as output from '../output'
-import { SimpleType } from './test-lib/simple-type'
+} from '../command-util.js'
+import * as output from '../output.js'
+import { SimpleType } from './test-lib/simple-type.js'
 
 
 describe('command-util', () => {

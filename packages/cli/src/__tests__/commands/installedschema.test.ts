@@ -2,8 +2,8 @@ import { SchemaApp, SchemaEndpoint, SmartThingsClient } from '@smartthings/core-
 
 import { outputItemOrList, withLocation } from '@smartthings/cli-lib'
 
-import InstalledSchemaAppsCommand from '../../commands/installedschema'
-import { installedSchemaInstances } from '../../lib/commands/installedschema-util'
+import InstalledSchemaAppsCommand from '../../commands/installedschema.js'
+import { installedSchemaInstances } from '../../lib/commands/installedschema-util.js'
 
 
 jest.mock('../../lib/commands/installedschema-util', () => {

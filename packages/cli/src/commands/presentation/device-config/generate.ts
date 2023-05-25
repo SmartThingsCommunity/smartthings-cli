@@ -4,7 +4,7 @@ import { PresentationDeviceConfig, HttpClientParams } from '@smartthings/core-sd
 
 import { APICommand, outputItem } from '@smartthings/cli-lib'
 
-import { buildTableOutput } from '../device-config'
+import { buildTableOutput } from '../device-config.js'
 
 
 export default class GeneratePresentationCommand extends APICommand<typeof GeneratePresentationCommand.flags> {

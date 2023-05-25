@@ -1,8 +1,8 @@
 import { Flags } from '@oclif/core'
 
-import { chooseChannel } from '../../../../lib/commands/channels-util'
-import { EdgeCommand } from '../../../../lib/edge-command'
-import { chooseInvite } from '../invites'
+import { chooseChannel } from '../../../../lib/commands/channels-util.js'
+import { EdgeCommand } from '../../../../lib/edge-command.js'
+import { chooseInvite } from '../invites.js'
 
 
 export default class ChannelsInvitesDeleteCommand extends EdgeCommand<typeof ChannelsInvitesDeleteCommand.flags> {

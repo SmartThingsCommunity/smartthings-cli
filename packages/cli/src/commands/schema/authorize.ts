@@ -1,5 +1,5 @@
 import { SmartThingsCommand, lambdaAuthFlags } from '@smartthings/cli-lib'
-import { addSchemaPermission } from '../../lib/aws-utils'
+import { addSchemaPermission } from '../../lib/aws-utils.js'
 
 
 export default class SchemaAppAuthorizeCommand extends SmartThingsCommand<typeof SchemaAppAuthorizeCommand.flags> {

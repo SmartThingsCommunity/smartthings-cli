@@ -1,5 +1,5 @@
 import { PresentationDeviceConfig } from '@smartthings/core-sdk'
-import { augmentPresentation, augmentPresentationEntries, prunePresentation, prunePresentationEntries } from '../../../../lib/commands/deviceprofiles/view-util'
+import { augmentPresentation, augmentPresentationEntries, prunePresentation, prunePresentationEntries } from '../../../../lib/commands/deviceprofiles/view-util.js'
 
 
 const entry1PrunedOnlyMain = {

@@ -1,7 +1,7 @@
 import log4js from '@log4js-node/log4js-api'
-import { CLIConfig, Profile, ProfilesByName } from '../../cli-config'
-import { SmartThingsCommandInterface } from '../../smartthings-command'
-import { DefaultTableGenerator } from '../../table-generator'
+import { CLIConfig, Profile, ProfilesByName } from '../../cli-config.js'
+import { SmartThingsCommandInterface } from '../../smartthings-command.js'
+import { DefaultTableGenerator } from '../../table-generator.js'
 
 
 export const exitMock = jest.fn() as jest.Mock<never, [code?: number]>

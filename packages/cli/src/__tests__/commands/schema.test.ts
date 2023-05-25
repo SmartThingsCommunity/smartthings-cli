@@ -2,7 +2,7 @@ import { SchemaApp, SchemaEndpoint } from '@smartthings/core-sdk'
 
 import { outputItemOrList, TableCommonListOutputProducer } from '@smartthings/cli-lib'
 
-import SchemaCommand from '../../commands/schema'
+import SchemaCommand from '../../commands/schema.js'
 
 
 describe('SchemaCommand', () => {

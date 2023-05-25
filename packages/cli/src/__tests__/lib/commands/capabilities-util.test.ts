@@ -22,8 +22,8 @@ import {
 	getStandard,
 	joinEnums,
 	translateToId,
-} from '../../../lib/commands/capabilities-util'
-import * as capabilitiesUtil from '../../../lib/commands/capabilities-util'
+} from '../../../lib/commands/capabilities-util.js'
+import * as capabilitiesUtil from '../../../lib/commands/capabilities-util.js'
 
 
 jest.mock('inquirer')

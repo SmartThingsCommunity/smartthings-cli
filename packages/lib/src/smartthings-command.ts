@@ -2,9 +2,9 @@ import log4js from '@log4js-node/log4js-api'
 import { Command, Flags, Interfaces } from '@oclif/core'
 import { ExitError } from '@oclif/core/lib/errors'
 import { Input } from '@oclif/core/lib/interfaces'
-import { CLIConfig, loadConfig, Profile } from './cli-config'
-import { outputFlags } from './output-builder'
-import { DefaultTableGenerator, TableGenerator } from './table-generator'
+import { CLIConfig, loadConfig, Profile } from './cli-config.js'
+import { outputFlags } from './output-builder.js'
+import { DefaultTableGenerator, TableGenerator } from './table-generator.js'
 
 
 export type Loggable = {

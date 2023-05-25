@@ -1,5 +1,5 @@
-import { APICommand } from './api-command'
-import { EventSourceError, handleSignals } from './sse-util'
+import { APICommand } from './api-command.js'
+import { EventSourceError, handleSignals } from './sse-util.js'
 import EventSource from 'eventsource'
 import { Errors } from '@oclif/core'
 import { HttpClientHeaders } from '@smartthings/core-sdk'

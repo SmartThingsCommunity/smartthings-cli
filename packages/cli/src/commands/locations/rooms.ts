@@ -4,7 +4,7 @@ import { Room } from '@smartthings/core-sdk'
 
 import { APICommand, OutputItemOrListConfig, outputItemOrList, withLocation, WithNamedLocation } from '@smartthings/cli-lib'
 
-import { getRoomsByLocation, tableFieldDefinitions, tableFieldDefinitionsWithLocationName } from '../../lib/commands/locations/rooms-util'
+import { getRoomsByLocation, tableFieldDefinitions, tableFieldDefinitionsWithLocationName } from '../../lib/commands/locations/rooms-util.js'
 
 
 export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> {

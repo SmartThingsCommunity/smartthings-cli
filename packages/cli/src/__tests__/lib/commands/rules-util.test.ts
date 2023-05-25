@@ -7,8 +7,8 @@ import {
 	getRulesByLocation,
 	getRuleWithLocation,
 	tableFieldDefinitions,
-} from '../../../lib/commands/rules-util'
-import * as rulesUtil from '../../../lib/commands/rules-util'
+} from '../../../lib/commands/rules-util.js'
+import * as rulesUtil from '../../../lib/commands/rules-util.js'
 
 
 describe('rules-util', () => {
