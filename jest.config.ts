@@ -1,4 +1,7 @@
-const config = {
+import { Config } from 'jest'
+
+
+const config: Config = {
 	preset: 'ts-jest',
 	testMatch: [
 		'**/__tests__/**/*.test.ts',
@@ -13,7 +16,6 @@ const config = {
 	],
 	modulePathIgnorePatterns: [
 		'<rootDir>/dist',
-		'<rootDir>/lib',
 	],
 	clearMocks: true,
 	reporters: [
@@ -22,6 +24,8 @@ const config = {
 		'jest-html-reporters',
 	],
 	extensionsToTreatAsEsm: ['.ts'],
+	// moduleNameMapper and transform are for ES module support.
+	// See https://kulshekhar.github.io/ts-jest/docs/guides/esm-support
 	moduleNameMapper: {
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'^(\\.{1,2}/.*)\\.js$': '$1',
@@ -41,26 +45,8 @@ const config = {
 		],
 	},
 	testPathIgnorePatterns: [
-		'./src/__tests__/api-command.test.ts',
-		'./src/__tests__/api-organization-command.test.ts',
-		'./src/__tests__/basic-io.test.ts',
-		'./src/__tests__/command-util.test.ts',
-		'./src/__tests__/device-util.test.ts',
-		'./src/__tests__/input-builder.test.ts',
-		'./src/__tests__/format.test.ts',
-		'./src/__tests__/input.test.ts',
-		'./src/__tests__/listing-io.test.ts',
-		'./src/__tests__/login-authenticator.test.ts',
-		'./src/__tests__/output.test.ts',
-		'./src/__tests__/output-builder.test.ts',
-		'./src/__tests__/select.test.ts',
-		'./src/__tests__/smartthings-command.test.ts',
-		'./src/__tests__/test-lib/mock-command.ts',
-		'./src/__tests__/sse-command.test.ts',
-		'./src/__tests__/sse-io.test.ts',
-
-		'./src/__tests__/item-input/command-helpers.test.ts',
+		'./packages',
 	],
 }
 
-module.exports = config
+export default config

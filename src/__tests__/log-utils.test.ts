@@ -1,8 +1,8 @@
-import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../../lib/log-utils.js'
 import log4js from 'log4js'
 import yaml from 'js-yaml'
 
-import { yamlExists } from '@smartthings/cli-lib'
+import { yamlExists } from '../io-util.js'
+import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../log-utils.js'
 
 
 jest.mock('fs', () => {
@@ -16,7 +16,7 @@ jest.mock('fs', () => {
 })
 jest.mock('js-yaml')
 
-jest.mock('@smartthings/cli-lib')
+jest.mock('../io-util.js')
 
 describe('log-utils', () => {
 	describe('buildDefaultLog4jsConfig', () => {
@@ -62,14 +62,14 @@ describe('log-utils', () => {
 			appenders: {},
 			categories: {},
 		}
-		const mockYamlExists = jest.mocked(yamlExists)
-		const mockLoad = jest.mocked(yaml.load)
+		const yamlExistsMock = jest.mocked(yamlExists)
+		const loadMock = jest.mocked(yaml.load)
 
 		it('returns default config if requested file is not found', () => {
-			mockYamlExists.mockReturnValueOnce(false)
+			yamlExistsMock.mockReturnValueOnce(false)
 
 			expect(loadLog4jsConfig('filename', defaultConfig)).toStrictEqual(defaultConfig)
-			expect(mockYamlExists).toBeCalledWith('filename')
+			expect(yamlExistsMock).toBeCalledWith('filename')
 		})
 
 		it('returns valid config if found', () => {
@@ -77,8 +77,8 @@ describe('log-utils', () => {
 				appenders: { appender: { type: '' } },
 				categories: {},
 			}
-			mockLoad.mockReturnValueOnce(loadedConfig)
-			mockYamlExists.mockReturnValueOnce(true)
+			loadMock.mockReturnValueOnce(loadedConfig)
+			yamlExistsMock.mockReturnValueOnce(true)
 
 			expect(loadLog4jsConfig('filename', defaultConfig)).toStrictEqual(loadedConfig)
 		})
@@ -87,8 +87,8 @@ describe('log-utils', () => {
 			const invalidConfig = {
 				appenders: {},
 			}
-			mockLoad.mockReturnValueOnce(invalidConfig)
-			mockYamlExists.mockReturnValueOnce(true)
+			loadMock.mockReturnValueOnce(invalidConfig)
+			yamlExistsMock.mockReturnValueOnce(true)
 
 			expect(() => loadLog4jsConfig('filename', defaultConfig)).toThrow('invalid or unreadable logging config file format')
 		})

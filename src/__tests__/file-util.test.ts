@@ -3,8 +3,8 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 
 import { fileExists, findYAMLFilename, isDir, isFile, readYAMLFile, requireDir, YAMLFileData }
-	from '../lib/file-util.js'
-import * as fileUtil from '../lib/file-util.js'
+	from '../file-util.js'
+import * as fileUtil from '../file-util.js'
 
 
 jest.mock('fs', () => {
