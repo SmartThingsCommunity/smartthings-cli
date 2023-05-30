@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"composite": true,
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"importHelpers": true,
+		"module": "Node16",
+		"moduleResolution": "node",
+		"lib": ["ES2022"],
+		"strict": true,
+		"target": "ES2022",
+		"esModuleInterop": true,
+		"noErrorTruncation": true,
+		"useUnknownInCatchVariables": false,
+		"isolatedModules": true,
+		"skipLibCheck": true
+	}
+}

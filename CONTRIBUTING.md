@@ -4,7 +4,6 @@ Thanks for contributing! Our community of developers is what put SmartThings on 
 
 - [Contributing](#contributing)
 	- [Development](#development)
-		- [npm Workspaces](#npm-workspaces)
 		- [Build](#build)
 		- [Changesets](#changesets)
 		- [Core SDK](#core-sdk)
@@ -19,25 +18,15 @@ Thanks for contributing! Our community of developers is what put SmartThings on 
 
 ## Development
 
-### npm Workspaces
-
-This is the monorepo for the SmartThings CLI. Currently, the following
-packages are included:
-
-* [cli](packages/cli/README.md) - the CLI itself; @smartthings/cli node package
-* [edge](packages/edge/README.md) - a plugin for Edge Drivers that is installed by default
-* [lib](packages/lib/README.md) - a library for use in the CLI and its
-  extensions; @smartthings/cli-lib node package
-
 ### Build
 
-1. Be sure you're using at least Node.js version 16.
+1. Be sure you're using at least Node.js version 18.
 1. run `npm install`
 1. run `npm run compile`
-1. To run the CLI that was just compiled, run the `run` command in packages/cli/bin. You can create
+1. To run the CLI that was just compiled, run the `run` command in bin. You can create
    a link to this file to make it easier to run. Since the final installed
    name will be "smartthings", that's a good name for the link. For example:
-   `ln -s ~/mydevdir/smartthings-cli/packages/cli/bin/run ~/bin/smartthings`
+   `ln -s ~/mydevdir/smartthings-cli/bin/run ~/bin/smartthings`
 
 Other useful scripts:
 
@@ -58,11 +47,11 @@ We use changesets to automatically version and publish releases, and generate re
 
 ### Core SDK
 
-The CLI depends on the [SmartThings Core SDK](https://github.com/SmartThingsCommunity/smartthings-core-sdk). To use a pre-release version of the SDK for testing purposes, you'll need to make any required changes in both checked-out repositories and then [npm-link](https://docs.npmjs.com/cli/v8/commands/npm-link#workspace-usage) the SDK into the CLI.
+The CLI depends on the [SmartThings Core SDK](https://github.com/SmartThingsCommunity/smartthings-core-sdk). To use a pre-release version of the SDK for testing purposes, you'll need to make any required changes in both checked-out repositories and then [npm-link](https://docs.npmjs.com/cli/v8/commands/npm-link) the SDK into the CLI.
 
 ### Command Documentation
 
-The SmartThings CLI is built using [oclif](https://oclif.io), which allows for self-documenting
+The SmartThings CLI is built using [yargs](http://yargs.js.org/), which allows for self-documenting
 commands. Some ground rules to follow when creating or updating commands:
 
 * Commands should be kebab case. The module name is used as the command name and can be placed in

@@ -2,7 +2,7 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 import { Configuration as Log4jsConfig, FileAppender, StandardErrorAppender } from 'log4js'
 
-import { yamlExists } from '@smartthings/cli-lib'
+import { yamlExists } from './io-util.js'
 
 
 const defaultLogFileSize = 1_000_000 // bytes

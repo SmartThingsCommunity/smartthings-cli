@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 module.exports = {
 	root: true,
 	parser: '@typescript-eslint/parser',
@@ -25,7 +26,7 @@ module.exports = {
 	parserOptions: {
 		ecmaVersion: 2019,
 		tsconfigRootDir: __dirname,
-		project: ['./tsconfig.json'],
+		project: ['./tsconfig.json', './tsconfig-test.json'],
 	},
 	rules: {
 		indent: 'off',
@@ -50,7 +51,7 @@ module.exports = {
 			'error',
 			'always-multiline',
 		],
-		'no-console': 'error',
+		'no-console': 'off',
 		'no-process-exit': 'error',
 		'no-template-curly-in-string': 'error',
 		'require-await': 'off',
@@ -142,6 +143,6 @@ module.exports = {
 				format: ['PascalCase', 'UPPER_CASE'],
 			},
 		],
-		"no-console": "off",
 	},
 }
+/* eslint-enable @typescript-eslint/naming-convention */
