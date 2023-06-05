@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.4.0
+
+### Minor Changes
+
+- [#521](https://github.com/SmartThingsCommunity/smartthings-cli/pull/521) [`7f331ca`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/7f331ca835beba21bb96185dbfe8e458c4258ccf) Thanks [@rossiam](https://github.com/rossiam)! - include search-parameters.yaml (or .yml) in edge driver package
+
+### Patch Changes
+
+- Updated dependencies [[`7f331ca`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/7f331ca835beba21bb96185dbfe8e458c4258ccf)]:
+  - @smartthings/plugin-cli-edge@3.2.0
+
 ## 1.3.1
 
 ### Patch Changes
