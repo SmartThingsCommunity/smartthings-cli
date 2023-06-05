@@ -35,14 +35,20 @@ export const processConfigFile = async (projectDirectory: string, zip: JSZip): P
 	return parsedConfig
 }
 
-export const processFingerprintsFile = async (projectDirectory: string, zip: JSZip): Promise<void> => {
-	const fingerprintsFile = await findYAMLFilename(`${projectDirectory}/fingerprints`)
-	if (fingerprintsFile !== false) {
+export const processOptionalYAMLFile = async (baseFilename: string, projectDirectory: string, zip: JSZip): Promise<void> => {
+	const yamlFile = await findYAMLFilename(`${projectDirectory}/${baseFilename}`)
+	if (yamlFile !== false) {
 		// validate file is at least parsable as a YAML file
-		readYAMLFile(fingerprintsFile)
-		zip.file('fingerprints.yml', fs.createReadStream(fingerprintsFile))
+		readYAMLFile(yamlFile)
+		zip.file(`${baseFilename}.yml`, fs.createReadStream(yamlFile))
 	}
 }
+
+export const processFingerprintsFile = async (projectDirectory: string, zip: JSZip): Promise<void> =>
+	processOptionalYAMLFile('fingerprints', projectDirectory, zip)
+
+export const processSearchParametersFile = async (projectDirectory: string, zip: JSZip): Promise<void> =>
+	processOptionalYAMLFile('search-parameters', projectDirectory, zip)
 
 export const buildTestFileMatchers = (matchersFromConfig: string[]): picomatch.Matcher[] =>
 	matchersFromConfig.map(glob => picomatch(glob))

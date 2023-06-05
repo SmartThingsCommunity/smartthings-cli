@@ -4,9 +4,27 @@ import { CliUx, Errors } from '@oclif/core'
 import JSZip from 'jszip'
 import picomatch from 'picomatch'
 
-import { fileExists, findYAMLFilename, isDir, isFile, isSymbolicLink, readYAMLFile, realPathForSymbolicLink, requireDir } from '../../../../lib/file-util'
-import { buildTestFileMatchers, processConfigFile, processFingerprintsFile, processProfiles,
-	processSrcDir, resolveProjectDirName } from '../../../../lib/commands/drivers/package-util'
+import {
+	fileExists,
+	findYAMLFilename,
+	isDir,
+	isFile,
+	isSymbolicLink,
+	readYAMLFile,
+	realPathForSymbolicLink,
+	requireDir,
+} from '../../../../lib/file-util'
+import {
+	buildTestFileMatchers,
+	processConfigFile,
+	processFingerprintsFile,
+	processOptionalYAMLFile,
+	processProfiles,
+	processSearchParametersFile,
+	processSrcDir,
+	resolveProjectDirName,
+} from '../../../../lib/commands/drivers/package-util'
+import * as packageUtilModule from '../../../../lib/commands/drivers/package-util'
 
 
 jest.mock('fs')
@@ -94,34 +112,54 @@ describe('package-utils', () => {
 		})
 	})
 
-	describe('processFingerprintsFile', () => {
+	describe('processOptionalYAMLFile', () => {
 		it('includes fingerprint file if found', async () => {
-			findYAMLFilenameMock.mockResolvedValueOnce('fingerprints filename')
+			findYAMLFilenameMock.mockResolvedValueOnce('yaml filename')
 			readYAMLFileMock.mockReturnValueOnce({ yaml: 'file contents' })
 			createReadStreamMock.mockReturnValueOnce(readStreamMock)
 
-			await processFingerprintsFile('project dir', zipMock)
+			await processOptionalYAMLFile('optional yaml file', 'project dir', zipMock)
 
 			expect(findYAMLFilenameMock).toHaveBeenCalledTimes(1)
-			expect(findYAMLFilenameMock).toHaveBeenCalledWith('project dir/fingerprints')
+			expect(findYAMLFilenameMock).toHaveBeenCalledWith('project dir/optional yaml file')
 			expect(readYAMLFileMock).toHaveBeenCalledTimes(1)
-			expect(readYAMLFileMock).toHaveBeenCalledWith('fingerprints filename')
+			expect(readYAMLFileMock).toHaveBeenCalledWith('yaml filename')
 			expect(createReadStreamMock).toHaveBeenCalledTimes(1)
-			expect(createReadStreamMock).toHaveBeenCalledWith('fingerprints filename')
+			expect(createReadStreamMock).toHaveBeenCalledWith('yaml filename')
 			expect(zipFileMock).toHaveBeenCalledTimes(1)
-			expect(zipFileMock).toHaveBeenCalledWith('fingerprints.yml', readStreamMock)
+			expect(zipFileMock).toHaveBeenCalledWith('optional yaml file.yml', readStreamMock)
 		})
 
 		it('skips fingerprint file if none', async () => {
 			findYAMLFilenameMock.mockResolvedValueOnce(false)
 
-			await processFingerprintsFile('project dir', zipMock)
+			await processOptionalYAMLFile('optional yaml file', 'project dir', zipMock)
 
 			expect(findYAMLFilenameMock).toHaveBeenCalledTimes(1)
-			expect(findYAMLFilenameMock).toHaveBeenCalledWith('project dir/fingerprints')
+			expect(findYAMLFilenameMock).toHaveBeenCalledWith('project dir/optional yaml file')
 			expect(readYAMLFileMock).toHaveBeenCalledTimes(0)
 			expect(zipFileMock).toHaveBeenCalledTimes(0)
 		})
+	})
+
+	test('processFingerprintsFile calls processOptionalYAMLFile', async () => {
+		const processOptionalYAMLFileSpy = jest.spyOn(packageUtilModule, 'processOptionalYAMLFile')
+			.mockImplementationOnce(async () => { /* do nothing */ })
+
+		await processFingerprintsFile('project dir', zipMock)
+
+		expect(processOptionalYAMLFileSpy).toHaveBeenCalledTimes(1)
+		expect(processOptionalYAMLFileSpy).toHaveBeenCalledWith('fingerprints', 'project dir', zipMock)
+	})
+
+	test('processSearchParametersFile calls processOptionalYAMLFile', async () => {
+		const processOptionalYAMLFileSpy = jest.spyOn(packageUtilModule, 'processOptionalYAMLFile')
+			.mockImplementationOnce(async () => { /* do nothing */ })
+
+		await processSearchParametersFile('project dir', zipMock)
+
+		expect(processOptionalYAMLFileSpy).toHaveBeenCalledTimes(1)
+		expect(processOptionalYAMLFileSpy).toHaveBeenCalledWith('search-parameters', 'project dir', zipMock)
 	})
 
 	test('buildTestFileMatchers converts to matchers', () => {
