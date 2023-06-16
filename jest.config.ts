@@ -11,7 +11,6 @@ const config: Config = {
 	coveragePathIgnorePatterns: [
 		'/node_modules/',
 		'/__tests__/',
-		'/src/typings/',
 		'/src/index.ts',
 	],
 	modulePathIgnorePatterns: [
