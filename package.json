@@ -2,7 +2,7 @@
 	"name": "@smartthings/cli",
 	"version": "1.4.0",
 	"description": "Command Line Interface for the SmartThings APIs",
-	"author": "SmartThings, Inc.",
+	"author": "Samsung Electronics Co., LTD.",
 	"bin": {
 		"smartthings": "bin/run"
 	},
