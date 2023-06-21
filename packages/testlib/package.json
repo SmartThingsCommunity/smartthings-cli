@@ -2,7 +2,7 @@
 	"name": "@smartthings/cli-testlib",
 	"version": "2.0.2",
 	"description": "SmartThings CLI testing utility methods library",
-	"author": "SmartThings, Inc.",
+	"author": "Samsung Electronics Co., LTD.",
 	"bugs": {
 		"url": "https://github.com/SmartThingsCommunity/smartthings-cli/issues"
 	},

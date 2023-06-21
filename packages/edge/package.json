@@ -2,7 +2,7 @@
 	"name": "@smartthings/plugin-cli-edge",
 	"version": "3.2.0",
 	"description": "Edge-related SmartThings CLI commands",
-	"author": "SmartThings, Inc.",
+	"author": "Samsung Electronics Co., LTD.",
 	"bugs": {
 		"url": "https://github.com/SmartThingsCommunity/smartthings-cli/issues"
 	},
