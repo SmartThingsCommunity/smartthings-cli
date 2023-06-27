@@ -52,7 +52,7 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-lambda": "^3.346.0",
-		"@smartthings/core-sdk": "^7.1.0",
+		"@smartthings/core-sdk": "^7.1.1",
 		"axios": "^0.27.2",
 		"chalk": "^5.2.0",
 		"eventsource": "^2.0.2",
