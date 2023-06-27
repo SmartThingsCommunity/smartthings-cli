@@ -48,7 +48,7 @@
 		"@log4js-node/log4js-api": "^1.0.2",
 		"@oclif/core": "^1.16.3",
 		"@smartthings/cli-lib": "^2.1.0",
-		"@smartthings/core-sdk": "^7.1.0",
+		"@smartthings/core-sdk": "^7.1.1",
 		"axios": "^0.27.2",
 		"inquirer": "^8.2.4",
 		"js-yaml": "^4.1.0",
