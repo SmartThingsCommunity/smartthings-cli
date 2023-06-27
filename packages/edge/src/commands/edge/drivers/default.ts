@@ -1,9 +1,9 @@
-import { EdgeDriverSummary } from '@smartthings/core-sdk'
+import { EdgeDriver } from '@smartthings/core-sdk'
 
-import { outputList, OutputListConfig } from '@smartthings/cli-lib'
+import { outputItemOrList, OutputItemOrListConfig } from '@smartthings/cli-lib'
 
 import { EdgeCommand } from '../../../lib/edge-command'
-import { listTableFieldDefinitions } from '../../../lib/commands/drivers-util'
+import { buildTableOutput, listTableFieldDefinitions } from '../../../lib/commands/drivers-util'
 
 
 export default class DriversDefaultCommand extends EdgeCommand<typeof DriversDefaultCommand.flags> {
@@ -12,19 +12,36 @@ export default class DriversDefaultCommand extends EdgeCommand<typeof DriversDef
 
 	static flags = {
 		...EdgeCommand.flags,
-		...outputList.flags,
+		...outputItemOrList.flags,
 	}
 
+	static args = [{
+		name: 'idOrIndex',
+		description: 'the driver id or number in list',
+	}]
+
 	static examples = [`# list default drivers
-$ smartthings edge:drivers:default`]
+$ smartthings edge:drivers:default`,
+	`# show details about a specific default driver
+$ smartthings edge:drivers:default 12`]
 
 	async run(): Promise<void> {
-		const config: OutputListConfig<EdgeDriverSummary> = {
+		const config: OutputItemOrListConfig<EdgeDriver> = {
 			primaryKeyName: 'driverId',
 			sortKeyName: 'name',
+			buildTableOutput: (driver: EdgeDriver) => buildTableOutput(this.tableGenerator, driver),
 			listTableFieldDefinitions,
 		}
 
-		await outputList(this, config, () => this.client.drivers.listDefault())
+		await outputItemOrList(this, config, this.args.idOrIndex,
+			() => this.client.drivers.listDefault(),
+			async (id) => {
+				const list = await this.client.drivers.listDefault()
+				const driver = list.find(it => it.driverId === id)
+				if (!driver) {
+					throw Error(`Could not find driver with id ${id}`)
+				}
+				return driver
+			})
 	}
 }
