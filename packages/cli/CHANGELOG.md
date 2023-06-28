@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.4.1
+
+### Patch Changes
+
+- [#528](https://github.com/SmartThingsCommunity/smartthings-cli/pull/528) [`626630f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/626630fb6387ce5c6507d816b823faa88a379c81) Thanks [@bflorian](https://github.com/bflorian)! - feat: locally executing virtual devices
+
 ## 1.4.0
 
 ### Minor Changes
