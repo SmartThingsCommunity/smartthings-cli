@@ -36,7 +36,7 @@ for information on running the CLI.
 * [`smartthings edge:channels:unenroll [HUBID]`](#smartthings-edgechannelsunenroll-hubid)
 * [`smartthings edge:channels:update [ID]`](#smartthings-edgechannelsupdate-id)
 * [`smartthings edge:drivers [IDORINDEX]`](#smartthings-edgedrivers-idorindex)
-* [`smartthings edge:drivers:default`](#smartthings-edgedriversdefault)
+* [`smartthings edge:drivers:default [IDORINDEX]`](#smartthings-edgedriversdefault-idorindex)
 * [`smartthings edge:drivers:delete [ID]`](#smartthings-edgedriversdelete-id)
 * [`smartthings edge:drivers:install [DRIVERID]`](#smartthings-edgedriversinstall-driverid)
 * [`smartthings edge:drivers:installed [IDORINDEX]`](#smartthings-edgedriversinstalled-idorindex)
@@ -621,14 +621,17 @@ EXAMPLES
 
 _See code: [src/commands/edge/drivers.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@3.2.0/packages/edge/src/commands/edge/drivers.ts)_
 
-## `smartthings edge:drivers:default`
+## `smartthings edge:drivers:default [IDORINDEX]`
 
 list default drivers available to all users
 
 ```
 USAGE
-  $ smartthings edge:drivers:default [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
-    <value>]
+  $ smartthings edge:drivers:default [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-o <value>]
+
+ARGUMENTS
+  IDORINDEX  the driver id or number in list
 
 FLAGS
   -O, --organization=<value>  the organization ID to use for this command
@@ -653,6 +656,10 @@ EXAMPLES
   # list default drivers
 
     $ smartthings edge:drivers:default
+
+  # show details about a specific default driver
+
+    $ smartthings edge:drivers:default 12
 ```
 
 _See code: [src/commands/edge/drivers/default.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@3.2.0/packages/edge/src/commands/edge/drivers/default.ts)_
