@@ -1,7 +1,19 @@
 import inquirer from 'inquirer'
 
 import { DevicePreferenceCreate, PreferenceType } from '@smartthings/core-sdk'
-import { APIOrganizationCommand, askForInteger, askForNumber, askForString, askForOptionalString, inputAndOutputItem, userInputProcessor, ValidateFunction } from '@smartthings/cli-lib'
+
+import {
+	APIOrganizationCommand,
+	askForNumber,
+	askForString,
+	askForOptionalString,
+	inputAndOutputItem,
+	userInputProcessor,
+	ValidateFunction,
+	askForOptionalInteger,
+	integerValidateFn,
+} from '@smartthings/cli-lib'
+
 import { tableFieldDefinitions } from '../../lib/commands/devicepreferences-util.js'
 
 
@@ -66,13 +78,15 @@ export default class DevicePreferencesCreateCommand extends APIOrganizationComma
 		}
 
 		if (preferenceType === 'integer') {
-			const minimum = await askForInteger('Optional minimum value.')
-			const maximum = await askForInteger('Optional maximum value.', minimum)
-			const defaultValue = await askForInteger('Optional default value.', minimum, maximum)
+			const min = await askForOptionalInteger('Optional minimum value.')
+			const max = await askForOptionalInteger('Optional maximum value.',
+				{ validate: integerValidateFn({ min }) })
+			const defaultValue = await askForOptionalInteger('Optional default value.',
+				{ validate: integerValidateFn({ min, max }) })
 			return {
 				...base, preferenceType, definition: {
-					minimum: minimum ?? undefined,
-					maximum: maximum ?? undefined,
+					minimum: min ?? undefined,
+					maximum: max ?? undefined,
 					default: defaultValue ?? undefined,
 				},
 			}
@@ -108,8 +122,9 @@ export default class DevicePreferencesCreateCommand extends APIOrganizationComma
 		}
 
 		if (preferenceType === 'string') {
-			const minLength = await askForInteger('Optional minimum length.')
-			const maxLength = await askForInteger('Optional maximum length.', minLength)
+			const minLength = await askForOptionalInteger('Optional minimum length.')
+			const maxLength = await askForOptionalInteger('Optional maximum length.',
+				{ validate: integerValidateFn({ min: minLength }) })
 			const stringType = (await inquirer.prompt({
 				type: 'list',
 				name: 'stringType',

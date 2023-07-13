@@ -2,10 +2,12 @@ import { jest } from '@jest/globals'
 
 import inquirer from 'inquirer'
 
-import { InputDefinition, cancelOption, uneditable } from '../../../lib/item-input/defs.js'
+import { cancelOption, uneditable } from '../../../lib/item-input/defs.js'
 import {
 	askForBoolean,
+	askForInteger,
 	askForString,
+	askForOptionalInteger,
 	askForOptionalString,
 	ValidateFunction,
 } from '../../../lib/user-query.js'
@@ -20,10 +22,14 @@ jest.unstable_mockModule('inquirer', () => ({
 	},
 }))
 const askForBooleanMock: jest.Mock<typeof askForBoolean> = jest.fn()
+const askForIntegerMock: jest.Mock<typeof askForInteger> = jest.fn()
+const askForOptionalIntegerMock: jest.Mock<typeof askForOptionalInteger> = jest.fn()
 const askForStringMock: jest.Mock<typeof askForString> = jest.fn()
 const askForOptionalStringMock: jest.Mock<typeof askForOptionalString> = jest.fn()
 jest.unstable_mockModule('../../../lib/user-query.js', () => ({
 	askForBoolean: askForBooleanMock,
+	askForInteger: askForIntegerMock,
+	askForOptionalInteger: askForOptionalIntegerMock,
 	askForString: askForStringMock,
 	askForOptionalString: askForOptionalStringMock,
 }))
@@ -33,8 +39,10 @@ const {
 	booleanDef,
 	computedDef,
 	defaultWithContextFn,
+	integerDef,
 	listSelectionDef,
 	optionalDef,
+	optionalIntegerDef,
 	optionalStringDef,
 	staticDef,
 	stringDef,
@@ -223,6 +231,150 @@ describe('stringDef', () => {
 				{ default: 'original', validate: expect.any(Function) })
 
 			const validateFn = askForStringMock.mock.calls[0][1]?.validate as ValidateFunction
+			validateMock.mockReturnValueOnce('validation answer')
+			expect(validateFn('input string')).toBe('validation answer')
+			expect(validateMock).toHaveBeenCalledTimes(1)
+			expect(validateMock).toHaveBeenCalledWith('input string', context)
+		})
+	})
+})
+
+describe('optionalIntegerDef', () => {
+	describe('without validation', () => {
+		const def = optionalIntegerDef('Integer Def')
+
+		test('name', async () => {
+			expect(def.name).toBe('Integer Def')
+		})
+
+		test('build', async () => {
+			askForOptionalIntegerMock.mockResolvedValueOnce(17)
+
+			expect(await def.buildFromUserInput()).toBe(17)
+
+			expect(askForOptionalIntegerMock).toHaveBeenCalledTimes(1)
+			expect(askForOptionalIntegerMock).toHaveBeenCalledWith('Integer Def (optional)',
+				{ validate: undefined })
+		})
+
+		test('summarize', async () => {
+			expect(def.summarizeForEdit(451)).toBe('451')
+		})
+
+		test('update', async () => {
+			askForOptionalIntegerMock.mockResolvedValueOnce(13)
+
+			expect(await def.updateFromUserInput(12)).toBe(13)
+
+			expect(askForOptionalIntegerMock).toHaveBeenCalledTimes(1)
+			expect(askForOptionalIntegerMock).toHaveBeenCalledWith('Integer Def (optional)',
+				{ default: 12, validate: undefined })
+		})
+	})
+
+	describe('with validation', () => {
+		const validateMock = jest.fn()
+		const def = optionalIntegerDef('Integer Def', { validate: validateMock })
+
+		test('build', async () => {
+			const context = ['context item']
+			askForOptionalIntegerMock.mockResolvedValueOnce(11)
+
+			expect(await def.buildFromUserInput(context)).toBe(11)
+
+			expect(askForOptionalIntegerMock).toHaveBeenCalledTimes(1)
+			expect(askForOptionalIntegerMock).toHaveBeenCalledWith('Integer Def (optional)',
+				{ validate: expect.any(Function) })
+
+			const validateFn = askForOptionalIntegerMock.mock.calls[0][1]?.validate as ValidateFunction
+			validateMock.mockReturnValueOnce('validation answer')
+			expect(validateFn('input string')).toBe('validation answer')
+			expect(validateMock).toHaveBeenCalledTimes(1)
+			expect(validateMock).toHaveBeenCalledWith('input string', context)
+		})
+
+		test('update', async () => {
+			const context = ['context item']
+			askForOptionalIntegerMock.mockResolvedValueOnce(13)
+
+			expect(await def.updateFromUserInput(12, context)).toBe(13)
+
+			expect(askForOptionalIntegerMock).toHaveBeenCalledTimes(1)
+			expect(askForOptionalIntegerMock).toHaveBeenCalledWith('Integer Def (optional)',
+				{ default: 12, validate: expect.any(Function) })
+
+			const validateFn = askForOptionalIntegerMock.mock.calls[0][1]?.validate as ValidateFunction
+			validateMock.mockReturnValueOnce('validation answer')
+			expect(validateFn('input string')).toBe('validation answer')
+			expect(validateMock).toHaveBeenCalledTimes(1)
+			expect(validateMock).toHaveBeenCalledWith('input string', context)
+		})
+	})
+})
+
+describe('integerDef', () => {
+	describe('without validation', () => {
+		const def = integerDef('Integer Def')
+
+		test('name', async () => {
+			expect(def.name).toBe('Integer Def')
+		})
+
+		test('build', async () => {
+			askForIntegerMock.mockResolvedValueOnce(11)
+
+			expect(await def.buildFromUserInput()).toBe(11)
+
+			expect(askForIntegerMock).toHaveBeenCalledTimes(1)
+			expect(askForIntegerMock).toHaveBeenCalledWith('Integer Def', { validate: undefined })
+		})
+
+		test('summarize', async () => {
+			expect(def.summarizeForEdit(20000)).toBe('20000')
+		})
+
+		test('update', async () => {
+			askForIntegerMock.mockResolvedValueOnce(13)
+
+			expect(await def.updateFromUserInput(12)).toBe(13)
+
+			expect(askForIntegerMock).toHaveBeenCalledTimes(1)
+			expect(askForIntegerMock).toHaveBeenCalledWith('Integer Def', { default: 12 })
+		})
+	})
+
+	describe('with validation', () => {
+		const validateMock = jest.fn()
+		const def = integerDef('Integer Def', { validate: validateMock })
+
+		test('build', async () => {
+			const context = ['context item']
+			askForIntegerMock.mockResolvedValueOnce(17)
+
+			expect(await def.buildFromUserInput(context)).toBe(17)
+
+			expect(askForIntegerMock).toHaveBeenCalledTimes(1)
+			expect(askForIntegerMock).toHaveBeenCalledWith('Integer Def',
+				{ validate: expect.any(Function) })
+
+			const validateFn = askForIntegerMock.mock.calls[0][1]?.validate as ValidateFunction
+			validateMock.mockReturnValueOnce('validation answer')
+			expect(validateFn('input string')).toBe('validation answer')
+			expect(validateMock).toHaveBeenCalledTimes(1)
+			expect(validateMock).toHaveBeenCalledWith('input string', context)
+		})
+
+		test('update', async () => {
+			const context = ['context item']
+			askForIntegerMock.mockResolvedValueOnce(19)
+
+			expect(await def.updateFromUserInput(18, context)).toBe(19)
+
+			expect(askForIntegerMock).toHaveBeenCalledTimes(1)
+			expect(askForIntegerMock).toHaveBeenCalledWith('Integer Def',
+				{ default: 18, validate: expect.any(Function) })
+
+			const validateFn = askForIntegerMock.mock.calls[0][1]?.validate as ValidateFunction
 			validateMock.mockReturnValueOnce('validation answer')
 			expect(validateFn('input string')).toBe('validation answer')
 			expect(validateMock).toHaveBeenCalledTimes(1)

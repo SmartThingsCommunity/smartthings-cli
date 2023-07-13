@@ -5,7 +5,7 @@ import { inputAndOutputItem, TableFieldDefinition, userInputProcessor } from '@s
 
 import { chooseChannel } from '../../../../lib/commands/channels-util.js'
 import { EdgeCommand } from '../../../../lib/edge-command.js'
-import { CreateInvitation, Invitation } from '../../../../lib/endpoints/invites.js'
+import { InvitationCreate, Invitation } from '../../../../lib/endpoints/invites.js'
 
 
 const tableFieldDefinitions: TableFieldDefinition<Invitation>[] = [
@@ -30,7 +30,7 @@ export default class ChannelsInvitesCreateCommand extends EdgeCommand<typeof Cha
 	}
 
 	async run(): Promise<void> {
-		const create = async (_: void, input: CreateInvitation): Promise<Invitation> => {
+		const create = async (_: void, input: InvitationCreate): Promise<Invitation> => {
 			const { invitationId } = await this.edgeClient.invites.create(input)
 			const invitation = await this.edgeClient.invites.get(invitationId)
 			return invitation
@@ -39,7 +39,7 @@ export default class ChannelsInvitesCreateCommand extends EdgeCommand<typeof Cha
 		await inputAndOutputItem(this, { tableFieldDefinitions }, create, userInputProcessor(this))
 	}
 
-	async getInputFromUser(): Promise<CreateInvitation> {
+	async getInputFromUser(): Promise<InvitationCreate> {
 		const channelId = await chooseChannel(this, 'Choose a channel:', this.flags.channel,
 			{ useConfigDefault: true })
 

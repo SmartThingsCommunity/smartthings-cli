@@ -47,7 +47,7 @@ export const tableFieldDefinitions: TableFieldDefinition<AppResponse>[] = [
 
 export const oauthTableFieldDefinitions: TableFieldDefinition<AppOAuthRequest>[] = ['clientName', 'scope', 'redirectUris']
 
-export const chooseApp =  async (command: APICommand<SelectFromListFlags>, appFromArg?: string, options?: Partial<ChooseOptions<PagedApp>>): Promise<string> => {
+export const chooseApp = async (command: APICommand<SelectFromListFlags>, appFromArg?: string, options?: Partial<ChooseOptions<PagedApp>>): Promise<string> => {
 	const opts = chooseOptionsWithDefaults(options)
 	const config: SelectFromListConfig<PagedApp> = {
 		itemName: 'app',
