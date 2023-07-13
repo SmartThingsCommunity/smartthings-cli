@@ -1,24 +1,32 @@
+import { SchemaApp, SchemaAppRequest, SmartThingsClient, ViperAppLinks } from '@smartthings/core-sdk'
+
 import {
-	DefaultValueFunction,
-	InputDefinition,
-	SmartThingsCommandInterface,
+	APICommand,
+	chooseOptionsWithDefaults,
 	clipToMaximum,
 	createFromUserInput,
+	DefaultValueFunction,
+	InputDefinition,
 	listSelectionDef,
 	maxItemValueLength,
 	objectDef,
 	optionalDef,
 	optionalStringDef,
+	selectFromList,
+	SmartThingsCommandInterface,
 	staticDef,
 	stringDef,
+	stringTranslateToId,
 	undefinedDef,
 	updateFromUserInput,
 } from '@smartthings/cli-lib'
 
+import { awsHelpText } from '../../../lib/aws-utils'
 import {
 	appLinksDefSummarize,
 	arnDef,
 	buildInputDefinition,
+	chooseSchemaApp,
 	getSchemaAppCreateFromUser,
 	getSchemaAppUpdateFromUser,
 	InputData,
@@ -26,8 +34,6 @@ import {
 	webHookUrlDef,
 } from '../../../lib/commands/schema-util'
 import * as schemaUtil from '../../../lib/commands/schema-util'
-import { SchemaApp, SchemaAppRequest, ViperAppLinks } from '@smartthings/core-sdk'
-import { awsHelpText } from '../../../lib/aws-utils'
 
 
 jest.mock('@smartthings/cli-lib', () => {
@@ -35,13 +41,16 @@ jest.mock('@smartthings/cli-lib', () => {
 
 	return {
 		...originalLib,
+		chooseOptionsWithDefaults: jest.fn(),
 		clipToMaximum: jest.fn(),
 		listSelectionDef: jest.fn(),
 		objectDef: jest.fn(),
 		optionalDef: jest.fn(),
 		optionalStringDef: jest.fn(),
+		selectFromList: jest.fn(),
 		staticDef: jest.fn(),
 		stringDef: jest.fn(),
+		stringTranslateToId: jest.fn(),
 		createFromUserInput: jest.fn(),
 		updateFromUserInput: jest.fn(),
 	}
@@ -356,4 +365,66 @@ test('getSchemaAppCreateFromUser', async () => {
 	expect(createFromUserInputMock).toHaveBeenCalledWith(commandMock,
 		generatedDef,
 		{ dryRun: false })
+})
+
+describe('chooseSchemaApp', () => {
+	const chooseOptionsDefaults = {
+		allowIndex: false,
+		verbose: false,
+		useConfigDefault: false,
+	}
+
+	const schemaListMock = jest.fn()
+	const client = {
+		schema: {
+			list: schemaListMock,
+		},
+	} as unknown as SmartThingsClient
+	const command = { client } as APICommand<typeof APICommand.flags>
+
+	const chooseOptionsWithDefaultsMock = jest.mocked(chooseOptionsWithDefaults).mockReturnValue(chooseOptionsDefaults)
+	const selectFromListMock = jest.mocked(selectFromList).mockResolvedValue('chosen-app-id')
+	const stringTranslateToIdMock = jest.mocked(stringTranslateToId).mockResolvedValue('translated-id')
+
+	it('does not translate index id by default', async () => {
+		expect(await chooseSchemaApp(command)).toBe('chosen-app-id')
+
+		expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledTimes(1)
+		expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledWith(undefined)
+		expect(selectFromListMock).toHaveBeenCalledTimes(1)
+		expect(selectFromListMock).toHaveBeenCalledWith(command,
+			expect.objectContaining({ itemName: 'schema app' }),
+			{ preselectedId: undefined, listItems: expect.any(Function), autoChoose: true })
+
+		expect(stringTranslateToIdMock).toHaveBeenCalledTimes(0)
+	})
+
+	it('translates id from index when allowed to', async () => {
+		chooseOptionsWithDefaultsMock.mockReturnValueOnce({ ...chooseOptionsDefaults, allowIndex: true })
+		expect(await chooseSchemaApp(command, 'id-from-args', { allowIndex: true  })).toBe('chosen-app-id')
+
+		expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledTimes(1)
+		expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledWith({ allowIndex: true })
+		expect(stringTranslateToIdMock).toHaveBeenCalledTimes(1)
+		expect(stringTranslateToIdMock).toHaveBeenCalledWith(
+			expect.objectContaining({ itemName: 'schema app' }),
+			'id-from-args',
+			expect.any(Function),
+		)
+		expect(selectFromListMock).toHaveBeenCalledTimes(1)
+	})
+
+	test('listItems', async () => {
+		expect(await chooseSchemaApp(command)).toBe('chosen-app-id')
+
+		const listItems = selectFromListMock.mock.calls[0][2].listItems
+
+		const schemaAppList = [{ endpointAppId: 'schema-app-id-1' }]
+		schemaListMock.mockResolvedValueOnce(schemaAppList)
+
+		expect(await listItems()).toBe(schemaAppList)
+
+		expect(schemaListMock).toHaveBeenCalledTimes(1)
+		expect(schemaListMock).toHaveBeenCalledWith()
+	})
 })

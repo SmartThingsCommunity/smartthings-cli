@@ -7,6 +7,9 @@ import {
 	AskForBooleanOptions,
 	askForBoolean,
 	DefaultValueOrFn,
+	askForOptionalInteger,
+	AskForIntegerOptions,
+	askForInteger,
 } from '../user-query'
 import {
 	CancelAction,
@@ -25,7 +28,7 @@ export const validateWithContextFn = (validate?: InputDefinitionValidateFunction
 		? (input: string): true | string | Promise<string | true> => validate(input, context)
 		: undefined
 
-export const defaultWithContextFn = (def?: InputDefinitionDefaultValueOrFn<string>, context?: unknown[]): DefaultValueOrFn<string> | undefined =>
+export const defaultWithContextFn = <T extends string | number>(def?: InputDefinitionDefaultValueOrFn<T>, context?: unknown[]): DefaultValueOrFn<T> | undefined =>
 	typeof def === 'function' ? () => def(context) : def
 
 export type StringDefOptions = Omit<AskForStringOptions, 'default' | 'validate'> & {
@@ -39,7 +42,7 @@ export const optionalStringDef = (name: string, options?: StringDefOptions): Inp
 			default: defaultWithContextFn(options?.default, context),
 			validate: validateWithContextFn(options?.validate, context),
 		})
-	const summarizeForEdit = (original: string): string => original
+	const summarizeForEdit = (value: string): string => value
 	const updateFromUserInput = (original: string, context?: unknown[]): Promise<string | undefined> =>
 		askForOptionalString(`${name} (optional)`,
 			{ ...options, default: original, validate: validateWithContextFn(options?.validate, context) })
@@ -50,10 +53,46 @@ export const optionalStringDef = (name: string, options?: StringDefOptions): Inp
 export const stringDef = (name: string, options?: StringDefOptions): InputDefinition<string> => {
 	const buildFromUserInput = async (context?: unknown[]): Promise<string> =>
 		askForString(name,
-			{ ...options, validate: validateWithContextFn(options?.validate, context) })
+			{
+				...options,
+				default: defaultWithContextFn(options?.default, context),
+				validate: validateWithContextFn(options?.validate, context),
+			})
 	const summarizeForEdit = (value: string): string => value
 	const updateFromUserInput = (original: string, context?: unknown[]): Promise<string> =>
 		askForString(name,
+			{ ...options, default: original, validate: validateWithContextFn(options?.validate, context) })
+
+	return { name, buildFromUserInput, summarizeForEdit, updateFromUserInput }
+}
+
+export type NumberDefOptions = Omit<AskForIntegerOptions, 'default'> & {
+	default?: InputDefinitionDefaultValueOrFn<number>
+}
+export const optionalIntegerDef = (name: string, options?: NumberDefOptions): InputDefinition<number | undefined> => {
+	const buildFromUserInput = async (context?: unknown[]): Promise<number | undefined> =>
+		askForOptionalInteger(`${name} (optional)`, {
+			...options,
+			default: defaultWithContextFn(options?.default, context),
+			validate: validateWithContextFn(options?.validate, context),
+		})
+	const summarizeForEdit = (value: number | undefined): string => String(value)
+	const updateFromUserInput = (original: number | undefined, context?: unknown[]): Promise<number | undefined> =>
+		askForOptionalInteger(`${name} (optional)`,
+			{ ...options, default: original, validate: validateWithContextFn(options?.validate, context) })
+
+	return { name, buildFromUserInput, summarizeForEdit, updateFromUserInput }
+}
+export const integerDef = (name: string, options?: NumberDefOptions): InputDefinition<number> => {
+	const buildFromUserInput = async (context?: unknown[]): Promise<number> =>
+		askForInteger(name, {
+			...options,
+			default: defaultWithContextFn(options?.default, context),
+			validate: validateWithContextFn(options?.validate, context),
+		})
+	const summarizeForEdit = (value: number): string => String(value)
+	const updateFromUserInput = (original: number | undefined, context?: unknown[]): Promise<number> =>
+		askForInteger(name,
 			{ ...options, default: original, validate: validateWithContextFn(options?.validate, context) })
 
 	return { name, buildFromUserInput, summarizeForEdit, updateFromUserInput }

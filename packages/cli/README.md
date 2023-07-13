@@ -206,6 +206,10 @@ that map to the API spec.
 * [`smartthings installedapps:rename [ID] [NAME]`](#smartthings-installedappsrename-id-name)
 * [`smartthings installedschema [ID]`](#smartthings-installedschema-id)
 * [`smartthings installedschema:delete [ID]`](#smartthings-installedschemadelete-id)
+* [`smartthings invites:schema [IDORINDEX]`](#smartthings-invitesschema-idorindex)
+* [`smartthings invites:schema:check-acceptance [ID]`](#smartthings-invitesschemacheck-acceptance-id)
+* [`smartthings invites:schema:create`](#smartthings-invitesschemacreate)
+* [`smartthings invites:schema:delete [ID]`](#smartthings-invitesschemadelete-id)
 * [`smartthings locations [IDORINDEX]`](#smartthings-locations-idorindex)
 * [`smartthings locations:create`](#smartthings-locationscreate)
 * [`smartthings locations:delete [ID]`](#smartthings-locationsdelete-id)
@@ -416,7 +420,7 @@ USAGE
   $ smartthings apps:delete [ID] [-h] [-p <value>] [-t <value>] [--language <value>]
 
 ARGUMENTS
-  ID  app profile UUID or number in the list
+  ID  app UUID
 
 COMMON FLAGS
   -h, --help             Show CLI help.
@@ -4105,6 +4109,177 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/installedschema/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.7.0/packages/cli/src/commands/installedschema/delete.ts)_
+
+## `smartthings invites:schema [IDORINDEX]`
+
+list invitations for a schema app
+
+```
+USAGE
+  $ smartthings invites:schema [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o
+    <value>] [--schema-app <value>]
+
+ARGUMENTS
+  IDORINDEX  the invitation id or number in list
+
+FLAGS
+  --schema-app=<value>  schema app id
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  list invitations for a schema app
+
+EXAMPLES
+  prompt for a schema app and then list its invitations
+
+    $ smartthings invites:schema
+
+  list invitations for the specified schema app
+
+    $ smartthings invites:schema --schema-app=viper_7db10232-3f97-4618-924b-807bf852c616
+
+  display details about the third invitation listed in the previous example
+
+    $ smartthings invites:schema --schema-app=viper_7db10232-3f97-4618-924b-807bf852c616 3
+
+  list details of specified invitation
+
+    $ smartthings invites:schema 97e44afd-845f-4da1-a7b3-fd2625fc9367
+```
+
+_See code: [src/commands/invites/schema.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.7.0/packages/cli/src/commands/invites/schema.ts)_
+
+## `smartthings invites:schema:check-acceptance [ID]`
+
+check the acceptance status of a schema app invitation
+
+```
+USAGE
+  $ smartthings invites:schema:check-acceptance [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
+    [--schema-app <value>]
+
+ARGUMENTS
+  ID  the invitation id
+
+FLAGS
+  --schema-app=<value>  schema app id
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  check the acceptance status of a schema app invitation
+
+EXAMPLES
+  prompt for an invitation and check its acceptance status
+
+    $ smartthings invites:schema:check-acceptance
+
+  check acceptance status for the specified invitation
+
+    $ smartthings invites:schema:check-acceptance 7bd4c5b6-e840-44b3-9933-549a342d95ce
+```
+
+_See code: [src/commands/invites/schema/check-acceptance.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.7.0/packages/cli/src/commands/invites/schema/check-acceptance.ts)_
+
+## `smartthings invites:schema:create`
+
+create an invitation to a schema app
+
+```
+USAGE
+  $ smartthings invites:schema:create [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
+    <value>] [-d] [--schema-app <value>]
+
+FLAGS
+  -d, --dry-run         produce JSON but don't actually submit
+  --schema-app=<value>  schema app id
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    specify input file
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  create an invitation to a schema app
+
+EXAMPLES
+  create an invitation from prompted input
+
+    $ smartthings invites:schema:create
+
+  create an invitation for the specified ST Schema app from prompted input
+
+    $ smartthings invites:schema:create --schema-app d2e44c34-3cb1-42be-b5ba-8fbaf2922c19
+
+  create an invitation as defined in invitation.json, prompting the user for a schema-app
+
+    $ smartthings invites:schema:create -i invitation.json
+
+  create an invitation as defined in invitation.json with the specified schema-app
+
+    $ smartthings invites:schema:create -i invitation.json --schema-app d2e44c34-3cb1-42be-b5ba-8fbaf2922c19
+```
+
+_See code: [src/commands/invites/schema/create.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.7.0/packages/cli/src/commands/invites/schema/create.ts)_
+
+## `smartthings invites:schema:delete [ID]`
+
+delete a schema app invitation
+
+```
+USAGE
+  $ smartthings invites:schema:delete [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [--schema-app <value>]
+
+ARGUMENTS
+  ID  schema app invitation UUID
+
+FLAGS
+  --schema-app=<value>  schema app id
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  delete a schema app invitation
+
+EXAMPLES
+  select an invitation to delete from list
+
+    $ smartthings invites:schema:delete
+
+  select an invitation to delete from list, for the specified schema app
+
+    $ smartthings invites:schema:delete --schema-app e077532e-3c0f-4f3b-a1d8-029115ee1602
+
+  delete a specific invitation by id
+
+    $ smartthings invites:schema:delete 5dfd6626-ab1d-42da-bb76-90def3153998
+```
+
+_See code: [src/commands/invites/schema/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.7.0/packages/cli/src/commands/invites/schema/delete.ts)_
 
 ## `smartthings locations [IDORINDEX]`
 

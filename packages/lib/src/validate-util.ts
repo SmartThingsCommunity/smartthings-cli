@@ -51,6 +51,31 @@ export const stringValidateFn = (options: StringValidationOptions): ValidateFunc
 	}
 }
 
+export type IntegerValidationOptions = {
+	min?: number
+	max?: number
+}
+
+export const integerValidateFn = (options?: IntegerValidationOptions): ValidateFunction => {
+	if (options?.min != null && options.max != null && options.min > options.max) {
+		throw Error('max must be >= min')
+	}
+
+	return (input: string): true | string => {
+		if (!input.match(/^-?\d+$/)) {
+			return `"${input}" is not a valid integer`
+		}
+		const asNumber = Number(input)
+		if (options?.min != null && asNumber < options.min) {
+			return `must be no less than ${options.min}`
+		}
+		if (options?.max != null && asNumber > options.max) {
+			return `must be no more than ${options.max}`
+		}
+		return true
+	}
+}
+
 type URLValidateFnOptions = {
 	httpsRequired?: boolean
 
@@ -72,7 +97,7 @@ const urlValidateFn = (options?: URLValidateFnOptions): ValidateFunction => {
 		try {
 			const url = new URL(input)
 			if (options?.httpsRequired) {
-				if (options?.allowLocalhostHTTP) {
+				if (options.allowLocalhostHTTP) {
 					return url.protocol === 'https:' ||
 						url.protocol === 'http:' && allowedHTTPHosts.includes(url.host) ||
 						'https is required except for localhost'

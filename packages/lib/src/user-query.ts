@@ -74,34 +74,69 @@ export const askForString = async (message: string, options?: AskForStringOption
 	return await promptForString(message, updatedOptions) as string
 }
 
-export const askForInteger = async (message: string, min?: number, max?: number): Promise<number | undefined> => {
-	const value = (await inquirer.prompt({
-		// Since 'number' converts strings to NaN without warning or error before validate is
-		// called, we use `input` here and just do our own validation. (It's possible to do some
-		// error correction in `transformer` but you can't return an error.)
+export type AskForIntegerOptions = {
+	default?: DefaultValueOrFn<number>
+
+	/**
+	 * A validation function targeted at `inquirer`'s prompt method. Note that `inquirer` input is
+	 * always a string, so this method gets the raw `string` entered by the user (not a `number`).
+	 * For simple min/max validation, use `integerValidateFn`.
+	 */
+	validate?: ValidateFunction
+
+	helpText?: string
+}
+
+const promptForInteger = async (message: string, options: AskForIntegerOptions): Promise<number | undefined> => {
+	const buildValidateFunctionFn = (): ValidateFunction | undefined => {
+		// When there is a validate method defined and we have help text, we have to allow '?'.
+		if (options.helpText && options.validate) {
+			return input => input === '?' || options.validate === undefined || options.validate(input)
+		}
+
+		return options.validate
+	}
+
+	const prompt = async (): Promise<string | undefined> => (await inquirer.prompt({
 		type: 'input',
 		name: 'value',
-		message,
+		message: options.helpText ? `${message} (? for help)` : message,
 		transformer: numberTransformer,
-		validate: input => {
-			if (input === '') {
-				return true
-			}
-			if (!input.match(/^-?\d+$/)) {
-				return `${input} is not a valid integer`
-			}
-			const asNumber = Number(input)
-			if (min !== undefined && asNumber < min) {
-				return `must be no less than ${min}`
-			}
-			if (max !== undefined && asNumber > max) {
-				return `must be no more than ${max}`
-			}
-			return true
-		},
-	})).value as string
+		validate: buildValidateFunctionFn(),
+		default: typeof options.default === 'function' ? options.default() : options.default,
+	})).value as string | undefined
 
-	return value === '' ? undefined : Number(value)
+	let entered = await prompt()
+	while (options.helpText && entered === '?') {
+		console.log(options.helpText)
+		entered = await prompt()
+	}
+
+	return entered ? Number(entered) : undefined
+}
+
+/**
+ * Simple wrapper around querying a user for an integer. The return value will always be a number
+ * that is an integer or undefined.
+ */
+export const askForOptionalInteger = async (message: string, options?: AskForIntegerOptions): Promise<number | undefined> => {
+	const updatedOptions = {
+		...options,
+		validate: options?.validate ? allowEmptyFn(options.validate) : undefined,
+	}
+	return await promptForInteger(message, updatedOptions) || undefined
+}
+
+/**
+ * Simple wrapper around querying a user for a string. The return value will always be a string
+ * which may be empty (unless a validation function is specified which disallows it).
+ */
+export const askForInteger = async (message: string, options?: AskForIntegerOptions): Promise<number> =>  {
+	const updatedOptions = {
+		...options,
+		validate: (input: string) => input ? (options?.validate ? options.validate(input) : true) : 'value is required',
+	}
+	return await promptForInteger(message, updatedOptions) as number
 }
 
 export const askForNumber = async (message: string, min?: number, max?: number): Promise<number | undefined> => {
