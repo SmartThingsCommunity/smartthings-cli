@@ -1,20 +1,26 @@
 import { SchemaApp, SchemaAppRequest, SmartThingsURLProvider, ViperAppLinks } from '@smartthings/core-sdk'
 
 import {
-	InputDefinition,
-	SmartThingsCommandInterface,
+	APICommand,
 	booleanDef,
+	ChooseOptions,
+	chooseOptionsWithDefaults,
 	clipToMaximum,
 	createFromUserInput,
 	emailValidate,
 	httpsURLValidate,
+	InputDefinition,
 	listSelectionDef,
 	maxItemValueLength,
 	objectDef,
 	optionalDef,
 	optionalStringDef,
+	selectFromList,
+	SelectFromListConfig,
+	SmartThingsCommandInterface,
 	staticDef,
 	stringDef,
+	stringTranslateToId,
 	undefinedDef,
 	updateFromUserInput,
 } from '@smartthings/cli-lib'
@@ -133,4 +139,18 @@ export const getSchemaAppCreateFromUser = async (command: SmartThingsCommandInte
 	const inputData = await createFromUserInput(command, inputDef, { dryRun })
 
 	return stripTempInputFields(inputData)
+}
+
+export const chooseSchemaApp = async (command: APICommand<typeof APICommand.flags>, schemaAppFromArg?: string, options?: Partial<ChooseOptions<SchemaApp>>): Promise<string> => {
+	const opts = chooseOptionsWithDefaults(options)
+	const config: SelectFromListConfig<SchemaApp> = {
+		itemName: 'schema app',
+		primaryKeyName: 'endpointAppId',
+		sortKeyName: 'appName',
+	}
+	const listItems = (): Promise<SchemaApp[]> => command.client.schema.list()
+	const preselectedId = opts.allowIndex
+		? await stringTranslateToId(config, schemaAppFromArg, listItems)
+		: schemaAppFromArg
+	return selectFromList(command, config, { preselectedId, listItems, autoChoose: true })
 }

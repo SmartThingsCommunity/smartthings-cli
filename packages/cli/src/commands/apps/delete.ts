@@ -10,7 +10,7 @@ export default class AppDeleteCommand extends APICommand<typeof AppDeleteCommand
 
 	static args = [{
 		name: 'id',
-		description: 'app profile UUID or number in the list',
+		description: 'app UUID',
 	}]
 
 	static examples = [

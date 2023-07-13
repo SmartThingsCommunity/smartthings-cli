@@ -8,7 +8,7 @@ export type InvitationMetadata = {
 	termsUrl: string
 }
 
-export type CreateInvitation = {
+export type InvitationCreate = {
 	resource: {
 		root: {
 			service: 'core' | 'iam' | 'platform' | 'mdu' | 'developer'
@@ -28,12 +28,12 @@ export type CreateInvitation = {
 	expiration?: number
 }
 
-export type Invitation = CreateInvitation & {
+export type Invitation = InvitationCreate & {
 	id: string
 	acceptUrl: string
 }
 
-export type InvitationSummary = {
+export type SchemaAppInvitationSummary = {
 	invitationId: string
 	acceptUrl: string
 }
@@ -44,7 +44,7 @@ export class InvitesEndpoint extends Endpoint {
 		super(new EndpointClient('invites', config))
 	}
 
-	public async create(invitation: CreateInvitation): Promise<InvitationSummary> {
+	public async create(invitation: InvitationCreate): Promise<SchemaAppInvitationSummary> {
 		return this.client.post('', invitation)
 	}
 
