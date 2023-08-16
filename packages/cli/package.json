@@ -13,7 +13,7 @@
 	"license": "Apache-2.0",
 	"main": "lib/index.js",
 	"engines": {
-		"node": ">=18.15.0 <19",
+		"node": ">=18.5.0 <19",
 		"npm": ">=9.5"
 	},
 	"files": [
