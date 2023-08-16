@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.5.1
+
+### Patch Changes
+
+- [#537](https://github.com/SmartThingsCommunity/smartthings-cli/pull/537) [`964fb60`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/964fb6099019c6d013dac12fbc09a5d5ecd04b89) Thanks [@bflorian](https://github.com/bflorian)! - chore: reverted minimum node version to 18.5.0
+
+- Updated dependencies [[`964fb60`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/964fb6099019c6d013dac12fbc09a5d5ecd04b89)]:
+  - @smartthings/cli-lib@2.1.1
+  - @smartthings/plugin-cli-edge@3.2.1
+
 ## 1.5.0
 
 ### Minor Changes
