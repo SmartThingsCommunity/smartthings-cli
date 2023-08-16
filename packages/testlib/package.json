@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli-testlib",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"description": "SmartThings CLI testing utility methods library",
 	"author": "Samsung Electronics Co., LTD.",
 	"bugs": {
@@ -28,7 +28,7 @@
 		"directory": "packages/testlib"
 	},
 	"dependencies": {
-		"@smartthings/cli-lib": "^2.1.0",
+		"@smartthings/cli-lib": "^2.1.1",
 		"@smartthings/core-sdk": "^7.1.1"
 	},
 	"devDependencies": {

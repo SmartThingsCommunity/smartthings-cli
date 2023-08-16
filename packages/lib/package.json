@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli-lib",
-	"version": "2.1.0",
+	"version": "2.1.1",
 	"description": "SmartThings CLI utility library",
 	"author": "Samsung Electronics Co., LTD.",
 	"bugs": {
