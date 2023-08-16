@@ -11,7 +11,7 @@
 	"main": "dist/index",
 	"types": "dist/index",
 	"engines": {
-		"node": ">=18.15.0 <19",
+		"node": ">=18.5.0 <19",
 		"npm": ">=9.5"
 	},
 	"files": [
