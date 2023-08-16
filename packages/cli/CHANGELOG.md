@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.5.0
+
+### Minor Changes
+
+- [#498](https://github.com/SmartThingsCommunity/smartthings-cli/pull/498) [`86e82da`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/86e82da44cdc75c93c7e96913c8e459f6f43f77c) Thanks [@Sitlintac](https://github.com/Sitlintac)! - add commands for location modes
+
 ## 1.4.1
 
 ### Patch Changes
