@@ -22,6 +22,7 @@ describe('SchemaAppCreateCommand', () => {
 				tableFieldDefinitions: ['endpointAppId', 'stClientId', 'stClientSecret'],
 			}),
 			expect.any(Function),
+			expect.anything(),
 		)
 	})
 

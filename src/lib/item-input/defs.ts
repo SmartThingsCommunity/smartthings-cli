@@ -47,12 +47,34 @@ export type InputDefinition<T> = {
 	 */
 	updateFromUserInput(original: T, context?: unknown[]): Promise<T | CancelAction>
 
+	// TODO: implement and document
+	// TODO: better name
+	// TODO: maybe add dependencies between fields somehow for objectDef?
+	// 		"predicate" option for fields in objectDef?
+	/**
+	 * If provided, this method will be called on subsequent items in an object definition
+	 * when a change is made to one.
+	 *
+	 * Use cases:
+	 *   1. computed values need to be recomputed when things they depend upon have changed
+	 *   2. when selection made for one field leads to a different set of later fields requiring input
+	 */
+	updateIfNeeded?: <U extends T>(original: U, updatedPropertyName: string | number | symbol, context?: unknown[]) => Promise<T | CancelAction>
+
 	/**
 	 * Specific item types can include data here for reference outside the definition builder.
 	 * Currently this is used by object-type item definitions so parent definitions can access
 	 * child definition properties for rolled up properties.
 	 */
 	itemTypeData?: { type: 'object' }
+
+	/**
+	 * Optional final validation. Most validation should be done on each field as it's entered
+	 * or updated but sometimes in a more complex object, a final validation needs to be used.
+	 *
+	 * Return true if the object is valid or a string error message if not.
+	 */
+	validateFinal?: <U extends T>(item: U, context?: unknown[]) => true | string
 }
 
 /**
@@ -62,6 +84,7 @@ export type InputDefinition<T> = {
  */
 export type InputDefinitionValidateFunction = (input: string,
 	context?: unknown[]) => true | string | Promise<true | string>
+export type InputDefinitionDefaultValueOrFn<T> = T | ((context?: unknown[]) => T)
 
 export const addAction = Symbol('add')
 export type AddAction = typeof addAction

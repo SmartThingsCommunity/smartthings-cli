@@ -2,10 +2,15 @@ import { Flags } from '@oclif/core'
 
 import { SchemaAppRequest, SchemaCreateResponse } from '@smartthings/core-sdk'
 
-import { APICommand, inputAndOutputItem, lambdaAuthFlags } from '@smartthings/cli-lib'
+import {
+	APICommand,
+	inputAndOutputItem,
+	lambdaAuthFlags,
+	userInputProcessor,
+} from '@smartthings/cli-lib'
 
 import { addSchemaPermission } from '../../lib/aws-utils.js'
-import { SCHEMA_AWS_PRINCIPAL } from '../../lib/commands/schema-util.js'
+import { SCHEMA_AWS_PRINCIPAL, getSchemaAppCreateFromUser } from '../../lib/commands/schema-util.js'
 
 
 export default class SchemaAppCreateCommand extends APICommand<typeof SchemaAppCreateCommand.flags> {
@@ -48,6 +53,7 @@ export default class SchemaAppCreateCommand extends APICommand<typeof SchemaAppC
 		}
 		await inputAndOutputItem(this,
 			{ tableFieldDefinitions: ['endpointAppId', 'stClientId', 'stClientSecret'] },
-			createApp)
+			createApp, userInputProcessor(() => getSchemaAppCreateFromUser(this)),
+		)
 	}
 }

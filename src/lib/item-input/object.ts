@@ -33,6 +33,14 @@ export type ObjectDefOptions<T> = {
 	rollup?: boolean
 
 	helpText?: string
+
+	/**
+	 * Optional final validation. Most validation should be done on each field as it's entered
+	 * or updated but sometimes in a more complex object, a final validation needs to be used.
+	 *
+	 * Return true if the object is valid or a string error message if not.
+	 */
+	validateFinal?: (item: T, context?: unknown[]) => true | string
 }
 
 const defaultSummarizeForEditFn = (name: string) => (): string => { throw Error(`missing implementation of summarizeForEdit for objectDef ${name}`) }
@@ -43,6 +51,44 @@ export type ObjectItemTypeData<T> = {
 }
 
 const maxPropertiesForDefaultRollup = 3
+
+const buildPropertyChoices = <T>(inputDefsByProperty: InputDefsByProperty<T>, updated: T, contextForChildren: unknown[]): ChoiceCollection => {
+	const choices = [] as ChoiceCollection
+	for (const propertyName in inputDefsByProperty) {
+		const propertyInputDefinition = inputDefsByProperty[propertyName]
+		if (!propertyInputDefinition) {
+			continue
+		}
+		const propertyValue = updated[propertyName]
+		if (propertyInputDefinition.itemTypeData?.type === 'object' &&
+				(propertyInputDefinition.itemTypeData as ObjectItemTypeData<unknown>).rolledUp) {
+			// nested property that is rolled up
+			const itemTypeData = propertyInputDefinition.itemTypeData as ObjectItemTypeData<unknown>
+			for (const nestedPropertyName in itemTypeData.inputDefsByProperty) {
+				const nestedPropertyInputDefinition =
+					(itemTypeData.inputDefsByProperty as { [key: string]: InputDefinition<unknown> })[nestedPropertyName]
+				const nestedItem = (propertyValue as { [key: string]: unknown })[nestedPropertyName]
+				const summary = nestedPropertyInputDefinition.summarizeForEdit(nestedItem, contextForChildren)
+				if (summary !== uneditable) {
+					choices.push({
+						name: `Edit ${nestedPropertyInputDefinition.name}: ${summary}`,
+						value: `${propertyName}.${nestedPropertyName}`,
+					})
+				}
+			}
+		} else {
+			// top-level property
+			const summary = propertyInputDefinition.summarizeForEdit(propertyValue, contextForChildren)
+			if (summary !== uneditable) {
+				choices.push({
+					name: `Edit ${propertyInputDefinition.name}: ${summary}`,
+					value: propertyName,
+				})
+			}
+		}
+	}
+	return choices
+}
 
 // TODO: deal with optional objects
 //    rolled up: make all items optional or don't allow rollup for optional classes?
@@ -57,6 +103,9 @@ const maxPropertiesForDefaultRollup = 3
  *
  * If this definition is for a nested object whose properties are not rolled up into the questions
  * of its parent, you must include `summarizeForEdit` in `options`.
+ *
+ * NOTES:
+ *   Calling `updateIfNeeded` on rolled up properties is not yet implemented.
  */
 export function objectDef<T extends object>(name: string, inputDefsByProperty: InputDefsByProperty<T>,
 		options?: ObjectDefOptions<T>): InputDefinition<T> {
@@ -93,40 +142,7 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			const contextForChildren = [{ ...updated }, ...context]
-			const choices = [] as ChoiceCollection
-			for (const propertyName in inputDefsByProperty) {
-				const propertyInputDefinition = inputDefsByProperty[propertyName]
-				if (!propertyInputDefinition) {
-					continue
-				}
-				const propertyValue = updated[propertyName]
-				if (propertyInputDefinition.itemTypeData?.type === 'object' &&
-						(propertyInputDefinition.itemTypeData as ObjectItemTypeData<unknown>).rolledUp) {
-					// nested property that is rolled up
-					const itemTypeData = propertyInputDefinition.itemTypeData as ObjectItemTypeData<unknown>
-					for (const nestedPropertyName in itemTypeData.inputDefsByProperty) {
-						const nestedPropertyInputDefinition =
-							(itemTypeData.inputDefsByProperty as { [key: string]: InputDefinition<unknown> })[nestedPropertyName]
-						const nestedItem = (propertyValue as { [key: string]: unknown })[nestedPropertyName]
-						const summary = nestedPropertyInputDefinition.summarizeForEdit(nestedItem, contextForChildren)
-						if (summary !== uneditable) {
-							choices.push({
-								name: `Edit ${nestedPropertyInputDefinition.name}: ${summary}`,
-								value: `${propertyName}.${nestedPropertyName}`,
-							})
-						}
-					}
-				} else {
-					// top-level property
-					const summary = propertyInputDefinition.summarizeForEdit(propertyValue, contextForChildren)
-					if (summary !== uneditable) {
-						choices.push({
-							name: `Edit ${propertyInputDefinition.name}: ${summary}`,
-							value: propertyName,
-						})
-					}
-				}
-			}
+			const choices = buildPropertyChoices(inputDefsByProperty, updated, contextForChildren)
 			choices.push(new Separator())
 			if (options?.helpText) {
 				choices.push(helpOption)
@@ -152,30 +168,71 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 			} else {
 				const props = action.split('.')
 
-				const propertyName = props[0] as keyof T
-				const propertyInputDefinition = inputDefsByProperty[propertyName]
+				const updatedPropertyName = props[0] as keyof T
+				const propertyInputDefinition = inputDefsByProperty[updatedPropertyName]
 				if (props.length === 1) {
 					// top-level property
-					const updatedProperty = await propertyInputDefinition.updateFromUserInput(updated[propertyName], contextForChildren)
-					if (updatedProperty !== cancelAction) {
-						updated[propertyName] = updatedProperty
+					const updatedPropertyValue = await propertyInputDefinition
+						.updateFromUserInput(updated[updatedPropertyName], contextForChildren)
+					if (updatedPropertyValue !== cancelAction && updated[updatedPropertyName] !== updatedPropertyValue) {
+						updated[updatedPropertyName] = updatedPropertyValue
+						let afterUpdatedProperty = false
+						for (const propertyName in inputDefsByProperty) {
+							if (afterUpdatedProperty) {
+								const laterPropertyInputDefinition = inputDefsByProperty[propertyName]
+								const updateIfNeeded = laterPropertyInputDefinition.updateIfNeeded
+								if (updateIfNeeded) {
+									const laterPropertyValue = await updateIfNeeded(updated[propertyName], updatedPropertyName, [{ ...updated }, ...context])
+									if (laterPropertyValue !== cancelAction) {
+										updated[propertyName] = laterPropertyValue
+									}
+								}
+							} else if (propertyName === updatedPropertyName) {
+								afterUpdatedProperty = true
+							}
+							const propertyInputDefinition = inputDefsByProperty[propertyName]
+							if (!propertyInputDefinition) {
+								continue
+							}
+						}
 					}
 				} else {
 					// nested property that is rolled up
 					const nestedPropertyName = props[1]
 					const itemTypeData = propertyInputDefinition.itemTypeData as ObjectItemTypeData<unknown>
 
-					const objectValue = updated[propertyName] as { [key: string]: unknown }
+					const objectValue = updated[updatedPropertyName] as { [key: string]: unknown }
 
 					const nestedPropertyInputDefinition =
 						(itemTypeData.inputDefsByProperty as { [key: string]: InputDefinition<unknown> })[nestedPropertyName]
 
-					const updatedProperty = await nestedPropertyInputDefinition.updateFromUserInput(
+					const updatedPropertyValue = await nestedPropertyInputDefinition.updateFromUserInput(
 						objectValue[nestedPropertyName],
 						contextForChildren,
 					)
-					if (updatedProperty !== cancelAction) {
-						objectValue[nestedPropertyName] = updatedProperty
+					if (updatedPropertyValue !== cancelAction && objectValue[nestedPropertyName] !== updatedPropertyValue) {
+						objectValue[nestedPropertyName] = updatedPropertyValue
+						let afterUpdatedProperty = false
+						for (const propertyName in inputDefsByProperty) {
+							if (afterUpdatedProperty) {
+								const laterPropertyInputDefinition = inputDefsByProperty[propertyName]
+								const updateIfNeeded = laterPropertyInputDefinition.updateIfNeeded
+								if (updateIfNeeded) {
+									const laterPropertyValue = await updateIfNeeded(updated[propertyName], updatedPropertyName, [{ ...updated }, ...context])
+									if (laterPropertyValue !== cancelAction) {
+										updated[propertyName] = laterPropertyValue
+									}
+								}
+							} else if (propertyName === updatedPropertyName) {
+								// TODO: also do rolled up properties in `propertyName` after nested property
+								// (Once this is implemented, remove note from documentation for this function.)
+								afterUpdatedProperty = true
+							}
+							const propertyInputDefinition = inputDefsByProperty[propertyName]
+							if (!propertyInputDefinition) {
+								continue
+							}
+						}
 					}
 				}
 			}
@@ -186,5 +243,5 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 		?? Object.values(inputDefsByProperty).filter(value => !!value).length <= maxPropertiesForDefaultRollup
 	const itemTypeData: ObjectItemTypeData<T> = { type: 'object', inputDefsByProperty, rolledUp }
 
-	return { name, buildFromUserInput, summarizeForEdit, updateFromUserInput, itemTypeData }
+	return { name, buildFromUserInput, summarizeForEdit, updateFromUserInput, itemTypeData, validateFinal: options?.validateFinal }
 }

@@ -206,7 +206,7 @@ export type CheckboxDefItem<T> = T extends string ? string | ComplexCheckboxDefI
 
 export function checkboxDef<T>(name: string, items: CheckboxDefItem<T>[], options?: CheckboxDefOptions<T>): InputDefinition<T[]> {
 	const editValues = async (values: T[]): Promise<T[] | CancelAction> => {
-		// We can't add help to the inquirer `checkbox` so, at least for now, we'll just display
+		// We can't add help to the inquirer `checkbox` so, at least for now, we'll display
 		// the help before we display the checkbox.
 		if (options?.helpText) {
 			console.log(`\n${options.helpText}\n`)

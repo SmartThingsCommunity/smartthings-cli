@@ -16,8 +16,8 @@ import {
 	arrayDef,
 	InputDefsByProperty,
 } from '@smartthings/cli-lib'
-import { addPermission } from '../../lib/aws-utils'
-import { chooseApp, tableFieldDefinitions } from '../../lib/commands/apps-util'
+import { addPermission, awsHelpText } from '../../lib/aws-utils'
+import { chooseApp, smartAppHelpText, tableFieldDefinitions } from '../../lib/commands/apps-util'
 
 
 export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand.flags> {
@@ -82,8 +82,7 @@ export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand
 			}
 			if (appType === AppType.LAMBDA_SMART_APP) {
 				startingRequest.lambdaSmartApp = lambdaSmartApp
-				const helpText = 'More information on AWS Lambdas can be found at:\n' +
-					'  https://docs.aws.amazon.com/lambda/latest/dg/welcome.html'
+				const helpText = awsHelpText
 				propertyInputDefs.lambdaSmartApp = objectDef('Lambda SmartApp',
 					{ functions: arrayDef('Lambda Functions', stringDef('Lambda Function', { helpText }), { helpText }) })
 			}

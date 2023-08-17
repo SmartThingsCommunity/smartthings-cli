@@ -16,8 +16,9 @@ export const numberTransformer: TransformerFunction = (input, _, { isFinal }) =>
 export const allowEmptyFn = (validate: ValidateFunction): ValidateFunction =>
 	(input: string): true | string | Promise<true | string> => input === '' || validate(input)
 
+export type DefaultValueOrFn<T> = T | (() => T)
 export type AskForStringOptions = {
-	default?: string
+	default?: DefaultValueOrFn<string>
 	validate?: ValidateFunction
 	helpText?: string
 }
@@ -37,7 +38,7 @@ const promptForString = async (message: string, options: AskForStringOptions): P
 		name: 'value',
 		message: options.helpText ? `${message} (? for help)` : message,
 		validate: buildValidateFunction(),
-		default: options.default,
+		default: typeof options.default === 'function' ? options.default() : options.default,
 	})).value as string | undefined
 
 	let entered = await prompt()
@@ -128,4 +129,22 @@ export const askForNumber = async (message: string, min?: number, max?: number):
 	})).value as string
 
 	return value === '' ? undefined : Number(value)
+}
+
+export type AskForBooleanOptions = {
+	/**
+	 * Specify a default value for when the user hits enter. The default default is true.
+	 */
+	default?: boolean
+}
+
+export const askForBoolean = async (message: string, options?: AskForBooleanOptions): Promise<boolean> => {
+	const answer = (await inquirer.prompt({
+		type: 'confirm',
+		name: 'answer',
+		message,
+		default: options?.default ?? true,
+	})).answer as boolean
+
+	return answer
 }
