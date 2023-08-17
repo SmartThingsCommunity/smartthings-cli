@@ -5465,13 +5465,14 @@ update an ST Schema connector
 
 ```
 USAGE
-  $ smartthings schema:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>]
+  $ smartthings schema:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-d]
     [--authorize] [--principal <value>] [--statement <value>]
 
 ARGUMENTS
   ID  the app id
 
 FLAGS
+  -d, --dry-run        produce JSON but don't actually submit
   --authorize          authorize Lambda functions to be called by SmartThings
   --principal=<value>  use this principal instead of the default when authorizing lambda functions
   --statement=<value>  use this statement id instead of the default when authorizing lambda functions

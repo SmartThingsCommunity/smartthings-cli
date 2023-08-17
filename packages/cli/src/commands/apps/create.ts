@@ -122,7 +122,7 @@ export default class AppCreateCommand extends APICommand<typeof AppCreateCommand
 			name: 'action',
 			message: 'What kind of app do you want to create? (Currently, only OAuth-In apps are supported.)',
 			choices: [
-				{ name: 'OAuth-Inn App', value: 'oauth-in' },
+				{ name: 'OAuth-In App', value: 'oauth-in' },
 				{ name: 'Cancel', value: 'cancel' },
 			],
 			default: 'oauth-in',
