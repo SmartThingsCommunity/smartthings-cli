@@ -121,8 +121,13 @@ export type UserInputCommand<T> = {
  * always be the last one in the list since input processors are checked in order and this can
  * always provide data.
  */
-export function userInputProcessor<T>(command: UserInputCommand<T>): InputProcessor<T> {
-	return inputProcessor(() => true, () => command.getInputFromUser())
+export function userInputProcessor<T>(command: UserInputCommand<T>): InputProcessor<T>
+export function userInputProcessor<T>(readFn: () => Promise<T>): InputProcessor<T>
+export function userInputProcessor<T>(commandOrReadFn: UserInputCommand<T> | (() => Promise<T>)): InputProcessor<T> {
+	if (typeof commandOrReadFn === 'function') {
+		return inputProcessor(() => true, commandOrReadFn)
+	}
+	return inputProcessor(() => true, () => commandOrReadFn.getInputFromUser())
 }
 
 export class CombinedInputProcessor<T> implements InputProcessor<T> {

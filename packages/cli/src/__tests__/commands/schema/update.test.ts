@@ -47,6 +47,7 @@ describe('SchemaUpdateCommand', () => {
 
 		expect(inputItemMock).toBeCalledWith(
 			expect.any(SchemaUpdateCommand),
+			expect.anything(),
 		)
 	})
 

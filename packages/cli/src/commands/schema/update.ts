@@ -2,9 +2,10 @@ import { Flags, Errors } from '@oclif/core'
 
 import { SchemaApp, SchemaAppRequest } from '@smartthings/core-sdk'
 
-import { APICommand, inputItem, selectFromList, lambdaAuthFlags, SelectFromListConfig } from '@smartthings/cli-lib'
+import { APICommand, inputItem, selectFromList, lambdaAuthFlags, SelectFromListConfig, userInputProcessor, inputAndOutputItem } from '@smartthings/cli-lib'
 
 import { addSchemaPermission } from '../../lib/aws-utils'
+import { getSchemaAppUpdateFromUser } from '../../lib/commands/schema-util'
 
 
 export default class SchemaUpdateCommand extends APICommand<typeof SchemaUpdateCommand.flags> {
@@ -14,6 +15,11 @@ export default class SchemaUpdateCommand extends APICommand<typeof SchemaUpdateC
 	static flags = {
 		...APICommand.flags,
 		...inputItem.flags,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		'dry-run': Flags.boolean({
+			char: 'd',
+			description: "produce JSON but don't actually submit",
+		}),
 		authorize: Flags.boolean({
 			description: 'authorize Lambda functions to be called by SmartThings',
 		}),
@@ -36,7 +42,12 @@ export default class SchemaUpdateCommand extends APICommand<typeof SchemaUpdateC
 			listItems: () => this.client.schema.list(),
 		})
 
-		const [request] = await inputItem<SchemaAppRequest>(this)
+		const getInputFromUser = async (): Promise<SchemaAppRequest> => {
+			const original = await this.client.schema.get(id)
+			return getSchemaAppUpdateFromUser(this, original, this.flags['dry-run'])
+		}
+
+		const [request] = await inputItem<SchemaAppRequest>(this, userInputProcessor(getInputFromUser))
 		if (this.flags.authorize) {
 			if (request.hostingType === 'lambda') {
 				if (request.lambdaArn) {

@@ -11,6 +11,7 @@ import {
 	previewJSONAction,
 	previewYAMLAction,
 } from './defs'
+import { red } from 'chalk'
 
 
 export type UpdateFromUserInputOptions = {
@@ -33,6 +34,7 @@ export const updateFromUserInput = async <T extends object>(command: SmartThings
 		// TODO: this should probably be moved to someplace more common
 		const indent = command.flags.indent ?? command.cliConfig.profile.indent ?? (formatter === yamlFormatter ? 2 : 4)
 		const output = formatter(indent)(retVal)
+		// TODO: use `askForBoolean`
 		const editAgain = (await inquirer.prompt({
 			type: 'confirm',
 			name: 'editAgain',
@@ -49,11 +51,23 @@ export const updateFromUserInput = async <T extends object>(command: SmartThings
 
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
+		const validationResult = inputDefinition.validateFinal ? inputDefinition.validateFinal(retVal) : true
+		if (validationResult !== true) {
+			console.log(red(validationResult))
+			const answer = await inputDefinition.updateFromUserInput(retVal)
+			if (answer !== cancelAction) {
+				retVal = answer
+			}
+			continue
+		}
 		const choices: ChoiceCollection = [
 			editOption(inputDefinition.name),
 			{ name: 'Preview JSON.', value: previewJSONAction },
 			{ name: 'Preview YAML.', value: previewYAMLAction },
-			{ name: `Finish and ${options.dryRun ? 'output' : (options.finishVerb ?? 'update')} ${inputDefinition.name}.`, value: finishAction },
+			{
+				name: `Finish and ${options.dryRun ? 'output' : (options.finishVerb ?? 'update')} ${inputDefinition.name}.`,
+				value: finishAction,
+			},
 			{ name: `Cancel creating ${inputDefinition.name}.`, value: cancelAction },
 		]
 
@@ -62,7 +76,7 @@ export const updateFromUserInput = async <T extends object>(command: SmartThings
 			name: 'action',
 			message: 'Choose an action.',
 			choices,
-			default: finishAction,
+			default: validationResult === true ? finishAction : editAction,
 		})).action
 
 		if (action === editAction) {
