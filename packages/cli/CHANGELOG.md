@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.6.0
+
+### Minor Changes
+
+- [#539](https://github.com/SmartThingsCommunity/smartthings-cli/pull/539) [`a427e34`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a427e34467c56e221089a4aeee53a6894b590e2a) Thanks [@rossiam](https://github.com/rossiam)! - Added support for Q&A input and updating of Schema Apps.
+
+### Patch Changes
+
+- Updated dependencies [[`a427e34`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a427e34467c56e221089a4aeee53a6894b590e2a)]:
+  - @smartthings/cli-lib@2.2.0
+
 ## 1.5.1
 
 ### Patch Changes

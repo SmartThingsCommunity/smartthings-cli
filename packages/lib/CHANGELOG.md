@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.2.0
+
+### Minor Changes
+
+- [#539](https://github.com/SmartThingsCommunity/smartthings-cli/pull/539) [`a427e34`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a427e34467c56e221089a4aeee53a6894b590e2a) Thanks [@rossiam](https://github.com/rossiam)! - Miscellaneous updates to item-input module.
+
 ## 2.1.1
 
 ### Patch Changes
