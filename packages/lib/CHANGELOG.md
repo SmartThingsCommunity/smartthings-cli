@@ -1,5 +1,17 @@
 # Change Log
 
+## 2.2.0
+
+### Minor Changes
+
+- [#539](https://github.com/SmartThingsCommunity/smartthings-cli/pull/539) [`a427e34`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a427e34467c56e221089a4aeee53a6894b590e2a) Thanks [@rossiam](https://github.com/rossiam)! - Miscellaneous updates to item-input module.
+
+## 2.1.1
+
+### Patch Changes
+
+- [#537](https://github.com/SmartThingsCommunity/smartthings-cli/pull/537) [`964fb60`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/964fb6099019c6d013dac12fbc09a5d5ecd04b89) Thanks [@bflorian](https://github.com/bflorian)! - chore: reverted minimum node version to 18.5.0
+
 ## 2.1.0
 
 ### Minor Changes
