@@ -162,7 +162,7 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 			if (action === helpAction) {
 				console.log(`\n${options?.helpText}\n`)
 			} else if (action === cancelAction) {
-				return original
+				return cancelAction
 			} else if (action === finishAction) {
 				return updated
 			} else {
@@ -190,10 +190,6 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 							} else if (propertyName === updatedPropertyName) {
 								afterUpdatedProperty = true
 							}
-							const propertyInputDefinition = inputDefsByProperty[propertyName]
-							if (!propertyInputDefinition) {
-								continue
-							}
 						}
 					}
 				} else {
@@ -218,7 +214,7 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 								const laterPropertyInputDefinition = inputDefsByProperty[propertyName]
 								const updateIfNeeded = laterPropertyInputDefinition.updateIfNeeded
 								if (updateIfNeeded) {
-									const laterPropertyValue = await updateIfNeeded(updated[propertyName], updatedPropertyName, [{ ...updated }, ...context])
+									const laterPropertyValue = await updateIfNeeded(updated[propertyName], action, [{ ...updated }, ...context])
 									if (laterPropertyValue !== cancelAction) {
 										updated[propertyName] = laterPropertyValue
 									}
@@ -227,10 +223,6 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 								// TODO: also do rolled up properties in `propertyName` after nested property
 								// (Once this is implemented, remove note from documentation for this function.)
 								afterUpdatedProperty = true
-							}
-							const propertyInputDefinition = inputDefsByProperty[propertyName]
-							if (!propertyInputDefinition) {
-								continue
 							}
 						}
 					}

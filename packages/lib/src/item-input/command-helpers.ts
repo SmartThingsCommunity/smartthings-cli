@@ -1,7 +1,7 @@
-import { red } from 'chalk'
 import inquirer, { ChoiceCollection } from 'inquirer'
 
 import { jsonFormatter, OutputFormatter, yamlFormatter } from '../output.js'
+import { red } from '../colors'
 import { SmartThingsCommandInterface } from '../smartthings-command.js'
 import {
 	cancelAction,
@@ -55,9 +55,10 @@ export const updateFromUserInput = async <T extends object>(command: SmartThings
 		if (validationResult !== true) {
 			console.log(red(validationResult))
 			const answer = await inputDefinition.updateFromUserInput(retVal)
-			if (answer !== cancelAction) {
-				retVal = answer
+			if (answer === cancelAction) {
+				command.cancel()
 			}
+			retVal = answer
 			continue
 		}
 		const choices: ChoiceCollection = [
@@ -76,7 +77,7 @@ export const updateFromUserInput = async <T extends object>(command: SmartThings
 			name: 'action',
 			message: 'Choose an action.',
 			choices,
-			default: validationResult === true ? finishAction : editAction,
+			default: finishAction,
 		})).action
 
 		if (action === editAction) {

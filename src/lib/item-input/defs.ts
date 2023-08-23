@@ -84,7 +84,8 @@ export type InputDefinition<T> = {
  */
 export type InputDefinitionValidateFunction = (input: string,
 	context?: unknown[]) => true | string | Promise<true | string>
-export type InputDefinitionDefaultValueOrFn<T> = T | ((context?: unknown[]) => T)
+export type DefaultValueFunction<T> = (context?: unknown[]) => T
+export type InputDefinitionDefaultValueOrFn<T> = T | DefaultValueFunction<T>
 
 export const addAction = Symbol('add')
 export type AddAction = typeof addAction
