@@ -50,6 +50,11 @@ describe('objectDef', () => {
 		input2: input2DefMock,
 		input3: input3DefMock,
 	})
+	const updateIfNeededMock = jest.fn().mockImplementation(original => original)
+	const input3DefWithUpdateIfNeededMock = {
+		...input3DefMock,
+		updateIfNeeded: updateIfNeededMock,
+	}
 
 	const input4BuildFromUserInputMock = jest.fn()
 	const input4SummarizeForEditMock = jest.fn()
@@ -345,7 +350,7 @@ describe('objectDef', () => {
 			}))
 		})
 
-		it('returns original when canceled', async () => {
+		it('returns `cancelAction` when canceled', async () => {
 			input1SummarizeForEditMock.mockReturnValue('Summarized Input 1')
 			input2SummarizeForEditMock.mockReturnValue('Summarized Input 2')
 			input3SummarizeForEditMock.mockReturnValue('Summarized Input 3')
@@ -354,7 +359,7 @@ describe('objectDef', () => {
 			promptMock.mockResolvedValueOnce({ action: cancelAction })
 
 			const original = { input1: 'Item Value 1', input2: 'Item Value 2', 'input3': 'Item Value 3' }
-			expect(await threeInputDef.updateFromUserInput(original)).toStrictEqual(original)
+			expect(await threeInputDef.updateFromUserInput(original)).toStrictEqual(cancelAction)
 
 			expect(promptMock).toHaveBeenCalledTimes(2)
 
@@ -379,6 +384,122 @@ describe('objectDef', () => {
 			expect(promptMock).toHaveBeenCalledTimes(2)
 			expect(consoleLogSpy).toHaveBeenCalledTimes(1)
 			expect(consoleLogSpy).toHaveBeenCalledWith('\nhelp text\n')
+		})
+
+		// This test tests a situation that should be impossible to get into but allows for 100% coverage. :-)
+		// (Typescript can't tell that `helpText` is defined for sure but we know it is because we
+		// don't even include an option for displaying help if it isn't.)
+		it('logs undefined for help text in unexpected circumstance', async () => {
+			// Here is where we mock something that can't happen since `helpAction` isn't included
+			// when no help text is supplied.
+			promptMock.mockResolvedValueOnce({ action: helpAction })
+			promptMock.mockResolvedValueOnce({ action: finishAction })
+
+			const def = objectDef('Object Def', simpleInputDefsByProperty)
+
+			const original = { name: 'Thing Name' }
+			expect(await def.updateFromUserInput(original)).toStrictEqual({ name: 'Thing Name' })
+
+			expect(promptMock).toHaveBeenCalledTimes(2)
+			expect(consoleLogSpy).toHaveBeenCalledTimes(1)
+			expect(consoleLogSpy).toHaveBeenCalledWith('\nundefined\n')
+		})
+
+		it('calls `updateIfNeeded` on subsequent definitions when one has been updated', async () => {
+			input1SummarizeForEditMock.mockReturnValue('Summarized Input 1')
+			input2SummarizeForEditMock.mockReturnValue('Summarized Input 2')
+			input3SummarizeForEditMock.mockReturnValue('Summarized Input 3')
+			promptMock.mockResolvedValueOnce({ action: 'input2' })
+			input2UpdateFromUserInputMock.mockResolvedValueOnce('Updated Input 2')
+			promptMock.mockResolvedValueOnce({ action: finishAction })
+
+			const inputDef = objectDef('Object Def', {
+				input1: input1DefMock,
+				input2: input2DefMock,
+				input3: input3DefWithUpdateIfNeededMock,
+			})
+
+			const original = { input1: 'Item Value 1', input2: 'Item Value 2', 'input3': 'Item Value 3' }
+			expect(await inputDef.updateFromUserInput(original))
+				.toStrictEqual({ input1: 'Item Value 1', input2: 'Updated Input 2', 'input3': 'Item Value 3' })
+
+			expect(promptMock).toHaveBeenCalledTimes(2)
+			expect(promptMock).toHaveBeenCalledWith({
+				type: 'list',
+				name: 'action',
+				message: 'Object Def',
+				choices: [
+					{ name: 'Edit Item Name 1: Summarized Input 1', value: 'input1' },
+					{ name: 'Edit Item Name 2: Summarized Input 2', value: 'input2' },
+					{ name: 'Edit Item Name 3: Summarized Input 3', value: 'input3' },
+					expect.any(Separator),
+					{ name: 'Finish editing Object Def.', value: finishAction },
+					{ name: 'Cancel', value: cancelAction },
+				],
+				default: finishAction,
+				pageSize: inquirerPageSize,
+			})
+			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+				choices: expect.arrayContaining([
+					{ name: 'Edit Item Name 1: Summarized Input 1', value: 'input1' },
+					{ name: 'Edit Item Name 2: Summarized Input 2', value: 'input2' },
+					{ name: 'Edit Item Name 3: Summarized Input 3', value: 'input3' },
+				]),
+			}))
+
+			expect(input1UpdateFromUserInputMock).toHaveBeenCalledTimes(0)
+			expect(input2UpdateFromUserInputMock).toHaveBeenCalledTimes(1)
+			expect(input2UpdateFromUserInputMock).toHaveBeenCalledWith('Item Value 2', [original])
+			expect(input3UpdateFromUserInputMock).toHaveBeenCalledTimes(0)
+			expect(input1SummarizeForEditMock).toHaveBeenCalled()
+			expect(input2SummarizeForEditMock).toHaveBeenCalled()
+			expect(input3SummarizeForEditMock).toHaveBeenCalled()
+			expect(updateIfNeededMock).toHaveBeenCalledTimes(1)
+			expect(updateIfNeededMock).toHaveBeenCalledWith('Item Value 3', 'input2', [{
+				input1: 'Item Value 1',
+				input2: 'Updated Input 2',
+				input3: 'Item Value 3',
+			}])
+		})
+		it('calls `updateIfNeeded` on subsequent definitions after rolled-up property has been updated', async () => {
+			const def = objectDef('Object Def', {
+				prop1: input1DefMock,
+				objectProp: objectDef('Nested Object', {
+					prop2: input2DefMock,
+				}),
+				prop3: input3DefWithUpdateIfNeededMock,
+			})
+
+			promptMock.mockResolvedValueOnce({ action: 'objectProp.prop2' })
+			input2UpdateFromUserInputMock.mockResolvedValueOnce('Updated Prop 2 Value')
+			updateIfNeededMock.mockResolvedValueOnce('Updated 3 Value')
+			promptMock.mockResolvedValueOnce({ action: finishAction })
+
+			input1SummarizeForEditMock.mockReturnValue('Summarized Input 1')
+			input2SummarizeForEditMock.mockReturnValue('Summarized Input 2')
+
+			expect(await def.updateFromUserInput(
+				{ prop1: 'Prop 1 Value', objectProp: { prop2: 'Prop 2 Value' }, prop3: 'Prop 3 Value' },
+			)).toEqual(
+				{ prop1: 'Prop 1 Value', objectProp: { prop2: 'Updated Prop 2 Value' }, prop3: 'Updated 3 Value' },
+			)
+
+			expect(promptMock).toHaveBeenCalledTimes(2)
+			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+				choices: expect.arrayContaining([
+					{ name: 'Edit Item Name 1: Summarized Input 1', value: 'prop1' },
+					{ name: 'Edit Item Name 2: Summarized Input 2', value: 'objectProp.prop2' },
+				]),
+			}))
+
+			expect(input1SummarizeForEditMock).toHaveBeenCalled()
+			expect(input2SummarizeForEditMock).toHaveBeenCalled()
+			expect(updateIfNeededMock).toHaveBeenCalledTimes(1)
+			expect(updateIfNeededMock).toHaveBeenCalledWith('Prop 3 Value', 'objectProp.prop2', [{
+				prop1: 'Prop 1 Value',
+				objectProp: { prop2: 'Updated Prop 2 Value' },
+				prop3: 'Prop 3 Value',
+			}])
 		})
 	})
 })

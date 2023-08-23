@@ -1,5 +1,13 @@
 import inquirer, { ChoiceCollection } from 'inquirer'
-import { askForString, askForOptionalString, AskForStringOptions, ValidateFunction, AskForBooleanOptions, askForBoolean, DefaultValueOrFn } from '../user-query'
+import {
+	askForString,
+	askForOptionalString,
+	AskForStringOptions,
+	ValidateFunction,
+	AskForBooleanOptions,
+	askForBoolean,
+	DefaultValueOrFn,
+} from '../user-query'
 import {
 	CancelAction,
 	InputDefinition,
