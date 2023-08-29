@@ -461,6 +461,7 @@ describe('objectDef', () => {
 				input3: 'Item Value 3',
 			}])
 		})
+
 		it('calls `updateIfNeeded` on subsequent definitions after rolled-up property has been updated', async () => {
 			const def = objectDef('Object Def', {
 				prop1: input1DefMock,

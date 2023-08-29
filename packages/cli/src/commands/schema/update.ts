@@ -2,7 +2,7 @@ import { Flags, Errors } from '@oclif/core'
 
 import { SchemaApp, SchemaAppRequest } from '@smartthings/core-sdk'
 
-import { APICommand, inputItem, selectFromList, lambdaAuthFlags, SelectFromListConfig, userInputProcessor, inputAndOutputItem } from '@smartthings/cli-lib'
+import { APICommand, inputItem, selectFromList, lambdaAuthFlags, SelectFromListConfig, userInputProcessor } from '@smartthings/cli-lib'
 
 import { addSchemaPermission } from '../../lib/aws-utils'
 import { getSchemaAppUpdateFromUser } from '../../lib/commands/schema-util'

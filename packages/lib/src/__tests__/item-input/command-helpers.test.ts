@@ -2,6 +2,7 @@ import { Interfaces } from '@oclif/core'
 import inquirer from 'inquirer'
 
 import { Profile } from '../../cli-config'
+import { red } from '../../colors'
 import { cancelAction, editAction, finishAction, previewJSONAction, previewYAMLAction } from '../../item-input/defs'
 import { createFromUserInput, updateFromUserInput } from '../../item-input/command-helpers'
 import * as commandHelpers from '../../item-input/command-helpers'
@@ -9,8 +10,10 @@ import { jsonFormatter, yamlFormatter } from '../../output'
 import { SmartThingsCommandInterface } from '../../smartthings-command'
 
 
+// jest.mock('chalk')
 jest.mock('inquirer')
 jest.mock('../../output')
+jest.mock('../../colors')
 
 const promptMock = jest.mocked(inquirer.prompt)
 
@@ -33,6 +36,9 @@ const jsonOutputFormatterMock = jest.fn().mockReturnValue('formatted JSON')
 const yamlOutputFormatterMock = jest.fn().mockReturnValue('formatted YAML')
 const jsonFormatterMock = jest.mocked(jsonFormatter).mockReturnValue(jsonOutputFormatterMock)
 const yamlFormatterMock = jest.mocked(yamlFormatter).mockReturnValue(yamlOutputFormatterMock)
+
+const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => true)
+const redMock = jest.mocked(red)
 
 describe('updateFromUserInput', () => {
 	it('returns input when no further updates requested', async () => {
@@ -97,6 +103,53 @@ describe('updateFromUserInput', () => {
 		expect(promptMock).toHaveBeenCalledTimes(2)
 		expect(updateFromUserInputMock).toHaveBeenCalledTimes(1)
 		expect(updateFromUserInputMock).toHaveBeenCalledWith('input value')
+	})
+
+	it('displays validation error and disables finish with validation errors', async () => {
+		const validateFinalMock = jest.fn()
+			.mockReturnValue(true)
+			.mockReturnValueOnce('error text')
+		redMock.mockReturnValueOnce('red error text')
+		updateFromUserInputMock.mockResolvedValueOnce('updated input')
+
+		const inputDefWithValidationMock = { ...inputDefMock, validateFinal: validateFinalMock }
+		promptMock.mockResolvedValueOnce({ action: finishAction })
+
+		expect(await updateFromUserInput(commandMock, inputDefWithValidationMock, 'bad input value', { dryRun: false }))
+			.toBe('updated input')
+
+		expect(validateFinalMock).toHaveBeenCalledTimes(2)
+		expect(validateFinalMock).toHaveBeenCalledWith('bad input value')
+		expect(validateFinalMock).toHaveBeenCalledWith('updated input')
+		expect(redMock).toHaveBeenCalledTimes(1)
+		expect(redMock).toHaveBeenCalledWith('error text')
+		expect(consoleLogSpy).toHaveBeenCalledWith('red error text')
+		expect(updateFromUserInputMock).toHaveBeenCalledTimes(1)
+		expect(updateFromUserInputMock).toHaveBeenCalledWith('bad input value')
+		expect(promptMock).toHaveBeenCalledTimes(1)
+	})
+
+	it('allows cancelation with validation error', async () => {
+		const validateFinalMock = jest.fn()
+			.mockReturnValue('error text')
+		redMock.mockReturnValueOnce('red error text')
+		updateFromUserInputMock.mockResolvedValueOnce(cancelAction)
+
+		const inputDefWithValidationMock = { ...inputDefMock, validateFinal: validateFinalMock }
+
+		await expect(updateFromUserInput(commandMock, inputDefWithValidationMock, 'bad input value', { dryRun: false }))
+			.rejects.toThrow('canceled')
+
+		expect(validateFinalMock).toHaveBeenCalledTimes(1)
+		expect(validateFinalMock).toHaveBeenCalledWith('bad input value')
+		expect(redMock).toHaveBeenCalledTimes(1)
+		expect(redMock).toHaveBeenCalledWith('error text')
+		expect(consoleLogSpy).toHaveBeenCalledWith('red error text')
+		expect(updateFromUserInputMock).toHaveBeenCalledTimes(1)
+		expect(updateFromUserInputMock).toHaveBeenCalledWith('bad input value')
+		expect(cancelMock).toHaveBeenCalledTimes(1)
+
+		expect(promptMock).toHaveBeenCalledTimes(0)
 	})
 
 	it('accepts cancelation of editing from main menu', async () => {

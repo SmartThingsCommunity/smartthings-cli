@@ -53,7 +53,7 @@ export default class SchemaAppCreateCommand extends APICommand<typeof SchemaAppC
 		}
 		await inputAndOutputItem(this,
 			{ tableFieldDefinitions: ['endpointAppId', 'stClientId', 'stClientSecret'] },
-			createApp, userInputProcessor(() => getSchemaAppCreateFromUser(this)),
+			createApp, userInputProcessor(() => getSchemaAppCreateFromUser(this, this.flags['dry-run'])),
 		)
 	}
 }
