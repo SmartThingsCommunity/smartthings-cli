@@ -349,6 +349,25 @@ describe('arrayDef', () => {
 			expect(consoleLogSpy).toHaveBeenCalledTimes(1)
 			expect(consoleLogSpy).toHaveBeenCalledWith('\nhelp text\n')
 		})
+
+		// This test tests a situation that should be impossible to get into but allows for 100% coverage. :-)
+		// (Typescript can't tell that `helpText` is defined for sure but we know it is because we
+		// don't even include an option for displaying help if it isn't.)
+		it('logs undefined for help text in unexpected circumstance', async () => {
+			// Here is where we mock something that can't happen since `helpAction` isn't included
+			// when no help text is supplied.
+			promptMock.mockResolvedValueOnce({ action: helpAction })
+			promptMock.mockResolvedValueOnce({ action: cancelAction })
+
+			const def = arrayDef('Array Def', itemDefMock)
+
+			expect(await def.buildFromUserInput()).toBe(cancelAction)
+
+			expect(promptMock).toHaveBeenCalledTimes(2)
+
+			expect(consoleLogSpy).toHaveBeenCalledTimes(1)
+			expect(consoleLogSpy).toHaveBeenCalledWith('\nundefined\n')
+		})
 	})
 
 	describe('summarizeForEdit', () => {
