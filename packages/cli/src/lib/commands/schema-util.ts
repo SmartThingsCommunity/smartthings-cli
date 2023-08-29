@@ -23,7 +23,7 @@ import { awsHelpText } from '../aws-utils'
 
 export const SCHEMA_AWS_PRINCIPAL = '148790070172'
 
-const arnDef = (name: string, inChina: boolean, initialValue?: SchemaAppRequest, options?: { forChina?: boolean }): InputDefinition<string | undefined> => {
+export const arnDef = (name: string, inChina: boolean, initialValue?: SchemaAppRequest, options?: { forChina?: boolean }): InputDefinition<string | undefined> => {
 	if (inChina && !options?.forChina || !inChina && options?.forChina) {
 		return undefinedDef
 	}
@@ -39,7 +39,7 @@ const arnDef = (name: string, inChina: boolean, initialValue?: SchemaAppRequest,
 		{ initiallyActive })
 }
 
-const webHookUrlDef = (inChina: boolean, initialValue?: SchemaAppRequest): InputDefinition<string | undefined> => {
+export const webHookUrlDef = (inChina: boolean, initialValue?: SchemaAppRequest): InputDefinition<string | undefined> => {
 	if (inChina) {
 		return undefinedDef
 	}
@@ -51,9 +51,9 @@ const webHookUrlDef = (inChina: boolean, initialValue?: SchemaAppRequest): Input
 }
 
 // Create a type with some extra temporary fields.
-type InputData = SchemaAppRequest & { includeAppLinks: boolean }
+export type InputData = SchemaAppRequest & { includeAppLinks: boolean }
 
-const validateFinal = (schemaAppRequest: InputData): true | string => {
+export const validateFinal = (schemaAppRequest: InputData): true | string => {
 	if ( schemaAppRequest.hostingType === 'lambda'
 			&& !schemaAppRequest.lambdaArn
 			&& !schemaAppRequest.lambdaArnEU
@@ -64,15 +64,10 @@ const validateFinal = (schemaAppRequest: InputData): true | string => {
 	return true
 }
 
-const appLinksDefSummarize = (value?: ViperAppLinks): string =>
+export const appLinksDefSummarize = (value?: ViperAppLinks): string =>
 	clipToMaximum(`android: ${value?.android}, ios: ${value?.ios}`, maxItemValueLength)
-const appLinksDef = objectDef<ViperAppLinks>('App-to-app Links', {
-	android: stringDef('Android Link'),
-	ios: stringDef('iOS Link'),
-	isLinkingEnabled: staticDef(true),
-}, { summarizeForEdit: appLinksDefSummarize })
 
-const buildInputDefinition = (command: SmartThingsCommandInterface, initialValue?: SchemaAppRequest): InputDefinition<InputData> => {
+export const buildInputDefinition = (command: SmartThingsCommandInterface, initialValue?: SchemaAppRequest): InputDefinition<InputData> => {
 	// TODO: should do more type checking on this, perhaps using zod or
 	const baseURL = (command.profile.clientIdProvider as SmartThingsURLProvider | undefined)?.baseURL
 	const inChina = typeof baseURL === 'string' && baseURL.endsWith('cn')
@@ -80,6 +75,12 @@ const buildInputDefinition = (command: SmartThingsCommandInterface, initialValue
 	const hostingTypeDef = inChina
 		? staticDef('lambda')
 		: listSelectionDef('Hosting Type', ['lambda', 'webhook'], { default: 'webhook' })
+
+	const appLinksDef = objectDef<ViperAppLinks>('App-to-app Links', {
+		android: stringDef('Android Link'),
+		ios: stringDef('iOS Link'),
+		isLinkingEnabled: staticDef(true),
+	}, { summarizeForEdit: appLinksDefSummarize })
 
 	return objectDef<InputData>('Schema App', {
 		partnerName: stringDef('Partner Name'),
@@ -126,10 +127,10 @@ export const getSchemaAppUpdateFromUser = async (command: SmartThingsCommandInte
 	return stripTempInputFields(inputData)
 }
 
-export const getSchemaAppCreateFromUser = async (command: SmartThingsCommandInterface): Promise<SchemaAppRequest> => {
+export const getSchemaAppCreateFromUser = async (command: SmartThingsCommandInterface, dryRun: boolean): Promise<SchemaAppRequest> => {
 	const inputDef = buildInputDefinition(command)
 
-	const inputData = await createFromUserInput(command, inputDef, { dryRun: command.flags['dry-run'] })
+	const inputData = await createFromUserInput(command, inputDef, { dryRun })
 
 	return stripTempInputFields(inputData)
 }
