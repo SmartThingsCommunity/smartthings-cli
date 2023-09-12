@@ -38,10 +38,12 @@ for information on running the CLI.
 * [`smartthings edge:drivers [IDORINDEX]`](#smartthings-edgedrivers-idorindex)
 * [`smartthings edge:drivers:default [IDORINDEX]`](#smartthings-edgedriversdefault-idorindex)
 * [`smartthings edge:drivers:delete [ID]`](#smartthings-edgedriversdelete-id)
+* [`smartthings edge:drivers:devices [IDORINDEX]`](#smartthings-edgedriversdevices-idorindex)
 * [`smartthings edge:drivers:install [DRIVERID]`](#smartthings-edgedriversinstall-driverid)
 * [`smartthings edge:drivers:installed [IDORINDEX]`](#smartthings-edgedriversinstalled-idorindex)
 * [`smartthings edge:drivers:logcat [DRIVERID]`](#smartthings-edgedriverslogcat-driverid)
 * [`smartthings edge:drivers:package [PROJECTDIRECTORY]`](#smartthings-edgedriverspackage-projectdirectory)
+* [`smartthings edge:drivers:prune [DRIVERID]`](#smartthings-edgedriversprune-driverid)
 * [`smartthings edge:drivers:switch [DEVICEID]`](#smartthings-edgedriversswitch-deviceid)
 * [`smartthings edge:drivers:uninstall [DRIVERID]`](#smartthings-edgedriversuninstall-driverid)
 
@@ -694,6 +696,58 @@ DESCRIPTION
 
 _See code: [src/commands/edge/drivers/delete.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@3.2.1/packages/edge/src/commands/edge/drivers/delete.ts)_
 
+## `smartthings edge:drivers:devices [IDORINDEX]`
+
+list devices using edge drivers
+
+```
+USAGE
+  $ smartthings edge:drivers:devices [IDORINDEX] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j]
+    [-y] [-o <value>] [-H <value>] [-D <value>]
+
+ARGUMENTS
+  IDORINDEX  the device id or number in list
+
+FLAGS
+  -D, --driver=<UUID>         driver id
+  -H, --hub=<UUID>            hub id
+  -O, --organization=<value>  the organization ID to use for this command
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -j, --json             use JSON format of input and/or output
+  -o, --output=<value>   specify output file
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  -y, --yaml             use YAML format of input and/or output
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  list devices using edge drivers
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/getDevices,
+  https://developer.smartthings.com/docs/api/public/#operation/listDrivers,
+  https://developer.smartthings.com/docs/api/public/#operation/getDriver,
+  https://developer.smartthings.com/docs/api/public/#operation/getDriverRevision
+
+EXAMPLES
+  # list all devices using edge drivers
+  $ smartthings edge:drivers:devices
+  # display details about the third device listed in the above command
+  $ smartthings edge:drivers:devices 3
+
+  # display details about a device by using its id
+  $ smartthings edge:drivers:devices dfda0a8e-55d6-445b-ace5-db828679bcb3
+  # list all devices using edge drivers on the specified hub
+  $ smartthings edge:drivers:devices --hub a9108ab1-7087-4c10-9781-a0627b084fce
+  # list devices that use a specific driver
+  $ smartthings edge:drivers:devices --driver b67a134c-ace8-4b8d-9a0e-444ad78b4455
+```
+
+_See code: [src/commands/edge/drivers/devices.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@3.2.1/packages/edge/src/commands/edge/drivers/devices.ts)_
+
 ## `smartthings edge:drivers:install [DRIVERID]`
 
 install an edge driver onto a hub
@@ -879,6 +933,38 @@ EXAMPLES
 ```
 
 _See code: [src/commands/edge/drivers/package.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@3.2.1/packages/edge/src/commands/edge/drivers/package.ts)_
+
+## `smartthings edge:drivers:prune [DRIVERID]`
+
+uninstall unused edge drivers from a hub
+
+```
+USAGE
+  $ smartthings edge:drivers:prune [DRIVERID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-H
+    <value>]
+
+ARGUMENTS
+  DRIVERID  id of driver to uninstall
+
+FLAGS
+  -H, --hub=<UUID>            hub id
+  -O, --organization=<value>  the organization ID to use for this command
+
+COMMON FLAGS
+  -h, --help             Show CLI help.
+  -p, --profile=<value>  [default: default] configuration profile
+  -t, --token=<value>    the auth token to use
+  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
+
+DESCRIPTION
+  uninstall unused edge drivers from a hub
+
+  For API information, see:
+
+  https://developer.smartthings.com/docs/api/public/#operation/uninstallDriver
+```
+
+_See code: [src/commands/edge/drivers/prune.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/plugin-cli-edge@3.2.1/packages/edge/src/commands/edge/drivers/prune.ts)_
 
 ## `smartthings edge:drivers:switch [DEVICEID]`
 
