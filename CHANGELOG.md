@@ -1,5 +1,19 @@
 # Change Log
 
+## 1.7.0
+
+### Minor Changes
+
+- [#544](https://github.com/SmartThingsCommunity/smartthings-cli/pull/544) [`c32e1e1`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c32e1e1a010d0458591aa20f44d067e1344076b1) Thanks [@rossiam](https://github.com/rossiam)! - added support for viewing edge driver usage and pruning unused drivers
+
+### Patch Changes
+
+- [#541](https://github.com/SmartThingsCommunity/smartthings-cli/pull/541) [`b865ad8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b865ad8c7752ed85aadcadd0c1c6da742f74f93f) Thanks [@rossiam](https://github.com/rossiam)! - Fixed cancel action on schema:create command when validation errors exist.
+
+- Updated dependencies [[`c32e1e1`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c32e1e1a010d0458591aa20f44d067e1344076b1), [`b865ad8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b865ad8c7752ed85aadcadd0c1c6da742f74f93f), [`bcb0af5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/bcb0af5b011043903d265b40ac381f1dc0ebcff6)]:
+  - @smartthings/plugin-cli-edge@3.3.0
+  - @smartthings/cli-lib@2.2.1
+
 ## 1.6.0
 
 ### Minor Changes
