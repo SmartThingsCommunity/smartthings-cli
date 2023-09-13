@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.2.1
+
+### Patch Changes
+
+- [#541](https://github.com/SmartThingsCommunity/smartthings-cli/pull/541) [`b865ad8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b865ad8c7752ed85aadcadd0c1c6da742f74f93f) Thanks [@rossiam](https://github.com/rossiam)! - Fixed cancel action on schema:create command when validation errors exist.
+
+- [#545](https://github.com/SmartThingsCommunity/smartthings-cli/pull/545) [`bcb0af5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/bcb0af5b011043903d265b40ac381f1dc0ebcff6) Thanks [@rossiam](https://github.com/rossiam)! - fixed issue where ctrl-c wouldn't work while connecting
+
 ## 2.2.0
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # @smartthings/plugin-cli-edge
 
+## 3.3.0
+
+### Minor Changes
+
+- [#544](https://github.com/SmartThingsCommunity/smartthings-cli/pull/544) [`c32e1e1`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c32e1e1a010d0458591aa20f44d067e1344076b1) Thanks [@rossiam](https://github.com/rossiam)! - added support for viewing edge driver usage and pruning unused drivers
+
+### Patch Changes
+
+- [#545](https://github.com/SmartThingsCommunity/smartthings-cli/pull/545) [`bcb0af5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/bcb0af5b011043903d265b40ac381f1dc0ebcff6) Thanks [@rossiam](https://github.com/rossiam)! - fixed issue where ctrl-c wouldn't work while connecting
+
+- Updated dependencies [[`b865ad8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b865ad8c7752ed85aadcadd0c1c6da742f74f93f), [`bcb0af5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/bcb0af5b011043903d265b40ac381f1dc0ebcff6)]:
+  - @smartthings/cli-lib@2.2.1
+
 ## 3.2.1
 
 ### Patch Changes
