@@ -124,6 +124,7 @@ describe('LogCatCommand', () => {
 		})
 
 		it('sets a timeout for eventsource that is cleared when connected', async () => {
+			const setupSignalHandlerSpy = jest.spyOn(SseCommand.prototype, 'setupSignalHandler')
 			await expect(LogCatCommand.run([`--hub-address=${MOCK_IPV4}`, '--all'])).resolves.not.toThrow()
 
 			expect(setTimeoutSpy).toBeCalledWith(expect.any(Function), 30000)
@@ -138,7 +139,9 @@ describe('LogCatCommand', () => {
 
 			const timeoutID: NodeJS.Timeout = setTimeoutSpy.mock.results[0].value
 
-			expect(clearTimeoutSpy).toBeCalledWith(timeoutID)
+			expect(clearTimeoutSpy).toHaveBeenCalledTimes(1)
+			expect(clearTimeoutSpy).toHaveBeenCalledWith(timeoutID)
+			expect(setupSignalHandlerSpy).toHaveBeenCalledTimes(1)
 		})
 
 		it('initializes a LogClient with a host verifier function and timeout', async () => {

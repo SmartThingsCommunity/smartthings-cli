@@ -76,9 +76,9 @@ describe('SseCommand', () => {
 		)
 	})
 
-	it('registers signal handler on initialization', async () => {
+	test('setupSignalHandler', async () => {
 		parseSpy.mockResolvedValueOnce({ args: {}, flags } as ParserOutputType)
-		await sseCommand.init()
+		sseCommand.setupSignalHandler()
 
 		expect(handleSignalsSpy).toBeCalled()
 	})
