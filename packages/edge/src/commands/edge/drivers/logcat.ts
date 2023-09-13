@@ -236,6 +236,7 @@ export default class LogCatCommand extends SseCommand<typeof LogCatCommand.flags
 			}
 
 			CliUx.ux.action.stop(green('connected'))
+			this.setupSignalHandler()
 		}
 
 		this.source.onerror = (error: EventSourceError) => {
