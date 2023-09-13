@@ -66,9 +66,7 @@ export abstract class SseCommand<T extends typeof SseCommand.flags> extends APIC
 		}
 	}
 
-	async init(): Promise<void> {
-		await super.init()
-
+	setupSignalHandler(): void {
 		handleSignals(signal => {
 			this.logger.debug(`handling ${signal} and tearing down SseCommand`)
 
