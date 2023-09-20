@@ -106,7 +106,7 @@ describe('LoginAuthenticator', () => {
 		device_id: string
 		/* eslint-enable @typescript-eslint/naming-convention */
 	}
-	const tokenResponse: AxiosResponse<AuthTokenResponse> = {
+	const tokenResponse = {
 		data: {
 			/* eslint-disable @typescript-eslint/naming-convention */
 			access_token: 'access token',
@@ -119,9 +119,7 @@ describe('LoginAuthenticator', () => {
 		},
 		status: 200,
 		statusText: 'OK',
-		headers: {},
-		config: {},
-	}
+	} as AxiosResponse<AuthTokenResponse>
 
 	const mockServer = {
 		close: jest.fn(),

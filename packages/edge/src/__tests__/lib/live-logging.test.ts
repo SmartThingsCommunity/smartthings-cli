@@ -148,11 +148,9 @@ describe('live-logging', () => {
 			}
 			testClient = new LiveLogClient(bearerConfig)
 
-			const axiosResponse: AxiosResponse<DriverInfo[]> = {
+			const axiosResponse = {
 				status: 200,
 				statusText: 'OK',
-				headers: {},
-				config: {},
 				data: [
 					/* eslint-disable @typescript-eslint/naming-convention */
 					{
@@ -169,7 +167,7 @@ describe('live-logging', () => {
 					},
 					/* eslint-enable @typescript-eslint/naming-convention */
 				],
-			}
+			} as AxiosResponse<DriverInfo[]>
 
 			axiosRequestSpy.mockResolvedValueOnce(axiosResponse)
 
@@ -249,14 +247,12 @@ describe('live-logging', () => {
 				socket: new TLSSocket(new Socket()),
 			}
 
-			const certResponse: AxiosResponse = {
+			const certResponse = {
 				data: '',
 				status: 200,
 				statusText: 'OK',
-				headers: {},
-				config: {},
 				request: request,
-			}
+			} as AxiosResponse
 
 			const mockHostVerifier = jest.fn()
 			const verifierConfig = {
