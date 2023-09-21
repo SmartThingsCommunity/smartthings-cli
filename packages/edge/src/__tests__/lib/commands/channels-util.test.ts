@@ -305,5 +305,20 @@ describe('channels-util', () => {
 			expect(apiListChannelsMock).toHaveBeenCalledWith(expect.objectContaining({ includeReadOnly: true }))
 			expect(apiGetChannelsMock).toHaveBeenCalledTimes(0)
 		})
+
+		it('looks up and adds channel name when missing from list', async () => {
+			apiListChannelsMock.mockResolvedValueOnce([channel1])
+			apiGetChannelsMock.mockResolvedValueOnce(channel2)
+
+			expect(await withChannelNames(client, [thingWithChannel1, thingWithChannel2])).toStrictEqual([
+				{ channelId: 'channel-id-1', channelName: 'Channel 1' },
+				{ channelId: 'channel-id-2', channelName: 'Channel 2' },
+			])
+
+			expect(apiListChannelsMock).toHaveBeenCalledTimes(1)
+			expect(apiListChannelsMock).toHaveBeenCalledWith(expect.objectContaining({ includeReadOnly: true }))
+			expect(apiGetChannelsMock).toHaveBeenCalledTimes(1)
+			expect(apiGetChannelsMock).toHaveBeenCalledWith('channel-id-2')
+		})
 	})
 })
