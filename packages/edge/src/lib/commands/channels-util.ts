@@ -95,6 +95,14 @@ export async function withChannelNames<T extends WithChannel>(client: SmartThing
 	if (Array.isArray(input)) {
 		const channels = await listChannels(client, { includeReadOnly: true })
 		const channelNamesById = new Map(channels.map(channel => [channel.channelId, channel.name]))
+
+		for (const inputItem of input) {
+			if (!channelNamesById.get(inputItem.channelId)) {
+				const channelName = (await client.channels.get(inputItem.channelId)).name
+				channelNamesById.set(inputItem.channelId, channelName)
+			}
+		}
+
 		return input.map(input => ({ ...input, channelName: channelNamesById.get(input.channelId) }))
 	}
 
