@@ -1,14 +1,14 @@
-import { APICommand, selectFromList, outputItem, SelectFromListConfig } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, selectFromList, outputItem, SelectFromListConfig } from '@smartthings/cli-lib'
 import { SchemaApp } from '@smartthings/core-sdk'
 
 
-export default class SchemaAppRegenerateCommand extends APICommand<typeof SchemaAppRegenerateCommand.flags> {
+export default class SchemaAppRegenerateCommand extends APIOrganizationCommand<typeof SchemaAppRegenerateCommand.flags> {
 	static description = 'regenerate the clientId and clientSecret of the ST Schema connector\n' +
 		'NOTE: The previous values will be invalidated, which may affect existing installations.' +
 		this.apiDocsURL('generateStOauthCredentials')
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...outputItem.flags,
 	}
 

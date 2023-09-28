@@ -1,13 +1,13 @@
 import { SchemaApp } from '@smartthings/core-sdk'
 
-import { APICommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, selectFromList, SelectFromListConfig } from '@smartthings/cli-lib'
 
 
-export default class SchemaAppDeleteCommand extends APICommand<typeof SchemaAppDeleteCommand.flags> {
+export default class SchemaAppDeleteCommand extends APIOrganizationCommand<typeof SchemaAppDeleteCommand.flags> {
 	static description = 'delete an ST Schema connector' +
 		this.apiDocsURL('deleteAppsByEndpointAppId')
 
-	static flags = APICommand.flags
+	static flags = APIOrganizationCommand.flags
 
 	static args = [{
 		name: 'id',

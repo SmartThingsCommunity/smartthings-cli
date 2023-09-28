@@ -3,7 +3,7 @@ import { Flags } from '@oclif/core'
 import { SchemaAppRequest, SchemaCreateResponse } from '@smartthings/core-sdk'
 
 import {
-	APICommand,
+	APIOrganizationCommand,
 	inputAndOutputItem,
 	lambdaAuthFlags,
 	userInputProcessor,
@@ -13,12 +13,12 @@ import { addSchemaPermission } from '../../lib/aws-utils.js'
 import { SCHEMA_AWS_PRINCIPAL, getSchemaAppCreateFromUser } from '../../lib/commands/schema-util.js'
 
 
-export default class SchemaAppCreateCommand extends APICommand<typeof SchemaAppCreateCommand.flags> {
+export default class SchemaAppCreateCommand extends APIOrganizationCommand<typeof SchemaAppCreateCommand.flags> {
 	static description = 'create an ST Schema connector' +
 		this.apiDocsURL('postApps')
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...inputAndOutputItem.flags,
 		authorize: Flags.boolean({
 			description: 'authorize connector\'s Lambda functions to be called by SmartThings',
