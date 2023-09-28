@@ -1,23 +1,22 @@
-import { AppListOptions, AppOAuthRequest, AppResponse, AppSettingsResponse, PagedApp, SmartThingsClient } from '@smartthings/core-sdk'
-
 import {
-	APICommand,
-	arrayDef,
-	checkboxDef,
-	ChooseOptions,
-	chooseOptionsWithDefaults,
-	localhostOrHTTPSValidate,
-	selectFromList,
-	SelectFromListConfig,
-	stringDef,
-	stringTranslateToId,
-	TableFieldDefinition,
-	TableGenerator,
-} from '@smartthings/cli-lib'
+	AppListOptions,
+	AppOAuthRequest,
+	AppResponse,
+	AppSettingsResponse,
+	PagedApp,
+	SmartThingsClient,
+} from '@smartthings/core-sdk'
+
+import { arrayDef, checkboxDef, stringDef } from '../../item-input/index.js'
+import { TableFieldDefinition, TableGenerator } from '../../table-generator.js'
+import { localhostOrHTTPSValidate } from '../../validate-util.js'
+import { APICommand } from '../api-command.js'
+import { ChooseOptions, chooseOptionsWithDefaults, stringTranslateToId } from '../command-util.js'
+import { SelectFromListConfig, SelectFromListFlags, selectFromList } from '../select.js'
 
 
-const isWebhookSmartApp = (app: AppResponse): boolean => !!app.webhookSmartApp
-const hasSubscription = (app: AppResponse): boolean => !!app.apiOnly?.subscription
+export const isWebhookSmartApp = (app: AppResponse): boolean => !!app.webhookSmartApp
+export const hasSubscription = (app: AppResponse): boolean => !!app.apiOnly?.subscription
 
 export const tableFieldDefinitions: TableFieldDefinition<AppResponse>[] = [
 	'displayName',
@@ -44,12 +43,11 @@ export const tableFieldDefinitions: TableFieldDefinition<AppResponse>[] = [
 	},
 	{ path: 'apiOnly.subscription.targetUrl', include: hasSubscription },
 	{ path: 'apiOnly.subscription.targetStatus', include: hasSubscription },
-	{ path: 'installMetadata.certified', include: app => app.installMetadata?.certified !== undefined },
 ]
 
 export const oauthTableFieldDefinitions: TableFieldDefinition<AppOAuthRequest>[] = ['clientName', 'scope', 'redirectUris']
 
-export const chooseApp =  async (command: APICommand<typeof APICommand.flags>, appFromArg?: string, options?: Partial<ChooseOptions<PagedApp>>): Promise<string> => {
+export const chooseApp =  async (command: APICommand<SelectFromListFlags>, appFromArg?: string, options?: Partial<ChooseOptions<PagedApp>>): Promise<string> => {
 	const opts = chooseOptionsWithDefaults(options)
 	const config: SelectFromListConfig<PagedApp> = {
 		itemName: 'app',

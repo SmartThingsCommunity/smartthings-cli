@@ -8,7 +8,7 @@
 		"module": "Node16",
 		"lib": ["ES2022"],
 		"strict": true,
-		"target": "ES2022",
+		"target": "ES2021",
 		"esModuleInterop": true,
 		"noErrorTruncation": true,
 		"useUnknownInCatchVariables": false,

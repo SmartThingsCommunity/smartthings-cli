@@ -1,14 +1,16 @@
+import fs from 'fs'
+import path from 'path'
+
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 import { createHash, randomBytes, BinaryLike } from 'crypto'
 import express from 'express'
-import fs from 'fs'
-import getPort from 'get-port'
+import log4js from 'log4js'
 import open from 'open'
-import path from 'path'
+import ora from 'ora'
 import qs from 'qs'
+
 import { SmartThingsURLProvider, defaultSmartThingsURLProvider, Authenticator } from '@smartthings/core-sdk'
-import log4js from '@log4js-node/log4js-api'
-import { CliUx } from '@oclif/core'
+import { getPort } from 'get-port-please'
 
 
 export type ClientIdProvider = SmartThingsURLProvider & {
@@ -49,6 +51,8 @@ type CredentialsFileData = {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	[profileName: string]: any
 }
+
+const delay = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
 
 /**
  * Convert to string and scrub sensitive values
@@ -139,7 +143,7 @@ export class LoginAuthenticator implements Authenticator {
 
 	async login(): Promise<void> {
 		const app = express()
-		const port = await getPort({ port: [61973, 61974, 61975] })
+		const port = await getPort({ ports: [61973, 61974, 61975] })
 		const finishURL = `http://localhost:${port}/finish`
 		const baseOAuthInURL = this.clientIdProvider.baseOAuthInURL
 
@@ -209,9 +213,10 @@ export class LoginAuthenticator implements Authenticator {
 				})
 		})
 
+		const spinner = ora('Logging In')
 		const server = app.listen(port, async () => {
 			this.logger.debug(`login start: listening on port ${port}`)
-			CliUx.ux.action.start('logging in')
+			spinner.start()
 			await open(`http://localhost:${port}/start`)
 		})
 
@@ -221,7 +226,7 @@ export class LoginAuthenticator implements Authenticator {
 		// eslint-disable-next-line no-async-promise-executor
 		return new Promise(async (resolve, reject) => {
 			while (!loginFailed && !this.authenticationInfo && Date.now() < startTime + maxDelay) {
-				await CliUx.ux.wait(1000)
+				await delay(1000)
 			}
 
 			server.close(error => {
@@ -232,14 +237,14 @@ export class LoginAuthenticator implements Authenticator {
 				if (this.authenticationInfo) {
 					this.logger.trace('got authentication info', scrubAuthInfo(this.authenticationInfo))
 					this.logger.debug('login success')
-					CliUx.ux.action.stop()
+					spinner.succeed()
 
 					resolve()
 				} else {
-					this.logger.error('unable to get authentication info')
-					CliUx.ux.action.stop('failed')
-
-					reject('unable to get authentication info')
+					const failMsg = 'unable to get authentication info'
+					this.logger.error(failMsg)
+					spinner.fail()
+					reject(failMsg)
 				}
 			})
 		})
@@ -268,7 +273,7 @@ export class LoginAuthenticator implements Authenticator {
 			.then((response: AxiosResponse<any>) => {
 				this.updateTokenFromResponse(response)
 			})
-			.catch(error => {
+			.catch((error) => {
 				this.logger.error('error trying to refresh token:', error.message)
 				if (error.isAxiosError) {
 					const axiosError = error as AxiosError

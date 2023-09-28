@@ -1,4 +1,4 @@
-import inquirer, { ChoiceCollection, DistinctChoice, Separator } from 'inquirer'
+import inquirer, { ChoiceCollection, DistinctChoice } from 'inquirer'
 import { clipToMaximum, stringFromUnknown } from '../util.js'
 
 import {
@@ -114,7 +114,7 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 			}))
 
 			if (choices.length > 0) {
-				choices.push(new Separator())
+				choices.push(new inquirer.Separator())
 			}
 
 			if (options?.helpText) {

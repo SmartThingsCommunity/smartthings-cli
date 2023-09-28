@@ -2,7 +2,7 @@ import { ArgumentsCamelCase } from 'yargs'
 
 import { Profile, ProfilesByName } from '../../lib/cli-config'
 import { IOFormat } from '../../lib/io-util'
-import cmd, { ConfigCommandArgs, ProfileWithName } from '../../commands/config.js'
+import cmd, { CommandArgs, ProfileWithName } from '../../commands/config.js'
 import { outputItem, outputList } from '../../lib/command/basic-io.js'
 import { stringTranslateToId } from '../../lib/command/command-util.js'
 import { calculateOutputFormat, writeOutput } from '../../lib/command/output'
@@ -39,7 +39,7 @@ describe('handler', () => {
 	const smartThingsCommandMock = jest.mocked(smartThingsCommand)
 
 	it('lists configs without args', async () => {
-		const inputArgv = { profile: 'profile1', verbose: false } as ArgumentsCamelCase<ConfigCommandArgs>
+		const inputArgv = { profile: 'profile1', verbose: false } as ArgumentsCamelCase<CommandArgs>
 		const command = { cliConfig: {
 			mergedProfiles,
 		} } as SmartThingsCommand<SmartThingsCommandFlags>
@@ -69,7 +69,7 @@ describe('handler', () => {
 	})
 
 	it('lists configs with extra fields when verbose requested', async () => {
-		const inputArgv = { profile: 'profile1', verbose: true } as ArgumentsCamelCase<ConfigCommandArgs>
+		const inputArgv = { profile: 'profile1', verbose: true } as ArgumentsCamelCase<CommandArgs>
 		const command = { cliConfig: {
 			mergedProfiles,
 		} } as SmartThingsCommand<SmartThingsCommandFlags>
@@ -100,7 +100,7 @@ describe('handler', () => {
 	})
 
 	it('supports JSON or YAML output', async () => {
-		const inputArgv = { profile: 'profile1', verbose: false, output: 'output-file.json' } as ArgumentsCamelCase<ConfigCommandArgs>
+		const inputArgv = { profile: 'profile1', verbose: false, output: 'output-file.json' } as ArgumentsCamelCase<CommandArgs>
 		const flags: SmartThingsCommandFlags = { profile: 'default1' }
 		const command = {
 			cliConfig: { mergedProfiles },
@@ -126,7 +126,7 @@ describe('handler', () => {
 	})
 
 	it('lists details of a specified config', async () => {
-		const inputArgv = { profile: 'profile1', verbose: false, name: 'profile2' } as ArgumentsCamelCase<ConfigCommandArgs>
+		const inputArgv = { profile: 'profile1', verbose: false, name: 'profile2' } as ArgumentsCamelCase<CommandArgs>
 		const flags: SmartThingsCommandFlags = { profile: 'default1' }
 		const command = {
 			cliConfig: { mergedProfiles },

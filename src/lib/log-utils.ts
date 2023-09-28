@@ -1,6 +1,8 @@
 import fs from 'fs'
 import yaml from 'js-yaml'
-import { Configuration as Log4jsConfig, FileAppender, StandardErrorAppender } from 'log4js'
+import { Configuration as Log4jsConfig, Logger, FileAppender, StandardErrorAppender } from 'log4js'
+
+import { Logger as CoreSDKLogger } from '@smartthings/core-sdk'
 
 import { yamlExists } from './io-util.js'
 
@@ -56,4 +58,37 @@ export function loadLog4jsConfig(configFilename: string, defaultConfig: Log4jsCo
 	}
 
 	throw new Error(`invalid or unreadable logging config file format; see ${loggingDocsURL}`)
+}
+
+/**
+ * Create a proxy for a log4js logger that is compatible with the core SDK's `Logger` type.
+ */
+export const coreSDKLoggerFromLog4JSLogger = (logger: Logger): CoreSDKLogger => {
+	return {
+		get level(): string {
+			return typeof logger.level === 'string' ? logger.level : logger.level.levelStr
+		},
+
+		set level(level: string) {
+			logger.level = level
+		},
+
+		/* eslint-disable @typescript-eslint/no-explicit-any */
+		/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+		trace: (message: any, ...args: any[]) => logger.trace(message, ...args),
+		debug: (message: any, ...args: any[]) => logger.debug(message, ...args),
+		info: (message: any, ...args: any[]) => logger.info(message, ...args),
+		warn: (message: any, ...args: any[]) => logger.warn(message, ...args),
+		error: (message: any, ...args: any[]) => logger.error(message, ...args),
+		fatal: (message: any, ...args: any[]) => logger.fatal(message, ...args),
+		/* eslint-enable @typescript-eslint/no-explicit-any */
+		/* eslint-enable @typescript-eslint/explicit-module-boundary-types */
+
+		isTraceEnabled: (): boolean => logger.isTraceEnabled(),
+		isDebugEnabled: (): boolean => logger.isDebugEnabled(),
+		isInfoEnabled: (): boolean => logger.isInfoEnabled(),
+		isWarnEnabled: (): boolean => logger.isWarnEnabled(),
+		isErrorEnabled: (): boolean => logger.isErrorEnabled(),
+		isFatalEnabled: (): boolean => logger.isFatalEnabled(),
+	}
 }

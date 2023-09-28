@@ -1,8 +1,8 @@
-import { Config } from 'jest'
+import type { JestConfigWithTsJest } from 'ts-jest'
+import { defaultsESM as tsjPreset } from 'ts-jest/presets'
 
 
-const config: Config = {
-	preset: 'ts-jest',
+const config: JestConfigWithTsJest = {
 	testMatch: [
 		'**/__tests__/**/*.test.ts',
 	],
@@ -11,7 +11,9 @@ const config: Config = {
 	coveragePathIgnorePatterns: [
 		'/node_modules/',
 		'/__tests__/',
+		'/src/run.ts',
 		'/src/index.ts',
+		'/src/commands/index.ts',
 	],
 	modulePathIgnorePatterns: [
 		'<rootDir>/dist',
@@ -30,6 +32,7 @@ const config: Config = {
 		'^(\\.{1,2}/.*)\\.js$': '$1',
 	},
 	transform: {
+		...tsjPreset.transform,
 		// '^.+\\.[tj]sx?$' to process js/ts with `ts-jest`
 		// '^.+\\.m?[tj]sx?$' to process js/ts/mjs/mts with `ts-jest`
 		// eslint-disable-next-line @typescript-eslint/naming-convention

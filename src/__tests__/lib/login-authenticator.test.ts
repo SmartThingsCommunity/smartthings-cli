@@ -1,13 +1,13 @@
 import fs, { NoParamCallback, PathLike } from 'fs'
 
 import axios, { AxiosResponse } from 'axios'
-import { Request, Response } from 'express'
-import getPort from 'get-port'
-import open from 'open'
+import express, { Express, Request, Response } from 'express'
 import log4js from 'log4js'
+import open from 'open'
+import ora, { Ora } from 'ora'
 
-import { LoginAuthenticator } from '../login-authenticator.js'
-import { CliUx } from '@oclif/core'
+import { getPort } from 'get-port-please'
+import { LoginAuthenticator } from '../../lib/login-authenticator.js'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const recording = require('log4js/lib/appenders/recording')
@@ -25,20 +25,12 @@ jest.mock('fs', () => {
 	}
 })
 
-const mockApp = {
-	get: jest.fn(),
-	listen: jest.fn(),
-}
-jest.mock('express', () => {
-	return () => mockApp
-})
-
-jest.mock('get-port')
-jest.mock('open')
+jest.mock('express')
+jest.mock('get-port-please')
+jest.mock('open', () => jest.fn())
+jest.mock('ora', () => jest.fn())
 jest.mock('axios')
 
-jest.spyOn(CliUx.ux.action, 'start').mockImplementation()
-jest.spyOn(CliUx.ux.action, 'stop').mockImplementation()
 
 async function delay(milliseconds: number): Promise<void> {
 	return new Promise(resolve => setTimeout(resolve, milliseconds).unref())
@@ -125,7 +117,14 @@ describe('LoginAuthenticator', () => {
 		close: jest.fn(),
 	}
 
-	mockApp.listen.mockReturnValue(mockServer)
+	const expressGetMock = jest.fn()
+	const expressListenMock = jest.fn()
+	const expressMock = {
+		get: expressGetMock,
+		listen: expressListenMock,
+	} as unknown as Express
+	const expressFunctionMock = jest.mocked(express).mockReturnValue(expressMock)
+	expressListenMock.mockReturnValue(mockServer)
 
 	const mockStartResponse = {
 		redirect: jest.fn(),
@@ -137,7 +136,6 @@ describe('LoginAuthenticator', () => {
 		send: jest.fn(),
 	}
 
-
 	log4js.configure(config)
 
 	const mkdirMock = jest.mocked(fs.mkdirSync)
@@ -146,6 +144,16 @@ describe('LoginAuthenticator', () => {
 	const chmodMock = jest.mocked(fs.chmod)
 	const getPortMock = jest.mocked(getPort).mockResolvedValue(7777)
 	const postMock = jest.mocked(axios.post).mockResolvedValue(tokenResponse)
+
+	const spinnerStartMock = jest.fn()
+	const spinnerSucceedMock = jest.fn()
+	const spinnerFailMock = jest.fn()
+	const spinnerMock = {
+		start: spinnerStartMock,
+		succeed: spinnerSucceedMock,
+		fail: spinnerFailMock,
+	} as unknown as Ora
+	const oraMock = jest.mocked(ora).mockReturnValue(spinnerMock)
 
 	function setupAuthenticator(): LoginAuthenticator {
 		LoginAuthenticator.init(credentialsFilename)
@@ -157,11 +165,11 @@ describe('LoginAuthenticator', () => {
 		finishHandler(mockFinishRequest as unknown as Request, mockFinishResponse as unknown as Response)
 	// Call handlers like would happen if the user were following the flow in the browser.
 	async function imitateBrowser(finishHandlerCaller = finishHappy): Promise<void> {
-		while (mockApp.get.mock.calls.length < 2) {
+		while (expressGetMock.mock.calls.length < 2) {
 			await delay(25)
 		}
-		const startHandler: ExpressRouteHandler = mockApp.get.mock.calls[0][1]
-		const finishHandler: ExpressRouteHandler = mockApp.get.mock.calls[1][1]
+		const startHandler: ExpressRouteHandler = expressGetMock.mock.calls[0][1]
+		const finishHandler: ExpressRouteHandler = expressGetMock.mock.calls[1][1]
 
 		startHandler({} as Request, mockStartResponse as unknown as Response)
 		finishHandlerCaller(finishHandler)
@@ -244,17 +252,28 @@ describe('LoginAuthenticator', () => {
 			await imitateBrowser()
 			await loginPromise
 
+			expect(expressFunctionMock).toHaveBeenCalledTimes(1)
+			expect(expressFunctionMock).toHaveBeenCalledWith()
+
 			expect(getPortMock).toHaveBeenCalledTimes(1)
-			expect(getPortMock).toHaveBeenCalledWith({ port: [61973, 61974, 61975] })
+			expect(getPortMock).toHaveBeenCalledWith({ ports: [61973, 61974, 61975] })
 
-			expect(mockApp.get).toHaveBeenCalledTimes(2)
-			expect(mockApp.get).toHaveBeenCalledWith('/start', expect.any(Function))
-			expect(mockApp.get).toHaveBeenCalledWith('/finish', expect.any(Function))
+			expect(oraMock).toHaveBeenCalledTimes(1)
+			expect(oraMock).toHaveBeenCalledWith('Logging In')
 
-			expect(mockApp.listen).toHaveBeenCalledTimes(1)
-			expect(mockApp.listen).toHaveBeenCalledWith(7777, expect.any(Function))
-			const listenHandler: () => Promise<void> = mockApp.listen.mock.calls[0][1]
+			expect(expressGetMock).toHaveBeenCalledTimes(2)
+			expect(expressGetMock).toHaveBeenCalledWith('/start', expect.any(Function))
+			expect(expressGetMock).toHaveBeenCalledWith('/finish', expect.any(Function))
+
+			expect(spinnerSucceedMock).toHaveBeenCalledTimes(1)
+			expect(spinnerSucceedMock).toHaveBeenCalledWith()
+
+			expect(expressListenMock).toHaveBeenCalledTimes(1)
+			expect(expressListenMock).toHaveBeenCalledWith(7777, expect.any(Function))
+			const listenHandler: () => Promise<void> = expressListenMock.mock.calls[0][1]
 			await listenHandler()
+			expect(spinnerStartMock).toHaveBeenCalledTimes(1)
+			expect(spinnerStartMock).toHaveBeenCalledWith()
 			expect(open).toHaveBeenCalledTimes(1)
 			expect(open).toHaveBeenCalledWith('http://localhost:7777/start')
 
@@ -280,6 +299,8 @@ describe('LoginAuthenticator', () => {
 			expect(writeFileMock).toHaveBeenCalledWith(credentialsFilename, expect.stringMatching(/"myProfile":/))
 			expect(chmodMock).toHaveBeenCalledTimes(1)
 			expect(chmodMock).toHaveBeenCalledWith(credentialsFilename, 0o600, expect.any(Function))
+
+			expect(spinnerFailMock).toHaveBeenCalledTimes(0)
 		})
 
 		it('includes User-Agent in requests', async () => {
@@ -338,13 +359,16 @@ describe('LoginAuthenticator', () => {
 			await imitateBrowser(finishWithError)
 			await expect(loginPromise).rejects.toBe('unable to get authentication info')
 
-			expect(mockApp.get).toHaveBeenCalledTimes(2)
-			expect(mockApp.get).toHaveBeenCalledWith('/start', expect.any(Function))
-			expect(mockApp.get).toHaveBeenCalledWith('/finish', expect.any(Function))
+			expect(expressGetMock).toHaveBeenCalledTimes(2)
+			expect(expressGetMock).toHaveBeenCalledWith('/start', expect.any(Function))
+			expect(expressGetMock).toHaveBeenCalledWith('/finish', expect.any(Function))
 
-			expect(mockApp.listen).toHaveBeenCalledTimes(1)
-			expect(mockApp.listen).toHaveBeenCalledWith(7777, expect.any(Function))
-			const listenHandler: () => Promise<void> = mockApp.listen.mock.calls[0][1]
+			expect(spinnerFailMock).toHaveBeenCalledTimes(1)
+			expect(spinnerFailMock).toHaveBeenCalledWith()
+
+			expect(expressListenMock).toHaveBeenCalledTimes(1)
+			expect(expressListenMock).toHaveBeenCalledWith(7777, expect.any(Function))
+			const listenHandler: () => Promise<void> = expressListenMock.mock.calls[0][1]
 			await listenHandler()
 			expect(open).toHaveBeenCalledTimes(1)
 			expect(open).toHaveBeenCalledWith('http://localhost:7777/start')
@@ -371,13 +395,13 @@ describe('LoginAuthenticator', () => {
 			await imitateBrowser()
 			await expect(loginPromise).rejects.toBe('unable to get authentication info')
 
-			expect(mockApp.get).toHaveBeenCalledTimes(2)
-			expect(mockApp.get).toHaveBeenCalledWith('/start', expect.any(Function))
-			expect(mockApp.get).toHaveBeenCalledWith('/finish', expect.any(Function))
+			expect(expressGetMock).toHaveBeenCalledTimes(2)
+			expect(expressGetMock).toHaveBeenCalledWith('/start', expect.any(Function))
+			expect(expressGetMock).toHaveBeenCalledWith('/finish', expect.any(Function))
 
-			expect(mockApp.listen).toHaveBeenCalledTimes(1)
-			expect(mockApp.listen).toHaveBeenCalledWith(7777, expect.any(Function))
-			const listenHandler: () => Promise<void> = mockApp.listen.mock.calls[0][1]
+			expect(expressListenMock).toHaveBeenCalledTimes(1)
+			expect(expressListenMock).toHaveBeenCalledWith(7777, expect.any(Function))
+			const listenHandler: () => Promise<void> = expressListenMock.mock.calls[0][1]
 			await listenHandler()
 			expect(open).toHaveBeenCalledTimes(1)
 			expect(open).toHaveBeenCalledWith('http://localhost:7777/start')
@@ -538,15 +562,15 @@ describe('LoginAuthenticator', () => {
 			expect(response.headers?.Authorization).toEqual('Bearer access token')
 
 			expect(getPortMock).toHaveBeenCalledTimes(1)
-			expect(getPortMock).toHaveBeenCalledWith({ port: [61973, 61974, 61975] })
+			expect(getPortMock).toHaveBeenCalledWith({ ports: [61973, 61974, 61975] })
 
-			expect(mockApp.get).toHaveBeenCalledTimes(2)
-			expect(mockApp.get).toHaveBeenCalledWith('/start', expect.any(Function))
-			expect(mockApp.get).toHaveBeenCalledWith('/finish', expect.any(Function))
+			expect(expressGetMock).toHaveBeenCalledTimes(2)
+			expect(expressGetMock).toHaveBeenCalledWith('/start', expect.any(Function))
+			expect(expressGetMock).toHaveBeenCalledWith('/finish', expect.any(Function))
 
-			expect(mockApp.listen).toHaveBeenCalledTimes(1)
-			expect(mockApp.listen).toHaveBeenCalledWith(7777, expect.any(Function))
-			const listenHandler: () => Promise<void> = mockApp.listen.mock.calls[0][1]
+			expect(expressListenMock).toHaveBeenCalledTimes(1)
+			expect(expressListenMock).toHaveBeenCalledWith(7777, expect.any(Function))
+			const listenHandler: () => Promise<void> = expressListenMock.mock.calls[0][1]
 			await listenHandler()
 			expect(open).toHaveBeenCalledTimes(1)
 			expect(open).toHaveBeenCalledWith('http://localhost:7777/start')
