@@ -2,18 +2,18 @@ import { Flags, Errors } from '@oclif/core'
 
 import { SchemaApp, SchemaAppRequest } from '@smartthings/core-sdk'
 
-import { APICommand, inputItem, selectFromList, lambdaAuthFlags, SelectFromListConfig, userInputProcessor } from '@smartthings/cli-lib'
+import { APIOrganizationCommand, inputItem, selectFromList, lambdaAuthFlags, SelectFromListConfig, userInputProcessor } from '@smartthings/cli-lib'
 
 import { addSchemaPermission } from '../../lib/aws-utils'
 import { getSchemaAppUpdateFromUser } from '../../lib/commands/schema-util'
 
 
-export default class SchemaUpdateCommand extends APICommand<typeof SchemaUpdateCommand.flags> {
+export default class SchemaUpdateCommand extends APIOrganizationCommand<typeof SchemaUpdateCommand.flags> {
 	static description = 'update an ST Schema connector' +
 		this.apiDocsURL('putAppsByEndpointAppId')
 
 	static flags = {
-		...APICommand.flags,
+		...APIOrganizationCommand.flags,
 		...inputItem.flags,
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		'dry-run': Flags.boolean({

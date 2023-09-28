@@ -19,8 +19,8 @@ describe('SchemaCommand', () => {
 			expect.any(SchemaCommand),
 			expect.objectContaining({
 				tableFieldDefinitions: [
-					'appName', 'partnerName', 'endpointAppId', 'schemaType', 'hostingType',
-					'stClientId', 'oAuthAuthorizationUrl', 'oAuthTokenUrl', 'oAuthClientId',
+					'appName', 'partnerName', 'endpointAppId', 'organizationId', 'schemaType', 'hostingType',
+					('stClientId' as keyof SchemaApp), 'oAuthAuthorizationUrl', 'oAuthTokenUrl', 'oAuthClientId',
 					'oAuthClientSecret', 'icon', 'icon2x', 'icon3x',
 					{ prop: 'lambdaArn', skipEmpty: true },
 					{ prop: 'lambdaArnAP', skipEmpty: true },
@@ -31,7 +31,7 @@ describe('SchemaCommand', () => {
 				],
 				primaryKeyName: 'endpointAppId',
 				sortKeyName: 'appName',
-				listTableFieldDefinitions: ['appName', 'endpointAppId', 'hostingType'],
+				listTableFieldDefinitions: ['appName', 'endpointAppId', 'organizationId', 'hostingType'],
 			}),
 			'schemaAppId',
 			expect.any(Function),
@@ -58,7 +58,7 @@ describe('SchemaCommand', () => {
 		await expect(SchemaCommand.run(['--verbose'])).resolves.not.toThrow()
 
 		const config = (outputItemOrListMock.mock.calls[0][1] as TableCommonListOutputProducer<SchemaApp>)
-		const tableFieldDefinition = config.listTableFieldDefinitions[3] as { value: (input: SchemaApp) => string | undefined }
+		const tableFieldDefinition = config.listTableFieldDefinitions[4] as { value: (input: SchemaApp) => string | undefined }
 
 		expect(tableFieldDefinition).toBeObject()
 		const valueFunction = tableFieldDefinition.value
