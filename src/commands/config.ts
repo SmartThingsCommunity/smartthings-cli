@@ -17,15 +17,16 @@ export type ProfileWithName = {
 	profile: Profile
 }
 
-export type ConfigCommandArgs = SmartThingsCommandFlags & OutputItemOrListFlags & {
+export type CommandArgs = SmartThingsCommandFlags & OutputItemOrListFlags & {
 	verbose: boolean
 	name?: string
 }
+
 const command = 'config [name]'
 
 const describe = 'list profiles defined in config file'
 
-const builder = (yargs: Argv): Argv<ConfigCommandArgs> =>
+const builder = (yargs: Argv): Argv<CommandArgs> =>
 	outputItemOrListBuilder(smartThingsCommandBuilder(yargs))
 		.positional('name', { describe: 'profile name for detail view', type: 'string' })
 		.option('verbose',
@@ -35,7 +36,7 @@ const builder = (yargs: Argv): Argv<ConfigCommandArgs> =>
 			['$0 config my-org-1', 'provide details for profile named "my-org-1"'],
 		])
 
-const handler = async (argv: ArgumentsCamelCase<ConfigCommandArgs>): Promise<void> => {
+const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await smartThingsCommand(argv)
 	const listTableFieldDefinitions: TableFieldDefinition<ProfileWithName>[] = [
 		'name',
@@ -90,5 +91,5 @@ const handler = async (argv: ArgumentsCamelCase<ConfigCommandArgs>): Promise<voi
 	}
 }
 
-const cmd: CommandModule<object, ConfigCommandArgs> = { command, describe, builder, handler }
+const cmd: CommandModule<object, CommandArgs> = { command, describe, builder, handler }
 export default cmd

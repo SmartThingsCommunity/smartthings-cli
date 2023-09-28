@@ -1,4 +1,4 @@
-import inquirer, { Separator } from 'inquirer'
+import inquirer from 'inquirer'
 
 import {
 	addAction,
@@ -225,7 +225,7 @@ describe('arrayDef', () => {
 			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
 				choices: [
 					{ name: 'Edit summarized item1.', value: 0 },
-					expect.any(Separator),
+					expect.any(inquirer.Separator),
 					{ name: 'Add Item Def.', value: addAction },
 					cancelOption,
 				],
@@ -235,7 +235,7 @@ describe('arrayDef', () => {
 				choices: [
 					{ name: 'Edit summarized item1.', value: 0 },
 					{ name: 'Edit summarized item2.', value: 1 },
-					expect.any(Separator),
+					expect.any(inquirer.Separator),
 					{ name: 'Add Item Def.', value: addAction },
 					{ name: 'Finish editing Array Def.', value: finishAction },
 					cancelOption,
@@ -272,7 +272,7 @@ describe('arrayDef', () => {
 			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
 				choices: [
 					{ name: 'Edit summarized item1.', value: 0 },
-					expect.any(Separator),
+					expect.any(inquirer.Separator),
 					{ name: 'Add Item Def.', value: addAction },
 					{ name: 'Finish editing Array Def.', value: finishAction },
 					cancelOption,
@@ -283,7 +283,7 @@ describe('arrayDef', () => {
 				choices: [
 					{ name: 'Edit summarized item1.', value: 0 },
 					{ name: 'Edit summarized item2.', value: 1 },
-					expect.any(Separator),
+					expect.any(inquirer.Separator),
 					{ name: 'Add Item Def.', value: addAction },
 					{ name: 'Finish editing Array Def.', value: finishAction },
 					cancelOption,
@@ -295,7 +295,7 @@ describe('arrayDef', () => {
 					{ name: 'Edit summarized item1.', value: 0 },
 					{ name: 'Edit summarized item2.', value: 1 },
 					{ name: 'Edit summarized item3.', value: 2 },
-					expect.any(Separator),
+					expect.any(inquirer.Separator),
 					{ name: 'Finish editing Array Def.', value: finishAction },
 					cancelOption,
 				],

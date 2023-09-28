@@ -1,10 +1,17 @@
-import { CliUx } from '@oclif/core'
 import inquirer from 'inquirer'
 
-import { IdRetrievalFunction, ListDataFunction, LookupDataFunction, Naming, outputList, OutputListConfig, Sorting } from './basic-io.js'
-import { resetManagedConfigKey, setConfigKey } from './cli-config.js'
+import {
+	IdRetrievalFunction,
+	ListDataFunction,
+	LookupDataFunction,
+	Naming,
+	outputList,
+	OutputListConfig,
+	Sorting } from './basic-io.js'
+import { resetManagedConfigKey, setConfigKey } from '../cli-config.js'
 import { stringGetIdFromUser } from './command-util.js'
-import { SmartThingsCommandInterface } from './smartthings-command.js'
+import { SmartThingsCommand } from './smartthings-command.js'
+import { buildOutputFormatterBuilder, BuildOutputFormatterFlags } from './output-builder.js'
 
 
 export type SelectFromListConfig<L extends object> = Sorting<L> & Naming & OutputListConfig<L>
@@ -15,6 +22,8 @@ function promptFromNaming(config: Naming): string | undefined {
 	return config.itemName ? `Select ${indefiniteArticleFor(config.itemName)} ${config.itemName}.` : undefined
 }
 
+export type PromptUserFlags = BuildOutputFormatterFlags
+export const promptUserBuilder = buildOutputFormatterBuilder
 export type PromptUserOptions<L extends object, ID = string> = {
 	/**
 	 * A function that returns the list of items to display.
@@ -57,7 +66,7 @@ export type PromptUserOptions<L extends object, ID = string> = {
  * @param options More parameters bundled in an object for readability.
  * @returns Selected id if one was chosen. Logs message if no items are found and exits.
  */
-export async function promptUser<L extends object, ID = string>(command: SmartThingsCommandInterface,
+export async function promptUser<L extends object, ID = string>(command: SmartThingsCommand<PromptUserFlags>,
 		config: SelectFromListConfig<L>, options: PromptUserOptions<L, ID>): Promise<ID> {
 	const items = await options.listItems()
 	if (options.autoChoose && items.length === 1) {
@@ -66,12 +75,16 @@ export async function promptUser<L extends object, ID = string>(command: SmartTh
 	const list = await outputList(command, config, async () => items, true, true)
 	if (list.length === 0) {
 		// Nothing was found; user was already notified by `outputList` above.
-		command.exit(0)
+		// eslint-disable-next-line no-process-exit
+		process.exit(0)
 	}
 
 	const getIdFromUser = (options.getIdFromUser ?? stringGetIdFromUser) as IdRetrievalFunction<ID, L>
 	return await getIdFromUser(config, list, options.promptMessage ?? promptFromNaming(config))
 }
+
+export type SelectFromListFlags = PromptUserFlags
+export const selectFromListBuilder = promptUserBuilder
 
 export type SelectOptions<L extends object, ID = string> = PromptUserOptions<L, ID> & {
 	/**
@@ -115,7 +128,7 @@ export type SelectOptions<L extends object, ID = string> = PromptUserOptions<L, 
  * @param options More parameters bundled in an object for readability.
  * @returns Selected id if one was chosen. Logs message if no items are found and exits.
  */
-export async function selectFromList<L extends object, ID = string>(command: SmartThingsCommandInterface,
+export async function selectFromList<L extends object, ID = string>(command: SmartThingsCommand<SelectFromListFlags>,
 		config: SelectFromListConfig<L>, options: SelectOptions<L, ID>): Promise<ID> {
 	if (options.preselectedId) {
 		return options.preselectedId
@@ -127,7 +140,7 @@ export async function selectFromList<L extends object, ID = string>(command: Sma
 			try {
 				const item = await options.defaultValue.getItem(configuredDefault)
 				if (item) {
-					command.logToStderr(options.defaultValue.userMessage(item))
+					console.log(options.defaultValue.userMessage(item))
 					return configuredDefault
 				}
 			} catch (error) {
@@ -159,10 +172,10 @@ export async function selectFromList<L extends object, ID = string>(command: Sma
 		const resetInfo = 'You can reset these settings using the config:reset command.'
 		if (answer === 'yes') {
 			await setConfigKey(command.cliConfig, options.defaultValue.configKey, userSelected)
-			CliUx.ux.log(`${userSelected} is now the default.\n${resetInfo}`)
+			console.log(`${userSelected} is now the default.\n${resetInfo}`)
 		} else if (answer === 'never') {
 			await setConfigKey(command.cliConfig, neverAgainKey, true)
-			CliUx.ux.log(`You will not be asked again.\n${resetInfo}`)
+			console.log(`You will not be asked again.\n${resetInfo}`)
 		}
 	}
 

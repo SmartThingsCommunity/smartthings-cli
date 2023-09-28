@@ -1,4 +1,4 @@
-import inquirer, { Separator } from 'inquirer'
+import inquirer from 'inquirer'
 
 import { cancelAction, finishAction, helpAction, InputDefinition, inquirerPageSize } from '../../../lib/item-input/defs'
 import { objectDef, ObjectItemTypeData } from '../../../lib/item-input/object.js'
@@ -218,7 +218,7 @@ describe('objectDef', () => {
 					{ name: 'Edit Item Name 1: Summarized Input 1', value: 'input1' },
 					{ name: 'Edit Item Name 2: Summarized Input 2', value: 'input2' },
 					{ name: 'Edit Item Name 3: Summarized Input 3', value: 'input3' },
-					expect.any(Separator),
+					expect.any(inquirer.Separator),
 					{ name: 'Finish editing Object Def.', value: finishAction },
 					{ name: 'Cancel', value: cancelAction },
 				],
@@ -271,7 +271,7 @@ describe('objectDef', () => {
 					{ name: 'Edit Item Name 1: Summarized Input 1', value: 'prop1' },
 					{ name: 'Edit Item Name 2: Summarized Input 2', value: 'prop2' },
 					{ name: 'Edit Item Name 4: Summarized Input 4', value: 'prop4' },
-					expect.any(Separator),
+					expect.any(inquirer.Separator),
 					{ name: 'Finish editing Object Def.', value: finishAction },
 					{ name: 'Cancel', value: cancelAction },
 				],
@@ -432,7 +432,7 @@ describe('objectDef', () => {
 					{ name: 'Edit Item Name 1: Summarized Input 1', value: 'input1' },
 					{ name: 'Edit Item Name 2: Summarized Input 2', value: 'input2' },
 					{ name: 'Edit Item Name 3: Summarized Input 3', value: 'input3' },
-					expect.any(Separator),
+					expect.any(inquirer.Separator),
 					{ name: 'Finish editing Object Def.', value: finishAction },
 					{ name: 'Cancel', value: cancelAction },
 				],

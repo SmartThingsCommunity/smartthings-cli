@@ -1,18 +1,17 @@
 import inquirer from 'inquirer'
+import log4js from 'log4js'
 
-import { outputList } from '../basic-io.js'
-import { Profile, resetManagedConfigKey, setConfigKey } from '../cli-config.js'
-import { stringGetIdFromUser } from '../command-util.js'
-import { indefiniteArticleFor, promptUser, selectFromList } from '../select.js'
-import { SmartThingsCommandInterface } from '../smartthings-command.js'
-import { buildMockCommand, exitMock } from './test-lib/mock-command.js'
+import { CLIConfig, Profile, ProfilesByName, resetManagedConfigKey, setConfigKey } from '../../../lib/cli-config.js'
+import { outputList } from '../../../lib/command/basic-io.js'
+import { stringGetIdFromUser } from '../../../lib/command/command-util.js'
+import { SelectFromListConfig, indefiniteArticleFor, promptUser, selectFromList } from '../../../lib/command/select.js'
+import { SmartThingsCommand, SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
 
 
 jest.mock('inquirer')
-jest.mock('@oclif/core')
-jest.mock('../cli-config')
-jest.mock('../command-util')
-jest.mock('../basic-io')
+jest.mock('../../../lib/cli-config.js')
+jest.mock('../../../lib/command/basic-io.js')
+jest.mock('../../../lib/command/command-util.js')
 
 describe('select', () => {
 	const item1 = { str: 'string-id-1', num: 5 }
@@ -21,21 +20,26 @@ describe('select', () => {
 	const singleItemList = [item1]
 	const booleanConfigValueMock = jest.fn()
 
-	const commandWithProfile = (profile: Profile): SmartThingsCommandInterface => ({
-		...buildMockCommand({ output: 'output.yaml' }, profile),
+	const commandWithProfile = (profile: Profile): SmartThingsCommand<SmartThingsCommandFlags> => ({
+		logger: log4js.getLogger('cli'),
+		cliConfig: {
+			profileName: 'default',
+			mergedProfiles: { default: { profile } } as ProfilesByName,
+			profile,
+		} as CLIConfig,
 		booleanConfigValue: booleanConfigValueMock,
-	})
+	} as unknown as SmartThingsCommand<SmartThingsCommandFlags>)
 	const command = commandWithProfile({})
-	const config = {
-		tableFieldDefinitions: [],
+	const config: SelectFromListConfig<typeof item1> = {
 		primaryKeyName: 'str',
 		sortKeyName: 'num',
 	}
 
-	const listItems = jest.fn()
+	const listItems = jest.fn().mockResolvedValue(list)
 	const stringGetIdFromUserMock = jest.mocked(stringGetIdFromUser)
 	const outputListMock = jest.mocked(outputList)
 
+	const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /*no-op*/ })
 
 	describe('indefiniteArticleFor', () => {
 		it.each(['apple', 'Animal', 'egret', 'item', 'orange'])('returns "an" for "%s"', word => {
@@ -49,7 +53,6 @@ describe('select', () => {
 
 	describe('promptUser', () => {
 		it('works with defaults', async () => {
-			const listItems = jest.fn().mockResolvedValueOnce(list)
 			outputListMock.mockResolvedValueOnce(list)
 			stringGetIdFromUserMock.mockResolvedValue('chosen-id')
 
@@ -70,7 +73,7 @@ describe('select', () => {
 		})
 
 		it('autoChoose default to false', async () => {
-			const listItems = jest.fn().mockResolvedValueOnce(singleItemList)
+			listItems.mockResolvedValueOnce(singleItemList)
 			outputListMock.mockResolvedValueOnce(singleItemList)
 			stringGetIdFromUserMock.mockResolvedValue('chosen-id')
 
@@ -85,7 +88,7 @@ describe('select', () => {
 		})
 
 		it('chooses single item automatically if autoChoose is on', async () => {
-			const listItems = jest.fn().mockResolvedValueOnce(singleItemList)
+			listItems.mockResolvedValueOnce(singleItemList)
 
 			expect(await promptUser(command, config, { listItems, autoChoose: true })).toBe('string-id-1')
 
@@ -96,11 +99,12 @@ describe('select', () => {
 		})
 
 		it('exits when nothing to select from', async () => {
+			const exitSpy = jest.spyOn(process, 'exit')
 			outputListMock.mockResolvedValue([])
 			// fake exiting with a special thrown error
-			exitMock.mockImplementation(() => { throw Error('should exit') })
+			exitSpy.mockImplementation(() => { throw Error('should exit') })
 
-			await expect(selectFromList(command, config, { listItems })).rejects.toThrow('should exit')
+			await expect(promptUser(command, config, { listItems })).rejects.toThrow('should exit')
 
 			expect(listItems).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledTimes(1)
@@ -108,7 +112,6 @@ describe('select', () => {
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(0)
 		})
 		it('calls custom getIdFromUser when specified', async () => {
-			const listItems = jest.fn().mockResolvedValueOnce(list)
 			outputListMock.mockResolvedValueOnce(list)
 
 			const getIdFromUser = jest.fn().mockResolvedValueOnce('special-id')
@@ -128,7 +131,7 @@ describe('select', () => {
 			outputListMock.mockResolvedValue(list)
 			const configWithName = { ...config, itemName: 'thingamabob' }
 
-			expect(await selectFromList(command, configWithName, { listItems })).toBe('chosen-id')
+			expect(await promptUser(command, configWithName, { listItems })).toBe('chosen-id')
 
 			expect(listItems).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledTimes(1)
@@ -140,7 +143,7 @@ describe('select', () => {
 		it('passes custom prompt on', async () => {
 			outputListMock.mockResolvedValue(list)
 
-			expect(await selectFromList(command, config, { listItems, promptMessage: 'custom prompt' }))
+			expect(await promptUser(command, config, { listItems, promptMessage: 'custom prompt' }))
 				.toBe('chosen-id')
 
 			expect(listItems).toHaveBeenCalledTimes(1)
@@ -204,6 +207,8 @@ describe('select', () => {
 
 			expect(await selectFromList(commandWithDefault, config, { listItems, defaultValue }))
 				.toBe('default-item-id')
+
+			expect(consoleLogSpy).toHaveBeenCalledWith('user message')
 
 			expect(listItems).toHaveBeenCalledTimes(0)
 			expect(outputListMock).toHaveBeenCalledTimes(0)
@@ -339,6 +344,8 @@ describe('select', () => {
 			expect(promptSpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'list', name: 'answer' }))
 			expect(setConfigKeyMock).toHaveBeenCalledTimes(1)
 			expect(setConfigKeyMock).toHaveBeenCalledWith(command.cliConfig, 'defaultItem', 'chosen-id')
+			expect(consoleLogSpy).toHaveBeenCalledWith('chosen-id is now the default.\n' +
+				'You can reset these settings using the config:reset command.')
 		})
 
 		it('saves "never ask again" response"', async () => {
@@ -358,6 +365,8 @@ describe('select', () => {
 			expect(promptSpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'list', name: 'answer' }))
 			expect(setConfigKeyMock).toHaveBeenCalledTimes(1)
 			expect(setConfigKeyMock).toHaveBeenCalledWith(command.cliConfig, 'defaultItem::neverAskForSaveAgain', true)
+			expect(consoleLogSpy).toHaveBeenCalledWith('You will not be asked again.\n' +
+				'You can reset these settings using the config:reset command.')
 		})
 	})
 })

@@ -1,4 +1,4 @@
-import inquirer, { ChoiceCollection, Separator } from 'inquirer'
+import inquirer, { ChoiceCollection } from 'inquirer'
 
 import {
 	cancelAction,
@@ -143,7 +143,7 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 		while (true) {
 			const contextForChildren = [{ ...updated }, ...context]
 			const choices = buildPropertyChoices(inputDefsByProperty, updated, contextForChildren)
-			choices.push(new Separator())
+			choices.push(new inquirer.Separator())
 			if (options?.helpText) {
 				choices.push(helpOption)
 			}
