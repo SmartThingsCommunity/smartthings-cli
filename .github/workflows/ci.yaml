@@ -12,7 +12,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
-          node-version: 18.15.0
+          node-version: 20.8.0
       - run: npm ci
       - run: npx commitlint --from HEAD~${{ github.event.pull_request.commits }} --to HEAD
 
@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         # add/remove versions as we move support forward
-        node-version: [18]
+        node-version: [20]
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
