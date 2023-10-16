@@ -5379,13 +5379,16 @@ list all ST Schema Apps currently available in a user account
 
 ```
 USAGE
-  $ smartthings schema [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>] [-v]
+  $ smartthings schema [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
+    <value>] [-A] [-v]
 
 ARGUMENTS
   ID  the schema connector id
 
 FLAGS
-  -v, --verbose  include ARN in output
+  -A, --all-organizations     include entities from all organizations the user belongs to
+  -O, --organization=<value>  the organization ID to use for this command
+  -v, --verbose               include ARN in output
 
 COMMON FLAGS
   -h, --help             Show CLI help.
@@ -5457,14 +5460,15 @@ create an ST Schema connector
 
 ```
 USAGE
-  $ smartthings schema:create [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-o
-    <value>] [-d] [--authorize] [--principal <value>] [--statement <value>]
+  $ smartthings schema:create [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
+    <value>] [-o <value>] [-d] [--authorize] [--principal <value>] [--statement <value>]
 
 FLAGS
-  -d, --dry-run        produce JSON but don't actually submit
-  --authorize          authorize connector's Lambda functions to be called by SmartThings
-  --principal=<value>  use this principal instead of the default when authorizing lambda functions
-  --statement=<value>  use this statement id instead of the default when authorizing lambda functions
+  -O, --organization=<value>  the organization ID to use for this command
+  -d, --dry-run               produce JSON but don't actually submit
+  --authorize                 authorize connector's Lambda functions to be called by SmartThings
+  --principal=<value>         use this principal instead of the default when authorizing lambda functions
+  --statement=<value>         use this statement id instead of the default when authorizing lambda functions
 
 COMMON FLAGS
   -h, --help             Show CLI help.
@@ -5492,10 +5496,13 @@ delete an ST Schema connector
 
 ```
 USAGE
-  $ smartthings schema:delete [ID] [-h] [-p <value>] [-t <value>] [--language <value>]
+  $ smartthings schema:delete [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>]
 
 ARGUMENTS
   ID  schema app id
+
+FLAGS
+  -O, --organization=<value>  the organization ID to use for this command
 
 COMMON FLAGS
   -h, --help             Show CLI help.
@@ -5519,10 +5526,14 @@ regenerate the clientId and clientSecret of the ST Schema connector
 
 ```
 USAGE
-  $ smartthings schema:regenerate [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
+  $ smartthings schema:regenerate [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-o
+    <value>]
 
 ARGUMENTS
   ID  schema app id
+
+FLAGS
+  -O, --organization=<value>  the organization ID to use for this command
 
 COMMON FLAGS
   -h, --help             Show CLI help.
@@ -5551,17 +5562,18 @@ update an ST Schema connector
 
 ```
 USAGE
-  $ smartthings schema:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-i <value>] [-d]
-    [--authorize] [--principal <value>] [--statement <value>]
+  $ smartthings schema:update [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-O <value>] [-j] [-y] [-i
+    <value>] [-d] [--authorize] [--principal <value>] [--statement <value>]
 
 ARGUMENTS
   ID  the app id
 
 FLAGS
-  -d, --dry-run        produce JSON but don't actually submit
-  --authorize          authorize Lambda functions to be called by SmartThings
-  --principal=<value>  use this principal instead of the default when authorizing lambda functions
-  --statement=<value>  use this statement id instead of the default when authorizing lambda functions
+  -O, --organization=<value>  the organization ID to use for this command
+  -d, --dry-run               produce JSON but don't actually submit
+  --authorize                 authorize Lambda functions to be called by SmartThings
+  --principal=<value>         use this principal instead of the default when authorizing lambda functions
+  --statement=<value>         use this statement id instead of the default when authorizing lambda functions
 
 COMMON FLAGS
   -h, --help             Show CLI help.
