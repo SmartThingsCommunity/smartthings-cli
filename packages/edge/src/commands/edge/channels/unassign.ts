@@ -61,9 +61,9 @@ export class ChannelsUnassignCommand extends EdgeCommand<typeof ChannelsUnassign
 	]
 
 	async run(): Promise<void> {
-		const channelId = await chooseChannel(this, 'Select a channel for the driver.',
+		const channelId = await chooseChannel(this, 'Select a channel:',
 			this.flags.channel, { useConfigDefault: true })
-		const driverId = await chooseAssignedDriver(this, 'Select a driver to remove from channel.',
+		const driverId = await chooseAssignedDriver(this, 'Select a driver to remove from the selected channel:',
 			channelId, this.args.driverId)
 
 		await this.client.channels.unassignDriver(channelId, driverId)
