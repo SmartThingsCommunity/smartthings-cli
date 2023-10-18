@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs'
 import log4js, { Logger, levels } from 'log4js'
 import yaml from 'js-yaml'
 
@@ -63,7 +64,8 @@ describe('loadLog4jsConfig', () => {
 		categories: {},
 	}
 	const yamlExistsMock = jest.mocked(yamlExists)
-	const loadMock = jest.mocked(yaml.load)
+	const readFileSyncMock = jest.mocked(readFileSync)
+	const yamlLoadMock = jest.mocked(yaml.load)
 
 	it('returns default config if requested file is not found', () => {
 		yamlExistsMock.mockReturnValueOnce(false)
@@ -77,20 +79,31 @@ describe('loadLog4jsConfig', () => {
 			appenders: { appender: { type: '' } },
 			categories: {},
 		}
-		loadMock.mockReturnValueOnce(loadedConfig)
+		readFileSyncMock.mockReturnValueOnce('file contents')
+		yamlLoadMock.mockReturnValueOnce(loadedConfig)
 		yamlExistsMock.mockReturnValueOnce(true)
 
 		expect(loadLog4jsConfig('filename', defaultConfig)).toStrictEqual(loadedConfig)
+
+		expect(readFileSyncMock).toHaveBeenCalledTimes(1)
+		expect(readFileSyncMock).toHaveBeenCalledWith('filename', 'utf-8')
+		expect(yamlLoadMock).toHaveBeenCalledTimes(1)
+		expect(yamlLoadMock).toHaveBeenCalledWith('file contents')
 	})
 
 	it('throws error if config is invalid', () => {
 		const invalidConfig = {
 			appenders: {},
 		}
-		loadMock.mockReturnValueOnce(invalidConfig)
 		yamlExistsMock.mockReturnValueOnce(true)
+		readFileSyncMock.mockReturnValueOnce('bad file contents')
+		yamlLoadMock.mockReturnValueOnce(invalidConfig)
 
 		expect(() => loadLog4jsConfig('filename', defaultConfig)).toThrow('invalid or unreadable logging config file format')
+
+		expect(readFileSyncMock).toHaveBeenCalledTimes(1)
+		expect(yamlLoadMock).toHaveBeenCalledTimes(1)
+		expect(yamlLoadMock).toHaveBeenCalledWith('bad file contents')
 	})
 })
 
