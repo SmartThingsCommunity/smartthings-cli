@@ -127,7 +127,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.9.6'
+          python-version: '3.11.5'
           cache: 'pip'
 
       # make sure 'smartthings' is available to child processes
