@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.2.2
+
+### Patch Changes
+
+- [#546](https://github.com/SmartThingsCommunity/smartthings-cli/pull/546) [`33f6476`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/33f6476f1cfb04d021c6fa9d4c6b7aac4818b8d9) Thanks [@rossiam](https://github.com/rossiam)! - update axios and qs dependencies
+
+- [#549](https://github.com/SmartThingsCommunity/smartthings-cli/pull/549) [`60a9126`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/60a9126c1b844ba91cc84a5353c46a578469eadc) Thanks [@bflorian](https://github.com/bflorian)! - feat: added organizations to Schema CRUD commands
+
 ## 2.2.1
 
 ### Patch Changes

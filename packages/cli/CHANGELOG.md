@@ -1,5 +1,21 @@
 # Change Log
 
+## 1.8.0
+
+### Minor Changes
+
+- [#532](https://github.com/SmartThingsCommunity/smartthings-cli/pull/532) [`a86a152`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a86a15249fe117cfe9d53e22ac46cfd7d0017daa) Thanks [@rossiam](https://github.com/rossiam)! - add support for schema app invitations
+
+### Patch Changes
+
+- [#549](https://github.com/SmartThingsCommunity/smartthings-cli/pull/549) [`60a9126`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/60a9126c1b844ba91cc84a5353c46a578469eadc) Thanks [@bflorian](https://github.com/bflorian)! - feat: added organizations to Schema CRUD commands
+
+- [#551](https://github.com/SmartThingsCommunity/smartthings-cli/pull/551) [`8b18df3`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/8b18df3c31627d0855a76ce5ab6eea2a4dfdd44e) Thanks [@Doczillar](https://github.com/Doczillar)! - Improved channels:unassign prompt text
+
+- Updated dependencies [[`4a5d13c`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/4a5d13c8711515f99582ec19c05356d42a051ec0), [`33f6476`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/33f6476f1cfb04d021c6fa9d4c6b7aac4818b8d9), [`60a9126`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/60a9126c1b844ba91cc84a5353c46a578469eadc), [`8b18df3`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/8b18df3c31627d0855a76ce5ab6eea2a4dfdd44e)]:
+  - @smartthings/plugin-cli-edge@3.3.1
+  - @smartthings/cli-lib@2.2.2
+
 ## 1.7.0
 
 ### Minor Changes

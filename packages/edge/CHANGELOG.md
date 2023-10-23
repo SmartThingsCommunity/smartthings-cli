@@ -1,5 +1,20 @@
 # @smartthings/plugin-cli-edge
 
+## 3.3.1
+
+### Patch Changes
+
+- [#547](https://github.com/SmartThingsCommunity/smartthings-cli/pull/547) [`4a5d13c`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/4a5d13c8711515f99582ec19c05356d42a051ec0) Thanks [@Sitlintac](https://github.com/Sitlintac)! - fix channel name lookup bug for edge:drivers:installed command
+
+- [#546](https://github.com/SmartThingsCommunity/smartthings-cli/pull/546) [`33f6476`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/33f6476f1cfb04d021c6fa9d4c6b7aac4818b8d9) Thanks [@rossiam](https://github.com/rossiam)! - update axios and qs dependencies
+
+- [#549](https://github.com/SmartThingsCommunity/smartthings-cli/pull/549) [`60a9126`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/60a9126c1b844ba91cc84a5353c46a578469eadc) Thanks [@bflorian](https://github.com/bflorian)! - feat: added organizations to Schema CRUD commands
+
+- [#551](https://github.com/SmartThingsCommunity/smartthings-cli/pull/551) [`8b18df3`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/8b18df3c31627d0855a76ce5ab6eea2a4dfdd44e) Thanks [@Doczillar](https://github.com/Doczillar)! - Improved channels:unassign prompt text
+
+- Updated dependencies [[`33f6476`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/33f6476f1cfb04d021c6fa9d4c6b7aac4818b8d9), [`60a9126`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/60a9126c1b844ba91cc84a5353c46a578469eadc)]:
+  - @smartthings/cli-lib@2.2.2
+
 ## 3.3.0
 
 ### Minor Changes
