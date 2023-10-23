@@ -1,5 +1,14 @@
 # Change Log
 
+## 2.0.4
+
+### Patch Changes
+
+- [#549](https://github.com/SmartThingsCommunity/smartthings-cli/pull/549) [`60a9126`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/60a9126c1b844ba91cc84a5353c46a578469eadc) Thanks [@bflorian](https://github.com/bflorian)! - feat: added organizations to Schema CRUD commands
+
+- Updated dependencies [[`33f6476`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/33f6476f1cfb04d021c6fa9d4c6b7aac4818b8d9), [`60a9126`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/60a9126c1b844ba91cc84a5353c46a578469eadc)]:
+  - @smartthings/cli-lib@2.2.2
+
 ## 2.0.3
 
 ### Patch Changes
