@@ -30,9 +30,9 @@
 	"dependencies": {
 		"@log4js-node/log4js-api": "^1.0.2",
 		"@oclif/core": "^1.16.3",
-		"@smartthings/core-sdk": "^8.0.1",
+		"@smartthings/core-sdk": "^8.1.0",
 		"@types/eventsource": "^1.1.9",
-		"axios": "^1.5.0",
+		"axios": "^0.27.2",
 		"chalk": "^4.1.2",
 		"eventsource": "^2.0.2",
 		"express": "^4.18.1",
