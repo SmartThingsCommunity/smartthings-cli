@@ -207,7 +207,6 @@ that map to the API spec.
 * [`smartthings installedschema [ID]`](#smartthings-installedschema-id)
 * [`smartthings installedschema:delete [ID]`](#smartthings-installedschemadelete-id)
 * [`smartthings invites:schema [IDORINDEX]`](#smartthings-invitesschema-idorindex)
-* [`smartthings invites:schema:check-acceptance [ID]`](#smartthings-invitesschemacheck-acceptance-id)
 * [`smartthings invites:schema:create`](#smartthings-invitesschemacreate)
 * [`smartthings invites:schema:delete [ID]`](#smartthings-invitesschemadelete-id)
 * [`smartthings locations [IDORINDEX]`](#smartthings-locations-idorindex)
@@ -4156,45 +4155,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/invites/schema.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.8.0/packages/cli/src/commands/invites/schema.ts)_
-
-## `smartthings invites:schema:check-acceptance [ID]`
-
-check the acceptance status of a schema app invitation
-
-```
-USAGE
-  $ smartthings invites:schema:check-acceptance [ID] [-h] [-p <value>] [-t <value>] [--language <value>] [-j] [-y] [-o <value>]
-    [--schema-app <value>]
-
-ARGUMENTS
-  ID  the invitation id
-
-FLAGS
-  --schema-app=<value>  schema app id
-
-COMMON FLAGS
-  -h, --help             Show CLI help.
-  -j, --json             use JSON format of input and/or output
-  -o, --output=<value>   specify output file
-  -p, --profile=<value>  [default: default] configuration profile
-  -t, --token=<value>    the auth token to use
-  -y, --yaml             use YAML format of input and/or output
-  --language=<value>     ISO language code or "NONE" to not specify a language. Defaults to the OS locale
-
-DESCRIPTION
-  check the acceptance status of a schema app invitation
-
-EXAMPLES
-  prompt for an invitation and check its acceptance status
-
-    $ smartthings invites:schema:check-acceptance
-
-  check acceptance status for the specified invitation
-
-    $ smartthings invites:schema:check-acceptance 7bd4c5b6-e840-44b3-9933-549a342d95ce
-```
-
-_See code: [src/commands/invites/schema/check-acceptance.ts](https://github.com/SmartThingsCommunity/smartthings-cli/blob/@smartthings/cli@1.8.0/packages/cli/src/commands/invites/schema/check-acceptance.ts)_
 
 ## `smartthings invites:schema:create`
 

@@ -2,7 +2,7 @@ import { SchemaApp, SchemaAppInvitation, SmartThingsClient } from '@smartthings/
 
 import { APICommand, ValueTableFieldDefinition, chooseOptionsWithDefaults, selectFromList, stringTranslateToId } from '@smartthings/cli-lib'
 
-import { chooseSchemaInvitation, getSingleInvite, inviteTableFieldDefinitions } from '../../../lib/commands/invites-utils'
+import { addAppDetails, chooseSchemaInvitation, getSingleInvite, tableFieldDefinitions } from '../../../lib/commands/invites-utils'
 import { chooseSchemaApp } from '../../../lib/commands/schema-util'
 
 
@@ -74,41 +74,82 @@ describe('chooseSchemaInvitation', () => {
 })
 
 test.each`
-	input                             | expected
-	${undefined}                             | ${'none'}
-	${1694617703}        | ${'2023-09-13T15:08:23.000Z'}
+	input           | expected
+	${undefined}    | ${'none'}
+	${1694617703}   | ${'2023-09-13T15:08:23.000Z'}
 `('expiration displays $expected for $input', ({ input, expected }) => {
-	const value = (inviteTableFieldDefinitions[2] as
+	const value = (tableFieldDefinitions[2] as
 		ValueTableFieldDefinition<SchemaAppInvitation>).value as (input: SchemaAppInvitation) => string
 	expect(value({ expiration: input } as SchemaAppInvitation)).toBe(expected)
 })
 
+describe('addAppDetails', () => {
+	it('handles optional fields', () => {
+		expect(addAppDetails({
+			id: 'invitation-id',
+			schemaAppId: 'schema-app-id',
+		} as SchemaAppInvitation, {
+		} as SchemaApp)).toStrictEqual({
+			id: 'invitation-id',
+			schemaAppId: 'schema-app-id',
+			schemaAppName: undefined,
+			sort: ':schema-app-id :invitation-id',
+		})
+	})
+
+	it('handles populated optional fields', () => {
+		expect(addAppDetails({
+			id: 'invitation-id',
+			description: 'invitation-description',
+			schemaAppId: 'schema-app-id',
+		} as SchemaAppInvitation, {
+			appName: 'schema-app-name',
+		} as SchemaApp)).toStrictEqual({
+			id: 'invitation-id',
+			description: 'invitation-description',
+			schemaAppId: 'schema-app-id',
+			schemaAppName: 'schema-app-name',
+			sort: 'schema-app-name:schema-app-id invitation-description:invitation-id',
+		})
+	})
+})
+
 describe('getSingleInvite', () => {
 	const invitation1 = { id: 'invitation-id-1' } as SchemaAppInvitation
-	const invitation2 = { id: 'invitation-id-2' } as SchemaAppInvitation
+	const invitation2 = { id: 'invitation-id-2', schemaAppId: 'invite-2-app-id' } as SchemaAppInvitation
 	const invitation3 = { id: 'invitation-id-3' } as SchemaAppInvitation
 	const invitationList = [invitation1, invitation2, invitation3]
 
 	const schemaApp1 = { endpointAppId: 'schema-app-id-1' } as SchemaApp
-	const schemaApp2 = { endpointAppId: 'schema-app-id-2' } as SchemaApp
+	const schemaApp2 = { endpointAppId: 'schema-app-id-2', appName: 'Schema App 2' } as SchemaApp
 	const schemaApp3 = { endpointAppId: 'schema-app-id-3' } as SchemaApp
 	const schemaAppList = [schemaApp1, schemaApp2, schemaApp3]
 
 	const listInvitesMock = jest.fn().mockResolvedValue(invitationList)
 	const listSchemaMock = jest.fn().mockResolvedValue(schemaAppList)
+	const getSchemaMock = jest.fn()
 	const client = {
 		invitesSchema: {
 			list: listInvitesMock,
 		},
 		schema: {
+			get: getSchemaMock,
 			list: listSchemaMock,
 		},
 	} as unknown as SmartThingsClient
 
 	describe('with schemaAppId specified', () => {
 		it('returns invitation with matching id', async () => {
-			expect(await getSingleInvite(client, 'schema-app-id', 'invitation-id-2')).toBe(invitation2)
+			getSchemaMock.mockResolvedValueOnce(schemaApp2)
 
+			expect(await getSingleInvite(client, 'schema-app-id', 'invitation-id-2')).toStrictEqual({
+				...invitation2,
+				schemaAppName: 'Schema App 2',
+				sort: 'Schema App 2:invite-2-app-id :invitation-id-2',
+			})
+
+			expect(getSchemaMock).toHaveBeenCalledTimes(1)
+			expect(getSchemaMock).toHaveBeenCalledWith('invite-2-app-id')
 			expect(listInvitesMock).toHaveBeenCalledTimes(1)
 			expect(listInvitesMock).toHaveBeenCalledWith('schema-app-id')
 
@@ -118,24 +159,32 @@ describe('getSingleInvite', () => {
 		it('throws an error when no matching invite found', async () => {
 			await expect(getSingleInvite(client, 'schema-app-id', 'bad-invitation-id')).rejects.toThrow()
 
-			expect(listSchemaMock).toHaveBeenCalledTimes(0)
 			expect(listInvitesMock).toHaveBeenCalledTimes(1)
 			expect(listInvitesMock).toHaveBeenCalledWith('schema-app-id')
+
+			expect(getSchemaMock).toHaveBeenCalledTimes(0)
+			expect(listSchemaMock).toHaveBeenCalledTimes(0)
 		})
 	})
 
-	describe('with schemaAppId specified', () => {
+	describe('with schemaAppId not specified', () => {
 		it('searches schema apps when none specified', async () => {
 			listInvitesMock.mockResolvedValueOnce([invitation1])
 			listInvitesMock.mockResolvedValueOnce([invitation3, invitation2])
 
-			expect(await getSingleInvite(client, undefined, 'invitation-id-2')).toBe(invitation2)
+			expect(await getSingleInvite(client, undefined, 'invitation-id-2')).toStrictEqual({
+				...invitation2,
+				schemaAppName: 'Schema App 2',
+				sort: 'Schema App 2:invite-2-app-id :invitation-id-2',
+			})
 
 			expect(listSchemaMock).toHaveBeenCalledTimes(1)
 			expect(listSchemaMock).toHaveBeenCalledWith()
 			expect(listInvitesMock).toHaveBeenCalledTimes(2)
 			expect(listInvitesMock).toHaveBeenCalledWith('schema-app-id-1')
 			expect(listInvitesMock).toHaveBeenCalledWith('schema-app-id-2')
+
+			expect(getSchemaMock).toHaveBeenCalledTimes(0)
 		})
 
 		it('skips schema apps with no id', async () => {
@@ -143,13 +192,19 @@ describe('getSingleInvite', () => {
 			listInvitesMock.mockResolvedValueOnce([invitation1])
 			listInvitesMock.mockResolvedValueOnce([invitation3, invitation2])
 
-			expect(await getSingleInvite(client, undefined, 'invitation-id-2')).toBe(invitation2)
+			expect(await getSingleInvite(client, undefined, 'invitation-id-2')).toStrictEqual({
+				...invitation2,
+				schemaAppName: 'Schema App 2',
+				sort: 'Schema App 2:invite-2-app-id :invitation-id-2',
+			})
 
 			expect(listSchemaMock).toHaveBeenCalledTimes(1)
 			expect(listSchemaMock).toHaveBeenCalledWith()
 			expect(listInvitesMock).toHaveBeenCalledTimes(2)
 			expect(listInvitesMock).toHaveBeenCalledWith('schema-app-id-1')
 			expect(listInvitesMock).toHaveBeenCalledWith('schema-app-id-2')
+
+			expect(getSchemaMock).toHaveBeenCalledTimes(0)
 		})
 
 		it('throws an error when no matching invite found', async () => {
@@ -161,6 +216,8 @@ describe('getSingleInvite', () => {
 			expect(listInvitesMock).toHaveBeenCalledWith('schema-app-id-1')
 			expect(listInvitesMock).toHaveBeenCalledWith('schema-app-id-2')
 			expect(listInvitesMock).toHaveBeenCalledWith('schema-app-id-3')
+
+			expect(getSchemaMock).toHaveBeenCalledTimes(0)
 		})
 	})
 })
