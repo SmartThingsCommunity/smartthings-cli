@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core'
 
-import { SchemaAppInvitation } from '@smartthings/core-sdk'
+import { SmartThingsClient } from '@smartthings/core-sdk'
 
 import {
 	APICommand,
@@ -8,8 +8,7 @@ import {
 	OutputItemOrListConfig,
 } from '@smartthings/cli-lib'
 
-import { getSingleInvite, inviteTableFieldDefinitions } from '../../lib/commands/invites-utils'
-import { chooseSchemaApp } from '../../lib/commands/schema-util'
+import { addAppDetails, getSingleInvite, InvitationWithAppDetails, tableFieldDefinitions } from '../../lib/commands/invites-utils'
 
 
 export default class InvitesSchemaCommand extends APICommand<typeof InvitesSchemaCommand.flags> {
@@ -49,18 +48,29 @@ export default class InvitesSchemaCommand extends APICommand<typeof InvitesSchem
 	]
 
 	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<SchemaAppInvitation> = {
+		type InvitationProviderFunction = () => Promise<InvitationWithAppDetails[]>
+		const listFn = (client: SmartThingsClient, appId?: string): InvitationProviderFunction =>
+			async (): Promise<InvitationWithAppDetails[]> => {
+				const apps = appId
+					? [await client.schema.get(appId)]
+					: await client.schema.list()
+				return (await Promise.all(apps.map(async app => {
+					return app.endpointAppId
+						?  (await client.invitesSchema.list(app.endpointAppId))
+							.map(invite => addAppDetails(invite, app))
+						: []
+				}))).flat()
+			}
+
+		const config: OutputItemOrListConfig<InvitationWithAppDetails> = {
 			primaryKeyName: 'id',
-			sortKeyName: 'description',
+			sortKeyName: 'sort',
 			itemName: 'schema app invitation',
-			listTableFieldDefinitions: ['id', 'description', 'shortCode'],
-			tableFieldDefinitions: inviteTableFieldDefinitions,
-		}
-		const list = async (): Promise<SchemaAppInvitation[]> => {
-			const schemaAppId = await chooseSchemaApp(this, this.flags['schema-app'])
-			return this.client.invitesSchema.list(schemaAppId)
+			listTableFieldDefinitions: [{ prop: 'id', label: 'Invitation Id' }, 'schemaAppName', 'description'],
+			tableFieldDefinitions,
 		}
 		await outputItemOrList(this, config, this.args.idOrIndex,
-			list, id => getSingleInvite(this.client, this.flags['schema-app'], id))
+			listFn(this.client, this.flags['schema-app']),
+			id => getSingleInvite(this.client, this.flags['schema-app'], id))
 	}
 }

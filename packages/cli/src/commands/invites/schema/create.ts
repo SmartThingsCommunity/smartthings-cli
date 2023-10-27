@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core'
 
-import { SchemaApp, SchemaAppInvitation, SchemaAppInvitationCreate } from '@smartthings/core-sdk'
+import { SchemaApp, SchemaAppInvitationCreate } from '@smartthings/core-sdk'
 
 import {
 	APICommand,
@@ -15,7 +15,7 @@ import {
 } from '@smartthings/cli-lib'
 
 import { chooseSchemaApp } from '../../../lib/commands/schema-util'
-import { getSingleInvite, inviteTableFieldDefinitions } from '../../../lib/commands/invites-utils'
+import { getSingleInvite, InvitationWithAppDetails, tableFieldDefinitions } from '../../../lib/commands/invites-utils'
 
 
 export default class InvitesSchemaCreateCommand extends APICommand<typeof InvitesSchemaCreateCommand.flags> {
@@ -86,11 +86,14 @@ export default class InvitesSchemaCreateCommand extends APICommand<typeof Invite
 	}
 
 	async run(): Promise<void> {
-		const createInvitation = async (_: unknown, input: SchemaAppInvitationCreate): Promise<SchemaAppInvitation> => {
+		const createInvitation = async (_: unknown, input: SchemaAppInvitationCreate): Promise<InvitationWithAppDetails> => {
+			// We don't need the full schema app but we need to call this to force some
+			// bookkeeping in the back end for older apps.
+			await this.client.schema.get(input.schemaAppId)
 			const idWrapper = await this.client.invitesSchema.create(input)
 			return getSingleInvite(this.client, input.schemaAppId, idWrapper.invitationId)
 		}
-		await inputAndOutputItem<SchemaAppInvitationCreate, SchemaAppInvitation>(this,
-			{ tableFieldDefinitions: inviteTableFieldDefinitions }, createInvitation, userInputProcessor(this))
+		await inputAndOutputItem<SchemaAppInvitationCreate, InvitationWithAppDetails>(this,
+			{ tableFieldDefinitions }, createInvitation, userInputProcessor(this))
 	}
 }
