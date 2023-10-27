@@ -1,4 +1,4 @@
-import { SchemaAppInvitation, SmartThingsClient } from '@smartthings/core-sdk'
+import { SchemaApp, SchemaAppInvitation, SmartThingsClient } from '@smartthings/core-sdk'
 
 import {
 	APICommand,
@@ -29,29 +29,44 @@ export const chooseSchemaInvitation = async (command: APICommand<typeof APIComma
 	return selectFromList(command, config, { preselectedId, listItems })
 }
 
-export const inviteTableFieldDefinitions: TableFieldDefinition<SchemaAppInvitation>[] = [
-	'id',
+export type InvitationWithAppDetails = SchemaAppInvitation & {
+	schemaAppId?: string
+	schemaAppName?: string
+	sort: string
+}
+
+export const tableFieldDefinitions: TableFieldDefinition<InvitationWithAppDetails>[] = [
+	{ prop: 'id', label: 'Invitation Id' },
 	'description',
 	{
 		label: 'Expiration',
 		value: (invite) => invite.expiration ? new Date(invite.expiration * 1000).toISOString() : 'none',
 	},
+	'acceptances',
 	'acceptUrl',
-	'shortCode',
+	'schemaAppId',
+	'schemaAppName',
 ]
+
+export const addAppDetails = (invite: SchemaAppInvitation, app: SchemaApp): InvitationWithAppDetails => ({
+	...invite,
+	schemaAppName: app.appName,
+	// In future we should make it so we can sort by multiple fields.
+	sort: `${app.appName ?? ''}:${invite.schemaAppId} ${invite.description ?? ''}:${invite.id}`,
+})
 
 /**
  * Since there is no API to get a single invitation, this function uses the list function to get all
  * invites for a given schema app and then returns the one specified by the `id` parameter.
  */
-export const getSingleInvite = async (client: SmartThingsClient, schemaAppId: string | undefined, id: string): Promise<SchemaAppInvitation> => {
+export const getSingleInvite = async (client: SmartThingsClient, schemaAppId: string | undefined, id: string): Promise<InvitationWithAppDetails> => {
 	const findInvitation = async (schemaAppId: string): Promise<SchemaAppInvitation | undefined> =>
 		(await client.invitesSchema.list(schemaAppId)).find(invite => invite.id === id)
 
 	if (schemaAppId) {
-		const retVal = await findInvitation(schemaAppId)
-		if (retVal) {
-			return retVal
+		const invite = await findInvitation(schemaAppId)
+		if (invite) {
+			return addAppDetails(invite, await client.schema.get(invite.schemaAppId))
 		}
 	} else {
 		const schemaApps = await client.schema.list()
@@ -59,9 +74,9 @@ export const getSingleInvite = async (client: SmartThingsClient, schemaAppId: st
 			if (schemaApp.endpointAppId == null) {
 				continue
 			}
-			const retVal = await findInvitation(schemaApp.endpointAppId)
-			if (retVal) {
-				return retVal
+			const invite = await findInvitation(schemaApp.endpointAppId)
+			if (invite) {
+				return addAppDetails(invite, schemaApp)
 			}
 		}
 	}
