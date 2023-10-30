@@ -1,5 +1,14 @@
 # Change Log
 
+## 2.0.5
+
+### Patch Changes
+
+- [#559](https://github.com/SmartThingsCommunity/smartthings-cli/pull/559) [`e75b122`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e75b1223b108dc90fd320c8f70a77551887f8067) Thanks [@rossiam](https://github.com/rossiam)! - minor ux tweaks to new ST Schema Invites
+
+- Updated dependencies [[`e75b122`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e75b1223b108dc90fd320c8f70a77551887f8067)]:
+  - @smartthings/cli-lib@2.2.3
+
 ## 2.0.4
 
 ### Patch Changes
