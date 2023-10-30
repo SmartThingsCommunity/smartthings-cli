@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.8.1
+
+### Patch Changes
+
+- [#559](https://github.com/SmartThingsCommunity/smartthings-cli/pull/559) [`e75b122`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e75b1223b108dc90fd320c8f70a77551887f8067) Thanks [@rossiam](https://github.com/rossiam)! - minor ux tweaks to new ST Schema Invites
+
 ## 1.8.0
 
 ### Minor Changes
@@ -12,10 +18,6 @@
 
 - [#551](https://github.com/SmartThingsCommunity/smartthings-cli/pull/551) [`8b18df3`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/8b18df3c31627d0855a76ce5ab6eea2a4dfdd44e) Thanks [@Doczillar](https://github.com/Doczillar)! - Improved channels:unassign prompt text
 
-- Updated dependencies [[`4a5d13c`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/4a5d13c8711515f99582ec19c05356d42a051ec0), [`33f6476`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/33f6476f1cfb04d021c6fa9d4c6b7aac4818b8d9), [`60a9126`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/60a9126c1b844ba91cc84a5353c46a578469eadc), [`8b18df3`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/8b18df3c31627d0855a76ce5ab6eea2a4dfdd44e)]:
-  - @smartthings/plugin-cli-edge@3.3.1
-  - @smartthings/cli-lib@2.2.2
-
 ## 1.7.0
 
 ### Minor Changes
@@ -25,10 +27,6 @@
 ### Patch Changes
 
 - [#541](https://github.com/SmartThingsCommunity/smartthings-cli/pull/541) [`b865ad8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b865ad8c7752ed85aadcadd0c1c6da742f74f93f) Thanks [@rossiam](https://github.com/rossiam)! - Fixed cancel action on schema:create command when validation errors exist.
-
-- Updated dependencies [[`c32e1e1`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c32e1e1a010d0458591aa20f44d067e1344076b1), [`b865ad8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b865ad8c7752ed85aadcadd0c1c6da742f74f93f), [`bcb0af5`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/bcb0af5b011043903d265b40ac381f1dc0ebcff6)]:
-  - @smartthings/plugin-cli-edge@3.3.0
-  - @smartthings/cli-lib@2.2.1
 
 ## 1.6.0
 
