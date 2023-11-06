@@ -105,8 +105,8 @@ describe('tableFieldDefinitions functions', () => {
 		${{ webhookSmartApp: { publicKey: 'key' } }}                   | ${'key'}
 		${{ webhookSmartApp: { publicKey: 'key\r\npart2\r\npart3' } }} | ${'key\npart2\npart3'}
 	`('Public Key value returns $expected for $input', ({ input, expected }) => {
-		const include = (tableFieldDefinitions[12] as ValueTableFieldDefinition<AppResponse>).value as (input: AppResponse) => string
-		expect(include(input)).toBe(expected)
+		const value = (tableFieldDefinitions[12] as ValueTableFieldDefinition<AppResponse>).value as (input: AppResponse) => string
+		expect(value(input)).toBe(expected)
 	})
 
 	test.each`
@@ -128,8 +128,8 @@ describe('tableFieldDefinitions functions', () => {
 		${{ lambdaSmartApp: { functions: ['fun1'] } }}         | ${'fun1'}
 		${{ lambdaSmartApp: { functions: ['fun1', 'fun2'] } }} | ${'fun1\nfun2'}
 	`('Lambda Function value returns $expected for $input', ({ input, expected }) => {
-		const include = (tableFieldDefinitions[13] as ValueTableFieldDefinition<AppResponse>).value as (input: AppResponse) => string
-		expect(include(input)).toBe(expected)
+		const value = (tableFieldDefinitions[13] as ValueTableFieldDefinition<AppResponse>).value as (input: AppResponse) => string
+		expect(value(input)).toBe(expected)
 	})
 })
 

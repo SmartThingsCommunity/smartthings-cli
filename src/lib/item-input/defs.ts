@@ -47,8 +47,6 @@ export type InputDefinition<T> = {
 	 */
 	updateFromUserInput(original: T, context?: unknown[]): Promise<T | CancelAction>
 
-	// TODO: implement and document
-	// TODO: better name
 	// TODO: maybe add dependencies between fields somehow for objectDef?
 	// 		"predicate" option for fields in objectDef?
 	/**

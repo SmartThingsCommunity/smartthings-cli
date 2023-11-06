@@ -33,7 +33,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			{ alias: 'v', describe: 'include URLs and ARNs in table output', type: 'boolean', default: false })
 		.example([
 			['$0 apps', 'list all apps'],
-			['$0 apps 1', 'list the first app in the list retrieved by running "smartthings apps"'],
+			['$0 apps 1', 'display details for the first app in the list retrieved by running "smartthings apps"'],
 			['$0 apps 5dfd6626-ab1d-42da-bb76-90def3153998', 'display details for an app by id'],
 			['$0 apps --verbose', 'include URLs and ARNs in the output'],
 			['$0 apps --classification SERVICE', 'list SERVICE classification apps'],
