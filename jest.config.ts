@@ -47,6 +47,7 @@ const config: JestConfigWithTsJest = {
 		],
 	},
 	testPathIgnorePatterns: [
+		'/node_modules/',
 		'./packages',
 	],
 }

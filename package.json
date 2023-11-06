@@ -2,21 +2,16 @@
 	"name": "@smartthings/cli",
 	"version": "1.7.0",
 	"description": "Command Line Interface for the SmartThings APIs",
+	"keywords": ["smartthings", "cli"],
+	"homepage": "https://github.com/SmartThingsCommunity/smartthings-cli",
 	"author": "Samsung Electronics Co., LTD.",
-	"bin": {
-		"smartthings": "bin/run"
-	},
 	"bugs": {
 		"url": "https://github.com/SmartThingsCommunity/smartthings-cli/issues"
 	},
-	"homepage": "https://github.com/SmartThingsCommunity/smartthings-cli",
 	"license": "Apache-2.0",
-	"exports": {
-		".": "./dist/index.js"
-	},
-	"engines": {
-		"node": ">=20.8.0 <21",
-		"npm": ">=10.1"
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/SmartThingsCommunity/smartthings-cli.git"
 	},
 	"files": [
 		"bin",
@@ -25,12 +20,19 @@
 		"/npm-shrinkwrap.json",
 		"!*/__tests__"
 	],
+	"main": "./dist/index.js",
+	"bin": {
+		"smartthings": "dist/run.js"
+	},
+	"exports": {
+		".": "./dist/index.js"
+	},
+	"engines": {
+		"node": ">=20.8.0 <21",
+		"npm": ">=10.1"
+	},
 	"publishConfig": {
 		"access": "public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/SmartThingsCommunity/smartthings-cli.git"
 	},
 	"type": "module",
 	"pkg": {
@@ -90,7 +92,7 @@
 		"@types/picomatch": "^2.3.1",
 		"@types/qs": "^6.9.8",
 		"@types/uuid": "^9.0.5",
-		"@types/yargs": "^17.0.28",
+		"@types/yargs": "^17.0.29",
 		"@typescript-eslint/eslint-plugin": "^6.7.5",
 		"@typescript-eslint/parser": "^6.7.5",
 		"archiver": "^6.0.1",

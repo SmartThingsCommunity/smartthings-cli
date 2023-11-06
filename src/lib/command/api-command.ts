@@ -27,7 +27,7 @@ export type APICommandFlags = SmartThingsCommandFlags & {
 	language?: string
 }
 
-export const apiCommandBuilder = <T extends object>(yargs: Argv<T>): Argv<APICommandFlags> =>
+export const apiCommandBuilder = <T extends object>(yargs: Argv<T>): Argv<T & APICommandFlags> =>
 	smartThingsCommandBuilder(yargs)
 		.option('token', { alias: 't', desc: 'the auth token to use', type: 'string' })
 		.option('language', {
@@ -45,7 +45,7 @@ export type APICommand<T extends APICommandFlags> = SmartThingsCommand<T> & {
 /**
  * Base for commands that need to use Rest API via the SmartThings Core SDK.
  */
-export const apiCommand = async <T extends APICommandFlags>(flags: T): Promise<APICommand<T>> => {
+export const apiCommand = async <T extends APICommandFlags>(flags: T, addAdditionalHeaders?: (stCommand: SmartThingsCommand<T>, headers: HttpClientHeaders) => void): Promise<APICommand<T>> => {
 	const stCommand = await smartThingsCommand(flags)
 
 	LoginAuthenticator.init(`${stCommand.configDir}/credentials.json`)
@@ -84,6 +84,9 @@ export const apiCommand = async <T extends APICommandFlags>(flags: T): Promise<A
 		return headers
 	}
 	const headers = await buildHeaders()
+	if (addAdditionalHeaders) {
+		addAdditionalHeaders(stCommand, headers)
+	}
 
 	const authenticator = token
 		? new BearerTokenAuthenticator(token)

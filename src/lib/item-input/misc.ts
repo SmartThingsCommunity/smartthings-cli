@@ -120,7 +120,7 @@ export const listSelectionDef = <T=string>(name: string, validItems: T[], option
 		const chosen: T | CancelAction = (await inquirer.prompt({
 			type: 'list',
 			name: 'chosen',
-			message: `Select ${name}:`, // TODO: check
+			message: `Select ${name}:`,
 			choices,
 			default: original,
 		})).chosen
