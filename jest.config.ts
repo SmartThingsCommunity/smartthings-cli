@@ -4,7 +4,9 @@ import { defaultsESM as tsjPreset } from 'ts-jest/presets'
 
 const config: JestConfigWithTsJest = {
 	testMatch: [
-		'**/__tests__/**/*.test.ts',
+		// TODO: put this back when all unit tests are converted
+		// '**/__tests__/**/*.test.ts',
+		'**/__tests__/lib/(a*|t*|u*|v*).test.ts',
 	],
 	setupFilesAfterEnv: ['jest-extended/all'],
 	collectCoverageFrom: ['src/**/*.ts'],

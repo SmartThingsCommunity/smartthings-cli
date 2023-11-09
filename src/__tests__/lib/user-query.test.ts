@@ -1,21 +1,25 @@
-import inquirer from 'inquirer'
+import { jest } from '@jest/globals'
 
-import {
+import { ValidateFunction } from '../../lib/user-query'
+
+
+const promptMock = jest.fn()
+jest.unstable_mockModule('inquirer', () => ({
+	default: {
+		prompt: promptMock,
+	},
+}))
+
+const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => true)
+
+const {
 	askForBoolean,
 	askForInteger,
 	askForNumber,
 	askForString,
 	askForOptionalString,
 	numberTransformer,
-	ValidateFunction,
-} from '../../lib/user-query.js'
-
-
-jest.mock('inquirer')
-
-const promptMock = jest.mocked(inquirer.prompt)
-
-const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => true)
+} = await import('../../lib/user-query.js')
 
 
 describe('numberTransformer', () => {
