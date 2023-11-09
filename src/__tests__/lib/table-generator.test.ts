@@ -1,27 +1,33 @@
-import at from 'lodash.at'
+import { jest } from '@jest/globals'
+
 import { URL } from 'url'
-import log4js from 'log4js'
-import { DefaultTableGenerator, TableFieldDefinition, TableGenerator } from '../../lib/table-generator.js'
+import { TableFieldDefinition, TableGenerator } from '../../lib/table-generator.js'
 
 
 const mockDebug = jest.fn()
 const mockWarn = jest.fn()
 
-jest.mock('log4js', () => ({
-	getLogger: jest.fn(() => ({
-		debug: mockDebug,
-		warn: mockWarn,
-	})),
+jest.unstable_mockModule('log4js', () => ({
+	default: {
+		getLogger: jest.fn(() => ({
+			debug: mockDebug,
+			warn: mockWarn,
+		})),
+	},
 }))
 
-jest.mock('lodash.at', () => {
-	const actualAt = jest.requireActual('lodash.at')
+jest.unstable_mockModule('lodash.at', () => {
+	const original = jest.requireActual('lodash.at') as (...args: unknown[]) => unknown
 	return {
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		__esModule: true,
-		default: jest.fn(actualAt),
+		default: jest.fn(original),
 	}
 })
+
+const log4js = (await import('log4js')).default
+const at = (await import('lodash.at')).default
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const { DefaultTableGenerator } = await import('../../lib/table-generator.js')
 
 /**
  * Quote characters that are special to regular expressions.
@@ -146,8 +152,8 @@ const basicFieldDefinitions: TableFieldDefinition<SimpleData>[] = [
 ]
 
 describe('table-generator', () => {
-	const mockAt = jest.mocked(at)
-	const mockGetLogger = jest.mocked(log4js.getLogger)
+	const atMock = jest.mocked(at)
+	const getLoggerMock = jest.mocked(log4js.getLogger)
 
 	let tableGenerator: TableGenerator
 
@@ -314,39 +320,39 @@ describe('table-generator', () => {
 		})
 
 		it('uses empty string for no match', () => {
-			mockAt.mockReturnValue([])
+			atMock.mockReturnValue([])
 
 			const output = tableGenerator.buildTableFromList([{} as { obj?: string }], [{ path: 'obj.name' }])
 
 			expect(output).toHaveItemValues([''])
-			expect(mockGetLogger).toHaveBeenCalledTimes(1)
-			expect(mockGetLogger).toHaveBeenCalledWith('table-manager')
-			expect(mockAt).toHaveBeenCalledTimes(1)
-			expect(mockAt).toHaveBeenCalledWith({}, 'obj.name')
+			expect(getLoggerMock).toHaveBeenCalledTimes(1)
+			expect(getLoggerMock).toHaveBeenCalledWith('table-manager')
+			expect(atMock).toHaveBeenCalledTimes(1)
+			expect(atMock).toHaveBeenCalledWith({}, 'obj.name')
 			expect(mockDebug).toHaveBeenCalledTimes(1)
 			expect(mockDebug).toHaveBeenCalledWith('did not find match for obj.name in {}')
 		})
 
 		it('combines data on multiple matches', () => {
-			mockAt.mockReturnValue(['one', 'two'])
+			atMock.mockReturnValue(['one', 'two'])
 
 			const output = tableGenerator.buildTableFromList([{} as { obj?: string }], [{ path: 'obj.name' }])
 
 			expect(output).toHaveItemValues(['one, two'])
-			expect(mockGetLogger).toHaveBeenCalledTimes(1)
-			expect(mockGetLogger).toHaveBeenCalledWith('table-manager')
-			expect(mockAt).toHaveBeenCalledTimes(1)
-			expect(mockAt).toHaveBeenCalledWith({}, 'obj.name')
+			expect(getLoggerMock).toHaveBeenCalledTimes(1)
+			expect(getLoggerMock).toHaveBeenCalledWith('table-manager')
+			expect(atMock).toHaveBeenCalledTimes(1)
+			expect(atMock).toHaveBeenCalledWith({}, 'obj.name')
 			expect(mockWarn).toHaveBeenCalledTimes(1)
 			expect(mockWarn).toHaveBeenCalledWith('found more than one match for obj.name in {}')
 		})
 
 		it('gets logger only once', () => {
 			tableGenerator.buildTableFromList([{} as { obj?: string }], [{ path: 'obj.name' }])
-			expect(mockGetLogger).toHaveBeenCalledTimes(1)
-			expect(mockGetLogger).toHaveBeenCalledWith('table-manager')
+			expect(getLoggerMock).toHaveBeenCalledTimes(1)
+			expect(getLoggerMock).toHaveBeenCalledWith('table-manager')
 			tableGenerator.buildTableFromList([{} as { obj?: string }], [{ path: 'obj.name' }])
-			expect(mockGetLogger).toHaveBeenCalledTimes(1)
+			expect(getLoggerMock).toHaveBeenCalledTimes(1)
 		})
 
 		it('includes separators every 4 rows with grouping on', () => {

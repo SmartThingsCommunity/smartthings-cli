@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals'
+
 import { httpsURLValidate, localhostOrHTTPSValidate, stringValidateFn, urlValidate } from '../../lib/validate-util.js'
 
 
