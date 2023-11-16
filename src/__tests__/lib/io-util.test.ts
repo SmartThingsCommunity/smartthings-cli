@@ -1,18 +1,23 @@
-import { stdin as mockStdin } from 'mock-stdin'
-import { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, stdinIsTTY, yamlExists } from '../../lib/io-util.js'
-import { validData, validYAML, SimpleType } from '../test-lib/simple-type.js'
+import { jest } from '@jest/globals'
+
 import { existsSync } from 'fs'
 
+import { stdin as mockStdin } from 'mock-stdin'
+import { validData, validYAML, SimpleType } from '../test-lib/simple-type.js'
 
-jest.mock('fs', () => {
-	// if this isn't done, something breaks with sub-dependency 'fs-extra'
-	const originalLib = jest.requireActual('fs')
 
-	return {
-		...originalLib,
-		existsSync: jest.fn(),
-	}
-})
+const existsSyncMock: jest.Mock<typeof existsSync> = jest.fn()
+jest.unstable_mockModule('fs', () => ({
+	default: {
+		existsSync: existsSyncMock,
+	},
+}))
+
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, stdinIsTTY, yamlExists } =
+	await import('../../lib/io-util.js')
+
 
 describe('formatFromFilename', () => {
 	it('handles yaml extensions', function () {
@@ -75,9 +80,6 @@ describe('stdinIsTTY', () => {
 })
 
 describe('yamlExists', () => {
-	const mockExistsSync = jest.mocked(existsSync)
-	const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { /* do nothing */})
-
 	it.each([
 		'config.ini',
 		'config',
@@ -86,7 +88,7 @@ describe('yamlExists', () => {
 		'c:\\users\\user\\AppData\\Local',
 	])('throws error when %s is checked', (path) => {
 		expect(() => yamlExists(path)).toThrow('Invalid file extension')
-		expect(mockExistsSync).not.toBeCalled()
+		expect(existsSyncMock).not.toBeCalled()
 	})
 
 	it.each([
@@ -94,9 +96,12 @@ describe('yamlExists', () => {
 		'/Users/user/.config/@smartthings/cli/config.yaml',
 		'c:\\users\\user\\AppData\\Local\\config.yaml',
 	])('returns true when %s is checked and exists', (path) => {
-		mockExistsSync.mockReturnValueOnce(true)
+		existsSyncMock.mockReturnValueOnce(true)
 
 		expect(yamlExists(path)).toBe(true)
+
+		expect(existsSyncMock).toHaveBeenCalledTimes(1)
+		expect(existsSyncMock).toHaveBeenCalledWith(path)
 	})
 
 	it.each([
@@ -104,7 +109,8 @@ describe('yamlExists', () => {
 		'/Users/user/.config/@smartthings/cli/config.yaml',
 		'c:\\users\\user\\AppData\\Local\\config.yaml',
 	])('warns and returns false when %s is checked but .yml exists', (path) => {
-		mockExistsSync
+		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+		existsSyncMock
 			.mockReturnValueOnce(false)
 			.mockReturnValueOnce(true)
 

@@ -1,5 +1,8 @@
+import { readFile, writeFile } from 'fs/promises'
+
 import yaml from 'js-yaml'
-import { readFile, writeFile, yamlExists } from './io-util.js'
+
+import { yamlExists } from './io-util.js'
 
 
 export const seeConfigDocs = 'see https://github.com/SmartThingsCommunity/smartthings-cli/blob/main/packages/cli/doc/configuration.md for more information'

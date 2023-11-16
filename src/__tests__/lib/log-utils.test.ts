@@ -1,23 +1,36 @@
+import { jest } from '@jest/globals'
+
 import { readFileSync } from 'fs'
-import log4js, { Logger, levels } from 'log4js'
+
+import log4js, { Logger } from 'log4js'
 import yaml from 'js-yaml'
 
 import { yamlExists } from '../../lib/io-util.js'
-import { buildDefaultLog4jsConfig, coreSDKLoggerFromLog4JSLogger, loadLog4jsConfig } from '../../lib/log-utils.js'
 
 
-jest.mock('fs', () => {
-	// if this isn't done, something breaks with sub-dependency 'fs-extra'
-	const originalLib = jest.requireActual('fs')
+const readFileSyncMock: jest.Mock<typeof readFileSync> = jest.fn()
+jest.unstable_mockModule('fs', () => ({
+	default: {
+		readFileSync: readFileSyncMock,
+	},
+}))
 
-	return {
-		...originalLib,
-		readFileSync: jest.fn(),
-	}
-})
-jest.mock('js-yaml')
+const yamlLoadMock: jest.Mock<typeof yaml.load> = jest.fn()
+jest.unstable_mockModule('js-yaml', () => ({
+	default: {
+		load: yamlLoadMock,
+	},
+}))
 
-jest.mock('../../lib/io-util.js')
+const yamlExistsMock: jest.Mock<typeof yamlExists> = jest.fn()
+jest.unstable_mockModule('../../lib/io-util.js', () => ({
+	yamlExists: yamlExistsMock,
+}))
+
+
+const { buildDefaultLog4jsConfig, coreSDKLoggerFromLog4JSLogger, loadLog4jsConfig } =
+	await import('../../lib/log-utils.js')
+
 
 describe('buildDefaultLog4jsConfig', () => {
 	it('returns "default" category configured at warn level with file appender', () => {
@@ -63,10 +76,6 @@ describe('loadLog4jsConfig', () => {
 		appenders: {},
 		categories: {},
 	}
-	const yamlExistsMock = jest.mocked(yamlExists)
-	const readFileSyncMock = jest.mocked(readFileSync)
-	const yamlLoadMock = jest.mocked(yaml.load)
-
 	it('returns default config if requested file is not found', () => {
 		yamlExistsMock.mockReturnValueOnce(false)
 
@@ -130,7 +139,7 @@ describe('coreSDKLoggerFromLog4JSLogger', () => {
 		mockLogger.level = 'level-string'
 		expect(coreSDKLogger.level).toBe('level-string')
 
-		mockLogger.level = levels.INFO
+		mockLogger.level = 'INFO'
 		expect(coreSDKLogger.level).toBe('INFO')
 	})
 

@@ -1,9 +1,10 @@
+import { readFile } from 'fs/promises'
+
 import {
 	formatFromFilename,
 	IOFormat,
 	parseJSONOrYAML,
 	readDataFromStdin,
-	readFile,
 	stdinIsTTY,
 } from '../io-util.js'
 

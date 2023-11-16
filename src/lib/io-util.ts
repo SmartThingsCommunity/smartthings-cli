@@ -4,9 +4,6 @@ import path from 'path'
 import yaml from 'js-yaml'
 
 
-export const readFile = fs.promises.readFile
-export const writeFile = fs.promises.writeFile
-
 export enum IOFormat {
 	YAML = 'yaml',
 	JSON = 'json',
