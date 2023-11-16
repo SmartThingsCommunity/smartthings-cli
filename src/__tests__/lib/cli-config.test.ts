@@ -1,30 +1,52 @@
+import { readFile, writeFile } from 'fs/promises'
+
+import { jest } from '@jest/globals'
+
 import yaml from 'js-yaml'
 
 import {
 	CLIConfig,
 	CLIConfigDescription,
+	ProfilesByName,
+} from '../../lib/cli-config.js'
+import { yamlExists } from '../../lib/io-util.js'
+
+
+const readFileMock: jest.Mock<typeof readFile> = jest.fn()
+const writeFileMock: jest.Mock<typeof writeFile> = jest.fn()
+jest.unstable_mockModule('fs/promises', () => ({
+	readFile: readFileMock,
+	writeFile: writeFileMock,
+}))
+
+const yamlLoadMock: jest.Mock<typeof yaml.load> = jest.fn()
+const yamlDumpMock: jest.Mock<typeof yaml.dump> = jest.fn()
+jest.unstable_mockModule('js-yaml', () => ({
+	default: {
+		load: yamlLoadMock,
+		dump: yamlDumpMock,
+	},
+}))
+
+const yamlExistsMock: jest.Mock<typeof yamlExists> = jest.fn()
+yamlExistsMock.mockReturnValue(true)
+jest.unstable_mockModule('../../lib/io-util.js', () => ({
+	yamlExists: yamlExistsMock,
+}))
+
+
+const {
 	loadConfig,
 	loadConfigFile,
 	mergeProfiles,
-	ProfilesByName,
 	resetManagedConfig,
 	resetManagedConfigKey,
 	seeConfigDocs,
 	setConfigKey,
-} from '../../lib/cli-config.js'
-import * as cliConfigModule from '../../lib/cli-config.js'
-import { readFile, writeFile, yamlExists } from '../../lib/io-util.js'
+} = await import('../../lib/cli-config.js')
 
-
-jest.mock('js-yaml')
-jest.mock('../../lib/io-util.js')
 
 describe('cli-config', () => {
-	const yamlLoadMock = jest.mocked(yaml.load)
-
-	const readFileMock = jest.mocked(readFile)
-	const yamlExistsMock = jest.mocked(yamlExists).mockReturnValue(true)
-
 	describe('loadConfigFile', () => {
 		it('returns empty object when filename does not exist', async () => {
 			yamlExistsMock.mockReturnValueOnce(false)
@@ -52,18 +74,18 @@ describe('cli-config', () => {
 		})
 
 		it.each(['string', ['array']])('throws error for non-object yaml file', async (parsedYAML) => {
-			readFileMock.mockResolvedValueOnce('string contents')
+			readFileMock.mockResolvedValueOnce('file contents')
 			yamlLoadMock.mockReturnValueOnce(parsedYAML)
 
-			await expect(loadConfigFile('string file'))
+			await expect(loadConfigFile('configFilename.json'))
 				.rejects.toThrow('invalid config file format\n' + seeConfigDocs)
 
 			expect(yamlExistsMock).toHaveBeenCalledTimes(1)
-			expect(yamlExistsMock).toHaveBeenCalledWith('string file')
+			expect(yamlExistsMock).toHaveBeenCalledWith('configFilename.json')
 			expect(readFileMock).toHaveBeenCalledTimes(1)
-			expect(readFileMock).toHaveBeenCalledWith('string file', 'utf-8')
+			expect(readFileMock).toHaveBeenCalledWith('configFilename.json', 'utf-8')
 			expect(yamlLoadMock).toHaveBeenCalledTimes(1)
-			expect(yamlLoadMock).toHaveBeenCalledWith('string contents')
+			expect(yamlLoadMock).toHaveBeenCalledWith('file contents')
 		})
 
 		it('combines errors for individual profiles', async () => {
@@ -192,27 +214,26 @@ describe('cli-config', () => {
 		})
 	})
 
-	const loadConfigFileSpy = jest.spyOn(cliConfigModule, 'loadConfigFile')
-	const mergeProfilesSpy = jest.spyOn(cliConfigModule, 'mergeProfiles')
-
-	const description: CLIConfigDescription = {
+	const descriptionTemplate: CLIConfigDescription = {
 		configFilename: 'config-filename.yaml',
 		managedConfigFilename: 'managed-config-filename.yaml',
 		profileName: 'chosenProfile',
 	}
 
-	const profiles: ProfilesByName = { mainConfigProfile: { key: 'value' } }
+	const profiles: ProfilesByName = {
+		mainConfigProfile: { key: 'value' },
+		chosenProfile: { configKey: 'configured value' },
+	}
 	const managedProfiles: ProfilesByName = { managedConfigProfile: { key: 'value' } }
-
-	const yamlDumpMock = jest.mocked(yaml.dump)
-	const writeFileMock = jest.mocked(writeFile)
+	const mergedProfiles: ProfilesByName = {
+		...profiles,
+		...managedProfiles,
+		chosenProfile: { configKey: 'configured value' },
+	}
 
 	describe('loadConfig', () => {
 		it('merges main and managed configurations', async () => {
-			const mergedProfiles: ProfilesByName = {
-				chosenProfile: { configKey: 'configured value' },
-			}
-
+			const description = descriptionTemplate
 			const expected: CLIConfig = {
 				...description,
 				profiles,
@@ -221,45 +242,44 @@ describe('cli-config', () => {
 				profile: mergedProfiles.chosenProfile,
 			}
 
-			loadConfigFileSpy.mockResolvedValueOnce(profiles)
-			loadConfigFileSpy.mockResolvedValueOnce(managedProfiles)
-			mergeProfilesSpy.mockReturnValueOnce(mergedProfiles)
+			readFileMock.mockResolvedValue('good contents')
+			yamlLoadMock.mockReturnValueOnce(profiles)
+			yamlLoadMock.mockReturnValueOnce(managedProfiles)
 
-			expect(await loadConfig(description)).toEqual(expected)
+			expect(await loadConfig(description)).toStrictEqual(expected)
 
-			expect(loadConfigFileSpy).toHaveBeenCalledTimes(2)
-			expect(loadConfigFileSpy).toHaveBeenCalledWith(description.configFilename)
-			expect(loadConfigFileSpy).toHaveBeenCalledWith(description.managedConfigFilename)
-			expect(mergeProfilesSpy).toHaveBeenCalledTimes(1)
-			expect(mergeProfilesSpy).toHaveBeenCalledWith(profiles, managedProfiles)
+			expect(readFileMock).toHaveBeenCalledTimes(2)
+			expect(readFileMock).toHaveBeenCalledWith(description.configFilename, 'utf-8')
+			expect(readFileMock).toHaveBeenCalledWith(description.managedConfigFilename, 'utf-8')
 		})
 
 		it('uses empty profile if none exists', async () => {
-			const mergedConfig: ProfilesByName = {}
-
+			const description = {
+				...descriptionTemplate,
+				profileName: 'nonExistentProfile',
+			}
 			const expected: CLIConfig = {
 				...description,
 				profiles,
 				managedProfiles,
-				mergedProfiles: mergedConfig,
+				mergedProfiles,
 				profile: {},
 			}
 
-			loadConfigFileSpy.mockResolvedValueOnce(profiles)
-			loadConfigFileSpy.mockResolvedValueOnce(managedProfiles)
-			mergeProfilesSpy.mockReturnValueOnce(mergedConfig)
+			readFileMock.mockResolvedValue('good contents')
+			yamlLoadMock.mockReturnValueOnce(profiles)
+			yamlLoadMock.mockReturnValueOnce(managedProfiles)
 
-			expect(await loadConfig(description)).toEqual(expected)
+			expect(await loadConfig(description)).toStrictEqual(expected)
 
-			expect(loadConfigFileSpy).toHaveBeenCalledTimes(2)
-			expect(loadConfigFileSpy).toHaveBeenCalledWith(description.configFilename)
-			expect(loadConfigFileSpy).toHaveBeenCalledWith(description.managedConfigFilename)
-			expect(mergeProfilesSpy).toHaveBeenCalledTimes(1)
-			expect(mergeProfilesSpy).toHaveBeenCalledWith(profiles, managedProfiles)
+			expect(readFileMock).toHaveBeenCalledTimes(2)
+			expect(readFileMock).toHaveBeenCalledWith(description.configFilename, 'utf-8')
+			expect(readFileMock).toHaveBeenCalledWith(description.managedConfigFilename, 'utf-8')
 		})
 	})
 
 	test('setConfigKey writes updated file and updates config', async () => {
+		const description = descriptionTemplate
 		const cliConfig = {
 			...description,
 			profileName: 'updatedProfile',
@@ -267,30 +287,30 @@ describe('cli-config', () => {
 			managedProfiles,
 		} as CLIConfig
 
-		const updatedManagedConfig: ProfilesByName = { updated: { managed: 'managed' } }
-		const updateMergedConfig: ProfilesByName = { update: { merged: 'config' } }
-		mergeProfilesSpy.mockReturnValueOnce(updatedManagedConfig)
-		mergeProfilesSpy.mockReturnValueOnce(updateMergedConfig)
+		readFileMock.mockResolvedValue('good contents')
+		yamlLoadMock.mockReturnValueOnce(profiles)
+		yamlLoadMock.mockReturnValueOnce(managedProfiles)
+
 		yamlDumpMock.mockReturnValueOnce('yaml output')
 
 		await expect(setConfigKey(cliConfig, 'keyToSet', 'value')).resolves.not.toThrow()
 
-		expect(mergeProfilesSpy).toHaveBeenCalledTimes(2)
 		expect(yamlDumpMock).toHaveBeenCalledTimes(1)
+		expect(yamlDumpMock).toHaveBeenCalledWith({
+			...managedProfiles,
+			updatedProfile: {
+				keyToSet: 'value',
+			},
+		})
 		expect(writeFileMock).toHaveBeenCalledTimes(1)
-
-		expect(mergeProfilesSpy).toHaveBeenCalledWith({ updatedProfile: { keyToSet: 'value' } },
-			managedProfiles)
-		expect(yamlDumpMock).toHaveBeenCalledWith(updatedManagedConfig)
 		expect(writeFileMock).toHaveBeenCalledWith(description.managedConfigFilename,
 			expect.stringContaining('yaml output'))
-		expect(mergeProfilesSpy).toHaveBeenCalledWith(profiles, updatedManagedConfig)
 	})
 
 	describe('resetManagedConfigKey', () => {
 		const deepCopy = <T> (input: T): T => JSON.parse(JSON.stringify(input))
 		const makeConfig = (profiles: ProfilesByName, managedProfiles: ProfilesByName): CLIConfig => deepCopy({
-			...description,
+			...descriptionTemplate,
 			profileName: 'defaultProfile',
 			profiles,
 			managedProfiles,
@@ -310,7 +330,7 @@ describe('cli-config', () => {
 			profile2: {},
 		}
 
-		const predicateMock = jest.fn()
+		const predicateMock: jest.Mock<(value: unknown) => boolean> = jest.fn()
 
 		it('does nothing when key not present', async () => {
 			const cliConfig = makeConfig(profiles, managedProfiles)
@@ -361,28 +381,28 @@ describe('cli-config', () => {
 	})
 
 	test('resetManagedConfig', async () => {
-		const managedProfilesWithProfileToReset: ProfilesByName = { ...managedProfiles, profileToReset: { not: 'empty' } }
+		const managedProfilesWithProfileToReset: ProfilesByName = {
+			...managedProfiles,
+			profileToReset: { not: 'empty' },
+		}
+		const description = descriptionTemplate
 		const cliConfig = {
 			...description,
 			profileName: 'updatedProfile',
 			profiles,
 			managedProfiles: { ...managedProfilesWithProfileToReset },
 		} as CLIConfig
-		const updateMergedConfig: ProfilesByName = { update: { merged: 'config' } }
 		yamlDumpMock.mockReturnValueOnce('yaml output')
-		mergeProfilesSpy.mockReturnValueOnce(updateMergedConfig)
 
 		await expect(resetManagedConfig(cliConfig, 'profileToReset')).resolves.not.toThrow()
 
 		expect(cliConfig.managedProfiles.profileToReset).toBeUndefined()
-		expect(cliConfig.mergedProfiles).toBe(updateMergedConfig)
+		expect(cliConfig.mergedProfiles).toStrictEqual(mergedProfiles)
 
 		expect(yamlDumpMock).toHaveBeenCalledTimes(1)
 		expect(yamlDumpMock).toHaveBeenCalledWith(managedProfiles)
 		expect(writeFileMock).toHaveBeenCalledTimes(1)
 		expect(writeFileMock).toHaveBeenCalledWith(description.managedConfigFilename,
 			expect.stringContaining('yaml output'))
-		expect(mergeProfilesSpy).toHaveBeenCalledTimes(1)
-		expect(mergeProfilesSpy).toHaveBeenCalledWith(profiles, managedProfiles)
 	})
 })

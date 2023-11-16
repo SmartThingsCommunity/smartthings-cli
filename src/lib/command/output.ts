@@ -1,7 +1,9 @@
+import { writeFile } from 'fs/promises'
+
 import yaml from 'js-yaml'
 import { Argv } from 'yargs'
 
-import { formatFromFilename, IOFormat, stdoutIsTTY, writeFile } from '../io-util.js'
+import { formatFromFilename, IOFormat, stdoutIsTTY } from '../io-util.js'
 import { TableFieldDefinition, TableGenerator } from '../table-generator.js'
 
 

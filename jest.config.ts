@@ -6,7 +6,7 @@ const config: JestConfigWithTsJest = {
 	testMatch: [
 		// TODO: put this back when all unit tests are converted
 		// '**/__tests__/**/*.test.ts',
-		'**/__tests__/lib/(a*|t*|u*|v*).test.ts',
+		'**/__tests__/lib/(a*|c*|f*|i*|log-*|t*|u*|v*).test.ts',
 	],
 	setupFilesAfterEnv: ['jest-extended/all'],
 	collectCoverageFrom: ['src/**/*.ts'],
