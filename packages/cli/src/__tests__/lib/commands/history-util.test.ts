@@ -19,7 +19,7 @@ import {
 jest.mock('inquirer')
 
 describe('history-util', () => {
-	describe('epochTime', () => {
+	describe('toEpochTime', () => {
 		it ('handles ISO input', () => {
 			expect(toEpochTime('2022-08-01T22:41:42.559Z')).toBe(1659393702559)
 		})
@@ -29,7 +29,11 @@ describe('history-util', () => {
 			expect(toEpochTime('8/1/2022, 6:41:42 PM')).toBe(expected)
 		})
 
-		it ('handles undefined input', () => {
+		it ('handles input in millis since epoch', () => {
+			expect(toEpochTime('1700596752000')).toBe(1700596752000)
+		})
+
+		it('handles undefined input', () => {
 			expect(toEpochTime(undefined)).toBeUndefined()
 		})
 	})
@@ -189,8 +193,8 @@ describe('history-util', () => {
 			hasNext.mockReturnValueOnce(true)
 			hasNext.mockReturnValueOnce(true)
 			hasNext.mockReturnValueOnce(false)
-			promptSpy.mockResolvedValueOnce({ more: '' })
-			promptSpy.mockResolvedValueOnce({ more: 'y' })
+			promptSpy.mockResolvedValueOnce({ more: true })
+			promptSpy.mockResolvedValueOnce({ more: true })
 
 			await writeDeviceEventsTable(commandMock, dataMock)
 
@@ -201,8 +205,8 @@ describe('history-util', () => {
 
 		it('returns next page until canceled', async () => {
 			hasNext.mockReturnValue(true)
-			promptSpy.mockResolvedValueOnce({ more: '' })
-			promptSpy.mockResolvedValueOnce({ more: 'n' })
+			promptSpy.mockResolvedValueOnce({ more: true })
+			promptSpy.mockResolvedValueOnce({ more: false })
 
 			await writeDeviceEventsTable(commandMock, dataMock)
 
@@ -231,8 +235,12 @@ describe('history-util', () => {
 
 		const params = { locationId: 'location-id', deviceId: 'device-id' }
 		const items: DeviceActivity[] = []
-		for (let index = 0; index < maxItemsPerRequest * maxRequestsBeforeWarning + 10; index++) {
-			items.push({ deviceId: 'history-device-id', text: `item${index}` } as DeviceActivity)
+		const totalNumItems = maxItemsPerRequest * maxRequestsBeforeWarning + 10
+		for (let index = 0; index < totalNumItems; index++) {
+			items.push({
+				deviceId: 'history-device-id',
+				text: `item${index}`,
+			} as DeviceActivity)
 		}
 
 		const promptMock = jest.mocked(inquirer.prompt)
@@ -352,6 +360,39 @@ describe('history-util', () => {
 			expect(historyDevicesMock).toHaveBeenCalledWith(params)
 			expect(hasNextMock).toHaveBeenCalledTimes(6)
 			expect(nextMock).toHaveBeenCalledTimes(6)
+		})
+
+		it('stops paging when results are before specified after', async () => {
+			const epochTimestamp = 1701097200 // 2023/11/27 9:00 a.m. CST
+			const makeActivity = (index: number, epoch: number): DeviceActivity => ({
+				deviceId: 'history-device-id',
+				text: `item${index}`,
+				epoch,
+			} as DeviceActivity)
+			const firstPage = [
+				makeActivity(0, epochTimestamp + 600),
+				makeActivity(1, epochTimestamp + 500),
+				makeActivity(2, epochTimestamp + 400),
+			]
+			const secondPage = [
+				makeActivity(3, epochTimestamp + 300),
+				makeActivity(4, epochTimestamp + 200),
+				makeActivity(5, epochTimestamp + 100),
+			]
+			const historyResponse = makeHistoryResponse(firstPage)
+			historyDevicesMock.mockResolvedValueOnce(historyResponse)
+			hasNextMock.mockReturnValue(true)
+			nextMock.mockImplementationOnce(async () => historyResponse.items = secondPage)
+
+			const paramsWithAfter = { ...params, after: epochTimestamp + 350 }
+
+			const result = await getHistory(client, 300, 3, paramsWithAfter)
+			expect(result).toStrictEqual(firstPage)
+
+			expect(historyDevicesMock).toHaveBeenCalledTimes(1)
+			expect(historyDevicesMock).toHaveBeenCalledWith(paramsWithAfter)
+			expect(hasNextMock).toHaveBeenCalledTimes(1)
+			expect(nextMock).toHaveBeenCalledTimes(1)
 		})
 	})
 })

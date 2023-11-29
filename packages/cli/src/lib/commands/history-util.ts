@@ -36,17 +36,15 @@ export const historyFlags = {
 	}),
 }
 
-export function toEpochTime(date?: string): number | undefined {
-	if (date) {
-		return new Date(date).getTime()
-	}
-}
+export const toEpochTime = (date?: string): number | undefined =>
+	date ? (date.match(/^\d+$/) ? Number(date) : new Date(date).getTime()) : undefined
 
-export function sortEvents(list: DeviceActivity[]): DeviceActivity[] {
-	return list.sort((a, b) => a.epoch === b.epoch ? 0 : (a.epoch < b.epoch ? 1 : -1))
-}
+export const sortEvents = (list: DeviceActivity[]): DeviceActivity[] => list.sort((a, b) => b.epoch - a.epoch)
 
-export function getNextDeviceEvents(table: Table, items: DeviceActivity[], options: Partial<DeviceActivityOptions>): void {
+export const getNextDeviceEvents = (
+		table: Table,
+		items: DeviceActivity[],
+		options: Partial<DeviceActivityOptions>): void => {
 	for (const item of items) {
 		const date = new Date(item.time)
 		const value = JSON.stringify(item.value)
@@ -64,36 +62,37 @@ export function getNextDeviceEvents(table: Table, items: DeviceActivity[], optio
 	}
 }
 
-export async function writeDeviceEventsTable(
+export const writeDeviceEventsTable = async (
 		command: SmartThingsCommandInterface,
 		data:  PaginatedList<DeviceActivity>,
-		options?: Partial<DeviceActivityOptions>): Promise<void> {
-
+		options?: Partial<DeviceActivityOptions>): Promise<void> => {
 	const opts = { includeName: false, utcTimeFormat: false, ...options }
 	const head = options && options.includeName ?
 		['Time', 'Device Name', 'Component', 'Capability', 'Attribute', 'Value'] :
 		['Time', 'Component', 'Capability', 'Attribute', 'Value']
 
 	if (data.items) {
-		let table = command.tableGenerator.newOutputTable({ isList: true, head })
+		const table = command.tableGenerator.newOutputTable({ isList: true, head })
 		getNextDeviceEvents(table, sortEvents(data.items), opts)
 		process.stdout.write(table.toString())
 
-		let more = 'y'
-		while (more.toLowerCase() !== 'n' && data.hasNext()) {
-			more = (await inquirer.prompt({
-				type: 'input',
+		while (data.hasNext()) {
+			const more = (await inquirer.prompt({
+				type: 'confirm',
 				name: 'more',
-				message: 'Fetch more history records ([y]/n)?',
-			})).more
+				message: 'Fetch more history records?',
+				default: true,
+			})).more as boolean
 
-			if (more.toLowerCase() !== 'n') {
-				table = command.tableGenerator.newOutputTable({ isList: true, head })
-				await data.next()
-				if (data.items.length) {
-					getNextDeviceEvents(table, sortEvents(data.items), opts)
-					process.stdout.write(table.toString())
-				}
+			if (!more) {
+				break
+			}
+
+			const table = command.tableGenerator.newOutputTable({ isList: true, head })
+			await data.next()
+			if (data.items.length) {
+				getNextDeviceEvents(table, sortEvents(data.items), opts)
+				process.stdout.write(table.toString())
 			}
 		}
 	}
@@ -132,6 +131,11 @@ export const getHistory = async (client: SmartThingsClient, limit: number, perRe
 	const items: DeviceActivity[] = [...history.items]
 	while (items.length < limit && history.hasNext()) {
 		await history.next()
+		// The API allows the user to continue to view history from before the specified "after"
+		// with paging so we stop processing if we get items that come before the specified "after".
+		if ((params.after && history.items[0].epoch <= params.after)) {
+			break
+		}
 		items.push(...history.items.slice(0, limit - items.length))
 	}
 	return items
