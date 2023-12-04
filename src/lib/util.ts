@@ -34,3 +34,5 @@ export const clipToMaximum = (input: string, maxLength: number): string =>
  * removed. This function also returns an empty string if the input is undefined.
  */
 export const sanitize = (input?: string): string => input?.replace(/[\W]/g, '') ?? ''
+
+export const delay = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))

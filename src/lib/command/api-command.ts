@@ -5,7 +5,7 @@ import { Argv } from 'yargs'
 import { Authenticator, BearerTokenAuthenticator, HttpClientHeaders, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
 
 import { coreSDKLoggerFromLog4JSLogger } from '../log-utils.js'
-import { ClientIdProvider, defaultClientIdProvider, LoginAuthenticator } from '../login-authenticator.js'
+import { ClientIdProvider, defaultClientIdProvider, loginAuthenticator } from '../login-authenticator.js'
 import { SmartThingsCommand, SmartThingsCommandFlags, smartThingsCommand, smartThingsCommandBuilder } from './smartthings-command.js'
 
 
@@ -48,8 +48,6 @@ export type APICommand<T extends APICommandFlags> = SmartThingsCommand<T> & {
 export const apiCommand = async <T extends APICommandFlags>(flags: T, addAdditionalHeaders?: (stCommand: SmartThingsCommand<T>, headers: HttpClientHeaders) => void): Promise<APICommand<T>> => {
 	const stCommand = await smartThingsCommand(flags)
 
-	LoginAuthenticator.init(`${stCommand.configDir}/credentials.json`)
-
 	// The `|| undefined` at then end of this line is to normalize falsy values to `undefined`.
 	const token = (flags.token ?? stCommand.stringConfigValue('token')) || undefined
 
@@ -90,7 +88,7 @@ export const apiCommand = async <T extends APICommandFlags>(flags: T, addAdditio
 
 	const authenticator = token
 		? new BearerTokenAuthenticator(token)
-		: new LoginAuthenticator(stCommand.profileName, clientIdProvider, userAgent)
+		: loginAuthenticator(`${stCommand.configDir}/credentials.json`, stCommand.profileName, clientIdProvider, userAgent)
 
 	const warningLogger = (warnings: WarningFromHeader[] | string): void => {
 		const message = 'Warnings from API:\n' + (typeof(warnings) === 'string'
