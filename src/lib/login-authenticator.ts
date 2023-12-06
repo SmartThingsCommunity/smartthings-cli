@@ -4,13 +4,14 @@ import path from 'path'
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 import { createHash, randomBytes, BinaryLike } from 'crypto'
 import express from 'express'
+import { getPort } from 'get-port-please'
 import log4js from 'log4js'
 import open from 'open'
 import ora from 'ora'
 import qs from 'qs'
 
 import { SmartThingsURLProvider, defaultSmartThingsURLProvider, Authenticator } from '@smartthings/core-sdk'
-import { getPort } from 'get-port-please'
+
 import { delay } from './util.js'
 
 

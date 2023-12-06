@@ -14,9 +14,6 @@ import { Authenticator } from '@smartthings/core-sdk'
 import { delay } from '../../lib/util.js'
 
 
-const recording = await import('log4js/lib/appenders/recording')
-
-
 const chmodMock: jest.Mock<typeof chmod> = jest.fn()
 const mkdirSyncMock: jest.Mock<typeof mkdirSync> = jest.fn()
 const readFileSyncMock: jest.Mock<typeof readFileSync> = jest.fn()
@@ -36,6 +33,24 @@ jest.unstable_mockModule('get-port-please', () => ({
 	getPort: getPortMock,
 }))
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LogFunction = (message: any, ...args: any[]) => void
+const getLoggerMock: jest.Mock<typeof log4js.getLogger> = jest.fn()
+const errorMock = jest.fn() as jest.Mock<LogFunction>
+const debugMock = jest.fn() as jest.Mock<LogFunction>
+const traceMock = jest.fn() as jest.Mock<LogFunction>
+const loggerMock = {
+	error: errorMock,
+	debug: debugMock,
+	trace: traceMock,
+} as unknown as log4js.Logger
+getLoggerMock.mockReturnValue(loggerMock)
+jest.unstable_mockModule('log4js', () => ({
+	default: {
+		getLogger: getLoggerMock,
+	},
+}))
+
 const openMock: jest.Mock<typeof open> = jest.fn()
 jest.unstable_mockModule('open', () => ({ default: openMock }))
 
@@ -50,7 +65,7 @@ jest.unstable_mockModule('axios', () => ({
 }))
 
 const delayMock: jest.Mock<typeof delay> = jest.fn()
-delayMock.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 10)))
+delayMock.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 5)))
 jest.unstable_mockModule('../../lib/util.js', () => ({
 	delay: delayMock,
 }))
@@ -70,43 +85,32 @@ const clientIdProvider = {
 	clientId: 'client-id',
 }
 const userAgent = 'userAgent'
-const config = {
-	appenders: {
-		main: { type: 'recording' },
-		stdout: { type: 'stdout' },
-	},
-	categories: {
-		default: { appenders: ['main'], level: 'ERROR' },
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		'login-authenticator': { appenders: ['main'], level: 'TRACE' },
-	},
-}
 const accessToken = 'db3d92f1-0000-0000-0000-000000000000'
 const refreshToken = '3f3fb859-0000-0000-0000-000000000000'
 const credentialsFileData = {
 	[profileName]: {
-		'accessToken': accessToken,
-		'refreshToken': refreshToken,
-		'expires': '2020-10-15T13:26:39.966Z',
-		'scope': 'controller:stCli',
-		'installedAppId': 'installed app id',
-		'deviceId': 'device id',
+		accessToken: accessToken,
+		refreshToken: refreshToken,
+		expires: '2020-10-15T13:26:39.966Z',
+		scope: 'controller:stCli',
+		installedAppId: 'installed app id',
+		deviceId: 'device id',
 	},
 }
 const otherCredentialsFileData = {
 	other: {
-		'accessToken': 'other access token',
-		'refreshToken': 'other refresh token',
-		'expires': '2021-07-15T22:33:44.123Z',
-		'scope': 'controller:stCli',
-		'installedAppId': 'installed app id',
-		'deviceId': 'device id',
+		accessToken: 'other access token',
+		refreshToken: 'other refresh token',
+		expires: '2021-07-15T22:33:44.123Z',
+		scope: 'controller:stCli',
+		installedAppId: 'installed app id',
+		deviceId: 'device id',
 	},
 }
 const refreshableCredentialsFileData = {
 	[profileName]: {
 		...credentialsFileData[profileName],
-		'expires': new Date().toISOString(),
+		expires: new Date().toISOString(),
 	},
 }
 const codeVerifierRegex = /\bcode_verifier=[\w|-]+\b/
@@ -135,7 +139,7 @@ const tokenResponse = {
 	statusText: 'OK',
 } as AxiosResponse<AuthTokenResponse>
 
-const mockServer = {
+const serverMock = {
 	close: jest.fn(),
 }
 
@@ -145,7 +149,7 @@ expressMock.mockReturnValue({
 	get: expressGetMock,
 	listen: expressListenMock,
 } as unknown as Express)
-expressListenMock.mockReturnValue(mockServer)
+expressListenMock.mockReturnValue(serverMock)
 
 const mockStartResponse = {
 	redirect: jest.fn(),
@@ -156,8 +160,6 @@ const mockFinishRequest = {
 const mockFinishResponse = {
 	send: jest.fn(),
 }
-
-log4js.configure(config)
 
 readFileSyncMock.mockImplementation(() => { throw { code: 'ENOENT' } })
 getPortMock.mockResolvedValue(7777)
@@ -180,13 +182,13 @@ type ExpressRouteHandler = (request: Request, response: Response) => void
 const finishHappy = (finishHandler: ExpressRouteHandler): void =>
 	finishHandler(mockFinishRequest as unknown as Request, mockFinishResponse as unknown as Response)
 // Call handlers like would happen if the user were following the flow in the browser.
-const mockBrowser = async (finishHandlerCaller = finishHappy): Promise<void> => {
+const mockBrowser = async (finishHandlerCaller = finishHappy, closeError?: Error): Promise<void> => {
 	async function testDelay(milliseconds: number): Promise<void> {
 		return new Promise(resolve => setTimeout(resolve, milliseconds).unref())
 	}
 
 	while (expressGetMock.mock.calls.length < 2) {
-		await testDelay(25)
+		await testDelay(5)
 	}
 	const startHandler = expressGetMock.mock.calls[0][1] as ExpressRouteHandler
 	const finishHandler = expressGetMock.mock.calls[1][1] as ExpressRouteHandler
@@ -194,19 +196,15 @@ const mockBrowser = async (finishHandlerCaller = finishHappy): Promise<void> => 
 	startHandler({} as Request, mockStartResponse as unknown as Response)
 	finishHandlerCaller(finishHandler)
 
-	while (mockServer.close.mock.calls.length < 1) {
-		await testDelay(25)
+	while (serverMock.close.mock.calls.length < 1) {
+		await testDelay(10)
 	}
-	const closeHandler = mockServer.close.mock.calls[0][0] as (error?: Error) => void
-	closeHandler()
+	const closeHandler = serverMock.close.mock.calls[0][0] as (error?: Error) => void
+	closeHandler(closeError)
 }
 
-afterEach(() => {
-	recording.reset()
-})
-
 describe('loginAuthenticator', () => {
-	it('constructs without errors', () => {
+	it('creates Authenticator without errors', () => {
 		expect(loginAuthenticator(credentialsFilename, profileName, clientIdProvider, userAgent)).toBeDefined()
 	})
 
@@ -222,11 +220,9 @@ describe('loginAuthenticator', () => {
 
 		expect(loginAuthenticator(credentialsFilename, profileName, clientIdProvider, userAgent)).toBeDefined()
 
-		const logs = recording.replay()
-		expect(logs.length).toBe(2)
-		expect(logs[0].data[0]).toBe('constructing a LoginAuthenticator')
+		expect(traceMock).toHaveBeenCalledWith('constructing a LoginAuthenticator')
+		expect(traceMock).toHaveBeenCalledWith(expect.stringContaining('authentication info from file'))
 		expect(readFileSyncMock).toHaveBeenCalledWith(credentialsFilename)
-		expect(logs[1].data[0]).toEqual(expect.stringContaining('authentication info from file'))
 	})
 
 	it('partially redacts token values in logs', async () => {
@@ -234,10 +230,17 @@ describe('loginAuthenticator', () => {
 
 		expect(loginAuthenticator(credentialsFilename, profileName, clientIdProvider, userAgent)).toBeDefined()
 
-		const logs = recording.replay()
-		const authInfoLog = logs[1].data[0]
-		expect(authInfoLog).not.toIncludeMultiple([accessToken, refreshToken])
-		expect(authInfoLog).toIncludeMultiple(['db3d92f1', '3f3fb859'])
+		expect(traceMock).not.toHaveBeenCalledWith(expect.stringContaining(accessToken))
+		expect(traceMock).not.toHaveBeenCalledWith(expect.stringContaining(refreshToken))
+		expect(traceMock).toHaveBeenCalledWith(expect.stringContaining('db3d92f1'))
+		expect(traceMock).toHaveBeenCalledWith(expect.stringContaining('3f3fb859'))
+	})
+
+	it('re-throws non-end-of-file error reading file', async () => {
+		readFileSyncMock.mockImplementationOnce(() => { throw Error('not an end-of-file error') })
+
+		expect(() => loginAuthenticator(credentialsFilename, profileName, clientIdProvider, userAgent))
+			.toThrow('not an end-of-file error')
 	})
 })
 
@@ -320,8 +323,9 @@ describe('login', () => {
 	})
 
 	it('logs error if setting permissions of credentials file fails', async () => {
+		const error = Error('failed to chmod')
 		chmodMock.mockImplementationOnce((path: PathLike, mode: string | number, callback: NoParamCallback) => {
-			callback(Error('failed to chmod'))
+			callback(error)
 		})
 		const authenticator = setupAuthenticator()
 
@@ -332,10 +336,7 @@ describe('login', () => {
 
 		expect(chmodMock).toHaveBeenCalledTimes(1)
 		expect(chmodMock).toHaveBeenCalledWith(credentialsFilename, 0o600, expect.any(Function))
-		const logs = recording.replay()
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const pertinentLog = logs.filter((log: { data: any[] }) => log.data[0] === 'failed to set permissions on credentials file')
-		expect(pertinentLog.length).toBe(1)
+		expect(errorMock).toHaveBeenCalledWith('failed to set permissions on credentials file', error)
 	})
 
 	it('reports error when authentication fails', async () => {
@@ -424,6 +425,32 @@ describe('login', () => {
 		expect(writeFileSyncMock).toHaveBeenCalledTimes(0)
 		expect(chmodMock).toHaveBeenCalledTimes(0)
 	})
+
+	it('logs axios response data', async () => {
+		readFileSyncMock.mockReturnValueOnce(Buffer.from(JSON.stringify(credentialsFileData)))
+		postMock.mockRejectedValueOnce({ isAxiosError: true, response: { data: 'axios error data' } })
+		const authenticator = setupAuthenticator()
+
+		const loginPromise = authenticator.login()
+
+		await mockBrowser()
+		await expect(loginPromise).rejects.toBe('unable to get authentication info')
+
+		expect(errorMock).toHaveBeenCalledWith('axios error data')
+	})
+
+	it('logs express server close error', async () => {
+		readFileSyncMock.mockReturnValueOnce(Buffer.from(JSON.stringify(credentialsFileData)))
+		const closeError = Error('express close error')
+		const authenticator = setupAuthenticator()
+
+		const loginPromise = authenticator.login()
+
+		await mockBrowser(finishHappy, closeError)
+		await loginPromise
+
+		expect(errorMock).toHaveBeenCalledWith('error closing express server', closeError)
+	})
 })
 
 describe('logout', () => {
@@ -461,9 +488,7 @@ describe('authenticate', () => {
 		const response = await authenticator.authenticate(requestConfig)
 
 		expect(response.headers?.Authorization).toEqual('Bearer access token')
-		const logs = recording.replay()
-		expect(logs.length).toBeGreaterThan(0)
-		expect(logs[2].data[0]).toBe('authentication - enter')
+		expect(debugMock).toHaveBeenCalledWith('authentication - enter')
 	})
 })
 
@@ -594,5 +619,25 @@ describe('authenticateGeneric', () => {
 		expect(readFileSyncMock).toHaveBeenCalledWith(credentialsFilename)
 		expect(writeFileSyncMock).toHaveBeenCalledTimes(1)
 		expect(writeFileSyncMock).toHaveBeenCalledWith(credentialsFilename, expect.stringMatching(/"myProfile":/))
+	})
+
+	it('logs errors with trying to refresh token', async () => {
+		readFileSyncMock.mockReturnValueOnce(Buffer.from(JSON.stringify(refreshableCredentialsFileData)))
+		postMock.mockRejectedValueOnce({
+			message: 'token refresh failure',
+			isAxiosError: true,
+			response: { data: 'axios error data' },
+		})
+
+		const authenticator = setupAuthenticator()
+		const requestConfig = {}
+
+		const promise = authenticator.authenticate(requestConfig)
+		await mockBrowser()
+		const response = await promise
+
+		expect(response.headers?.Authorization).toEqual('Bearer access token')
+
+		expect(errorMock).toHaveBeenCalledWith('error trying to refresh token:', 'token refresh failure')
 	})
 })
