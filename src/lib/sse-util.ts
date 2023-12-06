@@ -5,9 +5,8 @@ export const sseSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGHUP', 'SIG
  *
  * see: https://nodejs.org/api/process.html#process_signal_events
  */
-export function handleSignals(listener: NodeJS.SignalsListener): void {
+export const handleSignals = (listener: NodeJS.SignalsListener): void =>
 	sseSignals.forEach(signal => process.on(signal, listener))
-}
 
 /**
  * error Event from eventsource doesn't always overlap with MessageEvent
