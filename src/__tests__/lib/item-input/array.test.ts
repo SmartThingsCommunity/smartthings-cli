@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals'
+
 import inquirer from 'inquirer'
 
 import {
@@ -13,20 +15,31 @@ import {
 	maxItemValueLength,
 	uneditable,
 } from '../../../lib/item-input/defs.js'
-import { arrayDef, checkboxDef } from '../../../lib/item-input/array.js'
 import { clipToMaximum, stringFromUnknown } from '../../../lib/util.js'
 
 
-jest.mock('inquirer')
-jest.mock('../../../lib/util.js')
-
-const promptMock = jest.mocked(inquirer.prompt)
+const promptMock: jest.Mock<typeof inquirer.prompt> = jest.fn()
+jest.unstable_mockModule('inquirer', () => ({
+	default: {
+		prompt: promptMock,
+		Separator: inquirer.Separator,
+	},
+}))
+const clipToMaximumMock: jest.Mock<typeof clipToMaximum> = jest.fn()
+clipToMaximumMock.mockReturnValue('clipped')
+const stringFromUnknownMock: jest.Mock<typeof stringFromUnknown> = jest.fn()
+jest.unstable_mockModule('../../../lib/util.js', () => ({
+	clipToMaximum: clipToMaximumMock,
+	stringFromUnknown: stringFromUnknownMock,
+}))
 
 // ignore console output
 jest.spyOn(process.stdout, 'write').mockImplementation(() => true)
 const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => true)
 
-const clipToMaximumMock = jest.mocked(clipToMaximum).mockReturnValue('clipped')
+
+const { arrayDef, checkboxDef } = await import('../../../lib/item-input/array.js')
+
 
 describe('arrayDef', () => {
 	const itemBuildFromUserInputMock = jest.fn()
@@ -616,8 +629,6 @@ describe('checkboxDef', () => {
 	})
 
 	describe('summarizeForEdit', () => {
-		const stringFromUnknownMock = jest.mocked(stringFromUnknown)
-
 		it('returns empty clipped string with no items', async () => {
 			expect(simpleDef.summarizeForEdit([])).toBe('clipped')
 

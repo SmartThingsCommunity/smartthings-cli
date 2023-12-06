@@ -1,17 +1,8 @@
+import { jest } from '@jest/globals'
+
 import inquirer from 'inquirer'
 
 import { InputDefinition, cancelOption, uneditable } from '../../../lib/item-input/defs.js'
-import {
-	booleanDef,
-	computedDef,
-	defaultWithContextFn,
-	listSelectionDef,
-	optionalDef,
-	optionalStringDef,
-	staticDef,
-	stringDef,
-	validateWithContextFn,
-} from '../../../lib/item-input/misc.js'
 import {
 	askForBoolean,
 	askForString,
@@ -21,10 +12,35 @@ import {
 import { stringFromUnknown } from '../../../lib/util.js'
 
 
-jest.mock('inquirer')
-jest.mock('../../../lib/user-query.js')
+const promptMock: jest.Mock<typeof inquirer.prompt> = jest.fn()
+jest.unstable_mockModule('inquirer', () => ({
+	default: {
+		prompt: promptMock,
+		Separator: inquirer.Separator,
+	},
+}))
+const askForBooleanMock: jest.Mock<typeof askForBoolean> = jest.fn()
+const askForStringMock: jest.Mock<typeof askForString> = jest.fn()
+const askForOptionalStringMock: jest.Mock<typeof askForOptionalString> = jest.fn()
+jest.unstable_mockModule('../../../lib/user-query.js', () => ({
+	askForBoolean: askForBooleanMock,
+	askForString: askForStringMock,
+	askForOptionalString: askForOptionalStringMock,
+}))
 
-const promptMock = jest.mocked(inquirer.prompt)
+
+const {
+	booleanDef,
+	computedDef,
+	defaultWithContextFn,
+	listSelectionDef,
+	optionalDef,
+	optionalStringDef,
+	staticDef,
+	stringDef,
+	validateWithContextFn,
+} = await import('../../../lib/item-input/misc.js')
+
 
 describe('validateWithContext', () => {
 	it('returns undefined when not given a validation function to convert', () => {
@@ -72,8 +88,6 @@ describe('defaultWithContextFn', () => {
 })
 
 describe('optionalStringDef', () => {
-	const askForOptionalStringMock = jest.mocked(askForOptionalString)
-
 	describe('without validation', () => {
 		const def = optionalStringDef('String Def')
 
@@ -147,8 +161,6 @@ describe('optionalStringDef', () => {
 })
 
 describe('stringDef', () => {
-	const askForStringMock = jest.mocked(askForString)
-
 	describe('without validation', () => {
 		const def = stringDef('String Def')
 
@@ -220,7 +232,6 @@ describe('stringDef', () => {
 })
 
 describe('booleanDef', () => {
-	const askForBooleanMock = jest.mocked(askForBoolean)
 	const def = booleanDef('Boolean Def')
 
 	test('name', async () => {
