@@ -1,10 +1,22 @@
+import { jest } from '@jest/globals'
+
 import inquirer from 'inquirer'
 
 import { cancelAction, finishAction, helpAction, InputDefinition, inquirerPageSize } from '../../../lib/item-input/defs'
-import { objectDef, ObjectItemTypeData } from '../../../lib/item-input/object.js'
+import { ObjectItemTypeData } from '../../../lib/item-input/object.js'
 
 
-jest.mock('inquirer')
+const promptMock: jest.Mock<typeof inquirer.prompt> = jest.fn()
+jest.unstable_mockModule('inquirer', () => ({
+	default: {
+		prompt: promptMock,
+		Separator: inquirer.Separator,
+	},
+}))
+
+
+const { objectDef } = await import('../../../lib/item-input/object.js')
+
 
 type InputtedThing = {
 	prop1: string
@@ -14,7 +26,6 @@ type InputtedThing = {
 }
 describe('objectDef', () => {
 	const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => true)
-	const promptMock = jest.mocked(inquirer.prompt)
 
 	const input1BuildFromUserInputMock = jest.fn()
 	const input1SummarizeForEditMock = jest.fn()
