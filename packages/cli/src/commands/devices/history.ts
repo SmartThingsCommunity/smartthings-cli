@@ -48,7 +48,7 @@ export default class DeviceHistoryCommand extends APICommand<typeof DeviceHistor
 			after: toEpochTime(this.flags.after),
 		}
 
-		if (calculateOutputFormat(this) === IOFormat.COMMON) {
+		if (calculateOutputFormat(this) === 'common') {
 			if (limit > perRequestLimit) {
 				this.log(`History is limited to ${maxItemsPerRequest} items per request.`)
 			}

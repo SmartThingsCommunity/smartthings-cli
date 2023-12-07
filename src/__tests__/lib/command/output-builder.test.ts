@@ -1,6 +1,5 @@
 import yargs, { Argv } from 'yargs'
 
-import { IOFormat } from '../../../lib/io-util.js'
 import { CalculateOutputFormatFlags, calculateOutputFormat, calculateOutputFormatBuilder, jsonFormatter, yamlFormatter } from '../../../lib/command/output.js'
 import { BuildOutputFormatterFlags, buildOutputFormatter, buildOutputFormatterBuilder } from '../../../lib/command/output-builder.js'
 import { SimpleType } from '../../test-lib/simple-type.js'
@@ -44,7 +43,7 @@ describe('buildOutputFormatter', () => {
 	} as CLIConfig
 
 	it('uses commonOutputFormatter when it exists', () => {
-		calculateOutputFormatMock.mockReturnValue(IOFormat.COMMON)
+		calculateOutputFormatMock.mockReturnValue('common')
 		const commonFormatter = jest.fn()
 
 		expect(buildOutputFormatter<SimpleType>(flags, cliConfig, undefined, commonFormatter)).toBe(commonFormatter)
@@ -54,7 +53,7 @@ describe('buildOutputFormatter', () => {
 	})
 
 	it('uses yamlFormatter with default of 2 for YAML output', () => {
-		calculateOutputFormatMock.mockReturnValue(IOFormat.YAML)
+		calculateOutputFormatMock.mockReturnValue('yaml')
 
 		buildOutputFormatter<SimpleType>(flags, cliConfig)
 
@@ -65,7 +64,7 @@ describe('buildOutputFormatter', () => {
 	})
 
 	it('uses jsonFormatter with a default of 4 for JSON output', () => {
-		calculateOutputFormatMock.mockReturnValue(IOFormat.COMMON)
+		calculateOutputFormatMock.mockReturnValue('common')
 
 		expect(buildOutputFormatter<SimpleType>(flags, cliConfig)).toBe(jsonOutputFormatter)
 
@@ -76,7 +75,7 @@ describe('buildOutputFormatter', () => {
 	})
 
 	it('accepts indent from config file over default', () => {
-		calculateOutputFormatMock.mockReturnValue(IOFormat.JSON)
+		calculateOutputFormatMock.mockReturnValue('json')
 
 		const cliConfig = { profile: { indent: 7 } } as unknown as CLIConfig
 		buildOutputFormatter<SimpleType>(flags, cliConfig)
@@ -88,7 +87,7 @@ describe('buildOutputFormatter', () => {
 	})
 
 	it('accepts indent from command line over config file and default', () => {
-		calculateOutputFormatMock.mockReturnValue(IOFormat.YAML)
+		calculateOutputFormatMock.mockReturnValue('yaml')
 
 		const flags = { indent: 13 } as unknown as SmartThingsCommandFlags
 		const cliConfig = { profile: { indent: 13 } } as unknown as CLIConfig

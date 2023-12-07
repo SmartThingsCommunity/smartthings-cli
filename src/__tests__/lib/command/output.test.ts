@@ -7,7 +7,7 @@ import {
 	writeOutput,
 	yamlFormatter,
 } from '../../../lib/command/output.js'
-import { IOFormat, formatFromFilename, stdoutIsTTY, writeFile } from '../../../lib/io-util.js'
+import { formatFromFilename, stdoutIsTTY, writeFile } from '../../../lib/io-util.js'
 import { DefaultTableGenerator, TableFieldDefinition, TableGenerator } from '../../../lib/table-generator.js'
 
 import { SimpleType } from '../../test-lib/simple-type.js'
@@ -35,40 +35,40 @@ describe('calculateOutputFormat', () => {
 	it('returns json when specified', () => {
 		const flags = { json: true }
 
-		expect(calculateOutputFormat(flags)).toBe(IOFormat.JSON)
+		expect(calculateOutputFormat(flags)).toBe('json')
 	})
 
 	it('uses yaml when specified', () => {
 		const flags = { yaml: true }
 
-		expect(calculateOutputFormat(flags)).toBe(IOFormat.YAML)
+		expect(calculateOutputFormat(flags)).toBe('yaml')
 	})
 
 	it('gets format using formatFromFilename with output file when not specified', () => {
 		const flags = { output: 'fn.json' }
-		const formatFromFilenameMock = jest.mocked(formatFromFilename).mockReturnValue(IOFormat.JSON)
+		const formatFromFilenameMock = jest.mocked(formatFromFilename).mockReturnValue('json')
 
-		expect(calculateOutputFormat(flags)).toBe(IOFormat.JSON)
+		expect(calculateOutputFormat(flags)).toBe('json')
 
 		expect(formatFromFilenameMock).toHaveBeenCalledTimes(1)
 		expect(formatFromFilenameMock).toHaveBeenCalledWith('fn.json')
 	})
 
 	it('defaults to specified default format', () => {
-		expect(calculateOutputFormat({}, IOFormat.YAML)).toBe(IOFormat.YAML)
+		expect(calculateOutputFormat({}, 'yaml')).toBe('yaml')
 	})
 
 	it('falls back to common in console with no other default specified', () => {
 		const ttySpy = jest.mocked(stdoutIsTTY).mockReturnValue(true)
 
-		expect(calculateOutputFormat({})).toBe(IOFormat.COMMON)
+		expect(calculateOutputFormat({})).toBe('common')
 		expect(ttySpy).toHaveBeenCalledTimes(1)
 	})
 
 	it('falls back to JSON with no other default specified and not outputting to the console', () => {
 		const ttySpy = jest.mocked(stdoutIsTTY).mockReturnValue(false)
 
-		expect(calculateOutputFormat({})).toBe(IOFormat.JSON)
+		expect(calculateOutputFormat({})).toBe('json')
 		expect(ttySpy).toHaveBeenCalledTimes(1)
 	})
 })

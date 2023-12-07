@@ -13,7 +13,7 @@ describe('SchemaUpdateCommand', () => {
 	const logSpy = jest.spyOn(SchemaUpdateCommand.prototype, 'log').mockImplementation()
 
 	const schemaAppRequest = { appName: 'schemaApp' } as SchemaAppRequest
-	const inputItemMock = jest.mocked(inputItem).mockResolvedValue([schemaAppRequest, IOFormat.JSON])
+	const inputItemMock = jest.mocked(inputItem).mockResolvedValue([schemaAppRequest, 'json'])
 	const addSchemaPermissionMock = jest.mocked(addSchemaPermission)
 	const selectFromListMock = jest.mocked(selectFromList).mockResolvedValue('schemaAppId')
 
@@ -73,7 +73,7 @@ describe('SchemaUpdateCommand', () => {
 			lambdaArnAP: 'lambdaArnAP',
 		} as SchemaAppRequest
 
-		inputItemMock.mockResolvedValueOnce([schemaAppRequest, IOFormat.JSON])
+		inputItemMock.mockResolvedValueOnce([schemaAppRequest, 'json'])
 
 		await expect(SchemaUpdateCommand.run(['--authorize'])).resolves.not.toThrow()
 
@@ -90,7 +90,7 @@ describe('SchemaUpdateCommand', () => {
 			hostingType: 'webhook',
 		} as SchemaAppRequest
 
-		inputItemMock.mockResolvedValueOnce([webhookSchemaRequest, IOFormat.JSON])
+		inputItemMock.mockResolvedValueOnce([webhookSchemaRequest, 'json'])
 
 		await expect(SchemaUpdateCommand.run(['--authorize'])).rejects.toThrow('Authorization is not applicable to WebHook schema connectors')
 		expect(updateSpy).not.toBeCalled()
@@ -102,7 +102,7 @@ describe('SchemaUpdateCommand', () => {
 			hostingType: 'lambda',
 		} as SchemaAppRequest
 
-		inputItemMock.mockResolvedValueOnce([noArnSchemaRequest, IOFormat.JSON])
+		inputItemMock.mockResolvedValueOnce([noArnSchemaRequest, 'json'])
 
 		await expect(SchemaUpdateCommand.run(['--authorize'])).resolves.not.toThrow()
 

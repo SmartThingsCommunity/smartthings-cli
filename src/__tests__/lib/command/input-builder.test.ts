@@ -1,4 +1,3 @@
-import { IOFormat } from '../../../lib/io-util.js'
 import { CombinedInputProcessor, FileInputProcessor, InputProcessor, StdinInputProcessor }
 	from '../../../lib/command/input-processor.js'
 import { buildInputProcessor } from '../../../lib/command/input-builder.js'
@@ -25,7 +24,7 @@ describe('buildInputProcessor', () => {
 		const flags = { input: 'fn' }
 		function makeProcessor(): InputProcessor<SimpleType> {
 			return {
-				ioFormat: IOFormat.JSON,
+				ioFormat: 'json',
 				hasInput: () => false,
 				read(): Promise<SimpleType> {
 					throw Error('Method not implemented.')

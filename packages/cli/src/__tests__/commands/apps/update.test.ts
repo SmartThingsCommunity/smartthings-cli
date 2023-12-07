@@ -39,7 +39,7 @@ describe('AppUpdateCommand', () => {
 			}),
 			expect.any(Function),
 			{
-				ioFormat: IOFormat.COMMON,
+				ioFormat: 'common',
 				hasInput: expect.any(Function),
 				read: expect.any(Function),
 			},

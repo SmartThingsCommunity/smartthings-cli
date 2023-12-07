@@ -2,7 +2,6 @@ import yaml from 'js-yaml'
 import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs'
 
 import { Profile } from '../lib/cli-config.js'
-import { IOFormat } from '../lib/io-util.js'
 import { TableFieldDefinition } from '../lib/table-generator.js'
 import { OutputListConfig, outputItem, outputList } from '../lib/command/basic-io.js'
 import { stringTranslateToId } from '../lib/command/command-util.js'
@@ -82,7 +81,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 		await outputItem(command, { tableFieldDefinitions }, () => getConfig(profileName))
 	} else {
 		const outputFormat = calculateOutputFormat(argv)
-		if (outputFormat === IOFormat.COMMON) {
+		if (outputFormat === 'common') {
 			await outputList(command, outputListConfig, listConfigs, true)
 		} else {
 			const outputFormatter = buildOutputFormatter(command.flags, command.cliConfig)

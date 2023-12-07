@@ -46,7 +46,7 @@ export default class LocationDeviceHistoryCommand extends APICommand<typeof Loca
 			after: toEpochTime(this.flags.after),
 		}
 
-		if (calculateOutputFormat(this) === IOFormat.COMMON) {
+		if (calculateOutputFormat(this) === 'common') {
 			if (limit > perRequestLimit) {
 				this.log(`History is limited to ${maxItemsPerRequest} items per request.`)
 			}

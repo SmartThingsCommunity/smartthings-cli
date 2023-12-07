@@ -11,7 +11,6 @@ import {
 } from '../../../lib/command/input-processor.js'
 import {
 	formatFromFilename,
-	IOFormat,
 	parseJSONOrYAML,
 	readDataFromStdin,
 	readFile,
@@ -24,8 +23,8 @@ jest.mock('../../../lib/io-util.js')
 
 describe('FileInputProcessor', () => {
 	it('gets format from filename', () => {
-		const formatFromFilenameMock = jest.mocked(formatFromFilename).mockReturnValue(IOFormat.JSON)
-		expect(new FileInputProcessor('fn').ioFormat).toBe(IOFormat.JSON)
+		const formatFromFilenameMock = jest.mocked(formatFromFilename).mockReturnValue('json')
+		expect(new FileInputProcessor('fn').ioFormat).toBe('json')
 		expect(formatFromFilenameMock).toHaveBeenCalledWith('fn')
 	})
 
@@ -62,7 +61,7 @@ describe('StdinInputProcessor', () => {
 	const parseJSONOrYAMLMock = jest.mocked(parseJSONOrYAML)
 
 	it('specifies JSON format', () =>  {
-		expect(new StdinInputProcessor().ioFormat).toBe(IOFormat.JSON)
+		expect(new StdinInputProcessor().ioFormat).toBe('json')
 	})
 
 	it('hasInput returns false for TTY input', async () =>  {
@@ -121,18 +120,18 @@ describe('simple input processor builder functions', () => {
 
 		expect(result.hasInput).toBe(hasInputMock)
 		expect(result.read).toBe(readMock)
-		expect(result.ioFormat).toBe(IOFormat.COMMON)
+		expect(result.ioFormat).toBe('common')
 	})
 
 	it('inputBuilder uses specified ioFormat', () => {
 		const hasInputMock = jest.fn()
 		const readMock = jest.fn()
 
-		const result = inputProcessor(hasInputMock, readMock, IOFormat.JSON)
+		const result = inputProcessor(hasInputMock, readMock, 'json')
 
 		expect(result.hasInput).toBe(hasInputMock)
 		expect(result.read).toBe(readMock)
-		expect(result.ioFormat).toBe(IOFormat.JSON)
+		expect(result.ioFormat).toBe('json')
 	})
 
 	it('commandLineInputProcessor uses proper methods from command', async () => {
@@ -145,7 +144,7 @@ describe('simple input processor builder functions', () => {
 
 		const inputProcessor = commandLineInputProcessor(command)
 
-		expect(inputProcessor.ioFormat).toBe(IOFormat.COMMON)
+		expect(inputProcessor.ioFormat).toBe('common')
 
 		hasInputMock.mockReturnValue(true)
 		expect(inputProcessor.hasInput()).toBeTrue()
@@ -164,7 +163,7 @@ describe('simple input processor builder functions', () => {
 
 		const inputProcessor = userInputProcessor(command)
 
-		expect(inputProcessor.ioFormat).toBe(IOFormat.COMMON)
+		expect(inputProcessor.ioFormat).toBe('common')
 
 		expect(inputProcessor.hasInput()).toBeTrue()
 
@@ -177,7 +176,7 @@ describe('simple input processor builder functions', () => {
 describe('CombinedInputProcessor', () => {
 	function makeProcessor(hasInputMock: () => boolean | Promise<boolean>, readMock?: () => Promise<SimpleType>): InputProcessor<SimpleType> {
 		return {
-			ioFormat: IOFormat.COMMON,
+			ioFormat: 'common',
 			hasInput: hasInputMock,
 			read: readMock ? readMock : () => { throw Error('should not be called') },
 		}
@@ -327,9 +326,9 @@ describe('CombinedInputProcessor', () => {
 		const readMock2 = jest.fn()
 		const readMock3 = jest.fn()
 
-		const processor1 = { ...makeProcessor(hasInputMock1, readMock1), ioFormat: IOFormat.JSON }
-		const processor2 = { ...makeProcessor(hasInputMock2, readMock2), ioFormat: IOFormat.YAML }
-		const processor3 = { ...makeProcessor(hasInputMock3, readMock3), ioFormat: IOFormat.COMMON }
+		const processor1 = { ...makeProcessor(hasInputMock1, readMock1), ioFormat: 'json' }
+		const processor2 = { ...makeProcessor(hasInputMock2, readMock2), ioFormat: 'yaml' }
+		const processor3 = { ...makeProcessor(hasInputMock3, readMock3), ioFormat: 'common' }
 		const processor = new CombinedInputProcessor(processor1, processor2, processor3)
 		hasInputMock1.mockReturnValue(false)
 		hasInputMock2.mockReturnValue(true)
@@ -347,7 +346,7 @@ describe('CombinedInputProcessor', () => {
 		expect(readMock2).toHaveBeenCalledTimes(1)
 		expect(readMock3).toHaveBeenCalledTimes(0)
 
-		expect(processor.ioFormat).toBe(IOFormat.YAML)
+		expect(processor.ioFormat).toBe('yaml')
 	})
 
 	it('throws exception on read with no filename', async () =>  {
