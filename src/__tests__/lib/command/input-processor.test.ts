@@ -1,49 +1,71 @@
+import { jest } from '@jest/globals'
+
+import { readFile } from 'fs/promises'
+
 import {
-	CombinedInputProcessor,
 	CommandLineInputCommand,
-	commandLineInputProcessor,
-	FileInputProcessor,
-	inputProcessor,
 	InputProcessor,
-	StdinInputProcessor,
 	UserInputCommand,
-	userInputProcessor,
 } from '../../../lib/command/input-processor.js'
 import {
 	formatFromFilename,
 	parseJSONOrYAML,
 	readDataFromStdin,
-	readFile,
 	stdinIsTTY,
 } from '../../../lib/io-util.js'
 import { SimpleType, validData } from '../../test-lib/simple-type.js'
 
 
-jest.mock('../../../lib/io-util.js')
+const readFileMock: jest.Mock<typeof readFile> = jest.fn()
+jest.unstable_mockModule('fs/promises', () => ({
+	readFile: readFileMock,
+}))
 
-describe('FileInputProcessor', () => {
+const formatFromFilenameMock: jest.Mock<typeof formatFromFilename> = jest.fn()
+const parseJSONOrYAMLMock: jest.Mock<typeof parseJSONOrYAML> = jest.fn()
+const readDataFromStdinMock: jest.Mock<typeof readDataFromStdin> = jest.fn()
+const stdinIsTTYMock: jest.Mock<typeof stdinIsTTY> = jest.fn()
+jest.unstable_mockModule('../../../lib/io-util.js', () => ({
+	formatFromFilename: formatFromFilenameMock,
+	parseJSONOrYAML: parseJSONOrYAMLMock,
+	readDataFromStdin: readDataFromStdinMock,
+	stdinIsTTY: stdinIsTTYMock,
+}))
+
+
+const {
+	combinedInputProcessor,
+	commandLineInputProcessor,
+	fileInputProcessor,
+	inputProcessor,
+	stdinInputProcessor,
+	userInputProcessor,
+} = await import('../../../lib/command/input-processor.js')
+
+
+describe('fileInputProcessor', () => {
 	it('gets format from filename', () => {
-		const formatFromFilenameMock = jest.mocked(formatFromFilename).mockReturnValue('json')
-		expect(new FileInputProcessor('fn').ioFormat).toBe('json')
+		formatFromFilenameMock.mockReturnValueOnce('json')
+		expect(fileInputProcessor('fn').ioFormat).toBe('json')
 		expect(formatFromFilenameMock).toHaveBeenCalledWith('fn')
 	})
 
 	it('hasInput returns false for no filename', () =>  {
-		const processor = new FileInputProcessor()
+		const processor = fileInputProcessor()
 		expect(processor.hasInput()).toBe(false)
 	})
 
 	it('throws exception on read with no filename', () =>  {
-		const processor = new FileInputProcessor()
+		const processor = fileInputProcessor()
 		expect(processor.hasInput()).toBe(false)
 		return expect(processor.read()).rejects.toEqual(ReferenceError('read called when hasInput returns false'))
 	})
 
 	it('returns data as expected', async () =>  {
-		const processor = new FileInputProcessor('input filename')
+		const processor = fileInputProcessor('input filename')
 
-		const readFileMock = jest.mocked(readFile).mockResolvedValueOnce('yaml file data')
-		const parseJSONOrYAMLMock = jest.mocked(parseJSONOrYAML).mockReturnValueOnce(validData)
+		readFileMock.mockResolvedValueOnce('yaml file data')
+		parseJSONOrYAMLMock.mockReturnValueOnce(validData)
 
 		expect(processor.hasInput()).toBe(true)
 		expect(await processor.read()).toEqual(validData)
@@ -55,47 +77,43 @@ describe('FileInputProcessor', () => {
 	})
 })
 
-describe('StdinInputProcessor', () => {
-	const isTTYMock = jest.mocked(stdinIsTTY)
-	const readDataFromStdinMock = jest.mocked(readDataFromStdin)
-	const parseJSONOrYAMLMock = jest.mocked(parseJSONOrYAML)
-
+describe('stdinInputProcessor', () => {
 	it('specifies JSON format', () =>  {
-		expect(new StdinInputProcessor().ioFormat).toBe('json')
+		expect(stdinInputProcessor().ioFormat).toBe('json')
 	})
 
 	it('hasInput returns false for TTY input', async () =>  {
-		isTTYMock.mockReturnValue(true)
-		const processor = new StdinInputProcessor()
+		stdinIsTTYMock.mockReturnValueOnce(true)
+		const processor = stdinInputProcessor()
 
 		expect(await processor.hasInput()).toBe(false)
 
-		expect(isTTYMock).toHaveBeenCalledTimes(1)
+		expect(stdinIsTTYMock).toHaveBeenCalledTimes(1)
 	})
 
 	it('hasInput returns false for empty TTY input', async () =>  {
-		const readDataFromStdinMock = jest.mocked(readDataFromStdin).mockResolvedValueOnce('')
-		isTTYMock.mockReturnValue(false)
-		const processor = new StdinInputProcessor()
+		readDataFromStdinMock.mockResolvedValueOnce('')
+		stdinIsTTYMock.mockReturnValueOnce(false)
+		const processor = stdinInputProcessor()
 
 		expect(await processor.hasInput()).toBe(false)
 
-		expect(isTTYMock).toHaveBeenCalledTimes(1)
+		expect(stdinIsTTYMock).toHaveBeenCalledTimes(1)
 		expect(readDataFromStdinMock).toHaveBeenCalledTimes(1)
 	})
 
 	it('processes valid YAML into object', async () =>  {
-		const processor = new StdinInputProcessor()
+		const processor = stdinInputProcessor()
 
-		isTTYMock.mockReturnValue(false)
-		readDataFromStdinMock.mockResolvedValue('some yaml')
+		stdinIsTTYMock.mockReturnValueOnce(false)
+		readDataFromStdinMock.mockResolvedValueOnce('some yaml')
 
 		expect(await processor.hasInput()).toBe(true)
 
-		expect(isTTYMock).toHaveBeenCalledTimes(1)
+		expect(stdinIsTTYMock).toHaveBeenCalledTimes(1)
 		expect(readDataFromStdinMock).toHaveBeenCalledTimes(1)
 
-		parseJSONOrYAMLMock.mockReturnValue(validData)
+		parseJSONOrYAMLMock.mockReturnValueOnce(validData)
 
 		const result = await processor.read()
 
@@ -104,7 +122,7 @@ describe('StdinInputProcessor', () => {
 	})
 
 	it('throws exception when read called before hasInput', async () => {
-		const processor = new StdinInputProcessor()
+		const processor = stdinInputProcessor()
 
 		await expect(processor.read()).rejects
 			.toThrow('invalid state; `hasInput` was not called or returned false')
@@ -112,10 +130,10 @@ describe('StdinInputProcessor', () => {
 })
 
 describe('simple input processor builder functions', () => {
-	it('inputBuilder defaults to common input', () => {
-		const hasInputMock = jest.fn()
-		const readMock = jest.fn()
+	const hasInputMock: jest.Mock<() => boolean> = jest.fn()
+	const readMock: jest.Mock<() => Promise<string>> = jest.fn()
 
+	it('inputBuilder defaults to common input', () => {
 		const result = inputProcessor(hasInputMock, readMock)
 
 		expect(result.hasInput).toBe(hasInputMock)
@@ -124,9 +142,6 @@ describe('simple input processor builder functions', () => {
 	})
 
 	it('inputBuilder uses specified ioFormat', () => {
-		const hasInputMock = jest.fn()
-		const readMock = jest.fn()
-
 		const result = inputProcessor(hasInputMock, readMock, 'json')
 
 		expect(result.hasInput).toBe(hasInputMock)
@@ -135,8 +150,6 @@ describe('simple input processor builder functions', () => {
 	})
 
 	it('commandLineInputProcessor uses proper methods from command', async () => {
-		const hasInputMock = jest.fn()
-		const readMock = jest.fn()
 		const command: CommandLineInputCommand<string> = {
 			hasCommandLineInput: hasInputMock,
 			getInputFromCommandLine: readMock,
@@ -146,17 +159,16 @@ describe('simple input processor builder functions', () => {
 
 		expect(inputProcessor.ioFormat).toBe('common')
 
-		hasInputMock.mockReturnValue(true)
-		expect(inputProcessor.hasInput()).toBeTrue()
+		hasInputMock.mockReturnValueOnce(true)
+		expect(inputProcessor.hasInput()).toBe(true)
 		expect(hasInputMock).toHaveBeenCalledTimes(1)
 
-		readMock.mockResolvedValue('happy return value')
+		readMock.mockResolvedValueOnce('happy return value')
 		expect(await inputProcessor.read()).toBe('happy return value')
 		expect(readMock).toHaveBeenCalledTimes(1)
 	})
 
 	it('userInputProcessor uses proper methods from command', async () => {
-		const readMock = jest.fn()
 		const command: UserInputCommand<string> = {
 			getInputFromUser: readMock,
 		}
@@ -165,34 +177,47 @@ describe('simple input processor builder functions', () => {
 
 		expect(inputProcessor.ioFormat).toBe('common')
 
-		expect(inputProcessor.hasInput()).toBeTrue()
+		expect(inputProcessor.hasInput()).toBe(true)
 
-		readMock.mockResolvedValue('happy return value')
+		readMock.mockResolvedValueOnce('happy return value')
 		expect(await inputProcessor.read()).toBe('happy return value')
 		expect(readMock).toHaveBeenCalledTimes(1)
 	})
+
+	it('userInputProcessor passes read function directly to `inputProcessor`', async () => {
+		const read: () => Promise<string> = () => Promise.resolve('I have been read by read.')
+
+		const inputProcessor = userInputProcessor(read)
+
+		expect(inputProcessor.ioFormat).toBe('common')
+		expect(inputProcessor.hasInput()).toBe(true)
+
+		expect(inputProcessor.read).toBe(read)
+	})
 })
 
-describe('CombinedInputProcessor', () => {
-	function makeProcessor(hasInputMock: () => boolean | Promise<boolean>, readMock?: () => Promise<SimpleType>): InputProcessor<SimpleType> {
-		return {
-			ioFormat: 'common',
-			hasInput: hasInputMock,
-			read: readMock ? readMock : () => { throw Error('should not be called') },
-		}
-	}
+describe('combinedInputProcessor', () => {
+	const hasInputMock1: jest.Mock<() => boolean> = jest.fn()
+	const hasInputMock2: jest.Mock<() => Promise<boolean>> = jest.fn()
+	const hasInputMock3: jest.Mock<() => Promise<boolean>> = jest.fn()
+
+	const readMock1: jest.Mock<() => Promise<SimpleType>> = jest.fn()
+	const readMock2: jest.Mock<() => Promise<SimpleType>> = jest.fn()
+	const readMock3: jest.Mock<() => Promise<SimpleType>> = jest.fn()
+
+	const makeProcessor = (hasInputMock: () => boolean | Promise<boolean>, readMock?: () => Promise<SimpleType>): InputProcessor<SimpleType> => ({
+		ioFormat: 'common',
+		hasInput: hasInputMock,
+		read: readMock ? readMock : () => { throw Error('should not be called') },
+	})
 
 	it('calls hasInput only as necessary', async () =>  {
-		const hasInputMock1 = jest.fn()
-		const hasInputMock2 = jest.fn()
-		const hasInputMock3 = jest.fn()
-
-		const processor = new CombinedInputProcessor(makeProcessor(hasInputMock1),
+		const processor = combinedInputProcessor(makeProcessor(hasInputMock1),
 			makeProcessor(hasInputMock2), makeProcessor(hasInputMock3))
 
-		hasInputMock1.mockReturnValue(false)
-		hasInputMock2.mockReturnValue(false)
-		hasInputMock3.mockReturnValue(true)
+		hasInputMock1.mockReturnValueOnce(false)
+		hasInputMock2.mockResolvedValueOnce(false)
+		hasInputMock3.mockResolvedValueOnce(true)
 
 		expect(await processor.hasInput()).toBe(true)
 
@@ -202,7 +227,7 @@ describe('CombinedInputProcessor', () => {
 
 		jest.clearAllMocks()
 
-		hasInputMock3.mockReturnValue(false)
+		hasInputMock3.mockResolvedValueOnce(false)
 		expect(await processor.hasInput()).toBe(false)
 
 		expect(hasInputMock1).toHaveBeenCalledTimes(1)
@@ -211,8 +236,8 @@ describe('CombinedInputProcessor', () => {
 
 		jest.clearAllMocks()
 
-		hasInputMock1.mockReturnValue(false)
-		hasInputMock2.mockReturnValue(true)
+		hasInputMock1.mockReturnValueOnce(false)
+		hasInputMock2.mockResolvedValueOnce(true)
 
 		expect(await processor.hasInput()).toBe(true)
 
@@ -222,7 +247,7 @@ describe('CombinedInputProcessor', () => {
 
 		jest.clearAllMocks()
 
-		hasInputMock1.mockReturnValue(true)
+		hasInputMock1.mockReturnValueOnce(true)
 
 		expect(await processor.hasInput()).toBe(true)
 
@@ -232,11 +257,11 @@ describe('CombinedInputProcessor', () => {
 	})
 
 	it('calls hasInput in correct order', async () =>  {
-		const hasInputMock1 = jest.fn().mockReturnValueOnce(false)
-		const hasInputMock2 = jest.fn().mockResolvedValueOnce(false)
-		const hasInputMock3 = jest.fn().mockResolvedValueOnce(true)
+		hasInputMock1.mockReturnValueOnce(false)
+		hasInputMock2.mockResolvedValueOnce(false)
+		hasInputMock3.mockResolvedValueOnce(true)
 
-		const processor = new CombinedInputProcessor(makeProcessor(hasInputMock1),
+		const processor = combinedInputProcessor(makeProcessor(hasInputMock1),
 			makeProcessor(hasInputMock2), makeProcessor(hasInputMock3))
 
 		expect(await processor.hasInput()).toBe(true)
@@ -247,11 +272,11 @@ describe('CombinedInputProcessor', () => {
 	})
 
 	it('works with both sync and async hasInput', async () => {
-		const hasInputMock1 = jest.fn().mockReturnValueOnce(false)
-		const hasInputMock2 = jest.fn().mockResolvedValueOnce(false)
-		const hasInputMock3 = jest.fn().mockResolvedValueOnce(true)
+		hasInputMock1.mockReturnValueOnce(false)
+		hasInputMock2.mockResolvedValueOnce(false)
+		hasInputMock3.mockResolvedValueOnce(true)
 
-		const processor = new CombinedInputProcessor(makeProcessor(hasInputMock1),
+		const processor = combinedInputProcessor(makeProcessor(hasInputMock1),
 			makeProcessor(hasInputMock2), makeProcessor(hasInputMock3))
 
 		expect(await processor.hasInput()).toBe(true)
@@ -262,23 +287,17 @@ describe('CombinedInputProcessor', () => {
 	})
 
 	it('throws exception if ioFormat called before read', () => {
-		const hasInputMock = jest.fn()
-		const processor = new CombinedInputProcessor(makeProcessor(hasInputMock))
+		const processor = combinedInputProcessor(makeProcessor(hasInputMock1))
 
 		expect(() => processor.ioFormat).toThrow('ioFormat called before read')
 	})
 
 	it('calls read only as necessary', async () =>  {
-		const hasInputMock1 = jest.fn()
-		const hasInputMock2 = jest.fn()
-		const readMock1 = jest.fn()
-		const readMock2 = jest.fn()
-
-		const processor = new CombinedInputProcessor(makeProcessor(hasInputMock1, readMock1),
+		const processor = combinedInputProcessor(makeProcessor(hasInputMock1, readMock1),
 			makeProcessor(hasInputMock2, readMock2))
 
-		hasInputMock1.mockReturnValue(true)
-		readMock1.mockReturnValue(validData)
+		hasInputMock1.mockReturnValueOnce(true)
+		readMock1.mockResolvedValueOnce(validData)
 
 		expect(await processor.hasInput()).toBe(true)
 
@@ -292,18 +311,11 @@ describe('CombinedInputProcessor', () => {
 	})
 
 	it('calls read only on correct processor', async () =>  {
-		const hasInputMock1 = jest.fn()
-		const hasInputMock2 = jest.fn()
-		const hasInputMock3 = jest.fn()
-		const readMock1 = jest.fn()
-		const readMock2 = jest.fn()
-		const readMock3 = jest.fn()
-
-		const processor = new CombinedInputProcessor(makeProcessor(hasInputMock1, readMock1),
+		const processor = combinedInputProcessor(makeProcessor(hasInputMock1, readMock1),
 			makeProcessor(hasInputMock2, readMock2), makeProcessor(hasInputMock3, readMock3))
-		hasInputMock1.mockReturnValue(false)
-		hasInputMock2.mockReturnValue(true)
-		readMock2.mockReturnValue(validData)
+		hasInputMock1.mockReturnValueOnce(false)
+		hasInputMock2.mockResolvedValueOnce(true)
+		readMock2.mockResolvedValueOnce(validData)
 
 		expect(await processor.hasInput()).toBe(true)
 
@@ -319,20 +331,13 @@ describe('CombinedInputProcessor', () => {
 	})
 
 	it('gets ioFormat from correct processor', async () =>  {
-		const hasInputMock1 = jest.fn()
-		const hasInputMock2 = jest.fn()
-		const hasInputMock3 = jest.fn()
-		const readMock1 = jest.fn()
-		const readMock2 = jest.fn()
-		const readMock3 = jest.fn()
-
-		const processor1 = { ...makeProcessor(hasInputMock1, readMock1), ioFormat: 'json' }
-		const processor2 = { ...makeProcessor(hasInputMock2, readMock2), ioFormat: 'yaml' }
-		const processor3 = { ...makeProcessor(hasInputMock3, readMock3), ioFormat: 'common' }
-		const processor = new CombinedInputProcessor(processor1, processor2, processor3)
-		hasInputMock1.mockReturnValue(false)
-		hasInputMock2.mockReturnValue(true)
-		readMock2.mockReturnValue(validData)
+		const processor1 = { ...makeProcessor(hasInputMock1, readMock1), ioFormat: 'json' } as const
+		const processor2 = { ...makeProcessor(hasInputMock2, readMock2), ioFormat: 'yaml' } as const
+		const processor3 = { ...makeProcessor(hasInputMock3, readMock3), ioFormat: 'common' } as const
+		const processor = combinedInputProcessor(processor1, processor2, processor3)
+		hasInputMock1.mockReturnValueOnce(false)
+		hasInputMock2.mockResolvedValueOnce(true)
+		readMock2.mockResolvedValueOnce(validData)
 
 		expect(await processor.hasInput()).toBe(true)
 
@@ -350,18 +355,15 @@ describe('CombinedInputProcessor', () => {
 	})
 
 	it('throws exception on read with no filename', async () =>  {
-		const hasInputMock = jest.fn()
-		const readMock = jest.fn()
-
-		const processor = new CombinedInputProcessor(makeProcessor(hasInputMock, readMock))
-		hasInputMock.mockReturnValue(false)
+		const processor = combinedInputProcessor(makeProcessor(hasInputMock1, readMock1))
+		hasInputMock1.mockReturnValueOnce(false)
 
 		expect(await processor.hasInput()).toBe(false)
 
-		expect(hasInputMock).toHaveBeenCalledTimes(1)
+		expect(hasInputMock1).toHaveBeenCalledTimes(1)
 
 		await expect(processor.read()).rejects.toThrow(ReferenceError('read called when hasInput returns false'))
 
-		expect(readMock).toHaveBeenCalledTimes(0)
+		expect(readMock1).toHaveBeenCalledTimes(0)
 	})
 })
