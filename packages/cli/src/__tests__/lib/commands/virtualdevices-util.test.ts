@@ -2,7 +2,7 @@ import inquirer from 'inquirer'
 import {
 	APICommand,
 	APIOrganizationCommand,
-	FileInputProcessor,
+	fileInputProcessor,
 	selectFromList,
 } from '@smartthings/cli-lib'
 import {
@@ -83,7 +83,7 @@ describe('virtualdevices-util', () => {
 				status: DeviceProfileStatus.PUBLISHED,
 			}
 
-			const fileSpy = jest.spyOn(FileInputProcessor.prototype, 'read').mockResolvedValueOnce(deviceProfile)
+			const fileSpy = jest.spyOn(fileInputProcessor.prototype, 'read').mockResolvedValueOnce(deviceProfile)
 
 			const value = await chooseDeviceProfileDefinition(command, undefined, 'device-profile-file')
 

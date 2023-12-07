@@ -1,10 +1,10 @@
 import { Argv } from 'yargs'
 
 import {
-	CombinedInputProcessor,
-	FileInputProcessor,
+	combinedInputProcessor,
+	fileInputProcessor,
 	InputProcessor,
-	StdinInputProcessor,
+	stdinInputProcessor,
 } from './input-processor.js'
 
 
@@ -27,9 +27,10 @@ export const inputProcessorBuilder = <T extends object>(yargs: Argv<T>): Argv<T 
  * Another less common use case (which might co-exist with a Q&A input processor) would be building
  * the data from command line options.
  */
-export function buildInputProcessor<T>(flags: InputProcessorFlags,
-		...alternateInputProcessors: InputProcessor<T>[]): InputProcessor<T> {
-	const fileInputProcessor = new FileInputProcessor<T>(flags.input)
-	const stdinInputProcessor = new StdinInputProcessor<T>()
-	return new CombinedInputProcessor(fileInputProcessor, stdinInputProcessor, ...alternateInputProcessors)
-}
+export const buildInputProcessor =
+	<T>(flags: InputProcessorFlags, ...alternateInputProcessors: InputProcessor<T>[]): InputProcessor<T> =>
+		combinedInputProcessor(
+			fileInputProcessor<T>(flags.input),
+			stdinInputProcessor<T>(),
+			...alternateInputProcessors,
+		)

@@ -1,4 +1,4 @@
-import { CombinedInputProcessor, FileInputProcessor, InputProcessor, StdinInputProcessor }
+import { combinedInputProcessor, fileInputProcessor, InputProcessor, stdinInputProcessor }
 	from '../../../lib/command/input-processor.js'
 import { buildInputProcessor } from '../../../lib/command/input-builder.js'
 import { SimpleType } from '../../test-lib/simple-type.js'
@@ -9,8 +9,8 @@ jest.mock('../../../lib/command/input-processor.js')
 
 describe('buildInputProcessor', () => {
 	it('includes file and stdin input processors', () => {
-		const fileInputProcessorSpy = jest.mocked(FileInputProcessor)
-		const stdinInputProcessorSpy = jest.mocked(StdinInputProcessor)
+		const fileInputProcessorSpy = jest.mocked(fileInputProcessor)
+		const stdinInputProcessorSpy = jest.mocked(stdinInputProcessor)
 
 		const flags = {}
 
@@ -32,15 +32,15 @@ describe('buildInputProcessor', () => {
 			}
 		}
 
-		const fileInputProcessor = makeProcessor()
-		const fileMock = jest.mocked(FileInputProcessor)
-			.mockReturnValue(fileInputProcessor as FileInputProcessor<SimpleType>)
+		const inputProcessor = makeProcessor()
+		const fileMock = jest.mocked(fileInputProcessor)
+			.mockReturnValue(inputProcessor as InputProcessor<SimpleType>)
 		const stdinInputProcessor = makeProcessor()
-		const stdinMock = jest.mocked(StdinInputProcessor)
-			.mockReturnValue(stdinInputProcessor as StdinInputProcessor<SimpleType>)
+		const stdinMock = jest.mocked(stdinInputProcessor)
+			.mockReturnValue(stdinInputProcessor as InputProcessor<SimpleType>)
 		const userProcessor1 = makeProcessor()
 		const userProcessor2 = makeProcessor()
-		const mock = jest.mocked(CombinedInputProcessor)
+		const mock = jest.mocked(combinedInputProcessor)
 
 		buildInputProcessor<SimpleType>(flags, userProcessor1, userProcessor2)
 
@@ -48,6 +48,6 @@ describe('buildInputProcessor', () => {
 		expect(fileMock).toHaveBeenCalledWith('fn')
 		expect(stdinMock).toHaveBeenCalledTimes(1)
 		expect(mock).toHaveBeenCalledTimes(1)
-		expect(mock).toHaveBeenCalledWith(fileInputProcessor, stdinInputProcessor, userProcessor1, userProcessor2)
+		expect(mock).toHaveBeenCalledWith(inputProcessor, stdinInputProcessor, userProcessor1, userProcessor2)
 	})
 })

@@ -11,7 +11,7 @@ import {
 import {
 	APICommand,
 	APIOrganizationCommand,
-	FileInputProcessor,
+	fileInputProcessor,
 	selectFromList,
 	SelectFromListConfig,
 } from '@smartthings/cli-lib'
@@ -86,7 +86,7 @@ export async function chooseDeviceProfileDefinition(command: APIOrganizationComm
 	let deviceProfile
 
 	if (deviceProfileFile) {
-		const inputProcessor = new FileInputProcessor<DeviceProfile>(deviceProfileFile)
+		const inputProcessor = fileInputProcessor<DeviceProfile>(deviceProfileFile)
 		deviceProfile = await inputProcessor.read()
 	} else if (!deviceProfileId) {
 		deviceProfileId = await chooseDeviceProfile(command, deviceProfileId, { allowIndex: true })

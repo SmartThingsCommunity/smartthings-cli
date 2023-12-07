@@ -8,6 +8,7 @@ const config: JestConfigWithTsJest = {
 		// '**/__tests__/**/*.test.ts',
 		'**/__tests__/lib/*.test.ts',
 		'**/__tests__/lib/item-input/*.test.ts',
+		'**/__tests__/lib/command/(input-p*).test.ts',
 	],
 	setupFilesAfterEnv: ['jest-extended/all'],
 	collectCoverageFrom: ['src/**/*.ts'],

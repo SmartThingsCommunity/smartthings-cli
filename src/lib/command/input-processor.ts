@@ -31,44 +31,42 @@ export type InputProcessor<T> = {
 }
 
 
-export class FileInputProcessor<T> implements InputProcessor<T> {
-	readonly ioFormat: IOFormat
+export const fileInputProcessor = <T>(filename?: string): InputProcessor<T> => {
+	const ioFormat: IOFormat = filename ? formatFromFilename(filename) : 'json'
 
-	constructor(private readonly filename?: string) {
-		this.ioFormat = filename ? formatFromFilename(filename) : 'json'
-	}
+	const hasInput = (): boolean => !!filename
 
-	hasInput(): boolean {
-		return !!this.filename
-	}
-
-	async read(): Promise<T> {
-		if (!this.filename) {
+	const read = async (): Promise<T> => {
+		if (!filename) {
 			throw ReferenceError('read called when hasInput returns false')
 		}
 
-		return parseJSONOrYAML(await readFile(this.filename, 'utf-8'), this.filename)
+		return parseJSONOrYAML(await readFile(filename, 'utf-8'), filename)
 	}
+
+	return { ioFormat, hasInput, read }
 }
 
-export class StdinInputProcessor<T> implements InputProcessor<T> {
+export const stdinInputProcessor = <T>(): InputProcessor<T> => {
 	// Could be JSON or YAML but it's not really worth trying to figure out which.
-	readonly ioFormat = 'json'
-	inputData?: string = undefined
+	const ioFormat = 'json'
+	let inputData: string | undefined = undefined
 
-	async hasInput(): Promise<boolean> {
-		if (this.inputData === undefined && !stdinIsTTY()) {
-			this.inputData = await readDataFromStdin()
+	const hasInput = async (): Promise<boolean> => {
+		if (inputData === undefined && !stdinIsTTY()) {
+			inputData = await readDataFromStdin()
 		}
-		return !!this.inputData
+		return !!inputData
 	}
 
-	async read(): Promise<T> {
-		if (!this.inputData) {
+	const read = async (): Promise<T> => {
+		if (!inputData) {
 			throw Error('invalid state; `hasInput` was not called or returned false')
 		}
-		return parseJSONOrYAML(this.inputData, 'stdin')
+		return parseJSONOrYAML(inputData, 'stdin')
 	}
+
+	return { ioFormat, hasInput, read }
 }
 
 /**
@@ -109,41 +107,41 @@ export function userInputProcessor<T>(commandOrReadFn: UserInputCommand<T> | (()
 	return inputProcessor(() => true, () => commandOrReadFn.getInputFromUser())
 }
 
-export class CombinedInputProcessor<T> implements InputProcessor<T> {
-	private inputProcessors: InputProcessor<T>[]
-	private selectedInputProcessor?: InputProcessor<T>
-	private _ioFormat?: IOFormat
+export const combinedInputProcessor = <T>(inputProcessor: InputProcessor<T>, ...moveInputProcessors: InputProcessor<T>[]): InputProcessor<T> => {
+	const inputProcessors: InputProcessor<T>[] = [inputProcessor, ...moveInputProcessors]
+	let selectedInputProcessor: InputProcessor<T> | undefined
+	let _ioFormat: IOFormat | undefined = undefined
 
-	get ioFormat(): IOFormat {
-		if (!this._ioFormat) {
-			throw new ReferenceError('ioFormat called before read')
-		}
-		return this._ioFormat
-	}
-
-	constructor(inputProcessor: InputProcessor<T>, ...inputProcessors: InputProcessor<T>[]) {
-		this.inputProcessors = [inputProcessor, ...inputProcessors]
-	}
-
-	async hasInput(): Promise<boolean> {
-		for (const inputProcessor of this.inputProcessors) {
+	const hasInput = async (): Promise<boolean> => {
+		for (const inputProcessor of inputProcessors) {
 			const hasInputResult = inputProcessor.hasInput()
 			const hasInput = typeof hasInputResult === 'boolean' ? hasInputResult : await hasInputResult
 			if (hasInput) {
-				this.selectedInputProcessor = inputProcessor
+				selectedInputProcessor = inputProcessor
 				return true
 			}
 		}
 		return false
 	}
 
-	async read(): Promise<T> {
-		if (!this.selectedInputProcessor) {
+	const read = async (): Promise<T> => {
+		if (!selectedInputProcessor) {
 			throw ReferenceError('read called when hasInput returns false')
 		}
 
-		const retVal = this.selectedInputProcessor.read()
-		this._ioFormat = this.selectedInputProcessor.ioFormat
+		const retVal = selectedInputProcessor.read()
+		_ioFormat = selectedInputProcessor.ioFormat
 		return retVal
+	}
+
+	return {
+		get ioFormat() {
+			if (!_ioFormat) {
+				throw new ReferenceError('ioFormat called before read')
+			}
+			return _ioFormat
+		},
+		hasInput,
+		read,
 	}
 }
