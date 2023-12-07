@@ -43,7 +43,7 @@ describe('inputItem', () => {
 	}
 
 	const inputProcessor: InputProcessor<SimpleType> = {
-		get ioFormat(): IOFormat.COMMON {
+		get ioFormat(): 'common' {
 			return ioFormatMock()
 		},
 		hasInput: hasInputMock,
@@ -51,13 +51,13 @@ describe('inputItem', () => {
 	}
 
 	it('accepts input and returns input', async () => {
-		ioFormatMock.mockReturnValue(IOFormat.COMMON)
+		ioFormatMock.mockReturnValue('common')
 		hasInputMock.mockReturnValue(true)
 		readMock.mockResolvedValue(item1)
 
 		buildInputProcessorMock.mockReturnValue(inputProcessor)
 
-		expect(await inputItem(flags)).toEqual([item1, IOFormat.COMMON])
+		expect(await inputItem(flags)).toEqual([item1, 'common'])
 
 		expect(buildInputProcessorMock).toHaveBeenCalledTimes(1)
 		expect(buildInputProcessorMock).toHaveBeenCalledWith(flags)
@@ -70,7 +70,7 @@ describe('inputItem', () => {
 
 	it('throws exception when there is no input', async () => {
 		const inputProcessor = {
-			ioFormat: IOFormat.COMMON,
+			ioFormat: 'common',
 			hasInput: () => false,
 			read: async () => item1,
 		}
@@ -87,7 +87,7 @@ describe('inputItem', () => {
 
 		buildInputProcessorMock.mockReturnValue(inputProcessor)
 
-		expect(await inputItem(flags)).toEqual([item1, IOFormat.COMMON])
+		expect(await inputItem(flags)).toEqual([item1, 'common'])
 
 		expect(buildInputProcessorMock).toHaveBeenCalledTimes(1)
 		expect(buildInputProcessorMock).toHaveBeenCalledWith(flags)
@@ -170,7 +170,7 @@ describe('outputList', () => {
 describe('inputAndOutputItem', () => {
 	it('accepts input, executes command and writes output', async () => {
 		const inputProcessor: InputProcessor<SimpleType> = {
-			get ioFormat(): IOFormat.COMMON {
+			get ioFormat(): 'common' {
 				return ioFormatMock()
 			},
 			hasInput: hasInputMock,
@@ -180,7 +180,7 @@ describe('inputAndOutputItem', () => {
 
 		hasInputMock.mockReturnValue(true)
 		readMock.mockResolvedValue(item1)
-		ioFormatMock.mockReturnValue(IOFormat.COMMON)
+		ioFormatMock.mockReturnValue('common')
 
 		const executeCommandMock = jest.fn().mockResolvedValue(item1)
 
@@ -203,7 +203,7 @@ describe('inputAndOutputItem', () => {
 
 	it('accepts and writes input in dry run mode', async () => {
 		const inputProcessor: InputProcessor<SimpleType> = {
-			get ioFormat(): IOFormat.YAML {
+			get ioFormat(): 'yaml' {
 				return ioFormatMock()
 			},
 			hasInput: hasInputMock,
@@ -213,7 +213,7 @@ describe('inputAndOutputItem', () => {
 
 		hasInputMock.mockReturnValue(true)
 		readMock.mockResolvedValue(item1)
-		ioFormatMock.mockReturnValue(IOFormat.YAML)
+		ioFormatMock.mockReturnValue('yaml')
 
 		const formatterMock = jest.fn().mockReturnValueOnce('formatted output')
 		const buildOutputFormatterMock = buildOutputFormatter as unknown as
@@ -240,7 +240,7 @@ describe('inputAndOutputItem', () => {
 		expect(readMock).toHaveBeenCalledBefore(ioFormatMock)
 
 		expect(buildOutputFormatterMock).toHaveBeenCalledTimes(1)
-		expect(buildOutputFormatterMock).toHaveBeenCalledWith(flags, cliConfig, IOFormat.YAML)
+		expect(buildOutputFormatterMock).toHaveBeenCalledWith(flags, cliConfig, 'yaml')
 		expect(formatterMock).toHaveBeenCalledTimes(1)
 		expect(formatterMock).toHaveBeenCalledWith(item1)
 		expect(writeOutputMock).toHaveBeenCalledTimes(1)
@@ -251,7 +251,7 @@ describe('inputAndOutputItem', () => {
 
 	it('throws exception when input could not be found', async () => {
 		const inputProcessor = {
-			ioFormat: IOFormat.COMMON,
+			ioFormat: 'common',
 			hasInput: () => false,
 			read: async () => item1,
 		}

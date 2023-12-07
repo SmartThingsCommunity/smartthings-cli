@@ -35,7 +35,7 @@ export class FileInputProcessor<T> implements InputProcessor<T> {
 	readonly ioFormat: IOFormat
 
 	constructor(private readonly filename?: string) {
-		this.ioFormat = filename ? formatFromFilename(filename) : IOFormat.JSON
+		this.ioFormat = filename ? formatFromFilename(filename) : 'json'
 	}
 
 	hasInput(): boolean {
@@ -53,7 +53,7 @@ export class FileInputProcessor<T> implements InputProcessor<T> {
 
 export class StdinInputProcessor<T> implements InputProcessor<T> {
 	// Could be JSON or YAML but it's not really worth trying to figure out which.
-	readonly ioFormat = IOFormat.JSON
+	readonly ioFormat = 'json'
 	inputData?: string = undefined
 
 	async hasInput(): Promise<boolean> {
@@ -75,7 +75,7 @@ export class StdinInputProcessor<T> implements InputProcessor<T> {
  * Build an input processor given the necessary functions for doing so.
  */
 export function inputProcessor<T>(hasInput: () => boolean | Promise<boolean>, read: () => Promise<T>,
-		ioFormat: IOFormat = IOFormat.COMMON): InputProcessor<T> {
+		ioFormat: IOFormat = 'common'): InputProcessor<T> {
 	return { ioFormat, hasInput, read }
 }
 

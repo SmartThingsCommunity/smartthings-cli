@@ -1,6 +1,6 @@
-import { readFile, writeFile } from 'fs/promises'
-
 import { jest } from '@jest/globals'
+
+import { readFile, writeFile } from 'fs/promises'
 
 import yaml from 'js-yaml'
 

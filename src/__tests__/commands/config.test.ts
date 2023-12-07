@@ -1,7 +1,6 @@
 import { ArgumentsCamelCase } from 'yargs'
 
 import { Profile, ProfilesByName } from '../../lib/cli-config'
-import { IOFormat } from '../../lib/io-util'
 import cmd, { CommandArgs, ProfileWithName } from '../../commands/config.js'
 import { outputItem, outputList } from '../../lib/command/basic-io.js'
 import { stringTranslateToId } from '../../lib/command/command-util.js'
@@ -32,7 +31,7 @@ describe('handler', () => {
 	const outputItemMock = jest.mocked(outputItem<ProfileWithName>).mockResolvedValue(profile1WithName)
 	const outputListMock = jest.mocked(outputList<ProfileWithName>).mockResolvedValue([profile1WithName, profile2WithName])
 	const stringTranslateToIdMock = jest.mocked(stringTranslateToId).mockResolvedValue('translated-id')
-	const calculateOutputFormatMock = jest.mocked(calculateOutputFormat).mockReturnValue(IOFormat.COMMON)
+	const calculateOutputFormatMock = jest.mocked(calculateOutputFormat).mockReturnValue('common')
 	const writeOutputMock = jest.mocked(writeOutput)
 	const outputFormatterMock = jest.fn().mockReturnValue('formatted output')
 	const buildOutputFormatterMock = jest.mocked(buildOutputFormatter).mockReturnValue(outputFormatterMock)
@@ -108,7 +107,7 @@ describe('handler', () => {
 		} as SmartThingsCommand<SmartThingsCommandFlags>
 		smartThingsCommandMock.mockResolvedValue(command)
 
-		calculateOutputFormatMock.mockReturnValue(IOFormat.JSON)
+		calculateOutputFormatMock.mockReturnValue('json')
 
 		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
 
@@ -134,7 +133,7 @@ describe('handler', () => {
 		} as SmartThingsCommand<SmartThingsCommandFlags>
 		smartThingsCommandMock.mockResolvedValue(command)
 
-		calculateOutputFormatMock.mockReturnValue(IOFormat.JSON)
+		calculateOutputFormatMock.mockReturnValue('json')
 		stringTranslateToIdMock.mockResolvedValue('profile2')
 
 		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()

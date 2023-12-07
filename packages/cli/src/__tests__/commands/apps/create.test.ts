@@ -33,7 +33,7 @@ describe('AppCreateCommand', () => {
 			}),
 			expect.any(Function),
 			expect.objectContaining({
-				ioFormat: IOFormat.COMMON,
+				ioFormat: 'common',
 				hasInput: expect.any(Function),
 				read: expect.any(Function),
 			}),

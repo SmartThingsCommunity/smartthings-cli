@@ -30,7 +30,7 @@ describe('AppOauthGenerateCommand', () => {
 				tableFieldDefinitions: expect.arrayContaining(['oauthClientId', 'oauthClientSecret']),
 			}),
 			expect.any(Function),
-			expect.objectContaining({ ioFormat: IOFormat.COMMON }),
+			expect.objectContaining({ ioFormat: 'common' }),
 		)
 	})
 

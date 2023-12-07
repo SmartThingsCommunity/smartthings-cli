@@ -30,10 +30,10 @@ export const calculateOutputFormatBuilder = <T extends object>(yargs: Argv<T>): 
 export function calculateOutputFormat(flags: CalculateOutputFormatFlags, defaultIOFormat?: IOFormat): IOFormat {
 	// flags get highest priority...check them first
 	if (flags.json) {
-		return IOFormat.JSON
+		return 'json'
 	}
 	if (flags.yaml) {
-		return IOFormat.YAML
+		return 'yaml'
 	}
 	// if we have an output filename, use that file's extension
 	if (flags.output) {
@@ -43,7 +43,7 @@ export function calculateOutputFormat(flags: CalculateOutputFormatFlags, default
 		return defaultIOFormat
 	}
 	// if we're writing to the console, use user-friendly output, otherwise default to JSON
-	return stdoutIsTTY() ? IOFormat.COMMON : IOFormat.JSON
+	return stdoutIsTTY() ? 'common' : 'json'
 }
 
 export type OutputFormatter<T extends object> = (data: T) => string

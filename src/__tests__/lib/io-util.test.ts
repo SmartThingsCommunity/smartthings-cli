@@ -15,24 +15,24 @@ jest.unstable_mockModule('fs', () => ({
 
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const { formatFromFilename, IOFormat, parseJSONOrYAML, readDataFromStdin, stdinIsTTY, yamlExists } =
+const { formatFromFilename, parseJSONOrYAML, readDataFromStdin, stdinIsTTY, yamlExists } =
 	await import('../../lib/io-util.js')
 
 
 describe('formatFromFilename', () => {
 	it('handles yaml extensions', function () {
-		expect(formatFromFilename('fn.yaml')).toBe(IOFormat.YAML)
-		expect(formatFromFilename('fn.yml')).toBe(IOFormat.YAML)
-		expect(formatFromFilename('fn.YAML')).toBe(IOFormat.YAML)
+		expect(formatFromFilename('fn.yaml')).toBe('yaml')
+		expect(formatFromFilename('fn.yml')).toBe('yaml')
+		expect(formatFromFilename('fn.YAML')).toBe('yaml')
 	})
 
 	it('handles json extensions', function () {
-		expect(formatFromFilename('fn.json')).toBe(IOFormat.JSON)
-		expect(formatFromFilename('fn.JSON')).toBe(IOFormat.JSON)
+		expect(formatFromFilename('fn.json')).toBe('json')
+		expect(formatFromFilename('fn.JSON')).toBe('json')
 	})
 
 	it('defaults to YAML', function () {
-		expect(formatFromFilename('fn')).toBe(IOFormat.YAML)
+		expect(formatFromFilename('fn')).toBe('yaml')
 	})
 })
 

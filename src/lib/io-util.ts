@@ -4,24 +4,21 @@ import path from 'path'
 import yaml from 'js-yaml'
 
 
-export enum IOFormat {
-	YAML = 'yaml',
-	JSON = 'json',
-
-	// for input, this is Q & A or command line, for output, it's a human-readable table format
-	COMMON = 'common',
-}
+export type IOFormat =
+	| 'yaml'
+	| 'json'
+	| 'common' // Q&A or command line for input; table format for output
 
 export function formatFromFilename(filename: string): IOFormat {
 	const ext = path.extname(filename).toLowerCase()
 	if (ext === '.yaml' || ext === '.yml') {
-		return IOFormat.YAML
+		return 'yaml'
 	}
 	if (ext === '.json') {
-		return IOFormat.JSON
+		return 'json'
 	}
 	log4js.getLogger('cli').warn(`could not determine file type from filename "${filename}, assuming YAML`)
-	return IOFormat.YAML
+	return 'yaml'
 }
 
 

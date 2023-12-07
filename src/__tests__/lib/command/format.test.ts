@@ -1,4 +1,3 @@
-import { IOFormat } from '../../../lib/io-util.js'
 import { TableGenerator } from '../../../lib/table-generator.js'
 import { Naming } from '../../../lib/command/basic-io.js'
 import { CommonListOutputProducer, formatAndWriteItem, formatAndWriteList } from '../../../lib/command/format.js'
@@ -40,12 +39,12 @@ describe('formatAndWriteItem', () => {
 		const commonFormatter = jest.fn()
 		itemTableFormatterMock.mockReturnValue(commonFormatter)
 
-		await formatAndWriteItem(command, config, item, IOFormat.COMMON)
+		await formatAndWriteItem(command, config, item, 'common')
 
 		expect(itemTableFormatterMock).toHaveBeenCalledTimes(1)
 		expect(itemTableFormatterMock).toHaveBeenCalledWith(command.tableGenerator, config.tableFieldDefinitions)
 		expect(buildOutputFormatterMock).toHaveBeenCalledTimes(1)
-		expect(buildOutputFormatterMock).toHaveBeenCalledWith(flags, cliConfig, IOFormat.COMMON, commonFormatter)
+		expect(buildOutputFormatterMock).toHaveBeenCalledWith(flags, cliConfig, 'common', commonFormatter)
 		expect(outputFormatter).toHaveBeenCalledTimes(1)
 		expect(outputFormatter).toHaveBeenCalledWith(item)
 		expect(writeOutputMock).toHaveBeenCalledTimes(1)
@@ -57,11 +56,11 @@ describe('formatAndWriteItem', () => {
 			buildTableOutput: jest.fn(),
 		}
 
-		await formatAndWriteItem<SimpleType>(command, config, item, IOFormat.JSON)
+		await formatAndWriteItem<SimpleType>(command, config, item, 'json')
 
 		expect(itemTableFormatterMock).toHaveBeenCalledTimes(0)
 		expect(buildOutputFormatterMock).toHaveBeenCalledTimes(1)
-		expect(buildOutputFormatterMock).toHaveBeenCalledWith(flags, cliConfig, IOFormat.JSON, expect.anything())
+		expect(buildOutputFormatterMock).toHaveBeenCalledWith(flags, cliConfig, 'json', expect.anything())
 		expect(outputFormatter).toHaveBeenCalledTimes(1)
 		expect(outputFormatter).toHaveBeenCalledWith(item)
 		expect(writeOutputMock).toHaveBeenCalledTimes(1)
@@ -80,11 +79,11 @@ describe('formatAndWriteItem', () => {
 			buildTableOutput: jest.fn(),
 		}
 
-		await formatAndWriteItem<SimpleType>(command, config, item, IOFormat.JSON)
+		await formatAndWriteItem<SimpleType>(command, config, item, 'json')
 
 		expect(itemTableFormatterMock).toHaveBeenCalledTimes(0)
 		expect(buildOutputFormatterMock).toHaveBeenCalledTimes(1)
-		expect(buildOutputFormatterMock).toHaveBeenCalledWith(flags, cliConfig, IOFormat.JSON, expect.anything())
+		expect(buildOutputFormatterMock).toHaveBeenCalledWith(flags, cliConfig, 'json', expect.anything())
 		expect(outputFormatter).toHaveBeenCalledTimes(1)
 		expect(outputFormatter).toHaveBeenCalledWith(item)
 		expect(writeOutputMock).toHaveBeenCalledTimes(1)

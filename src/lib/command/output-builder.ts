@@ -35,10 +35,10 @@ export function buildOutputFormatter<T extends object>(flags: BuildOutputFormatt
 	const outputFormat = calculateOutputFormat(flags, inputFormat)
 
 	const indent = flags.indent || (cliConfig.profile.indent as number | undefined)
-	if (outputFormat === IOFormat.COMMON && commonOutputFormatter) {
+	if (outputFormat === 'common' && commonOutputFormatter) {
 		return commonOutputFormatter
 	}
-	if (outputFormat == IOFormat.YAML) {
+	if (outputFormat == 'yaml') {
 		return yamlFormatter(indent ?? 2)
 	}
 	return jsonFormatter(indent ?? 4)

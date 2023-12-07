@@ -19,7 +19,7 @@ jest.mock('../../../commands/locations')
 describe('LocationHistoryCommand', () => {
 	const chooseLocationMock = jest.mocked(chooseLocation).mockResolvedValue('locationId')
 	const historySpy = jest.spyOn(HistoryEndpoint.prototype, 'devices').mockImplementation()
-	const calculateOutputFormatMock = jest.mocked(calculateOutputFormat).mockReturnValue(IOFormat.COMMON)
+	const calculateOutputFormatMock = jest.mocked(calculateOutputFormat).mockReturnValue('common')
 	const writeDeviceEventsTableMock = jest.mocked(writeDeviceEventsTable)
 	const calculateRequestLimitMock = jest.mocked(calculateRequestLimit)
 	const getHistoryMock = jest.mocked(getHistory)
@@ -53,7 +53,7 @@ describe('LocationHistoryCommand', () => {
 		const items = [{ deviceId: 'device-1' }] as DeviceActivity[]
 
 		calculateRequestLimitMock.mockReturnValueOnce(20)
-		calculateOutputFormatMock.mockReturnValueOnce(IOFormat.JSON)
+		calculateOutputFormatMock.mockReturnValueOnce('json')
 		buildOutputFormatterMock.mockReturnValueOnce(outputFormatterMock)
 		getHistoryMock.mockResolvedValueOnce(items)
 
