@@ -1,6 +1,6 @@
 import { RulesEndpoint, RuleExecutionResponse, SmartThingsClient, Rule } from '@smartthings/core-sdk'
 
-import { CustomCommonOutputProducer, DefaultTableGenerator, formatAndWriteItem, WithNamedLocation } from '@smartthings/cli-lib'
+import { CustomCommonOutputProducer, defaultTableGenerator, formatAndWriteItem, WithNamedLocation } from '@smartthings/cli-lib'
 
 import RulesExecuteCommand from '../../../commands/rules/execute.js'
 import { buildExecuteResponseTableOutput, chooseRule, getRuleWithLocation }
@@ -47,7 +47,7 @@ describe('RulesExecuteCommand', () => {
 
 		expect(buildExecuteResponseTableOutputMock).toHaveBeenCalledTimes(1)
 		expect(buildExecuteResponseTableOutputMock)
-			.toHaveBeenCalledWith(expect.any(DefaultTableGenerator), executeResponse)
+			.toHaveBeenCalledWith(expect.any(defaultTableGenerator), executeResponse)
 	})
 
 	it('use rule id from command line', async () => {

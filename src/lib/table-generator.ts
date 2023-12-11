@@ -1,5 +1,5 @@
-import log4js from 'log4js'
 import at from 'lodash.at'
+import log4js from 'log4js'
 import { table } from 'table'
 
 import { stringFromUnknown } from './util.js'
@@ -140,22 +140,16 @@ export type Table = {
 	toString: () => string
 }
 
-class TableAdapter implements Table {
-	private data: string[][] = []
-	private hasHeaderRow: boolean
+const setupTable = (options: Partial<TableOptions>): Table => {
+	const data: string[][] = []
 
-	push(row: TableCellData[]): void {
-		this.data.push(row.map(cell => cell?.toString() ?? ''))
+	const push = (row: TableCellData[]): number => data.push(row.map(cell => cell?.toString() ?? ''))
+
+	if (options.head) {
+		data.push(options.head)
 	}
 
-	constructor(private options: Partial<TableOptions>) {
-		this.hasHeaderRow = options.head != undefined
-		if (options.head) {
-			this.data.push(options.head)
-		}
-	}
-
-	toString(): string {
+	const toString = (): string => {
 		const border = {
 			topBody: '─',
 			topJoin: '',
@@ -177,29 +171,23 @@ class TableAdapter implements Table {
 			joinJoin: '',
 		}
 
-		const listDrawHorizontalLine = this.options.groupRows
-			? (index: number) => index === 0 || index === this.data.length || (index - 1) % 5 === 0
-			: (index: number) => index === 0 || index === this.data.length || index === 1
-		const drawHorizontalLine = this.options.isList
+		const listDrawHorizontalLine = options.groupRows
+			? (index: number) => index === 0 || index === data.length || (index - 1) % 5 === 0
+			: (index: number) => index === 0 || index === data.length || index === 1
+		const drawHorizontalLine = options.isList
 			? listDrawHorizontalLine
-			: (index: number) => index === 0 || index === this.data.length
+			: (index: number) => index === 0 || index === data.length
 		const config = { drawHorizontalLine, border }
-		return table(this.data, config)
+		return table(data, config)
 	}
+
+	return { push, toString }
 }
 
-export class DefaultTableGenerator implements TableGenerator {
-	constructor(private groupRows: boolean) {}
+export const defaultTableGenerator = (tableOptions: Pick<TableOptions, 'groupRows'>): TableGenerator => {
+	const logger = log4js.getLogger('table-manager')
 
-	private _logger?: log4js.Logger
-	protected get logger(): log4js.Logger {
-		if (!this._logger) {
-			this._logger = log4js.getLogger('table-manager')
-		}
-		return this._logger
-	}
-
-	private convertToLabel(propertyName: string): string {
+	const convertToLabel = (propertyName: string): string => {
 		// We only use the last field for the name if it's a nested property.
 		const propertyNames = propertyName.split('.')
 		return propertyNames[propertyNames.length - 1]
@@ -212,9 +200,9 @@ export class DefaultTableGenerator implements TableGenerator {
 			.replace(/^Is /, '')
 	}
 
-	private getLabelFor<T extends object>(definition: TableFieldDefinition<T>): string {
+	const getLabelFor = <T extends object>(definition: TableFieldDefinition<T>): string => {
 		if (typeof definition !== 'object') {
-			return this.convertToLabel(definition.toString())
+			return convertToLabel(definition.toString())
 		}
 
 		if (definition.label) {
@@ -226,13 +214,13 @@ export class DefaultTableGenerator implements TableGenerator {
 		}
 
 		if ('prop' in definition) {
-			return this.convertToLabel(definition.prop.toString())
+			return convertToLabel(definition.prop.toString())
 		}
 
-		return this.convertToLabel(definition.path)
+		return convertToLabel(definition.path)
 	}
 
-	private getDisplayValueFor<T extends object>(item: T, definition: TableFieldDefinition<T>): string | undefined {
+	const getDisplayValueFor = <T extends object>(item: T, definition: TableFieldDefinition<T>): string | undefined => {
 		if (typeof definition === 'object' && 'value' in definition) {
 			return definition.value(item)
 		}
@@ -246,47 +234,49 @@ export class DefaultTableGenerator implements TableGenerator {
 		// takes so we cast it to the DefinitelyTyped type.
 		const matches = at(item, definition.path as unknown as keyof T)
 		if (matches.length === 0) {
-			this.logger.debug(`did not find match for ${definition.path} in ${JSON.stringify(item)}`)
+			logger.debug(`did not find match for ${definition.path} in ${JSON.stringify(item)}`)
 			return ''
 		}
 		if (matches.length > 1) {
-			this.logger.warn(`found more than one match for ${definition.path} in ${JSON.stringify(item)}`)
+			logger.warn(`found more than one match for ${definition.path} in ${JSON.stringify(item)}`)
 		}
 		return matches.map(value => stringFromUnknown(value)).join(', ')
 	}
 
-	newOutputTable(options?: Partial<TableOptions>): Table {
-		const configuredOptions = { groupRows: this.groupRows }
+	const newOutputTable = (options?: Partial<TableOptions>): Table => {
+		const configuredOptions = { ...tableOptions }
 
 		if (options) {
-			return new TableAdapter({ ...configuredOptions, ...options })
+			return setupTable({ ...configuredOptions, ...options })
 		}
-		return new TableAdapter(configuredOptions)
+		return setupTable(configuredOptions)
 	}
 
-	buildTableFromItem<T extends object>(item: T, definitions: TableFieldDefinition<T>[]): string {
-		const table = this.newOutputTable()
+	const buildTableFromItem = <T extends object>(item: T, definitions: TableFieldDefinition<T>[]): string => {
+		const table = newOutputTable()
 		for (const definition of definitions) {
 			if (typeof definition !== 'object'
 					|| definition.include === undefined
 					|| definition.include(item)) {
-				const value = this.getDisplayValueFor(item, definition)
+				const value = getDisplayValueFor(item, definition)
 				if (typeof definition !== 'object'
 						|| !definition.skipEmpty
 						|| value) {
-					table.push([this.getLabelFor(definition), value])
+					table.push([getLabelFor(definition), value])
 				}
 			}
 		}
 		return table.toString()
 	}
 
-	buildTableFromList<T extends object>(items: T[], definitions: TableFieldDefinition<T>[]): string {
-		const headingLabels = definitions.map(def => this.getLabelFor(def))
-		const table = this.newOutputTable({ isList: true, head: headingLabels })
+	const buildTableFromList = <T extends object>(items: T[], definitions: TableFieldDefinition<T>[]): string => {
+		const headingLabels = definitions.map(def => getLabelFor(def))
+		const table = newOutputTable({ isList: true, head: headingLabels })
 		for (const item of items) {
-			table.push(definitions.map(def => this.getDisplayValueFor(item, def)))
+			table.push(definitions.map(def => getDisplayValueFor(item, def)))
 		}
 		return table.toString()
 	}
+
+	return { newOutputTable, buildTableFromItem, buildTableFromList }
 }

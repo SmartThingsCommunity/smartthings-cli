@@ -1,6 +1,6 @@
 import { ChannelsEndpoint, DriverChannelDetails, EdgeDriver } from '@smartthings/core-sdk'
 
-import { CustomCommonOutputProducer, DefaultTableGenerator, outputItemOrList } from '@smartthings/cli-lib'
+import { CustomCommonOutputProducer, defaultTableGenerator, outputItemOrList } from '@smartthings/cli-lib'
 
 import ChannelsMetaInfoCommand from '../../../../commands/edge/channels/metainfo.js'
 import { buildTableOutput } from '../../../../lib/commands/drivers-util.js'
@@ -123,6 +123,6 @@ describe('ChannelsMetaInfoCommand', () => {
 		expect(config.buildTableOutput(driver)).toBe('table output')
 
 		expect(buildTableOutputMock).toHaveBeenCalledTimes(1)
-		expect(buildTableOutputMock).toHaveBeenCalledWith(expect.any(DefaultTableGenerator), driver)
+		expect(buildTableOutputMock).toHaveBeenCalledWith(expect.any(defaultTableGenerator), driver)
 	})
 })

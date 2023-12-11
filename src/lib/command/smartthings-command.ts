@@ -4,7 +4,7 @@ import { Argv } from 'yargs'
 import { CLIConfig, loadConfig, Profile } from '../cli-config.js'
 import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../log-utils.js'
 import { BuildOutputFormatterFlags } from './output-builder.js'
-import { DefaultTableGenerator, TableGenerator } from '../table-generator.js'
+import { defaultTableGenerator, TableGenerator } from '../table-generator.js'
 
 
 export type SmartThingsCommandFlags = {
@@ -106,7 +106,7 @@ export const smartThingsCommand = async <T extends SmartThingsCommandFlags>(flag
 	const groupRowsFlag = (flags as Pick<BuildOutputFormatterFlags, 'groupRows'>).groupRows
 	const groupRows = groupRowsFlag ?? booleanConfigValue('groupTableOutputRows', true)
 
-	const tableGenerator = new DefaultTableGenerator(groupRows)
+	const tableGenerator = defaultTableGenerator({ groupRows })
 
 	function stringConfigValue(keyName: string): string
 	function stringConfigValue(keyName: string, defaultValue: string): string

@@ -1,7 +1,7 @@
 import { Device, DevicesEndpoint, DeviceStatus, SmartThingsClient } from '@smartthings/core-sdk'
 
 import {
-	CustomCommonOutputProducer, DefaultTableGenerator, outputItemOrList,
+	CustomCommonOutputProducer, defaultTableGenerator, outputItemOrList,
 	withLocationAndRoom,
 	withLocationsAndRooms, WithNamedRoom,
 } from '@smartthings/cli-lib'
@@ -85,7 +85,7 @@ describe('DevicesCommand', () => {
 		expect(config.buildTableOutput(device)).toBe('table output')
 
 		expect(buildTableOutputMock).toHaveBeenCalledTimes(1)
-		expect(buildTableOutputMock).toHaveBeenCalledWith(expect.any(DefaultTableGenerator), device)
+		expect(buildTableOutputMock).toHaveBeenCalledWith(expect.any(defaultTableGenerator), device)
 	})
 
 	describe('list function', () => {
