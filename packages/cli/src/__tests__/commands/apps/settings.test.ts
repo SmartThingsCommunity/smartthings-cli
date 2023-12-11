@@ -1,4 +1,4 @@
-import { CustomCommonOutputProducer, DefaultTableGenerator, outputItem } from '@smartthings/cli-lib'
+import { CustomCommonOutputProducer, defaultTableGenerator, outputItem } from '@smartthings/cli-lib'
 import { AppsEndpoint, AppSettingsResponse } from '@smartthings/core-sdk'
 import AppSettingsCommand from '../../../commands/apps/settings.js'
 import { buildTableOutput, chooseApp } from '../../../lib/commands/apps-util.js'
@@ -47,7 +47,7 @@ describe('AppSettingsCommand', () => {
 		)
 
 		expect(buildTableOutput).toBeCalledWith(
-			expect.any(DefaultTableGenerator),
+			expect.any(defaultTableGenerator),
 			appSettings,
 		)
 	})

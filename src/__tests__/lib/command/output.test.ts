@@ -8,7 +8,7 @@ import {
 	yamlFormatter,
 } from '../../../lib/command/output.js'
 import { formatFromFilename, stdoutIsTTY, writeFile } from '../../../lib/io-util.js'
-import { DefaultTableGenerator, TableFieldDefinition, TableGenerator } from '../../../lib/table-generator.js'
+import { defaultTableGenerator, TableFieldDefinition, TableGenerator } from '../../../lib/table-generator.js'
 
 import { SimpleType } from '../../test-lib/simple-type.js'
 
@@ -136,7 +136,7 @@ describe('listTableFormatter', () => {
 	})
 
 	it('handles includeIndex', () => {
-		const tableGenerator = new DefaultTableGenerator(true)
+		const tableGenerator = defaultTableGenerator({ groupRows: true })
 		const formatter = listTableFormatter(tableGenerator, fieldDefinitions, /* includeIndex */ true)
 
 		const buildTableSpy = jest.spyOn(tableGenerator, 'buildTableFromList')

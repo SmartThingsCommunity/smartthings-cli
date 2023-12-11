@@ -1,4 +1,4 @@
-import { CustomCommonOutputProducer, DefaultTableGenerator, inputAndOutputItem, IOFormat } from '@smartthings/cli-lib'
+import { CustomCommonOutputProducer, defaultTableGenerator, inputAndOutputItem, IOFormat } from '@smartthings/cli-lib'
 import { AppCreationResponse, AppCreateRequest, AppsEndpoint, AppResponse } from '@smartthings/core-sdk'
 import AppCreateCommand from '../../../commands/apps/create.js'
 import { tableFieldDefinitions } from '../../../lib/commands/apps-util.js'
@@ -22,7 +22,7 @@ describe('AppCreateCommand', () => {
 		mockInputAndOutputItem.mockImplementationOnce(async (_command, config) => {
 			(config as CustomCommonOutputProducer<AppCreationResponse>).buildTableOutput(appCreate)
 		})
-		const buildTableSpy = jest.spyOn(DefaultTableGenerator.prototype, 'buildTableFromItem')
+		const buildTableSpy = jest.spyOn(defaultTableGenerator.prototype, 'buildTableFromItem')
 
 		await expect(AppCreateCommand.run([])).resolves.not.toThrow()
 

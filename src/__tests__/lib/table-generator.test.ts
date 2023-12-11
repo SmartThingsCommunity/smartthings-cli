@@ -1,47 +1,48 @@
 import { jest } from '@jest/globals'
 
+import log4js from 'log4js'
 import { URL } from 'url'
-import { TableFieldDefinition, TableGenerator } from '../../lib/table-generator.js'
+
+import { TableFieldDefinition } from '../../lib/table-generator.js'
 
 
-const mockDebug = jest.fn()
-const mockWarn = jest.fn()
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LogFunction = (message: any, ...args: any[]) => void
+const getLoggerMock: jest.Mock<typeof log4js.getLogger> = jest.fn()
+const warnMock = jest.fn() as jest.Mock<LogFunction>
+const debugMock = jest.fn() as jest.Mock<LogFunction>
+const loggerMock = {
+	warn: warnMock,
+	debug: debugMock,
+} as unknown as log4js.Logger
+getLoggerMock.mockReturnValue(loggerMock)
 jest.unstable_mockModule('log4js', () => ({
 	default: {
-		getLogger: jest.fn(() => ({
-			debug: mockDebug,
-			warn: mockWarn,
-		})),
+		getLogger: getLoggerMock,
 	},
 }))
 
-jest.unstable_mockModule('lodash.at', () => {
-	const original = jest.requireActual('lodash.at') as (...args: unknown[]) => unknown
-	return {
-		default: jest.fn(original),
-	}
-})
+// TODO: this is really just a spy. Should we just use a spy?
+const original = (await import('lodash.at')).default
+const atMock = jest.fn(original)
+jest.unstable_mockModule('lodash.at', async () => ({ default: atMock }))
 
-const log4js = (await import('log4js')).default
-const at = (await import('lodash.at')).default
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-const { DefaultTableGenerator } = await import('../../lib/table-generator.js')
+const { defaultTableGenerator } = await import('../../lib/table-generator.js')
+
 
 /**
  * Quote characters that are special to regular expressions.
  * This isn't complete but it's good enough for this test.
  */
-function quoteForRegex(str: string): string {
-	return str.replace(/\./g, '\\.').replace(/\//g, '\\/')
-}
+const quoteForRegex = (str: string): string => str.replace(/\./g, '\\.').replace(/\//g, '\\/')
 
 /**
  * The output of the table command has escape sequences to change coloring.
  * These make it harder to validate so this method strips them.
  */
-function stripEscapeSequences(str: string): string {
+const stripEscapeSequences = (str: string): string => {
 	let retVal = ''
 	let inEscapeSequence = false
 	for (let index = 0; index < str.length; index++) {
@@ -152,17 +153,61 @@ const basicFieldDefinitions: TableFieldDefinition<SimpleData>[] = [
 ]
 
 describe('table-generator', () => {
-	const atMock = jest.mocked(at)
-	const getLoggerMock = jest.mocked(log4js.getLogger)
+	describe('defaultTableGenerator', () => {
+		it('produces TableGenerator with "table-generator" logger', () => {
+			expect(defaultTableGenerator({ groupRows: false })).toStrictEqual(expect.objectContaining({
+				newOutputTable: expect.any(Function),
+				buildTableFromItem: expect.any(Function),
+				buildTableFromList: expect.any(Function),
+			}))
 
-	let tableGenerator: TableGenerator
+			expect(getLoggerMock).toHaveBeenCalledTimes(1)
+			expect(getLoggerMock).toHaveBeenCalledWith('table-manager')
+		})
+	})
 
-	beforeEach(() => {
-		tableGenerator = new DefaultTableGenerator(false)
+	describe('newOutputTable', () => {
+		it('groups rows for a list when requested in defaultTableGenerator', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: true })
+
+			const table = tableGenerator.newOutputTable({ isList: true })
+			for (let count = 0; count < 7; ++count) {
+				table.push(['row', 'data'])
+			}
+
+			const output = table.toString()
+			expect(lineCount(output)).toBe(11)
+		})
+
+		it('does not group rows for a list when requested in defaultTableGenerator', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
+			const table = tableGenerator.newOutputTable({ isList: true })
+			for (let count = 0; count < 7; ++count) {
+				table.push(['row', 'data'])
+			}
+
+			const output = table.toString()
+			expect(lineCount(output)).toBe(10)
+		})
+
+		it('`groupRows` value passed to `newTableOutput` overrides value passed to `defaultTableGenerator`', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
+			const table = tableGenerator.newOutputTable({ groupRows: true, isList: true })
+			for (let count = 0; count < 7; ++count) {
+				table.push(['row', 'data'])
+			}
+
+			const output = table.toString()
+			expect(lineCount(output)).toBe(11)
+		})
 	})
 
 	describe('buildTableFromItem', () => {
-		it('converts simple column labels properly', function() {
+		it('converts simple column labels properly', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const output = tableGenerator.buildTableFromItem(basicData, basicFieldDefinitions)
 
 			expect(output).toHaveLabel('Id')
@@ -184,7 +229,9 @@ describe('table-generator', () => {
 			expect(output).toHaveLabel('OAuth Client Id')
 		})
 
-		it('converts simple column values properly', function() {
+		it('converts simple column values properly', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const output = tableGenerator.buildTableFromItem(basicData, basicFieldDefinitions)
 
 			expect(output).toHaveValue('uuid-here')
@@ -196,7 +243,9 @@ describe('table-generator', () => {
 			expect(output).toHaveLabelAndValue('Sub Field', 'sub-field value')
 		})
 
-		it('uses specified column headings', function() {
+		it('uses specified column headings', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const basicFieldDefinitions: TableFieldDefinition<SimpleData>[] = [{
 				prop: 'reallyLongFieldName',
 				label: 'Shorter Name',
@@ -207,7 +256,9 @@ describe('table-generator', () => {
 			expect(output).toHaveLabel('Shorter Name')
 		})
 
-		it('uses calculated value', function() {
+		it('uses calculated value', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const fieldDefinitions: TableFieldDefinition<SimpleData>[] = [{
 				prop: 'reallyLongFieldName',
 				value: (item: SimpleData): string => `${item.reallyLongFieldName} ms`,
@@ -217,7 +268,9 @@ describe('table-generator', () => {
 			expect(output).toHaveValue('7.2 ms')
 		})
 
-		it('uses empty string for undefined calculated value', function() {
+		it('uses empty string for undefined calculated value', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const fieldDefinitions: TableFieldDefinition<SimpleData>[] = [{
 				label: 'Really Long Field Name',
 				prop: 'reallyLongFieldName',
@@ -232,7 +285,9 @@ describe('table-generator', () => {
 			|`))
 		})
 
-		it('skips rows when include returns false', function() {
+		it('skips rows when include returns false', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const fieldDefinitions: TableFieldDefinition<SimpleData>[] = ['id', {
 				prop: 'someNumber',
 				include: (item: SimpleData): boolean => item.someNumber < 5,
@@ -244,7 +299,9 @@ describe('table-generator', () => {
 			expect(lineCount(output)).toBe(3)
 		})
 
-		it('remembers to include rows when include returns true', function() {
+		it('remembers to include rows when include returns true', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const fieldDefinitions: TableFieldDefinition<SimpleData>[] = ['id', {
 				prop: 'someNumber',
 				include: (item: SimpleData): boolean => item.someNumber > 5,
@@ -256,7 +313,9 @@ describe('table-generator', () => {
 			expect(lineCount(output)).toBe(4)
 		})
 
-		it('skips falsy values with skipEmpty', function() {
+		it('skips falsy values with skipEmpty', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const fieldDefinitions: TableFieldDefinition<SimpleData>[] =
 				['id', { prop: 'mightBeNull', skipEmpty: true }]
 			const output = tableGenerator.buildTableFromItem(basicData, fieldDefinitions)
@@ -266,7 +325,9 @@ describe('table-generator', () => {
 			expect(lineCount(output)).toBe(3)
 		})
 
-		it('include truthy values with skipEmpty', function() {
+		it('include truthy values with skipEmpty', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const fieldDefinitions: TableFieldDefinition<SimpleData>[] =
 				['id', { prop: 'mightBeNull', skipEmpty: true }]
 			const output = tableGenerator.buildTableFromItem({ ...basicData, mightBeNull: 'not null' }, fieldDefinitions)
@@ -277,6 +338,8 @@ describe('table-generator', () => {
 		})
 
 		it('handles all possible TableCellData types', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const item = {
 				stringField: 'string',
 				numberField: 'number',
@@ -298,7 +361,9 @@ describe('table-generator', () => {
 	})
 
 	describe('buildTableFromList', () => {
-		it('generates the correct number of rows', function() {
+		it('generates the correct number of rows', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			let output = tableGenerator.buildTableFromList([basicData], ['id', 'someNumber'])
 
 			expect(lineCount(output)).toBe(5) // top and bottom, header, header separator and data row
@@ -307,55 +372,53 @@ describe('table-generator', () => {
 			expect(lineCount(output)).toBe(6) // top and bottom, header, header separator and two data rows
 		})
 
-		it('generates the correct header', function() {
+		it('generates the correct header', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const output = tableGenerator.buildTableFromList([basicData], ['id', 'someNumber'])
 
 			expect(output).toHaveItemValues(['Id', 'Some Number'])
 		})
 
-		it('generates the correct data values', function() {
+		it('generates the correct data values', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const output = tableGenerator.buildTableFromList([basicData], ['id', 'someNumber'])
 
 			expect(output).toHaveItemValues(['uuid-here', '14.4'])
 		})
 
 		it('uses empty string for no match', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			atMock.mockReturnValue([])
 
 			const output = tableGenerator.buildTableFromList([{} as { obj?: string }], [{ path: 'obj.name' }])
 
 			expect(output).toHaveItemValues([''])
-			expect(getLoggerMock).toHaveBeenCalledTimes(1)
-			expect(getLoggerMock).toHaveBeenCalledWith('table-manager')
 			expect(atMock).toHaveBeenCalledTimes(1)
 			expect(atMock).toHaveBeenCalledWith({}, 'obj.name')
-			expect(mockDebug).toHaveBeenCalledTimes(1)
-			expect(mockDebug).toHaveBeenCalledWith('did not find match for obj.name in {}')
+			expect(debugMock).toHaveBeenCalledTimes(1)
+			expect(debugMock).toHaveBeenCalledWith('did not find match for obj.name in {}')
 		})
 
 		it('combines data on multiple matches', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			atMock.mockReturnValue(['one', 'two'])
 
 			const output = tableGenerator.buildTableFromList([{} as { obj?: string }], [{ path: 'obj.name' }])
 
 			expect(output).toHaveItemValues(['one, two'])
-			expect(getLoggerMock).toHaveBeenCalledTimes(1)
-			expect(getLoggerMock).toHaveBeenCalledWith('table-manager')
 			expect(atMock).toHaveBeenCalledTimes(1)
 			expect(atMock).toHaveBeenCalledWith({}, 'obj.name')
-			expect(mockWarn).toHaveBeenCalledTimes(1)
-			expect(mockWarn).toHaveBeenCalledWith('found more than one match for obj.name in {}')
-		})
-
-		it('gets logger only once', () => {
-			tableGenerator.buildTableFromList([{} as { obj?: string }], [{ path: 'obj.name' }])
-			expect(getLoggerMock).toHaveBeenCalledTimes(1)
-			expect(getLoggerMock).toHaveBeenCalledWith('table-manager')
-			tableGenerator.buildTableFromList([{} as { obj?: string }], [{ path: 'obj.name' }])
-			expect(getLoggerMock).toHaveBeenCalledTimes(1)
+			expect(warnMock).toHaveBeenCalledTimes(1)
+			expect(warnMock).toHaveBeenCalledWith('found more than one match for obj.name in {}')
 		})
 
 		it('includes separators every 4 rows with grouping on', () => {
+			const tableGenerator = defaultTableGenerator({ groupRows: false })
+
 			const longList: SimpleData[] = [
 				{ id: 'uno', someNumber: 10 },
 				{ id: 'dos', someNumber: 9 },
