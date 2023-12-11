@@ -1,4 +1,36 @@
-import {
+import { jest } from '@jest/globals'
+
+import { writeFile } from 'fs/promises'
+
+import { formatFromFilename, stdoutIsTTY } from '../../../lib/io-util.js'
+import { Table, TableFieldDefinition, TableGenerator, TableOptions, ValueTableFieldDefinition } from '../../../lib/table-generator.js'
+
+import { SimpleType } from '../../test-lib/simple-type.js'
+
+
+const writeFileMock: jest.Mock<typeof writeFile> = jest.fn()
+jest.unstable_mockModule('fs/promises', () => ({
+	writeFile: writeFileMock,
+}))
+
+const formatFromFilenameMock: jest.Mock<typeof formatFromFilename> = jest.fn()
+const stdoutIsTTYMock: jest.Mock<typeof stdoutIsTTY> = jest.fn()
+jest.unstable_mockModule('../../../lib/io-util.js', () => ({
+	formatFromFilename: formatFromFilenameMock,
+	stdoutIsTTY: stdoutIsTTYMock,
+}))
+
+const newOutputTableMock: jest.Mock<(options?: Partial<TableOptions>) => Table> = jest.fn()
+const buildTableFromItemMock: jest.Mock<(item: object, tableFieldDefinitions: TableFieldDefinition<object>[]) => string> = jest.fn()
+const buildTableFromListMock: jest.Mock<(items: object[], tableFieldDefinitions: TableFieldDefinition<object>[]) => string> = jest.fn()
+const tableGeneratorMock: TableGenerator = {
+	newOutputTable: newOutputTableMock,
+	buildTableFromItem: buildTableFromItemMock,
+	buildTableFromList: buildTableFromListMock,
+}
+
+
+const {
 	calculateOutputFormat,
 	itemTableFormatter,
 	jsonFormatter,
@@ -6,17 +38,16 @@ import {
 	sort,
 	writeOutput,
 	yamlFormatter,
-} from '../../../lib/command/output.js'
-import { formatFromFilename, stdoutIsTTY, writeFile } from '../../../lib/io-util.js'
-import { defaultTableGenerator, TableFieldDefinition, TableGenerator } from '../../../lib/table-generator.js'
-
-import { SimpleType } from '../../test-lib/simple-type.js'
-
-
-jest.mock('../../../lib/io-util.js')
+} = await import('../../../lib/command/output.js')
 
 
 describe('sort', () => {
+	it('returns list unsorted when no `keyName` specified', () => {
+		const input: SimpleType[] = [{ str: 'a string', num: 5 }]
+		const result = sort(input)
+		expect(result).toBe(input)
+	})
+
 	it('handles an empty array', () => {
 		const input: SimpleType[] = []
 		const result = sort(input, 'str')
@@ -46,7 +77,7 @@ describe('calculateOutputFormat', () => {
 
 	it('gets format using formatFromFilename with output file when not specified', () => {
 		const flags = { output: 'fn.json' }
-		const formatFromFilenameMock = jest.mocked(formatFromFilename).mockReturnValue('json')
+		formatFromFilenameMock.mockReturnValue('json')
 
 		expect(calculateOutputFormat(flags)).toBe('json')
 
@@ -59,17 +90,17 @@ describe('calculateOutputFormat', () => {
 	})
 
 	it('falls back to common in console with no other default specified', () => {
-		const ttySpy = jest.mocked(stdoutIsTTY).mockReturnValue(true)
+		stdoutIsTTYMock.mockReturnValue(true)
 
 		expect(calculateOutputFormat({})).toBe('common')
-		expect(ttySpy).toHaveBeenCalledTimes(1)
+		expect(stdoutIsTTYMock).toHaveBeenCalledTimes(1)
 	})
 
 	it('falls back to JSON with no other default specified and not outputting to the console', () => {
-		const ttySpy = jest.mocked(stdoutIsTTY).mockReturnValue(false)
+		stdoutIsTTYMock.mockReturnValue(false)
 
 		expect(calculateOutputFormat({})).toBe('json')
-		expect(ttySpy).toHaveBeenCalledTimes(1)
+		expect(stdoutIsTTYMock).toHaveBeenCalledTimes(1)
 	})
 })
 
@@ -87,26 +118,19 @@ describe('simple formatters', () => {
 
 describe('itemTableFormatter', () => {
 	it('returns function that calls tableGenerator.buildTableFromItem', () => {
-		const buildTableFromItem = jest.fn()
-		const mockTableGenerator: TableGenerator = {
-			newOutputTable: jest.fn(),
-			buildTableFromItem,
-			buildTableFromList: jest.fn(),
-		}
-
 		const fieldDefinitions: TableFieldDefinition<SimpleType>[] = ['str', 'num']
-		const formatter = itemTableFormatter(mockTableGenerator, fieldDefinitions)
+		const formatter = itemTableFormatter(tableGeneratorMock, fieldDefinitions)
 
 		const expected = 'expected result'
-		buildTableFromItem.mockReturnValue(expected)
+		buildTableFromItemMock.mockReturnValue(expected)
 
 		const item: SimpleType = { str: 'string', num: 5 }
 
 		const result = formatter(item)
 
 		expect(result).toBe(expected)
-		expect(buildTableFromItem).toHaveBeenCalledTimes(1)
-		expect(buildTableFromItem).toHaveBeenCalledWith(item, fieldDefinitions)
+		expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
+		expect(buildTableFromItemMock).toHaveBeenCalledWith(item, fieldDefinitions)
 	})
 })
 
@@ -117,52 +141,48 @@ describe('listTableFormatter', () => {
 	const list: SimpleType[] = [{ str: 'string1', num: 4 }, { str: 'string2', num: 5 }, { str: 'string3', num: 6 }]
 
 	it('returns function that calls tableGenerator.buildTableFromList', () => {
-		const buildTableFromList = jest.fn()
-		const mockTableGenerator: TableGenerator = {
-			newOutputTable: jest.fn(),
-			buildTableFromItem: jest.fn(),
-			buildTableFromList,
-		}
+		const formatter = listTableFormatter(tableGeneratorMock, fieldDefinitions)
 
-		const formatter = listTableFormatter(mockTableGenerator, fieldDefinitions)
-
-		buildTableFromList.mockReturnValue(expected)
+		buildTableFromListMock.mockReturnValue(expected)
 
 		const result = formatter(list)
 
 		expect(result).toBe(expected)
-		expect(buildTableFromList).toHaveBeenCalledTimes(1)
-		expect(buildTableFromList).toHaveBeenCalledWith(list, fieldDefinitions)
+		expect(buildTableFromListMock).toHaveBeenCalledTimes(1)
+		expect(buildTableFromListMock).toHaveBeenCalledWith(list, fieldDefinitions)
 	})
 
 	it('handles includeIndex', () => {
-		const tableGenerator = defaultTableGenerator({ groupRows: true })
-		const formatter = listTableFormatter(tableGenerator, fieldDefinitions, /* includeIndex */ true)
+		const formatter = listTableFormatter(tableGeneratorMock, fieldDefinitions, /* includeIndex */ true)
+		buildTableFromListMock.mockReturnValueOnce('formatted table 1')
+		buildTableFromListMock.mockReturnValueOnce('formatted table 2')
 
-		const buildTableSpy = jest.spyOn(tableGenerator, 'buildTableFromList')
+		expect(formatter(list)).toBe('formatted table 1')
 
-		const result = formatter(list)
+		expect(buildTableFromListMock).toHaveBeenCalledTimes(1)
+		const table1LabelFieldDefinition = buildTableFromListMock.mock.calls[0][1][0] as ValueTableFieldDefinition<object>
+		expect(table1LabelFieldDefinition.label).toBe('#')
+		const valueFunction1 = table1LabelFieldDefinition.value
+		expect(valueFunction1({})).toBe('1')
+		expect(valueFunction1({})).toBe('2')
+		expect(valueFunction1({})).toBe('3')
 
-		expect(buildTableSpy).toHaveBeenCalledTimes(1)
-		expect(result).toContain(' # ')
-		expect(result).toContain(' 1 ')
-		expect(result).toContain(' 2 ')
-		expect(result).toContain(' 3 ')
+		// Ensure `value` starts over at 1 the second time if we call twice.
+		expect(formatter(list)).toBe('formatted table 2')
 
-		const result2 = formatter(list)
-
-		// Ensure resets to 1 if we call twice.
-		expect(buildTableSpy).toHaveBeenCalledTimes(2)
-		expect(result2).toContain(' # ')
-		expect(result2).toContain(' 1 ')
-		expect(result2).toContain(' 2 ')
-		expect(result2).toContain(' 3 ')
+		expect(buildTableFromListMock).toHaveBeenCalledTimes(2)
+		const table2LabelFieldDefinition = buildTableFromListMock.mock.calls[0][1][0] as ValueTableFieldDefinition<object>
+		expect(table2LabelFieldDefinition.label).toBe('#')
+		const valueFunction2 = table2LabelFieldDefinition.value
+		expect(valueFunction2({})).toBe('1')
+		expect(valueFunction2({})).toBe('2')
+		expect(valueFunction2({})).toBe('3')
 	})
 })
 
 describe('writeOutput', () => {
 	it('writes to file when there is one', async () => {
-		const writeFileMock = jest.mocked(writeFile).mockResolvedValue()
+		writeFileMock.mockResolvedValue()
 
 		await writeOutput('data', 'fn')
 
