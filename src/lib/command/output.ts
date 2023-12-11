@@ -7,7 +7,7 @@ import { formatFromFilename, IOFormat, stdoutIsTTY } from '../io-util.js'
 import { TableFieldDefinition, TableGenerator } from '../table-generator.js'
 
 
-export function sort<L extends object>(list: L[], keyName?: Extract<keyof L, string>): L[] {
+export const sort = <L extends object>(list: L[], keyName?: Extract<keyof L, string>): L[] => {
 	if (!keyName) {
 		return list
 	}
@@ -27,7 +27,7 @@ export const calculateOutputFormatBuilder = <T extends object>(yargs: Argv<T>): 
 	.option('output', { alias: 'o', describe: 'specify output file', type: 'string' })
 	.option('json', { alias: 'j', describe: 'use JSON format of input and/or output', type: 'boolean', conflicts: 'yaml' })
 	.option('yaml', { alias: 'y', describe: 'use YAML format of input and/or output', type: 'boolean', conflicts: 'json' })
-export function calculateOutputFormat(flags: CalculateOutputFormatFlags, defaultIOFormat?: IOFormat): IOFormat {
+export const calculateOutputFormat = (flags: CalculateOutputFormatFlags, defaultIOFormat?: IOFormat): IOFormat => {
 	// flags get highest priority...check them first
 	if (flags.json) {
 		return 'json'
@@ -48,21 +48,17 @@ export function calculateOutputFormat(flags: CalculateOutputFormatFlags, default
 
 export type OutputFormatter<T extends object> = (data: T) => string
 
-export function jsonFormatter<T extends object>(indent: number): OutputFormatter<T> {
-	return (data: T) => JSON.stringify(data, null, indent)
-}
+export const jsonFormatter = <T extends object>(indent: number): OutputFormatter<T> =>
+	(data: T) => JSON.stringify(data, null, indent)
 
-export function yamlFormatter<T extends object>(indent: number): OutputFormatter<T> {
-	return (data: T) => yaml.dump(data, { indent })
-}
+export const yamlFormatter = <T extends object>(indent: number): OutputFormatter<T> =>
+	(data: T) => yaml.dump(data, { indent })
 
-export function itemTableFormatter<T extends object>(tableGenerator: TableGenerator,
-		fieldDefinitions: TableFieldDefinition<T>[]): OutputFormatter<T> {
-	return (item: T) => tableGenerator.buildTableFromItem(item, fieldDefinitions)
-}
+export const itemTableFormatter =
+	<T extends object>(tableGenerator: TableGenerator, fieldDefinitions: TableFieldDefinition<T>[]): OutputFormatter<T> =>
+		(item: T) => tableGenerator.buildTableFromItem(item, fieldDefinitions)
 
-export function listTableFormatter<T extends object>(tableGenerator: TableGenerator,
-		fieldDefinitions: TableFieldDefinition<T>[], includeIndex = false): OutputFormatter<T[]> {
+export const listTableFormatter = <T extends object>(tableGenerator: TableGenerator, fieldDefinitions: TableFieldDefinition<T>[], includeIndex = false): OutputFormatter<T[]> => {
 	let count = 0
 	const tfd = includeIndex ? [{
 		label: '#',
@@ -74,8 +70,7 @@ export function listTableFormatter<T extends object>(tableGenerator: TableGenera
 	}
 }
 
-
-export async function writeOutput(dataStr: string, filename?: string): Promise<void> {
+export const writeOutput = async (dataStr: string, filename?: string): Promise<void> => {
 	if (filename) {
 		await writeFile(filename, dataStr)
 	} else {
