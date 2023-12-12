@@ -1,23 +1,31 @@
+import { jest } from '@jest/globals'
+
 import { combinedInputProcessor, fileInputProcessor, InputProcessor, stdinInputProcessor }
 	from '../../../lib/command/input-processor.js'
-import { buildInputProcessor } from '../../../lib/command/input-builder.js'
 import { SimpleType } from '../../test-lib/simple-type.js'
 
 
-jest.mock('../../../lib/command/input-processor.js')
+const combinedInputProcessorMock: jest.Mock<typeof combinedInputProcessor> = jest.fn()
+const fileInputProcessorMock: jest.Mock<typeof fileInputProcessor> = jest.fn()
+const stdinInputProcessorMock: jest.Mock<typeof stdinInputProcessor> = jest.fn()
+jest.unstable_mockModule('../../../lib/command/input-processor.js', () => ({
+	combinedInputProcessor: combinedInputProcessorMock,
+	fileInputProcessor: fileInputProcessorMock,
+	stdinInputProcessor: stdinInputProcessorMock,
+}))
+
+
+const { buildInputProcessor } = await import('../../../lib/command/input-builder.js')
 
 
 describe('buildInputProcessor', () => {
 	it('includes file and stdin input processors', () => {
-		const fileInputProcessorSpy = jest.mocked(fileInputProcessor)
-		const stdinInputProcessorSpy = jest.mocked(stdinInputProcessor)
-
 		const flags = {}
 
 		buildInputProcessor<SimpleType>(flags)
 
-		expect(fileInputProcessorSpy).toHaveBeenCalledTimes(1)
-		expect(stdinInputProcessorSpy).toHaveBeenCalledTimes(1)
+		expect(fileInputProcessorMock).toHaveBeenCalledTimes(1)
+		expect(stdinInputProcessorMock).toHaveBeenCalledTimes(1)
 	})
 
 	it('includes added processors in order after file and stdin ones', () => {
@@ -33,21 +41,18 @@ describe('buildInputProcessor', () => {
 		}
 
 		const inputProcessor = makeProcessor()
-		const fileMock = jest.mocked(fileInputProcessor)
-			.mockReturnValue(inputProcessor as InputProcessor<SimpleType>)
+		fileInputProcessorMock.mockReturnValue(inputProcessor as InputProcessor<SimpleType>)
 		const stdinInputProcessor = makeProcessor()
-		const stdinMock = jest.mocked(stdinInputProcessor)
-			.mockReturnValue(stdinInputProcessor as InputProcessor<SimpleType>)
+		stdinInputProcessorMock.mockReturnValue(stdinInputProcessor as InputProcessor<SimpleType>)
 		const userProcessor1 = makeProcessor()
 		const userProcessor2 = makeProcessor()
-		const mock = jest.mocked(combinedInputProcessor)
 
 		buildInputProcessor<SimpleType>(flags, userProcessor1, userProcessor2)
 
-		expect(fileMock).toHaveBeenCalledTimes(1)
-		expect(fileMock).toHaveBeenCalledWith('fn')
-		expect(stdinMock).toHaveBeenCalledTimes(1)
-		expect(mock).toHaveBeenCalledTimes(1)
-		expect(mock).toHaveBeenCalledWith(inputProcessor, stdinInputProcessor, userProcessor1, userProcessor2)
+		expect(fileInputProcessorMock).toHaveBeenCalledTimes(1)
+		expect(fileInputProcessorMock).toHaveBeenCalledWith('fn')
+		expect(stdinInputProcessorMock).toHaveBeenCalledTimes(1)
+		expect(combinedInputProcessorMock).toHaveBeenCalledTimes(1)
+		expect(combinedInputProcessorMock).toHaveBeenCalledWith(inputProcessor, stdinInputProcessor, userProcessor1, userProcessor2)
 	})
 })
