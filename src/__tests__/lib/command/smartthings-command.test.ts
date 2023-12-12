@@ -1,27 +1,42 @@
+import { jest } from '@jest/globals'
+
 import log4js from 'log4js'
 
 import { CLIConfig, loadConfig } from '../../../lib/cli-config.js'
-import { smartThingsCommand } from '../../../lib/command/smartthings-command.js'
 import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../../../lib/log-utils.js'
+import { defaultTableGenerator } from '../../../lib/table-generator.js'
 
 
-jest.mock('log4js')
-jest.mock('../../../lib/cli-config.js')
-jest.mock('../../../lib/log-utils.js')
-jest.mock('../../../lib//table-generator')
+const { configureMock, getLoggerMock } = await import('../../test-lib/logger-mock.js')
+
+const loadConfigMock: jest.Mock<typeof loadConfig> = jest.fn()
+jest.unstable_mockModule('../../../lib/cli-config.js', () => ({
+	loadConfig: loadConfigMock,
+}))
+
+const buildDefaultLog4jsConfigMock: jest.Mock<typeof buildDefaultLog4jsConfig> = jest.fn()
+const loadLog4jsConfigMock: jest.Mock<typeof loadLog4jsConfig> = jest.fn()
+jest.unstable_mockModule('../../../lib/log-utils.js', () => ({
+	buildDefaultLog4jsConfig: buildDefaultLog4jsConfigMock,
+	loadLog4jsConfig: loadLog4jsConfigMock,
+}))
+
+const defaultTableGeneratorMock: jest.Mock<typeof defaultTableGenerator> = jest.fn()
+jest.unstable_mockModule('../../../lib//table-generator', () => ({
+	defaultTableGenerator: defaultTableGeneratorMock,
+}))
+
+
+const { smartThingsCommand } = await import('../../../lib/command/smartthings-command.js')
 
 
 describe('smartThingsCommand', () => {
 	const defaultLogConfig = { config: 'default' } as unknown as log4js.Configuration
-	const buildDefaultLog4jsConfigMock = jest.mocked(buildDefaultLog4jsConfig).mockReturnValue(defaultLogConfig)
+	buildDefaultLog4jsConfigMock.mockReturnValue(defaultLogConfig)
 	const logConfig = { config: 'final' } as unknown as log4js.Configuration
-	const loadLog4jsConfigMock = jest.mocked(loadLog4jsConfig).mockReturnValue(logConfig)
-	const log4jsConfigureMock = jest.mocked(log4js.configure)
-	const traceMock = jest.fn()
-	const loggerMock = { trace: traceMock } as unknown as log4js.Logger
-	const log4jsGetLoggerMock = jest.mocked(log4js.getLogger).mockReturnValue(loggerMock)
+	loadLog4jsConfigMock.mockReturnValue(logConfig)
 	const cliConfig = { profile: {} } as CLIConfig
-	const loadConfigMock = jest.mocked(loadConfig).mockResolvedValue(cliConfig)
+	loadConfigMock.mockResolvedValue(cliConfig)
 
 	it('works', async () => {
 		const flags = { profile: 'default' }
@@ -33,16 +48,18 @@ describe('smartThingsCommand', () => {
 		expect(buildDefaultLog4jsConfigMock).toHaveBeenCalledWith(expect.stringMatching('/smartthings.log'))
 		expect(loadLog4jsConfigMock).toHaveBeenCalledTimes(1)
 		expect(loadLog4jsConfigMock).toHaveBeenCalledWith(expect.stringContaining('/logging.yaml'), defaultLogConfig)
-		expect(log4jsConfigureMock).toHaveBeenCalledTimes(1)
-		expect(log4jsConfigureMock).toHaveBeenCalledWith(logConfig)
-		expect(log4jsGetLoggerMock).toHaveBeenCalledTimes(1)
-		expect(log4jsGetLoggerMock).toHaveBeenCalledWith('cli')
+		expect(configureMock).toHaveBeenCalledTimes(1)
+		expect(configureMock).toHaveBeenCalledWith(logConfig)
+		expect(getLoggerMock).toHaveBeenCalledTimes(1)
+		expect(getLoggerMock).toHaveBeenCalledWith('cli')
 		expect(loadConfigMock).toHaveBeenCalledTimes(1)
 		expect(loadConfigMock).toHaveBeenCalledWith({
 			configFilename: expect.stringContaining('/.config/@smartthings/cli/config.yaml'),
 			managedConfigFilename: expect.stringContaining('/.config/@smartthings/cli/config-managed.yaml'),
 			profileName: 'default',
 		})
+		expect(defaultTableGeneratorMock).toHaveBeenCalledTimes(1)
+		expect(defaultTableGeneratorMock).toHaveBeenCalledWith({ groupRows: true })
 	})
 
 	// TODO: these will eventually go in cli-config.test.ts

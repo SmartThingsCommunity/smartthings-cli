@@ -5,7 +5,6 @@ import { chmod, readFileSync, mkdirSync, writeFileSync } from 'fs'
 import axios, { AxiosResponse } from 'axios'
 import express, { Express, Request, Response } from 'express'
 import { getPort } from 'get-port-please'
-import log4js from 'log4js'
 import open from 'open'
 import ora, { Ora } from 'ora'
 
@@ -33,23 +32,7 @@ jest.unstable_mockModule('get-port-please', () => ({
 	getPort: getPortMock,
 }))
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type LogFunction = (message: any, ...args: any[]) => void
-const getLoggerMock: jest.Mock<typeof log4js.getLogger> = jest.fn()
-const errorMock = jest.fn() as jest.Mock<LogFunction>
-const debugMock = jest.fn() as jest.Mock<LogFunction>
-const traceMock = jest.fn() as jest.Mock<LogFunction>
-const loggerMock = {
-	error: errorMock,
-	debug: debugMock,
-	trace: traceMock,
-} as unknown as log4js.Logger
-getLoggerMock.mockReturnValue(loggerMock)
-jest.unstable_mockModule('log4js', () => ({
-	default: {
-		getLogger: getLoggerMock,
-	},
-}))
+const { debugMock, errorMock, traceMock } = await import('../test-lib/logger-mock.js')
 
 const openMock: jest.Mock<typeof open> = jest.fn()
 jest.unstable_mockModule('open', () => ({ default: openMock }))
