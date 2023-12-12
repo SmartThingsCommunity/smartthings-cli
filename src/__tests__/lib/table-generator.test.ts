@@ -1,28 +1,12 @@
 import { jest } from '@jest/globals'
 
-import log4js from 'log4js'
 import { URL } from 'url'
 
 import { TableFieldDefinition } from '../../lib/table-generator.js'
 
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type LogFunction = (message: any, ...args: any[]) => void
-const getLoggerMock: jest.Mock<typeof log4js.getLogger> = jest.fn()
-const warnMock = jest.fn() as jest.Mock<LogFunction>
-const debugMock = jest.fn() as jest.Mock<LogFunction>
-const loggerMock = {
-	warn: warnMock,
-	debug: debugMock,
-} as unknown as log4js.Logger
-getLoggerMock.mockReturnValue(loggerMock)
-jest.unstable_mockModule('log4js', () => ({
-	default: {
-		getLogger: getLoggerMock,
-	},
-}))
+const { getLoggerMock, debugMock, warnMock } = await import('../test-lib/logger-mock.js')
 
-// TODO: this is really just a spy. Should we just use a spy?
 const original = (await import('lodash.at')).default
 const atMock = jest.fn(original)
 jest.unstable_mockModule('lodash.at', async () => ({ default: atMock }))
