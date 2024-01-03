@@ -1,217 +1,317 @@
-import { Config, Interfaces } from '@oclif/core'
-import * as osLocale from 'os-locale'
+import { jest } from '@jest/globals'
 
-import { BearerTokenAuthenticator, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
-import * as coreSDK from '@smartthings/core-sdk'
+import { osLocale } from 'os-locale'
 
-import { APICommand } from '../api-command.js'
-import { CLIConfig, loadConfig, Profile } from '../cli-config.js'
-import { ClientIdProvider, LoginAuthenticator } from '../login-authenticator.js'
-import { TableGenerator } from '...js'
+import { Authenticator, Logger, RESTClientConfig, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
+
+import { SmartThingsCommand, smartThingsCommand, smartThingsCommandBuilder } from '../../../lib/command/smartthings-command.js'
+import { newBearerTokenAuthenticator, newSmartThingsClient } from '../../../lib/command/util/st-client-wrapper.js'
+import { coreSDKLoggerFromLog4JSLogger } from '../../../lib/log-utils.js'
+import { defaultClientIdProvider, loginAuthenticator } from '../../../lib/login-authenticator.js'
+import { TableGenerator } from '../../../lib/table-generator.js'
 
 
-jest.mock('os-locale')
-jest.mock('@smartthings/core-sdk')
-jest.mock('../cli-config')
-jest.mock('@log4js-node/log4js-api', () => ({
-	getLogger: jest.fn(() => ({
-		trace: jest.fn(),
-		warn: jest.fn(),
-	})),
+const { errorMock, loggerMock } = await import('../../test-lib/logger-mock.js')
+
+const osLocaleMock: jest.Mock<typeof osLocale> = jest.fn()
+osLocaleMock.mockResolvedValue('OS Locale')
+jest.unstable_mockModule('os-locale', () => ({
+	osLocale: osLocaleMock,
 }))
-jest.mock('../login-authenticator')
+
+const coreSDKLoggerFromLog4JSLoggerMock: jest.Mock<typeof coreSDKLoggerFromLog4JSLogger> = jest.fn()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const coreSDKWarnMock: jest.Mock<(message: any, ...args: any[]) => void> = jest.fn()
+const coreSDKLogger = {
+	warn: coreSDKWarnMock,
+} as unknown as Logger
+coreSDKLoggerFromLog4JSLoggerMock.mockReturnValue(coreSDKLogger)
+jest.unstable_mockModule('../../../lib/log-utils.js', async () => ({
+	coreSDKLoggerFromLog4JSLogger: coreSDKLoggerFromLog4JSLoggerMock,
+}))
+
+const stringConfigValueMock: jest.Mock<SmartThingsCommand['stringConfigValue']> = jest.fn()
+const buildTableFromListMock = jest.Mock<TableGenerator['buildTableFromList']> = jest.fn()
+buildTableFromListMock.mockReturnValue('table built from list')
+const stCommandMock = {
+	configDir: 'test-config-dir',
+	profileName: 'default',
+	profile: {},
+	logger: loggerMock,
+	stringConfigValue: stringConfigValueMock,
+	tableGenerator: {
+		buildTableFromList: buildTableFromListMock,
+	},
+} as unknown as SmartThingsCommand
+const smartThingsCommandMock: jest.Mock<typeof smartThingsCommand> = jest.fn()
+smartThingsCommandMock.mockResolvedValue(stCommandMock)
+jest.unstable_mockModule('../../../lib/command/smartthings-command.js', () => ({
+	smartThingsCommandBuilder,
+	smartThingsCommand: smartThingsCommandMock,
+}))
+
+const loginAuthenticatorMock: jest.Mock<typeof loginAuthenticator> = jest.fn()
+const mockAuthenticator = { mock: 'authenticator' } as unknown as Authenticator
+loginAuthenticatorMock.mockReturnValue(mockAuthenticator)
+jest.unstable_mockModule('../../../lib/login-authenticator.js', () => ({
+	defaultClientIdProvider,
+	loginAuthenticator: loginAuthenticatorMock,
+}))
+
+const newBearerTokenAuthenticatorMock = jest.Mock<typeof newBearerTokenAuthenticator> = jest.fn()
+const newSmartThingsClientMock = jest.Mock<typeof newSmartThingsClient> = jest.fn()
+const clientMock = { fake: 'client' } as unknown as SmartThingsClient
+newSmartThingsClientMock.mockReturnValue(clientMock)
+jest.unstable_mockModule('../../../lib/command/util/st-client-wrapper.js', () => ({
+	newBearerTokenAuthenticator: newBearerTokenAuthenticatorMock,
+	newSmartThingsClient: newSmartThingsClientMock,
+}))
+
+const { apiCommand, apiDocsURL, itemInputHelpText, userAgent } = await import('../../../lib/command/api-command.js')
 
 
-describe('api-command', () => {
-	describe('APICommand', () => {
-		const buildTableFromListMock = jest.fn()
-		const mockedTableGenerator = {
-			buildTableFromList: buildTableFromListMock,
-		} as unknown as TableGenerator
+describe('apiDocsURL', () => {
+	it('produces URL', () => {
+		expect(apiDocsURL('getDevice'))
+			.toBe('\n\nFor API information, see:\n\n' +
+				'  https://developer.smartthings.com/docs/api/public/#operation/getDevice')
+	})
 
-		const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
+	it('joins multiple pages with line breaks', () => {
+		expect(apiDocsURL('getDevice', 'getDevices'))
+			.toBe('\n\nFor API information, see:\n\n' +
+				'  https://developer.smartthings.com/docs/api/public/#operation/getDevice\n' +
+				'  https://developer.smartthings.com/docs/api/public/#operation/getDevices')
+	})
+})
 
-		class TestCommand extends APICommand<typeof TestCommand.flags> {
-			getToken(): string | undefined {
-				return this.token
+describe('itemInputHelpText', () => {
+	it('works with external URLs', () => {
+		expect(itemInputHelpText('https://adafruit.com', 'https://digikey.com'))
+			.toBe('More information can be found at:\n' +
+				'  https://adafruit.com\n' +
+				'  https://digikey.com')
+	})
+
+	it('builds URLs like `apiDocsURL`', () => {
+		expect(itemInputHelpText('getDevice'))
+			.toBe('More information can be found at:\n' +
+				'  https://developer.smartthings.com/docs/api/public/#operation/getDevice')
+	})
+})
+
+describe('apiCommand', () => {
+	it('includes output from "parent" smartThingsCommand', async () => {
+		const result = await apiCommand({ profile: 'default' })
+
+		expect(result.configDir).toBe('test-config-dir')
+		expect(result.profile).toBe(stCommandMock.profile)
+	})
+
+	describe('token handling', () => {
+		it('leaves token undefined when not specified anywhere', async () => {
+			stringConfigValueMock.mockReturnValueOnce(undefined)
+
+			const result = await apiCommand({ profile: 'default' })
+
+			expect(result.token).toBeUndefined()
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(1)
+			expect(stringConfigValueMock).toHaveBeenCalledWith('token')
+			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(0)
+			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(1)
+			expect(loginAuthenticatorMock).toHaveBeenCalledWith(
+				'test-config-dir/credentials.json', 'default', defaultClientIdProvider, userAgent)
+		})
+
+		it('uses token from command line', async () => {
+			const result = await apiCommand({ profile: 'default', token: 'token-from-cmd-line' })
+
+			expect(result.token).toBe('token-from-cmd-line')
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(0)
+			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(1)
+			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledWith('token-from-cmd-line')
+			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('uses token from config file', async () => {
+			stringConfigValueMock.mockReturnValueOnce('token-from-config-file')
+
+			const result = await apiCommand({ profile: 'default' })
+
+			expect(result.token).toBe('token-from-config-file')
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(1)
+			expect(stringConfigValueMock).toHaveBeenCalledWith('token')
+			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(1)
+			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledWith('token-from-config-file')
+			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('uses token from command line over token from config file', async () => {
+			const result = await apiCommand({ profile: 'default', token: 'token-from-cmd-line' })
+
+			expect(result.token).toBe('token-from-cmd-line')
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(0)
+			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(1)
+			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledWith('token-from-cmd-line')
+			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('normalizes empty token to undefined', async () => {
+			stringConfigValueMock.mockReturnValueOnce('')
+			const result = await apiCommand({ profile: 'default' })
+
+			expect(result.token).toBe(undefined)
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(1)
+			expect(stringConfigValueMock).toHaveBeenCalledWith('token')
+			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(0)
+			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(1)
+			expect(loginAuthenticatorMock).toHaveBeenCalledWith(
+				'test-config-dir/credentials.json', 'default', defaultClientIdProvider, userAgent)
+		})
+	})
+
+	describe('clientIdProvider handling', () => {
+		it('uses defaultClientIdProvider when none provided in configuration', async () => {
+			const result = await apiCommand({ profile: 'default' })
+
+			expect(result.clientIdProvider).toBe(defaultClientIdProvider)
+		})
+
+		it('uses value from config', async () => {
+			const clientIdProvider = {
+				notReally: 'valid',
+				needToFix: 'this test when we do more input checking',
 			}
+			smartThingsCommandMock.mockResolvedValueOnce({
+				...stCommandMock,
+				profile: {
+					clientIdProvider,
+				},
+			})
 
-			getClientIdProvider(): ClientIdProvider {
-				return this.clientIdProvider
-			}
+			const result = await apiCommand({ profile: 'default' })
 
-			get tableGenerator(): TableGenerator {
-				return mockedTableGenerator
-			}
+			expect(result.clientIdProvider).toStrictEqual(clientIdProvider)
+		})
 
-			async run(): Promise<void> {
-				// eslint-disable-line @typescript-eslint/no-empty-function
-			}
+		it('logs error and uses default when config is not an object', async () => {
+			smartThingsCommandMock.mockResolvedValueOnce({
+				...stCommandMock,
+				profile: {
+					clientIdProvider: 'not an object!',
+				},
+			})
 
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-			async parse(options?: Interfaces.Input<any, any>, argv?: string[]): Promise<Interfaces.ParserOutput<any, any, any>> {
-				return {
-					flags: {},
-					args: {},
-					argv: [],
-					raw: [],
-					metadata: { flags: {} },
-				}
+			const result = await apiCommand({ profile: 'default' })
+
+			expect(errorMock).toHaveBeenCalledWith('ignoring invalid configClientIdProvider')
+			expect(result.clientIdProvider).toBe(defaultClientIdProvider)
+		})
+	})
+
+	describe('http request header handling', () => {
+		it('includes user agent and os locale by default', async () => {
+			const result = await apiCommand({ profile: 'default' })
+
+			expect(newSmartThingsClientMock).toHaveBeenCalledTimes(1)
+			expect(newSmartThingsClientMock).toHaveBeenCalledWith(
+				mockAuthenticator,
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						// eslint-disable-next-line @typescript-eslint/naming-convention
+						'User-Agent': userAgent,
+						// eslint-disable-next-line @typescript-eslint/naming-convention
+						'Accept-Language': 'OS Locale',
+					}),
+				}),
+			)
+
+			expect(result.client).toBe(clientMock)
+		})
+
+		it('uses language flag', async () => {
+			const result = await apiCommand({ profile: 'default', language: 'es_MX' })
+
+			expect(newSmartThingsClientMock).toHaveBeenCalledTimes(1)
+			expect(newSmartThingsClientMock).toHaveBeenCalledWith(
+				mockAuthenticator,
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						// eslint-disable-next-line @typescript-eslint/naming-convention
+						'Accept-Language': 'es_MX',
+					}),
+				}),
+			)
+
+			expect(result.client).toBe(clientMock)
+		})
+
+		it('skips language header when "NONE" specified', async () => {
+			const result = await apiCommand({ profile: 'default', language: 'NONE' })
+
+			expect(newSmartThingsClientMock).toHaveBeenCalledTimes(1)
+			expect(newSmartThingsClientMock).toHaveBeenCalledWith(
+				mockAuthenticator,
+				expect.objectContaining({
+					headers: expect.not.objectContaining({
+						// eslint-disable-next-line @typescript-eslint/naming-convention
+						'Accept-Language': expect.anything(),
+					}),
+				}),
+			)
+
+			expect(result.client).toBe(clientMock)
+		})
+
+		it('calls addAdditionalHeaders to include extra headers when present', async () => {
+			const addAdditionalHeaders = jest.fn()
+			const result = await apiCommand({ profile: 'default' }, addAdditionalHeaders)
+
+			expect(newSmartThingsClientMock).toHaveBeenCalledTimes(1)
+			expect(addAdditionalHeaders).toHaveBeenCalledTimes(1)
+			expect(addAdditionalHeaders).toHaveBeenCalledWith(stCommandMock, expect.objectContaining({
+				// eslint-disable-next-line @typescript-eslint/naming-convention
+				'User-Agent': userAgent,
+			}))
+			expect(result.client).toBe(clientMock)
+		})
+	})
+
+	describe('warningLogger', () => {
+		const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+
+		type WarningLoggerFunc = (warnings: WarningFromHeader[] | string) => void
+		const getWarningLogger = async (): Promise<WarningLoggerFunc> => {
+			await apiCommand({ profile: 'default' })
+
+			const warningLogger = (newSmartThingsClientMock.mock.calls[0][1] as RESTClientConfig).warningLogger
+			expect(warningLogger).toBeDefined()
+			if (!warningLogger) {
+				throw Error('warning logger not passed')
 			}
+			return warningLogger
 		}
 
-		const loadConfigMock = jest.mocked(loadConfig)
-		const parseSpy = jest.spyOn(TestCommand.prototype, 'parse')
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		type ParserOutputType = Interfaces.ParserOutput<any, any>
+		it('logs string response with "from API" note', async () => {
+			const warningLogger = await getWarningLogger()
 
-		let apiCommand: TestCommand
+			expect(warningLogger('simple string warning message'))
 
-		beforeEach(() => {
-			apiCommand = new TestCommand([], {} as Config)
-			apiCommand.warn = jest.fn()
+			expect(coreSDKWarnMock).toHaveBeenCalledTimes(1)
+			expect(coreSDKWarnMock).toHaveBeenCalledWith('Warnings from API:\nsimple string warning message')
+			expect(warnSpy).toHaveBeenCalledWith('Warnings from API:\nsimple string warning message')
 		})
 
-		it('should set token when passed via flags during setup', async () => {
-			const token = 'token-from-cmd-line'
-			parseSpy.mockResolvedValueOnce({ args: {}, flags: { token } } as ParserOutputType)
-			await apiCommand.init()
+		it('uses table generator to format more complex messages', async () => {
+			const warningLogger = await getWarningLogger()
 
-			expect(apiCommand.getToken()).toBe(token)
-			expect(SmartThingsClient).toHaveBeenCalledTimes(1)
-		})
+			expect(warningLogger([
+				{ code: 404, agent: 'Thursday Next', text: 'Cheshire cat shenanigans' },
+			]))
 
-		it('should pass language header on to client', async () => {
-			parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'es-US' } } as ParserOutputType)
-			await apiCommand.init()
-
-			expect(stClientSpy).toHaveBeenCalledTimes(1)
-
-			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed?.headers).toContainEntry(['Accept-Language', 'es-US'])
-		})
-
-		it('returns oclif config User-Agent and default if undefined', () => {
-			expect(apiCommand.userAgent).toBe('@smartthings/cli')
-
-			apiCommand = new TestCommand([], { userAgent: 'userAgent' } as Config)
-
-			expect(apiCommand.userAgent).toBe('userAgent')
-		})
-
-		it('sets User-Agent header on client', async () => {
-			await apiCommand.init()
-
-			expect(stClientSpy).toHaveBeenCalledTimes(1)
-
-			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed?.headers).toContainEntry(['User-Agent', expect.any(String)])
-		})
-
-		it('uses BearerTokenAuthenticator in client if token is provided', async () => {
-			parseSpy.mockResolvedValueOnce({ args: {}, flags: { token: 'token' } } as ParserOutputType)
-			await apiCommand.init()
-
-			expect(stClientSpy).toBeCalledWith(expect.any(BearerTokenAuthenticator), expect.anything())
-		})
-
-		it('uses LoginAuthenticator in client if token is not provided', async () => {
-			await apiCommand.init()
-
-			expect(stClientSpy).toBeCalledWith(expect.any(LoginAuthenticator), expect.anything())
-
-			// sets User-Agent
-			expect(LoginAuthenticator).toBeCalledWith(expect.anything(), expect.anything(), expect.any(String))
-		})
-
-		describe('warningLogger', () => {
-			it('uses string as-is', async () => {
-				parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'es-US' } } as ParserOutputType)
-				await apiCommand.init()
-
-				expect(stClientSpy).toHaveBeenCalledTimes(1)
-
-				const configUsed = stClientSpy.mock.calls[0][1]
-				const warningLogger = configUsed?.warningLogger as (warnings: WarningFromHeader[] | string) => void
-				expect(warningLogger).toBeDefined()
-
-				void warningLogger('warning')
-
-				expect(apiCommand.logger.warn).toHaveBeenCalledTimes(1)
-				const expected = 'Warnings from API:\nwarning'
-				expect(apiCommand.logger.warn).toHaveBeenCalledWith(expected)
-				expect(apiCommand.warn).toHaveBeenCalledWith(expected)
-			})
-
-			it('uses builds table out of list of warnings', async () => {
-				parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'es-US' } } as ParserOutputType)
-				await apiCommand.init()
-
-				expect(stClientSpy).toHaveBeenCalledTimes(1)
-
-				const configUsed = stClientSpy.mock.calls[0][1]
-				const warningLogger = configUsed?.warningLogger as (warnings: WarningFromHeader[] | string) => void
-				expect(warningLogger).toBeDefined()
-
-				const warnings = [{ text: 'mock warning' } as WarningFromHeader]
-				buildTableFromListMock.mockReturnValueOnce('table of warnings')
-
-				void warningLogger(warnings)
-
-				expect(apiCommand.logger.warn).toHaveBeenCalledTimes(1)
-				const expected = 'Warnings from API:\ntable of warnings'
-				expect(apiCommand.logger.warn).toHaveBeenCalledWith(expected)
-				expect(apiCommand.warn).toHaveBeenCalledWith(expected)
-				expect(buildTableFromListMock).toHaveBeenCalledTimes(1)
-				expect(buildTableFromListMock).toHaveBeenCalledWith(warnings,
-					['code', 'agent', 'text', 'date'])
-			})
-		})
-
-		it('should skip language header when "NONE" specified', async () => {
-			parseSpy.mockResolvedValueOnce({ args: {}, flags: { language: 'NONE' } } as ParserOutputType)
-			await apiCommand.init()
-
-			expect(stClientSpy).toHaveBeenCalledTimes(1)
-
-			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed).toBeDefined()
-			expect(configUsed?.headers).not.toContainKey('Accept-Language')
-		})
-
-		it('should uses os language header when not specified', async () => {
-			const osLocaleSpy = jest.spyOn(osLocale, 'default').mockResolvedValue('fr-CA')
-			await apiCommand.init()
-
-			expect(stClientSpy).toHaveBeenCalledTimes(1)
-
-			expect(osLocaleSpy).toHaveBeenCalledTimes(1)
-			const configUsed = stClientSpy.mock.calls[0][1]
-			expect(configUsed?.headers).toContainEntry(['Accept-Language', 'fr-CA'])
-		})
-
-		it('should set token when passed via profile during setup', async () => {
-			const token = 'token-from-profile'
-			const profile: Profile = { token }
-			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-
-			await apiCommand.init()
-
-			expect(apiCommand.getToken()).toBe(token)
-		})
-
-		it('should override default clientIdProvider when set in profile during setup', async () => {
-			const profile: Profile = {
-				clientIdProvider: {
-					clientId: 'test-client-id',
-				},
-			}
-
-			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-
-			await apiCommand.init()
-
-			expect(apiCommand.getClientIdProvider()).toStrictEqual(profile.clientIdProvider)
+			expect(coreSDKWarnMock).toHaveBeenCalledTimes(1)
+			expect(coreSDKWarnMock).toHaveBeenCalledWith('Warnings from API:\ntable built from list')
+			expect(warnSpy).toHaveBeenCalledWith('Warnings from API:\ntable built from list')
 		})
 	})
 })

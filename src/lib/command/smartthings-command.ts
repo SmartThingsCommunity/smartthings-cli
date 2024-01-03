@@ -24,7 +24,7 @@ export const smartThingsCommandBuilder = <T extends object = object>(argv: Argv<
  * An interface version of SmartThingsCommand to make its contract easier to mix with other
  * interfaces and to limit what we need to mock for tests.
  */
-export type SmartThingsCommand<T extends SmartThingsCommandFlags> = {
+export type SmartThingsCommand<T extends SmartThingsCommandFlags = SmartThingsCommandFlags> = {
 	flags: T
 
 	configDir: string

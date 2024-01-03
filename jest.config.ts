@@ -8,7 +8,7 @@ const config: JestConfigWithTsJest = {
 		// '**/__tests__/**/*.test.ts',
 		'**/__tests__/lib/*.test.ts',
 		'**/__tests__/lib/item-input/*.test.ts',
-		'**/__tests__/lib/command/(input-*|output|smart*).test.ts',
+		'**/__tests__/lib/command/(api-command|input-*|output|smart*).test.ts',
 	],
 	setupFilesAfterEnv: ['jest-extended/all'],
 	collectCoverageFrom: ['src/**/*.ts'],
@@ -18,6 +18,7 @@ const config: JestConfigWithTsJest = {
 		'/src/run.ts',
 		'/src/index.ts',
 		'/src/commands/index.ts',
+		'/src/lib/commands/util/st-client-wrapper.ts',
 	],
 	modulePathIgnorePatterns: [
 		'<rootDir>/dist',
