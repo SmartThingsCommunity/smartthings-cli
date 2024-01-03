@@ -2,14 +2,14 @@ import log4js from 'log4js'
 import { osLocale } from 'os-locale'
 import { Argv } from 'yargs'
 
-import { Authenticator, BearerTokenAuthenticator, HttpClientHeaders, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
+import { Authenticator, HttpClientHeaders, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
 
 import { coreSDKLoggerFromLog4JSLogger } from '../log-utils.js'
 import { ClientIdProvider, defaultClientIdProvider, loginAuthenticator } from '../login-authenticator.js'
 import { SmartThingsCommand, SmartThingsCommandFlags, smartThingsCommand, smartThingsCommandBuilder } from './smartthings-command.js'
+import { newBearerTokenAuthenticator, newSmartThingsClient } from './util/st-client-wrapper.js'
 
 
-const languageHeader = 'Accept-Language'
 export const userAgent = '@smartthings/cli'
 
 const toURL = (nameOrURL: string): string => nameOrURL.startsWith('http')
@@ -73,10 +73,10 @@ export const apiCommand = async <T extends APICommandFlags>(flags: T, addAdditio
 
 		if (flags.language) {
 			if (flags.language !== 'NONE') {
-				headers[languageHeader] = flags.language
+				headers['Accept-Language'] = flags.language
 			}
 		} else {
-			headers[languageHeader] = await osLocale()
+			headers['Accept-Language'] = await osLocale()
 		}
 
 		return headers
@@ -87,7 +87,7 @@ export const apiCommand = async <T extends APICommandFlags>(flags: T, addAdditio
 	}
 
 	const authenticator = token
-		? new BearerTokenAuthenticator(token)
+		? newBearerTokenAuthenticator(token)
 		: loginAuthenticator(`${stCommand.configDir}/credentials.json`, stCommand.profileName, clientIdProvider, userAgent)
 
 	const warningLogger = (warnings: WarningFromHeader[] | string): void => {
@@ -97,7 +97,7 @@ export const apiCommand = async <T extends APICommandFlags>(flags: T, addAdditio
 		logger.warn(message)
 		console.warn(message)
 	}
-	const client = new SmartThingsClient(authenticator,
+	const client = newSmartThingsClient(authenticator,
 		{ urlProvider: clientIdProvider, logger, headers, warningLogger })
 
 	return {
