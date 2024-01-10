@@ -42,7 +42,7 @@ jest.spyOn(APICommand.prototype, 'client', 'get').mockReturnValue(new MockSmartT
  * Perform minimal stubbing required to get CLI commands running under jest
  */
 jest.spyOn(LoginAuthenticator.prototype, 'login').mockImplementation(() => Promise.resolve())
-jest.spyOn(LoginAuthenticator.prototype, 'authenticate').mockImplementation((requestConfig) => Promise.resolve(requestConfig));
+jest.spyOn(LoginAuthenticator.prototype, 'authenticate').mockImplementation(() => Promise.resolve({}));
 (global as { _credentialsFile?: string })._credentialsFile = 'credentials.json'
 
 /**
