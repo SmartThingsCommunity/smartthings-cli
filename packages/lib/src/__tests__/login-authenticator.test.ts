@@ -429,31 +429,12 @@ describe('LoginAuthenticator', () => {
 	})
 
 	describe('authenticate', () => {
-		it('calls generic authenticate', async () => {
-			readFileMock.mockReturnValueOnce(Buffer.from(JSON.stringify(credentialsFileData)))
-
-			const genericSpy = jest.spyOn(LoginAuthenticator.prototype, 'authenticateGeneric')
-
-			const loginAuthenticator = setupAuthenticator()
-			const requestConfig = {}
-
-			const response = await loginAuthenticator.authenticate(requestConfig)
-
-			expect(response.headers?.Authorization).toEqual('Bearer access token')
-			expect(genericSpy).toBeCalledTimes(1)
-		})
-	})
-
-	describe('authenticateGeneric', () => {
 		it('refreshes token when necessary', async () => {
 			readFileMock.mockReturnValueOnce(Buffer.from(JSON.stringify(refreshableCredentialsFileData)))
 
 			const loginAuthenticator = setupAuthenticator()
-			const requestConfig = {}
 
-			const response = await loginAuthenticator.authenticate(requestConfig)
-
-			expect(response.headers?.Authorization).toEqual('Bearer access token')
+			expect(await loginAuthenticator.authenticate()).toStrictEqual({ Authorization: 'Bearer access token' })
 
 			expect(postMock).toHaveBeenCalledTimes(1)
 			const postData = postMock.mock.calls[0][1]
@@ -472,9 +453,8 @@ describe('LoginAuthenticator', () => {
 		it('includes User-Agent on refresh', async () => {
 			readFileMock.mockReturnValueOnce(Buffer.from(JSON.stringify(refreshableCredentialsFileData)))
 			const loginAuthenticator = setupAuthenticator()
-			const requestConfig = {}
 
-			await loginAuthenticator.authenticate(requestConfig)
+			await loginAuthenticator.authenticate()
 
 			expect(postMock).toHaveBeenCalledTimes(1)
 			expect(postMock).toHaveBeenCalledWith(
@@ -493,13 +473,11 @@ describe('LoginAuthenticator', () => {
 			postMock.mockResolvedValueOnce(tokenResponse)
 
 			const loginAuthenticator = setupAuthenticator()
-			const requestConfig = {}
 
-			const promise = loginAuthenticator.authenticate(requestConfig)
+			const promise = loginAuthenticator.authenticate()
 			await imitateBrowser()
-			const response = await promise
 
-			expect(response.headers?.Authorization).toEqual('Bearer access token')
+			expect(await promise).toStrictEqual({ Authorization: 'Bearer access token' })
 
 			expect(postMock).toHaveBeenCalledTimes(2)
 			const postData = postMock.mock.calls[0][1]
@@ -529,13 +507,11 @@ describe('LoginAuthenticator', () => {
 
 		it('logs in not logged in', async () => {
 			const loginAuthenticator = setupAuthenticator()
-			const requestConfig = {}
 
-			const promise = loginAuthenticator.authenticate(requestConfig)
+			const promise = loginAuthenticator.authenticate()
 			await imitateBrowser()
-			const response = await promise
 
-			expect(response.headers?.Authorization).toEqual('Bearer access token')
+			expect(await promise).toStrictEqual({ Authorization: 'Bearer access token' })
 
 			expect(getPortMock).toHaveBeenCalledTimes(1)
 			expect(getPortMock).toHaveBeenCalledWith({ port: [61973, 61974, 61975] })

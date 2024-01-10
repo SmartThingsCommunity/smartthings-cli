@@ -23,9 +23,9 @@ export abstract class SseCommand<T extends typeof SseCommand.flags> extends APIC
 		const headers: HttpClientHeaders = { 'User-Agent': this.userAgent }
 
 		// assume auth is taken care of if passing an initDict
-		if (!sourceInitDict && this.authenticator.authenticateGeneric) {
-			const token = await this.authenticator.authenticateGeneric()
-			sourceInitDict = { headers: { ...headers, 'Authorization': `Bearer ${token}` } }
+		if (!sourceInitDict) {
+			const authHeaders = await this.authenticator.authenticate()
+			sourceInitDict = { headers: { ...headers, ...authHeaders } }
 		} else {
 			sourceInitDict = { ...sourceInitDict, headers: { ...headers, ...sourceInitDict?.headers } }
 		}
