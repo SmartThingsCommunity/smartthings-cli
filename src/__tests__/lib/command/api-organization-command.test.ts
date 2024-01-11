@@ -1,73 +1,90 @@
+import { jest } from '@jest/globals'
+
+import { APICommand, apiCommand, apiCommandBuilder } from '../../../lib/command/api-command.js'
+import { SmartThingsCommand } from '../../../lib/command/smartthings-command.js'
+
+
+const stringConfigValueMock: jest.Mock<SmartThingsCommand['stringConfigValue']> = jest.fn()
+const apiCommandResultMock = {
+	configDir: 'test-config-dir',
+	profileName: 'profile-from-parent',
+	stringConfigValue: stringConfigValueMock,
+} as unknown as APICommand
+const apiCommandMock: jest.Mock<typeof apiCommand> = jest.fn()
+apiCommandMock.mockResolvedValue(apiCommandResultMock)
+jest.unstable_mockModule('../../../lib/command/api-command.js', () => ({
+	apiCommandBuilder,
+	apiCommand: apiCommandMock,
+}))
+
+const { apiOrganizationCommand } = await import('../../../lib/command/api-organization-command.js')
+
+
 describe('apiOrganizationCommand', () => {
-	it.todo('calls apiCommand with an addAdditionalHeaders function')
-})
+	const flags = { profile: 'cmd-line-profile' }
 
-/*
-describe('APIOrganizationCommand', () => {
-	const stClientSpy = jest.spyOn(coreSDK, 'SmartThingsClient')
+	it('includes output from "parent" smartThingsCommand', async () => {
+		const result = await apiOrganizationCommand(flags)
 
-	class TestCommand extends APIOrganizationCommand<typeof TestCommand.flags> {
-		async run(): Promise<void> {
-			// eslint-disable-line @typescript-eslint/no-empty-function
-		}
+		expect(result.configDir).toBe('test-config-dir')
+		expect(result.profileName).toBe('profile-from-parent')
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-		async parse(options?: Interfaces.Input<any, any>, argv?: string[]): Promise<Interfaces.ParserOutput<any, any, any>> {
-			return {
-				flags: {},
-				args: {},
-				argv: [],
-				raw: [],
-				metadata: { flags: {} },
-			}
-		}
-	}
-
-	const loadConfigMock = jest.mocked(loadConfig)
-	const parseSpy = jest.spyOn(TestCommand.prototype, 'parse')
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	type ParserOutputType = Interfaces.ParserOutput<any, any>
-
-	let apiCommand: TestCommand
-
-	beforeEach(() => {
-		apiCommand = new TestCommand([], {} as Config)
-		apiCommand.warn = jest.fn()
+		expect(apiCommandMock).toHaveBeenCalledTimes(1)
+		expect(apiCommandMock).toHaveBeenCalledWith(flags, expect.any(Function))
 	})
 
-	it('passes organization flag on to client', async () => {
-		parseSpy.mockResolvedValueOnce({ args: {}, flags: { organization: 'organization-id-from-flag' } } as ParserOutputType)
-		await apiCommand.init()
+	describe('addAdditionalHeaders', () => {
+		it('adds nothing by default', async () => {
+			stringConfigValueMock.mockReturnValueOnce(undefined)
 
-		expect(stClientSpy).toHaveBeenCalledTimes(1)
+			const result = await apiOrganizationCommand(flags)
 
-		const configUsed = stClientSpy.mock.calls[0][1]
-		expect(configUsed?.headers).toContainEntry(['X-ST-Organization', 'organization-id-from-flag'])
-	})
+			const addHeadersFunc = apiCommandMock.mock.calls[0][1]
+			const headers = {}
 
-	it('passes organization config on to client', async () => {
-		const profile: Profile = { organization: 'organization-id-from-config' }
-		loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
+			addHeadersFunc?.(result, headers)
 
-		await apiCommand.init()
+			expect(headers).toStrictEqual({})
+		})
 
-		expect(stClientSpy).toHaveBeenCalledTimes(1)
+		it('adds organization from config file', async () => {
+			stringConfigValueMock.mockReturnValueOnce('config-file-organization')
 
-		const configUsed = stClientSpy.mock.calls[0][1]
-		expect(configUsed?.headers).toContainEntry(['X-ST-Organization', 'organization-id-from-config'])
-	})
+			const result = await apiOrganizationCommand(flags)
 
-	it('prefers organization flag over config', async () => {
-		const profile: Profile = { organization: 'organization-id-from-config' }
-		loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-		parseSpy.mockResolvedValueOnce({ args: {}, flags: { organization: 'organization-id-from-flag' } } as ParserOutputType)
+			const addHeadersFunc = apiCommandMock.mock.calls[0][1]
+			const headers = {}
 
-		await apiCommand.init()
+			addHeadersFunc?.(result, headers)
 
-		expect(stClientSpy).toHaveBeenCalledTimes(1)
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			expect(headers).toStrictEqual({ 'X-ST-Organization': 'config-file-organization' })
+		})
 
-		const configUsed = stClientSpy.mock.calls[0][1]
-		expect(configUsed?.headers).toContainEntry(['X-ST-Organization', 'organization-id-from-flag'])
+		it('adds organization from command line', async () => {
+			const result = await apiOrganizationCommand({ ...flags, organization: 'cmd-line-organization' })
+
+			const addHeadersFunc = apiCommandMock.mock.calls[0][1]
+			const headers = {}
+
+			addHeadersFunc?.(result, headers)
+
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			expect(headers).toStrictEqual({ 'X-ST-Organization': 'cmd-line-organization' })
+		})
+
+		it('uses command line over config options', async () => {
+			stringConfigValueMock.mockReturnValueOnce('config-file-organization')
+
+			const result = await apiOrganizationCommand({ ...flags, organization: 'cmd-line-organization' })
+
+			const addHeadersFunc = apiCommandMock.mock.calls[0][1]
+			const headers = {}
+
+			addHeadersFunc?.(result, headers)
+
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			expect(headers).toStrictEqual({ 'X-ST-Organization': 'cmd-line-organization' })
+		})
 	})
 })
-*/

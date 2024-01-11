@@ -35,7 +35,7 @@ const buildTableFromListMock = jest.Mock<TableGenerator['buildTableFromList']> =
 buildTableFromListMock.mockReturnValue('table built from list')
 const stCommandMock = {
 	configDir: 'test-config-dir',
-	profileName: 'default',
+	profileName: 'profile-from-parent',
 	profile: {},
 	logger: loggerMock,
 	stringConfigValue: stringConfigValueMock,
@@ -101,18 +101,22 @@ describe('itemInputHelpText', () => {
 })
 
 describe('apiCommand', () => {
+	const flags = { profile: 'cmd-line-profile' }
 	it('includes output from "parent" smartThingsCommand', async () => {
-		const result = await apiCommand({ profile: 'default' })
+		const result = await apiCommand(flags)
 
 		expect(result.configDir).toBe('test-config-dir')
 		expect(result.profile).toBe(stCommandMock.profile)
+
+		expect(smartThingsCommandMock).toHaveBeenCalledTimes(1)
+		expect(smartThingsCommandMock).toHaveBeenCalledWith(flags)
 	})
 
 	describe('token handling', () => {
 		it('leaves token undefined when not specified anywhere', async () => {
 			stringConfigValueMock.mockReturnValueOnce(undefined)
 
-			const result = await apiCommand({ profile: 'default' })
+			const result = await apiCommand(flags)
 
 			expect(result.token).toBeUndefined()
 			expect(stringConfigValueMock).toHaveBeenCalledTimes(1)
@@ -120,7 +124,9 @@ describe('apiCommand', () => {
 			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(0)
 			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(1)
 			expect(loginAuthenticatorMock).toHaveBeenCalledWith(
-				'test-config-dir/credentials.json', 'default', defaultClientIdProvider, userAgent)
+				'test-config-dir/credentials.json',
+				'profile-from-parent',
+				defaultClientIdProvider, userAgent)
 		})
 
 		it('uses token from command line', async () => {
@@ -136,7 +142,7 @@ describe('apiCommand', () => {
 		it('uses token from config file', async () => {
 			stringConfigValueMock.mockReturnValueOnce('token-from-config-file')
 
-			const result = await apiCommand({ profile: 'default' })
+			const result = await apiCommand(flags)
 
 			expect(result.token).toBe('token-from-config-file')
 			expect(stringConfigValueMock).toHaveBeenCalledTimes(1)
@@ -158,7 +164,7 @@ describe('apiCommand', () => {
 
 		it('normalizes empty token to undefined', async () => {
 			stringConfigValueMock.mockReturnValueOnce('')
-			const result = await apiCommand({ profile: 'default' })
+			const result = await apiCommand(flags)
 
 			expect(result.token).toBe(undefined)
 			expect(stringConfigValueMock).toHaveBeenCalledTimes(1)
@@ -166,13 +172,15 @@ describe('apiCommand', () => {
 			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(0)
 			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(1)
 			expect(loginAuthenticatorMock).toHaveBeenCalledWith(
-				'test-config-dir/credentials.json', 'default', defaultClientIdProvider, userAgent)
+				'test-config-dir/credentials.json',
+				'profile-from-parent',
+				defaultClientIdProvider, userAgent)
 		})
 	})
 
 	describe('clientIdProvider handling', () => {
 		it('uses defaultClientIdProvider when none provided in configuration', async () => {
-			const result = await apiCommand({ profile: 'default' })
+			const result = await apiCommand(flags)
 
 			expect(result.clientIdProvider).toBe(defaultClientIdProvider)
 		})
@@ -189,7 +197,7 @@ describe('apiCommand', () => {
 				},
 			})
 
-			const result = await apiCommand({ profile: 'default' })
+			const result = await apiCommand(flags)
 
 			expect(result.clientIdProvider).toStrictEqual(clientIdProvider)
 		})
@@ -202,7 +210,7 @@ describe('apiCommand', () => {
 				},
 			})
 
-			const result = await apiCommand({ profile: 'default' })
+			const result = await apiCommand(flags)
 
 			expect(errorMock).toHaveBeenCalledWith('ignoring invalid configClientIdProvider')
 			expect(result.clientIdProvider).toBe(defaultClientIdProvider)
@@ -211,7 +219,7 @@ describe('apiCommand', () => {
 
 	describe('http request header handling', () => {
 		it('includes user agent and os locale by default', async () => {
-			const result = await apiCommand({ profile: 'default' })
+			const result = await apiCommand(flags)
 
 			expect(newSmartThingsClientMock).toHaveBeenCalledTimes(1)
 			expect(newSmartThingsClientMock).toHaveBeenCalledWith(
@@ -265,7 +273,7 @@ describe('apiCommand', () => {
 
 		it('calls addAdditionalHeaders to include extra headers when present', async () => {
 			const addAdditionalHeaders = jest.fn()
-			const result = await apiCommand({ profile: 'default' }, addAdditionalHeaders)
+			const result = await apiCommand(flags, addAdditionalHeaders)
 
 			expect(newSmartThingsClientMock).toHaveBeenCalledTimes(1)
 			expect(addAdditionalHeaders).toHaveBeenCalledTimes(1)
@@ -282,7 +290,7 @@ describe('apiCommand', () => {
 
 		type WarningLoggerFunc = (warnings: WarningFromHeader[] | string) => void
 		const getWarningLogger = async (): Promise<WarningLoggerFunc> => {
-			await apiCommand({ profile: 'default' })
+			await apiCommand(flags)
 
 			const warningLogger = (newSmartThingsClientMock.mock.calls[0][1] as RESTClientConfig).warningLogger
 			expect(warningLogger).toBeDefined()
