@@ -35,7 +35,7 @@ export const apiCommandBuilder = <T extends object>(yargs: Argv<T>): Argv<T & AP
 			type: 'string',
 		})
 
-export type APICommand<T extends APICommandFlags> = SmartThingsCommand<T> & {
+export type APICommand<T extends APICommandFlags = APICommandFlags> = SmartThingsCommand<T> & {
 	token?: string
 	clientIdProvider: ClientIdProvider
 	authenticator: Authenticator
