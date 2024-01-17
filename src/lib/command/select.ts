@@ -7,7 +7,8 @@ import {
 	Naming,
 	outputList,
 	OutputListConfig,
-	Sorting } from './basic-io.js'
+	Sorting,
+} from './basic-io.js'
 import { resetManagedConfigKey, setConfigKey } from '../cli-config.js'
 import { stringGetIdFromUser } from './command-util.js'
 import { SmartThingsCommand } from './smartthings-command.js'
