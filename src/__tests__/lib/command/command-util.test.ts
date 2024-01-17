@@ -1,7 +1,27 @@
+import { jest } from '@jest/globals'
+
 import inquirer from 'inquirer'
 
-import {
-	ChooseOptions,
+import { ChooseOptions } from '../../../lib/command/command-util.js'
+import { sort } from '../../../lib/command/output.js'
+import { ListDataFunction, Sorting } from '../../../lib/command/basic-io.js'
+import { SimpleType } from '../../test-lib/simple-type.js'
+
+
+const promptMock: jest.Mock<typeof inquirer.prompt> = jest.fn()
+jest.unstable_mockModule('inquirer', () => ({
+	default: {
+		prompt: promptMock,
+	},
+}))
+
+const sortMock: jest.Mock<typeof sort> = jest.fn()
+jest.unstable_mockModule('../../../lib/command/output.js', () => ({
+	sort: sortMock,
+}))
+
+
+const {
 	chooseOptionsDefaults,
 	chooseOptionsWithDefaults,
 	convertToId,
@@ -10,15 +30,7 @@ import {
 	pluralItemName,
 	stringGetIdFromUser,
 	stringTranslateToId,
-} from '../../../lib/command/command-util.js'
-import { sort } from '../../../lib/command/output.js'
-import { Sorting } from '../../../lib/command/basic-io.js'
-import { SimpleType } from '../../test-lib/simple-type.js'
-
-
-jest.mock('inquirer')
-
-jest.mock('../../../lib/command/output.js')
+} = await import('../../../lib/command/command-util.js')
 
 
 describe('isIndexArgument', () => {
@@ -66,8 +78,7 @@ const config: Sorting<SimpleType> = {
 }
 
 describe('stringTranslateToId', () => {
-	const sortMock = jest.mocked(sort)
-	const listFunction = jest.fn()
+	const listFunction: jest.Mock<ListDataFunction<SimpleType>> = jest.fn()
 
 	it('simply returns undefined given undefined idOrIndex', async () => {
 		const computedId = await stringTranslateToId(config, undefined, listFunction)
@@ -157,8 +168,6 @@ describe('convertToId', () => {
 })
 
 describe('stringGetIdFromUser', () => {
-	const promptMock = jest.mocked(inquirer.prompt)
-
 	it('accepts id input from user', async () => {
 		promptMock.mockResolvedValue({ itemIdOrIndex: 'string-id-a' })
 
