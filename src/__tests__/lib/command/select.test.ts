@@ -1,21 +1,47 @@
+import { jest } from '@jest/globals'
+
 import inquirer from 'inquirer'
 import log4js from 'log4js'
 
 import { CLIConfig, Profile, ProfilesByName, resetManagedConfigKey, setConfigKey } from '../../../lib/cli-config.js'
-import { outputList } from '../../../lib/command/basic-io.js'
+import { IdRetrievalFunction, ListDataFunction, LookupDataFunction, outputList } from '../../../lib/command/basic-io.js'
 import { stringGetIdFromUser } from '../../../lib/command/command-util.js'
-import { SelectFromListConfig, indefiniteArticleFor, promptUser, selectFromList } from '../../../lib/command/select.js'
+import { SelectFromListConfig, SelectOptions } from '../../../lib/command/select.js'
 import { SmartThingsCommand, SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
+import { SimpleType } from '../../test-lib/simple-type.js'
 
 
-jest.mock('inquirer')
-jest.mock('../../../lib/cli-config.js')
-jest.mock('../../../lib/command/basic-io.js')
-jest.mock('../../../lib/command/command-util.js')
+const promptMock: jest.Mock<typeof inquirer.prompt> = jest.fn()
+jest.unstable_mockModule('inquirer', () => ({
+	default: {
+		prompt: promptMock,
+	},
+}))
+
+const resetManagedConfigKeyMock: jest.Mock<typeof resetManagedConfigKey> = jest.fn()
+const setConfigKeyMock: jest.Mock<typeof setConfigKey> = jest.fn()
+jest.unstable_mockModule('../../../lib/cli-config.js', () => ({
+	resetManagedConfigKey: resetManagedConfigKeyMock,
+	setConfigKey: setConfigKeyMock,
+}))
+
+const outputListMock: jest.Mock<typeof outputList> = jest.fn()
+jest.unstable_mockModule('../../../lib/command/basic-io.js', () => ({
+	outputList: outputListMock,
+}))
+
+const stringGetIdFromUserMock: jest.Mock<typeof stringGetIdFromUser> = jest.fn()
+jest.unstable_mockModule('../../../lib/command/command-util.js', () => ({
+	stringGetIdFromUser: stringGetIdFromUserMock,
+}))
+
+
+const { indefiniteArticleFor, promptUser, selectFromList } = await import('../../../lib/command/select.js')
+
 
 describe('select', () => {
-	const item1 = { str: 'string-id-1', num: 5 }
-	const item2 = { str: 'string-id-2', num: 7 }
+	const item1: SimpleType = { str: 'string-id-1', num: 5 }
+	const item2: SimpleType = { str: 'string-id-2', num: 7 }
 	const list = [item1, item2]
 	const singleItemList = [item1]
 	const booleanConfigValueMock = jest.fn()
@@ -30,14 +56,13 @@ describe('select', () => {
 		booleanConfigValue: booleanConfigValueMock,
 	} as unknown as SmartThingsCommand<SmartThingsCommandFlags>)
 	const command = commandWithProfile({})
-	const config: SelectFromListConfig<typeof item1> = {
+	const config: SelectFromListConfig<SimpleType> = {
 		primaryKeyName: 'str',
 		sortKeyName: 'num',
 	}
 
-	const listItems = jest.fn().mockResolvedValue(list)
-	const stringGetIdFromUserMock = jest.mocked(stringGetIdFromUser)
-	const outputListMock = jest.mocked(outputList)
+	const listItemsMock: jest.Mock<ListDataFunction<SimpleType>> = jest.fn()
+	listItemsMock.mockResolvedValue(list)
 
 	const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /*no-op*/ })
 
@@ -56,10 +81,10 @@ describe('select', () => {
 			outputListMock.mockResolvedValueOnce(list)
 			stringGetIdFromUserMock.mockResolvedValue('chosen-id')
 
-			expect(await promptUser(command, config, { listItems })).toBe('chosen-id')
+			expect(await promptUser(command, config, { listItems: listItemsMock })).toBe('chosen-id')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
-			expect(listItems).toHaveBeenCalledWith()
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledWith()
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledWith(command, config, expect.any(Function), true, true)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
@@ -69,18 +94,18 @@ describe('select', () => {
 			// without calling it again.
 			const anonymousListFunction = outputListMock.mock.calls[0][2]
 			expect(await anonymousListFunction()).toBe(list)
-			expect(listItems).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
 		})
 
 		it('autoChoose default to false', async () => {
-			listItems.mockResolvedValueOnce(singleItemList)
+			listItemsMock.mockResolvedValueOnce(singleItemList)
 			outputListMock.mockResolvedValueOnce(singleItemList)
 			stringGetIdFromUserMock.mockResolvedValue('chosen-id')
 
-			expect(await promptUser(command, config, { listItems })).toBe('chosen-id')
+			expect(await promptUser(command, config, { listItems: listItemsMock })).toBe('chosen-id')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
-			expect(listItems).toHaveBeenCalledWith()
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledWith()
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledWith(command, config, expect.any(Function), true, true)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
@@ -88,12 +113,12 @@ describe('select', () => {
 		})
 
 		it('chooses single item automatically if autoChoose is on', async () => {
-			listItems.mockResolvedValueOnce(singleItemList)
+			listItemsMock.mockResolvedValueOnce(singleItemList)
 
-			expect(await promptUser(command, config, { listItems, autoChoose: true })).toBe('string-id-1')
+			expect(await promptUser(command, config, { listItems: listItemsMock, autoChoose: true })).toBe('string-id-1')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
-			expect(listItems).toHaveBeenCalledWith()
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledWith()
 			expect(outputListMock).toHaveBeenCalledTimes(0)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(0)
 		})
@@ -104,9 +129,9 @@ describe('select', () => {
 			// fake exiting with a special thrown error
 			exitSpy.mockImplementation(() => { throw Error('should exit') })
 
-			await expect(promptUser(command, config, { listItems })).rejects.toThrow('should exit')
+			await expect(promptUser(command, config, { listItems: listItemsMock })).rejects.toThrow('should exit')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledWith(command, config, expect.any(Function), true, true)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(0)
@@ -114,12 +139,13 @@ describe('select', () => {
 		it('calls custom getIdFromUser when specified', async () => {
 			outputListMock.mockResolvedValueOnce(list)
 
-			const getIdFromUser = jest.fn().mockResolvedValueOnce('special-id')
+			const getIdFromUser: jest.Mock<IdRetrievalFunction<string, SimpleType>> = jest.fn()
+			getIdFromUser.mockResolvedValueOnce('special-id')
 
-			expect(await promptUser(command, config, { listItems, getIdFromUser })).toBe('special-id')
+			expect(await promptUser(command, config, { listItems: listItemsMock, getIdFromUser })).toBe('special-id')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
-			expect(listItems).toHaveBeenCalledWith()
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledWith()
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledWith(command, config, expect.any(Function), true, true)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(0)
@@ -131,9 +157,9 @@ describe('select', () => {
 			outputListMock.mockResolvedValue(list)
 			const configWithName = { ...config, itemName: 'thingamabob' }
 
-			expect(await promptUser(command, configWithName, { listItems })).toBe('chosen-id')
+			expect(await promptUser(command, configWithName, { listItems: listItemsMock })).toBe('chosen-id')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledWith(command, configWithName, expect.any(Function), true, true)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
@@ -143,10 +169,10 @@ describe('select', () => {
 		it('passes custom prompt on', async () => {
 			outputListMock.mockResolvedValue(list)
 
-			expect(await promptUser(command, config, { listItems, promptMessage: 'custom prompt' }))
+			expect(await promptUser(command, config, { listItems: listItemsMock, promptMessage: 'custom prompt' }))
 				.toBe('chosen-id')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledWith(command, config, expect.any(Function), true, true)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
@@ -155,27 +181,24 @@ describe('select', () => {
 	})
 
 	describe('selectFromList', () => {
-		const promptSpy = jest.spyOn(inquirer, 'prompt').mockImplementation()
-		const setConfigKeyMock = jest.mocked(setConfigKey)
-		const resetManagedConfigKeyMock = jest.mocked(resetManagedConfigKey)
-		const getItemMock = jest.fn()
-		const userMessageMock = jest.fn()
-		const defaultValue = {
+		const getItemMock: jest.Mock<LookupDataFunction<string, SimpleType>> = jest.fn()
+		const userMessageMock: jest.Mock<(item: SimpleType) => string> = jest.fn()
+		const defaultValue: SelectOptions<SimpleType>['defaultValue'] = {
 			configKey: 'defaultItem',
 			getItem: getItemMock,
 			userMessage: userMessageMock,
 		}
 
 		it('returns id when present', async () => {
-			expect(await selectFromList(command, config, { preselectedId: 'sample-id', listItems }))
+			expect(await selectFromList(command, config, { preselectedId: 'sample-id', listItems: listItemsMock }))
 				.toBe('sample-id')
 
-			expect(listItems).toHaveBeenCalledTimes(0)
+			expect(listItemsMock).toHaveBeenCalledTimes(0)
 			expect(outputListMock).toHaveBeenCalledTimes(0)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(0)
 
 			expect(booleanConfigValueMock).toHaveBeenCalledTimes(0)
-			expect(promptSpy).toHaveBeenCalledTimes(0)
+			expect(promptMock).toHaveBeenCalledTimes(0)
 			expect(setConfigKeyMock).toHaveBeenCalledTimes(0)
 			expect(getItemMock).toHaveBeenCalledTimes(0)
 			expect(userMessageMock).toHaveBeenCalledTimes(0)
@@ -183,15 +206,15 @@ describe('select', () => {
 		})
 
 		it('uses promptUser when no preselected id included', async () => {
-			expect(await selectFromList(command, config, { listItems }))
+			expect(await selectFromList(command, config, { listItems: listItemsMock }))
 				.toBe('chosen-id')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
 
 			expect(booleanConfigValueMock).toHaveBeenCalledTimes(0)
-			expect(promptSpy).toHaveBeenCalledTimes(0)
+			expect(promptMock).toHaveBeenCalledTimes(0)
 			expect(setConfigKeyMock).toHaveBeenCalledTimes(0)
 			expect(getItemMock).toHaveBeenCalledTimes(0)
 			expect(userMessageMock).toHaveBeenCalledTimes(0)
@@ -205,17 +228,17 @@ describe('select', () => {
 			getItemMock.mockResolvedValueOnce(item1)
 			userMessageMock.mockReturnValueOnce('user message')
 
-			expect(await selectFromList(commandWithDefault, config, { listItems, defaultValue }))
+			expect(await selectFromList(commandWithDefault, config, { listItems: listItemsMock, defaultValue }))
 				.toBe('default-item-id')
 
 			expect(consoleLogSpy).toHaveBeenCalledWith('user message')
 
-			expect(listItems).toHaveBeenCalledTimes(0)
+			expect(listItemsMock).toHaveBeenCalledTimes(0)
 			expect(outputListMock).toHaveBeenCalledTimes(0)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(0)
 
 			expect(booleanConfigValueMock).toHaveBeenCalledTimes(0)
-			expect(promptSpy).toHaveBeenCalledTimes(0)
+			expect(promptMock).toHaveBeenCalledTimes(0)
 			expect(setConfigKeyMock).toHaveBeenCalledTimes(0)
 			expect(userMessageMock).toHaveBeenCalledTimes(1)
 			expect(userMessageMock).toHaveBeenCalledWith(item1)
@@ -226,18 +249,18 @@ describe('select', () => {
 			const commandWithDefault = commandWithProfile({
 				defaultItem: 'default-item-id',
 			})
-			getItemMock.mockResolvedValueOnce(undefined)
-			promptSpy.mockResolvedValue({ answer: 'No' })
+			getItemMock.mockResolvedValueOnce(undefined as unknown as SimpleType)
+			promptMock.mockResolvedValue({ answer: 'No' })
 
-			expect(await selectFromList(commandWithDefault, config, { listItems, defaultValue }))
+			expect(await selectFromList(commandWithDefault, config, { listItems: listItemsMock, defaultValue }))
 				.toBe('chosen-id')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
 
 			expect(booleanConfigValueMock).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledTimes(1)
 			expect(setConfigKeyMock).toHaveBeenCalledTimes(0)
 			expect(getItemMock).toHaveBeenCalledTimes(1)
 			expect(getItemMock).toHaveBeenCalledWith('default-item-id')
@@ -251,17 +274,17 @@ describe('select', () => {
 				defaultItem: 'default-item-id',
 			})
 			getItemMock.mockRejectedValueOnce({ response: { status: statusCode } })
-			promptSpy.mockResolvedValue({ answer: 'No' })
+			promptMock.mockResolvedValue({ answer: 'No' })
 
-			expect(await selectFromList(commandWithDefault, config, { listItems, defaultValue }))
+			expect(await selectFromList(commandWithDefault, config, { listItems: listItemsMock, defaultValue }))
 				.toBe('chosen-id')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
 
 			expect(booleanConfigValueMock).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledTimes(1)
 			expect(setConfigKeyMock).toHaveBeenCalledTimes(0)
 			expect(getItemMock).toHaveBeenCalledTimes(1)
 			expect(getItemMock).toHaveBeenCalledWith('default-item-id')
@@ -275,17 +298,17 @@ describe('select', () => {
 				defaultItem: 'default-item-id',
 			})
 			getItemMock.mockRejectedValueOnce(Error('unexpected error'))
-			promptSpy.mockResolvedValue({ answer: 'No' })
+			promptMock.mockResolvedValue({ answer: 'No' })
 
-			await expect(selectFromList(commandWithDefault, config, { listItems, defaultValue }))
+			await expect(selectFromList(commandWithDefault, config, { listItems: listItemsMock, defaultValue }))
 				.rejects.toThrow('unexpected error')
 
-			expect(listItems).toHaveBeenCalledTimes(0)
+			expect(listItemsMock).toHaveBeenCalledTimes(0)
 			expect(outputListMock).toHaveBeenCalledTimes(0)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(0)
 
 			expect(booleanConfigValueMock).toHaveBeenCalledTimes(0)
-			expect(promptSpy).toHaveBeenCalledTimes(0)
+			expect(promptMock).toHaveBeenCalledTimes(0)
 			expect(setConfigKeyMock).toHaveBeenCalledTimes(0)
 			expect(getItemMock).toHaveBeenCalledTimes(1)
 			expect(getItemMock).toHaveBeenCalledWith('default-item-id')
@@ -295,19 +318,19 @@ describe('select', () => {
 
 		it('does not save default when user asked not to', async () => {
 			booleanConfigValueMock.mockReturnValueOnce(false)
-			promptSpy.mockResolvedValue({ answer: 'No' })
+			promptMock.mockResolvedValue({ answer: 'No' })
 
 			expect(await selectFromList(command, config,
-				{ listItems, defaultValue })).toBe('chosen-id')
+				{ listItems: listItemsMock, defaultValue })).toBe('chosen-id')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
 
 			expect(booleanConfigValueMock).toHaveBeenCalledTimes(1)
 			expect(booleanConfigValueMock).toHaveBeenCalledWith('defaultItem::neverAskForSaveAgain')
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'list', name: 'answer' }))
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({ type: 'list', name: 'answer' }))
 			expect(setConfigKeyMock).toHaveBeenCalledTimes(0)
 		})
 
@@ -315,33 +338,33 @@ describe('select', () => {
 			booleanConfigValueMock.mockReturnValueOnce(true)
 
 			expect(await selectFromList(command, config,
-				{ listItems, defaultValue })).toBe('chosen-id')
+				{ listItems: listItemsMock, defaultValue })).toBe('chosen-id')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
 
 			expect(booleanConfigValueMock).toHaveBeenCalledTimes(1)
 			expect(booleanConfigValueMock).toHaveBeenCalledWith('defaultItem::neverAskForSaveAgain')
-			expect(promptSpy).toHaveBeenCalledTimes(0)
+			expect(promptMock).toHaveBeenCalledTimes(0)
 			expect(setConfigKeyMock).toHaveBeenCalledTimes(0)
 		})
 
 		it('saves selected item as default', async () => {
 			booleanConfigValueMock.mockReturnValueOnce(false)
-			promptSpy.mockResolvedValue({ answer: 'yes' })
+			promptMock.mockResolvedValue({ answer: 'yes' })
 
 			expect(await selectFromList(command, config,
-				{ listItems, defaultValue })).toBe('chosen-id')
+				{ listItems: listItemsMock, defaultValue })).toBe('chosen-id')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
 
 			expect(booleanConfigValueMock).toHaveBeenCalledTimes(1)
 			expect(booleanConfigValueMock).toHaveBeenCalledWith('defaultItem::neverAskForSaveAgain')
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'list', name: 'answer' }))
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({ type: 'list', name: 'answer' }))
 			expect(setConfigKeyMock).toHaveBeenCalledTimes(1)
 			expect(setConfigKeyMock).toHaveBeenCalledWith(command.cliConfig, 'defaultItem', 'chosen-id')
 			expect(consoleLogSpy).toHaveBeenCalledWith('chosen-id is now the default.\n' +
@@ -350,19 +373,19 @@ describe('select', () => {
 
 		it('saves "never ask again" response"', async () => {
 			booleanConfigValueMock.mockReturnValueOnce(false)
-			promptSpy.mockResolvedValue({ answer: 'never' })
+			promptMock.mockResolvedValue({ answer: 'never' })
 
 			expect(await selectFromList(command, config,
-				{ listItems, defaultValue })).toBe('chosen-id')
+				{ listItems: listItemsMock, defaultValue })).toBe('chosen-id')
 
-			expect(listItems).toHaveBeenCalledTimes(1)
+			expect(listItemsMock).toHaveBeenCalledTimes(1)
 			expect(outputListMock).toHaveBeenCalledTimes(1)
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
 
 			expect(booleanConfigValueMock).toHaveBeenCalledTimes(1)
 			expect(booleanConfigValueMock).toHaveBeenCalledWith('defaultItem::neverAskForSaveAgain')
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith(expect.objectContaining({ type: 'list', name: 'answer' }))
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({ type: 'list', name: 'answer' }))
 			expect(setConfigKeyMock).toHaveBeenCalledTimes(1)
 			expect(setConfigKeyMock).toHaveBeenCalledWith(command.cliConfig, 'defaultItem::neverAskForSaveAgain', true)
 			expect(consoleLogSpy).toHaveBeenCalledWith('You will not be asked again.\n' +
