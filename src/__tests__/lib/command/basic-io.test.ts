@@ -1,49 +1,73 @@
-import { IOFormat } from '../../../lib/io-util.js'
+import { jest } from '@jest/globals'
+
 import {
-	inputAndOutputItem,
+	ActionFunction,
+	GetDataFunction,
 	InputAndOutputItemFlags,
-	inputItem,
-	outputItem,
 	OutputItemFlags,
-	outputList,
 	OutputListConfig,
 	OutputListFlags,
 } from '../../../lib/command/basic-io.js'
-import { InputProcessor } from '../../../lib/command/input.js'
+import { InputProcessor } from '../../../lib/command/input-processor.js'
 import { formatAndWriteItem, formatAndWriteList } from '../../../lib/command/format.js'
-import { buildInputProcessor, InputBuilderFlags } from '../../../lib/command/input-builder.js'
+import { InputProcessorFlags, buildInputProcessor } from '../../../lib/command/input-builder.js'
 import { OutputFormatter, sort, writeOutput } from '../../../lib/command/output.js'
-import { buildOutputFormatter, BuildOutputFormatterFlags } from '../../../lib/command/output-builder.js'
+import { buildOutputFormatter } from '../../../lib/command/output-builder.js'
 import { SmartThingsCommand } from '../../../lib/command/smartthings-command.js'
 import { SimpleType } from '../../test-lib/simple-type.js'
+import { IOFormat } from '../../../lib/io-util.js'
 
 
-jest.mock('../../../lib/command/format.js')
-jest.mock('../../../lib/command/input-builder.js')
-jest.mock('../../../lib/command/output.js')
-jest.mock('../../../lib/command/output-builder.js')
+const formatAndWriteItemMock: jest.Mock<typeof formatAndWriteItem> = jest.fn()
+const formatAndWriteListMock: jest.Mock<typeof formatAndWriteList> = jest.fn()
+jest.unstable_mockModule('../../../lib/command/format.js', () => ({
+	formatAndWriteItem: formatAndWriteItemMock,
+	formatAndWriteList: formatAndWriteListMock,
+}))
+
+const buildInputProcessorMock: jest.Mock<typeof buildInputProcessor> = jest.fn()
+jest.unstable_mockModule('../../../lib/command/input-builder.js', () => ({
+	inputProcessorBuilder: jest.fn(),
+	buildInputProcessor: buildInputProcessorMock,
+}))
+
+const sortMock: jest.Mock<typeof sort> = jest.fn()
+const writeOutputMock: jest.Mock<typeof writeOutput> = jest.fn()
+jest.unstable_mockModule('../../../lib/command/output.js', () => ({
+	sort: sortMock,
+	writeOutput: writeOutputMock,
+}))
+
+const buildOutputFormatterMock: jest.Mock<typeof buildOutputFormatter<SimpleType>> = jest.fn()
+jest.unstable_mockModule('../../../lib/command/output-builder.js', () => ({
+	buildOutputFormatterBuilder: jest.fn(),
+	buildOutputFormatter: buildOutputFormatterMock,
+}))
 
 
-const item1 = { str: 'string-1', num: 5 }
-const item2 = { str: 'string-2', num: 6 }
+const {
+	inputAndOutputItem,
+	inputItem,
+	outputItem,
+	outputList,
+} = await import('../../../lib/command/basic-io.js')
+
+
+const item1: SimpleType = { str: 'string-1', num: 5 }
+const item2: SimpleType = { str: 'string-2', num: 6 }
 const list = [item1, item2]
 
-const formatAndWriteItemMock = jest.mocked(formatAndWriteItem)
-const formatAndWriteListMock = jest.mocked(formatAndWriteList)
-
-const buildInputProcessorMock = jest.mocked(buildInputProcessor)
-
-const ioFormatMock = jest.fn()
-const hasInputMock = jest.fn()
-const readMock = jest.fn()
+const ioFormatMock: jest.Mock<() => IOFormat> = jest.fn()
+const hasInputMock: jest.Mock<InputProcessor<SimpleType>['hasInput']> = jest.fn()
+const readMock: jest.Mock<InputProcessor<SimpleType>['read']> = jest.fn()
 
 describe('inputItem', () => {
-	const flags: InputBuilderFlags = {
+	const flags: InputProcessorFlags = {
 		input: 'input.yaml',
 	}
 
 	const inputProcessor: InputProcessor<SimpleType> = {
-		get ioFormat(): 'common' {
+		get ioFormat(): IOFormat {
 			return ioFormatMock()
 		},
 		hasInput: hasInputMock,
@@ -51,9 +75,9 @@ describe('inputItem', () => {
 	}
 
 	it('accepts input and returns input', async () => {
-		ioFormatMock.mockReturnValue('common')
-		hasInputMock.mockReturnValue(true)
-		readMock.mockResolvedValue(item1)
+		ioFormatMock.mockReturnValueOnce('common')
+		hasInputMock.mockReturnValueOnce(true)
+		readMock.mockResolvedValueOnce(item1)
 
 		buildInputProcessorMock.mockReturnValue(inputProcessor)
 
@@ -69,23 +93,24 @@ describe('inputItem', () => {
 	})
 
 	it('throws exception when there is no input', async () => {
-		const inputProcessor = {
+		const inputProcessor: InputProcessor<SimpleType> = {
 			ioFormat: 'common',
 			hasInput: () => false,
 			read: async () => item1,
 		}
 
-		buildInputProcessorMock.mockReturnValue(inputProcessor)
+		buildInputProcessorMock.mockReturnValueOnce(inputProcessor)
 
 		await expect(inputItem(flags)).rejects
 			.toThrow('input is required either via file specified with --input option or from stdin')
 	})
 
 	it('works with async hasInput', async () => {
-		hasInputMock.mockResolvedValueOnce(true)
-		readMock.mockResolvedValue(item1)
+		ioFormatMock.mockReturnValueOnce('common')
+		hasInputMock.mockReturnValueOnce(Promise.resolve(true))
+		readMock.mockResolvedValueOnce(item1)
 
-		buildInputProcessorMock.mockReturnValue(inputProcessor)
+		buildInputProcessorMock.mockReturnValueOnce(inputProcessor)
 
 		expect(await inputItem(flags)).toEqual([item1, 'common'])
 
@@ -105,7 +130,8 @@ test('outputItem', async () => {
 		tableFieldDefinitions: [],
 	}
 
-	const getDataMock = jest.fn().mockResolvedValue(item1)
+	const getDataMock: jest.Mock<GetDataFunction<SimpleType>> = jest.fn()
+	getDataMock.mockResolvedValue(item1)
 
 	expect(await outputItem<SimpleType>(command, config, getDataMock)).toBe(item1)
 
@@ -116,9 +142,10 @@ test('outputItem', async () => {
 })
 
 describe('outputList', () => {
-	const getDataMock = jest.fn().mockResolvedValue(list)
+	const getDataMock: jest.Mock<GetDataFunction<SimpleType[]>> = jest.fn()
+	getDataMock.mockResolvedValue(list)
 	const sorted = [item2, item1]
-	const sortMock = jest.mocked(sort).mockReturnValue(sorted)
+	sortMock.mockReturnValue(sorted)
 	const command = { flags: { output: 'output.yaml' } } as SmartThingsCommand<OutputListFlags>
 	const config: OutputListConfig<SimpleType> = {
 		listTableFieldDefinitions: [],
@@ -170,7 +197,7 @@ describe('outputList', () => {
 describe('inputAndOutputItem', () => {
 	it('accepts input, executes command and writes output', async () => {
 		const inputProcessor: InputProcessor<SimpleType> = {
-			get ioFormat(): 'common' {
+			get ioFormat(): IOFormat {
 				return ioFormatMock()
 			},
 			hasInput: hasInputMock,
@@ -182,7 +209,8 @@ describe('inputAndOutputItem', () => {
 		readMock.mockResolvedValue(item1)
 		ioFormatMock.mockReturnValue('common')
 
-		const executeCommandMock = jest.fn().mockResolvedValue(item1)
+		const executeCommandMock: jest.Mock<ActionFunction<void, SimpleType>> = jest.fn()
+		executeCommandMock.mockResolvedValue(item1)
 
 		const flags = { output: 'output.yaml' }
 		const command = { flags } as SmartThingsCommand<InputAndOutputItemFlags>
@@ -203,7 +231,7 @@ describe('inputAndOutputItem', () => {
 
 	it('accepts and writes input in dry run mode', async () => {
 		const inputProcessor: InputProcessor<SimpleType> = {
-			get ioFormat(): 'yaml' {
+			get ioFormat(): IOFormat {
 				return ioFormatMock()
 			},
 			hasInput: hasInputMock,
@@ -215,15 +243,9 @@ describe('inputAndOutputItem', () => {
 		readMock.mockResolvedValue(item1)
 		ioFormatMock.mockReturnValue('yaml')
 
-		const formatterMock = jest.fn().mockReturnValueOnce('formatted output')
-		const buildOutputFormatterMock = buildOutputFormatter as unknown as
-		jest.Mock<OutputFormatter<SimpleType>, [
-			SmartThingsCommand<BuildOutputFormatterFlags>,
-			IOFormat | undefined,
-			OutputFormatter<SimpleType> | undefined,
-		]>
+		const formatterMock: jest.Mock<OutputFormatter<SimpleType>> = jest.fn()
+		formatterMock.mockReturnValueOnce('formatted output')
 		buildOutputFormatterMock.mockReturnValueOnce(formatterMock)
-		const writeOutputMock = jest.mocked(writeOutput)
 
 		const flags = { dryRun: true, output: 'output flag' }
 		const cliConfig = { profile: {} }
@@ -231,7 +253,7 @@ describe('inputAndOutputItem', () => {
 		const config = {
 			tableFieldDefinitions: [],
 		}
-		const executeCommandMock = jest.fn()
+		const executeCommandMock: jest.Mock<ActionFunction<void, SimpleType>> = jest.fn()
 
 		await inputAndOutputItem(command, config, executeCommandMock)
 
@@ -250,7 +272,7 @@ describe('inputAndOutputItem', () => {
 	})
 
 	it('throws exception when input could not be found', async () => {
-		const inputProcessor = {
+		const inputProcessor: InputProcessor<SimpleType> = {
 			ioFormat: 'common',
 			hasInput: () => false,
 			read: async () => item1,
@@ -262,7 +284,8 @@ describe('inputAndOutputItem', () => {
 		const config = {
 			tableFieldDefinitions: [],
 		}
-		const executeCommandMock = jest.fn().mockResolvedValue(item1)
+		const executeCommandMock: jest.Mock<ActionFunction<void, SimpleType>> = jest.fn()
+		executeCommandMock.mockResolvedValue(item1)
 
 		await expect(inputAndOutputItem(command, config, executeCommandMock)).rejects.toThrow(
 			'input is required either via file specified with --input option or from stdin')

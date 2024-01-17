@@ -12,7 +12,7 @@ import { SmartThingsCommand } from './smartthings-command.js'
 export type GetDataFunction<O extends object> = () => Promise<O>
 export type ListDataFunction<L extends object> = () => Promise<L[]>
 export type LookupDataFunction<ID, O extends object> = (id: ID) => Promise<O>
-export type ActionFunction<ID, I extends object, O extends object> = (id: ID, input: I) => Promise<O>
+export type ActionFunction<ID, I extends object, O extends object = I> = (id: ID, input: I) => Promise<O>
 export type IdTranslationFunction<ID, L extends object> = (idOrIndex: ID | string, listFunction: ListDataFunction<L>) => Promise<ID>
 export type IdRetrievalFunction<ID, L extends object> = (fieldInfo: Sorting<L>, list: L[], promptMessage?: string) => Promise<ID>
 

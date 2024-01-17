@@ -14,10 +14,16 @@ export type CustomCommonOutputProducer<O extends object> = {
 }
 export type CommonOutputProducer<O extends object> = TableCommonOutputProducer<O> | CustomCommonOutputProducer<O>
 
-export type CommonListOutputProducer<L extends object> = Sorting<L> & {
-	listTableFieldDefinitions?: TableFieldDefinition<L>[]
-	buildListTableOutput?(data: L[]): string
+export type TableCommonListOutputProducer<L extends object> = Sorting<L> & {
+	listTableFieldDefinitions: TableFieldDefinition<L>[]
 }
+export type CustomCommonListOutputProducer<L extends object> = Sorting<L> & {
+	buildListTableOutput(data: L[]): string
+}
+export type CommonListOutputProducer<L extends object> =
+	| Sorting<L>
+	| TableCommonListOutputProducer<L>
+	| CustomCommonListOutputProducer<L>
 
 export type FormatAndWriteItemFlags = BuildOutputFormatterFlags
 export const formatAndWriteItemBuilder = buildOutputFormatterBuilder
@@ -64,10 +70,10 @@ export async function formatAndWriteList<L extends object>(command: SmartThingsC
 	if (list.length === 0) {
 		const pluralName = config.pluralItemName ?? (config.itemName ? `${config.itemName}s` : 'items')
 		commonFormatter = () => `no ${pluralName} found`
-	} else if (config.buildListTableOutput) {
+	} else if ('buildListTableOutput' in config) {
 		const buildListTableOutput = config.buildListTableOutput
 		commonFormatter = data => buildListTableOutput(data)
-	} else if (config.listTableFieldDefinitions) {
+	} else if ('listTableFieldDefinitions' in config) {
 		commonFormatter = listTableFormatter<L>(command.tableGenerator, config.listTableFieldDefinitions, includeIndex)
 	} else if (config.sortKeyName) {
 		commonFormatter = listTableFormatter<L>(command.tableGenerator, [config.sortKeyName, config.primaryKeyName], includeIndex)
