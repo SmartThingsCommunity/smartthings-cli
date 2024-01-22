@@ -1,15 +1,20 @@
 import { jest } from '@jest/globals'
 
-import { DevicePreference } from '@smartthings/core-sdk'
+import { DevicePreference, DevicePreferencesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
-// import { APICommand } from '../../../../lib/command/api-command'
-// import { SelectFromListFlags, selectFromList } from '../../../../lib/command/select'
-// import { chooseDevicePreference, tableFieldDefinitions } from '../../../../lib/command/util/devicepreferences-util'
-import { tableFieldDefinitions } from '../../../../lib/command/util/devicepreferences-util'
+import { APICommand } from '../../../../lib/command/api-command'
+import { SelectFromListFlags, selectFromList } from '../../../../lib/command/select'
 import { ValueTableFieldDefinition } from '../../../../lib/table-generator'
 
 
-jest.mock('../../../../lib/command/select')
+const selectFromListMock: jest.Mock<typeof selectFromList> = jest.fn()
+jest.unstable_mockModule('../../../../lib/command/select', () => ({
+	selectFromList: selectFromListMock,
+}))
+
+
+const { chooseDevicePreference, tableFieldDefinitions } = await import('../../../../lib/command/util/devicepreferences-util')
+
 
 describe('tableFieldDefinitions options definition', () => {
 	const value = (tableFieldDefinitions[12] as
@@ -30,10 +35,9 @@ describe('tableFieldDefinitions options definition', () => {
 	})
 })
 
-/*
 test('chooseDevicePreference', async () => {
-	const selectFromListMock = jest.mocked(selectFromList).mockResolvedValueOnce('chosen-id')
-	const listMock = jest.fn()
+	selectFromListMock.mockResolvedValueOnce('chosen-id')
+	const listMock: jest.Mock<typeof DevicePreferencesEndpoint.prototype.list> = jest.fn()
 	const client = { devicePreferences: { list: listMock } } as unknown as SmartThingsClient
 	const command = { client } as APICommand<SelectFromListFlags>
 
@@ -50,7 +54,7 @@ test('chooseDevicePreference', async () => {
 	)
 
 	const listItems = selectFromListMock.mock.calls[0][2].listItems
-	const devicePreferenceList = [{ preferenceId: 'device-preference-id' }]
+	const devicePreferenceList = [{ preferenceId: 'device-preference-id' } as DevicePreference]
 	listMock.mockResolvedValueOnce(devicePreferenceList)
 
 	expect(await listItems()).toBe(devicePreferenceList)
@@ -58,4 +62,3 @@ test('chooseDevicePreference', async () => {
 	expect(listMock).toHaveBeenCalledTimes(1)
 	expect(listMock).toHaveBeenCalledWith()
 })
-*/
