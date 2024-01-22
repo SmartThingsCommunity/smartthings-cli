@@ -1,6 +1,8 @@
+import { jest } from '@jest/globals'
+
 import { AppResponse, AppsEndpoint, AppType, PagedApp, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { PropertyTableFieldDefinition, Table, ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
+import { PropertyTableFieldDefinition, Table, TableGenerator, ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
 import { APICommand } from '../../../../lib/command/api-command.js'
 import {
 	ChooseOptions,
@@ -9,7 +11,24 @@ import {
 	stringTranslateToId,
 } from '../../../../lib/command/command-util.js'
 import { selectFromList, SelectFromListFlags } from '../../../../lib/command/select.js'
-import {
+import { ListDataFunction } from '../../../../lib/command/basic-io.js'
+
+
+const chooseOptionsWithDefaultsMock: jest.Mock<typeof chooseOptionsWithDefaults> = jest.fn()
+const stringTranslateToIdMock: jest.Mock<typeof stringTranslateToId> = jest.fn()
+jest.unstable_mockModule('../../../../lib/command/command-util.js', () => ({
+	chooseOptionsDefaults,
+	chooseOptionsWithDefaults: chooseOptionsWithDefaultsMock,
+	stringTranslateToId: stringTranslateToIdMock,
+}))
+
+const selectFromListMock: jest.Mock<typeof selectFromList> = jest.fn()
+jest.unstable_mockModule('../../../../lib/command/select.js', () => ({
+	selectFromList: selectFromListMock,
+}))
+
+
+const {
 	buildTableOutput,
 	chooseApp,
 	hasSubscription,
@@ -17,19 +36,8 @@ import {
 	shortARNorURL,
 	tableFieldDefinitions,
 	verboseApps,
-} from '../../../../lib/command/util/apps-util.js'
+} = await import('../../../../lib/command/util/apps-util.js')
 
-
-jest.mock('../../../../lib/command/command-util.js', () => {
-	const original = jest.requireActual('../../../../lib/command/command-util.js')
-
-	return {
-		...original,
-		chooseOptionsWithDefaults: jest.fn(),
-		stringTranslateToId: jest.fn(),
-	}
-})
-jest.mock('../../../../lib/command/select.js')
 
 test.each`
 	input                             | expected
@@ -134,12 +142,11 @@ describe('tableFieldDefinitions functions', () => {
 })
 
 describe('chooseApp', () => {
-	const stringTranslateToIdMock = jest.mocked(stringTranslateToId).mockResolvedValue('translated-app-id')
-	const selectFromListMock = jest.mocked(selectFromList).mockResolvedValue('selected-app-id')
-	const chooseOptionsWithDefaultsMock = jest.mocked(chooseOptionsWithDefaults)
-		.mockReturnValue(chooseOptionsDefaults())
+	stringTranslateToIdMock.mockResolvedValue('translated-app-id')
+	selectFromListMock.mockResolvedValue('selected-app-id')
+	chooseOptionsWithDefaultsMock.mockReturnValue(chooseOptionsDefaults())
 
-	const apiAppsListMock = jest.fn()
+	const apiAppsListMock: jest.Mock<typeof AppsEndpoint.prototype.list> = jest.fn()
 	const command = {
 		client: {
 			apps: {
@@ -149,12 +156,14 @@ describe('chooseApp', () => {
 	} as unknown as APICommand<SelectFromListFlags>
 
 	it('sets defaults for passed options', async () => {
-		const opts: Partial<ChooseOptions<PagedApp>> = { listItems: jest.fn() }
+		const listItemsMock: jest.Mock<ListDataFunction<PagedApp>> = jest.fn()
+		const opts: Partial<ChooseOptions<PagedApp>> = { listItems: listItemsMock }
 
 		expect(await chooseApp(command, undefined, opts)).toBe('selected-app-id')
 
-		expect(chooseOptionsWithDefaults).toHaveBeenCalledTimes(1)
-		expect(chooseOptionsWithDefaults).toHaveBeenCalledWith(opts)
+		expect(listItemsMock).toHaveBeenCalledTimes(0)
+		expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledTimes(1)
+		expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledWith(opts)
 	})
 
 	it('resolves id from index when allowed', async () => {
@@ -172,8 +181,8 @@ describe('chooseApp', () => {
 
 		expect(await chooseApp(command, 'app-from-arg', opts)).toBe('selected-app-id')
 
-		expect(stringTranslateToId).toHaveBeenCalledTimes(1)
-		expect(stringTranslateToId).toHaveBeenCalledWith(
+		expect(stringTranslateToIdMock).toHaveBeenCalledTimes(1)
+		expect(stringTranslateToIdMock).toHaveBeenCalledWith(
 			expect.objectContaining(expectedConfig),
 			'app-from-arg',
 			expect.any(Function),
@@ -199,7 +208,7 @@ describe('chooseApp', () => {
 
 		expect(await chooseApp(command, 'app-from-arg', opts)).toBe('selected-app-id')
 
-		expect(stringTranslateToId).not.toBeCalled()
+		expect(stringTranslateToIdMock).toHaveBeenCalledTimes(0)
 		expect(selectFromListMock).toHaveBeenCalledWith(
 			command,
 			expect.objectContaining(expectedConfig),
@@ -216,7 +225,7 @@ describe('chooseApp', () => {
 
 		expect(await chooseApp(command, 'app-from-arg', opts)).toBe('selected-app-id')
 
-		expect(stringTranslateToId).toHaveBeenCalledTimes(1)
+		expect(stringTranslateToIdMock).toHaveBeenCalledTimes(1)
 		expect(selectFromListMock).toHaveBeenCalledTimes(1)
 
 		const listFromTranslateCall = stringTranslateToIdMock.mock.calls[0][2]
@@ -229,7 +238,7 @@ describe('chooseApp', () => {
 		expect(await chooseApp(command)).toBe('selected-app-id')
 
 		const listItems = selectFromListMock.mock.calls[0][2].listItems
-		const appsList = [{ appId: 'listed-app-id' }]
+		const appsList = [{ appId: 'listed-app-id' } as PagedApp]
 		apiAppsListMock.mockResolvedValueOnce(appsList)
 
 		expect(await listItems()).toBe(appsList)
@@ -240,12 +249,10 @@ describe('chooseApp', () => {
 })
 
 describe('buildTableOutput', () => {
-	const mockNewOutputTable = jest.fn()
+	const newOutputTableMock: jest.Mock<TableGenerator['newOutputTable']> = jest.fn()
 	const mockTableGenerator = {
-		newOutputTable: mockNewOutputTable,
-		buildTableFromItem: jest.fn(),
-		buildTableFromList: jest.fn(),
-	}
+		newOutputTable: newOutputTableMock,
+	} as unknown as TableGenerator
 	it('returns simple string when app settings are not present', () => {
 		expect(buildTableOutput(mockTableGenerator, { settings: {} })).toBe('No application settings.')
 	})
@@ -254,10 +261,10 @@ describe('buildTableOutput', () => {
 		const pushMock = jest.fn()
 		const toStringMock = jest.fn().mockReturnValue('table output')
 		const newTable = { push: pushMock, toString: toStringMock } as Table
-		mockNewOutputTable.mockReturnValueOnce(newTable)
+		newOutputTableMock.mockReturnValueOnce(newTable)
 
 		expect(buildTableOutput(mockTableGenerator, { settings: { setting: 'setting value' } })).toEqual('table output')
-		expect(mockNewOutputTable).toBeCalledWith(
+		expect(newOutputTableMock).toHaveBeenCalledWith(
 			expect.objectContaining({ head: ['Key', 'Value'] }),
 		)
 		expect(pushMock).toHaveBeenCalledTimes(1)
@@ -268,8 +275,8 @@ describe('buildTableOutput', () => {
 })
 
 describe('verboseApps', () => {
-	const listMock = jest.fn()
-	const getMock = jest.fn()
+	const listMock: jest.Mock<typeof AppsEndpoint.prototype.list> = jest.fn()
+	const getMock: jest.Mock<typeof AppsEndpoint.prototype.get> = jest.fn()
 	const apps = { list: listMock, get: getMock } as unknown as AppsEndpoint
 	const client = { apps } as SmartThingsClient
 
