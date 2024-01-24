@@ -3,11 +3,14 @@ import { jest } from '@jest/globals'
 import {
 	CapabilitiesEndpoint,
 	CapabilityNamespace,
+	LocationItem,
+	LocationsEndpoint,
+	OrganizationsEndpoint,
 	Room,
+	RoomsEndpoint,
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { SimpleType } from '../test-lib/simple-type.js'
 import {
 	forAllNamespaces,
 	forAllOrganizations,
@@ -21,14 +24,14 @@ import {
 const locations = [
 	{ locationId: 'uno', name: 'main location' },
 	{ locationId: 'dos', name: 'vacation home' },
-]
-const locationsListMock = jest.fn().mockResolvedValue(locations)
+] as LocationItem[]
+const locationsListMock = jest.fn<typeof LocationsEndpoint.prototype.list>().mockResolvedValue(locations)
 
 const roomsByLocationId: Map<string, Room[]> = new Map([
 	['uno', [{ roomId: 'twelve', name: 'garage' }, { roomId: 'unnamed' }, { name: 'no id' }]],
 	['dos', [{ roomId: 'thirteen', name: 'kitchen' }, { roomId: 'fourteen', name: 'living room' }]],
 ])
-const roomsListMock = jest.fn(async locationId => {
+const roomsListMock = jest.fn<typeof RoomsEndpoint.prototype.list>(async locationId => {
 	let rooms: Room[] | undefined
 	if (locationId && roomsByLocationId.has(locationId)) {
 		rooms = roomsByLocationId.get(locationId)
@@ -262,7 +265,7 @@ describe('withLocationAndRoom', () => {
 })
 
 describe('forAllOrganizations', () => {
-	const organizationsListMock = jest.fn()
+	const organizationsListMock = jest.fn<typeof OrganizationsEndpoint.prototype.list>()
 	const org1Client = {
 		isFor: 'Organization 1',
 	} as unknown as SmartThingsClient
@@ -284,7 +287,7 @@ describe('forAllOrganizations', () => {
 		organizationsListMock.mockResolvedValueOnce([organization1, organization2])
 		cloneMock.mockReturnValueOnce(org1Client)
 		cloneMock.mockReturnValueOnce(org2Client)
-		const query = jest.fn()
+		const query = jest.fn<Parameters<typeof forAllOrganizations>[1]>()
 			.mockResolvedValueOnce([
 				{ name: 'thing 1' },
 				{ name: 'thing 2' },
@@ -307,15 +310,17 @@ describe('forAllOrganizations', () => {
 })
 
 describe('forAllNamespaces', () => {
-	const listNamespacesMock = jest.fn()
+	const listNamespacesMock = jest.fn<typeof CapabilitiesEndpoint.prototype.listNamespaces>()
 	const capabilities = {
 		listNamespaces: listNamespacesMock,
 	} as unknown as CapabilitiesEndpoint
 	const client = { capabilities } as SmartThingsClient
-	const queryMock = jest.fn() as jest.Mock<Promise<SimpleType[]>, [CapabilityNamespace]>
+	const queryMock = jest.fn<Parameters<typeof forAllNamespaces>[1]>()
+	const namespace1 = { name: 'namespace1' } as CapabilityNamespace
+	const namespace2 = { name: 'namespace2' } as CapabilityNamespace
 
 	it('combines multiple results', async () => {
-		listNamespacesMock.mockResolvedValueOnce(['namespace1', 'namespace2'])
+		listNamespacesMock.mockResolvedValueOnce([namespace1, namespace2])
 
 		const ns1Items = [{ num: 1, str: 'str1' }]
 		const ns2Items = [{ num: 2, str: 'str2' }, { num: 3, str: 'str3' }]
@@ -326,5 +331,8 @@ describe('forAllNamespaces', () => {
 
 		expect(listNamespacesMock).toHaveBeenCalledTimes(1)
 		expect(listNamespacesMock).toHaveBeenCalledWith()
+		expect(queryMock).toHaveBeenCalledTimes(2)
+		expect(queryMock).toHaveBeenCalledWith(namespace1)
+		expect(queryMock).toHaveBeenCalledWith(namespace2)
 	})
 })

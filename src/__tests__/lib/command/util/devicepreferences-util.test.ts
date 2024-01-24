@@ -2,9 +2,9 @@ import { jest } from '@jest/globals'
 
 import { DevicePreference, DevicePreferencesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand } from '../../../../lib/command/api-command'
-import { SelectFromListFlags, selectFromList } from '../../../../lib/command/select'
-import { ValueTableFieldDefinition } from '../../../../lib/table-generator'
+import { APICommand } from '../../../../lib/command/api-command.js'
+import { SelectFromListFlags, selectFromList } from '../../../../lib/command/select.js'
+import { ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
 
 
 const selectFromListMock: jest.Mock<typeof selectFromList> = jest.fn()
@@ -13,7 +13,10 @@ jest.unstable_mockModule('../../../../lib/command/select', () => ({
 }))
 
 
-const { chooseDevicePreference, tableFieldDefinitions } = await import('../../../../lib/command/util/devicepreferences-util')
+const {
+	chooseDevicePreference,
+	tableFieldDefinitions,
+} = await import('../../../../lib/command/util/devicepreferences-util.js')
 
 
 describe('tableFieldDefinitions options definition', () => {

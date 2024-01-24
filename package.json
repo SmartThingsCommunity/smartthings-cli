@@ -15,17 +15,18 @@
 	},
 	"files": [
 		"bin",
-		"dist",
+		"dist/src",
+		"dist/tsconfig.tsbuildinfo",
 		"README.md",
 		"/npm-shrinkwrap.json",
-		"!*/__tests__"
+		"!*/src/__tests__"
 	],
-	"main": "./dist/index.js",
+	"main": "./dist/src/index.js",
 	"bin": {
-		"smartthings": "dist/run.js"
+		"smartthings": "dist/src/run.js"
 	},
 	"exports": {
-		".": "./dist/index.js"
+		".": "./dist/src/index.js"
 	},
 	"engines": {
 		"node": ">=20.8.0 <21",

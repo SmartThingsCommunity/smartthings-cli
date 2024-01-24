@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import { chmod, readFileSync, mkdirSync, writeFileSync } from 'fs'
+import { chmod, mkdirSync, NoParamCallback, PathLike, readFileSync, writeFileSync } from 'fs'
 
 import axios, { AxiosResponse } from 'axios'
 import express, { Express, Request, Response } from 'express'
@@ -11,6 +11,7 @@ import ora, { Ora } from 'ora'
 import { Authenticator } from '@smartthings/core-sdk'
 
 import { delay } from '../../lib/util.js'
+import { Server } from 'http'
 
 
 const chmodMock: jest.Mock<typeof chmod> = jest.fn()
@@ -122,12 +123,13 @@ const tokenResponse = {
 	statusText: 'OK',
 } as AxiosResponse<AuthTokenResponse>
 
+const serverCloseMock = jest.fn<Server['close']>()
 const serverMock = {
-	close: jest.fn(),
-}
+	close: serverCloseMock,
+} as unknown as Server
 
-const expressGetMock = jest.fn()
-const expressListenMock = jest.fn()
+const expressGetMock = jest.fn<Express['get']>()
+const expressListenMock = jest.fn<Express['listen']>()
 expressMock.mockReturnValue({
 	get: expressGetMock,
 	listen: expressListenMock,
@@ -179,10 +181,10 @@ const mockBrowser = async (finishHandlerCaller = finishHappy, closeError?: Error
 	startHandler({} as Request, mockStartResponse as unknown as Response)
 	finishHandlerCaller(finishHandler)
 
-	while (serverMock.close.mock.calls.length < 1) {
+	while (serverCloseMock.mock.calls.length < 1) {
 		await testDelay(10)
 	}
-	const closeHandler = serverMock.close.mock.calls[0][0] as (error?: Error) => void
+	const closeHandler = serverCloseMock.mock.calls[0][0] as (error?: Error) => void
 	closeHandler(closeError)
 }
 
@@ -231,7 +233,7 @@ describe('login', () => {
 	it('works on the happy path', async () => {
 		const authenticator = setupAuthenticator()
 
-		const loginPromise = authenticator.login()
+		const loginPromise = authenticator.login?.()
 
 		await mockBrowser()
 		await loginPromise
@@ -289,7 +291,7 @@ describe('login', () => {
 
 	it('includes User-Agent in requests', async () => {
 		const authenticator = setupAuthenticator()
-		const loginPromise = authenticator.login()
+		const loginPromise = authenticator.login?.()
 
 		await mockBrowser()
 		await loginPromise
@@ -307,12 +309,12 @@ describe('login', () => {
 
 	it('logs error if setting permissions of credentials file fails', async () => {
 		const error = Error('failed to chmod')
-		chmodMock.mockImplementationOnce((path: PathLike, mode: string | number, callback: NoParamCallback) => {
+		chmodMock.mockImplementationOnce(((path: PathLike, mode: string | number, callback: NoParamCallback): void => {
 			callback(error)
-		})
+		}) as typeof chmod)
 		const authenticator = setupAuthenticator()
 
-		const loginPromise = authenticator.login()
+		const loginPromise = authenticator.login?.()
 
 		await mockBrowser()
 		await loginPromise
@@ -326,7 +328,7 @@ describe('login', () => {
 		readFileSyncMock.mockReturnValueOnce(Buffer.from(JSON.stringify(credentialsFileData)))
 		const authenticator = setupAuthenticator()
 
-		const loginPromise = authenticator.login()
+		const loginPromise = authenticator.login?.()
 
 		const mockFinishRequest = {
 			query: {
@@ -350,8 +352,8 @@ describe('login', () => {
 
 		expect(expressListenMock).toHaveBeenCalledTimes(1)
 		expect(expressListenMock).toHaveBeenCalledWith(7777, expect.any(Function))
-		const listenHandler: () => Promise<void> = expressListenMock.mock.calls[0][1]
-		await listenHandler()
+		const listenHandler = expressListenMock.mock.calls[0][1]
+		listenHandler?.()
 		expect(openMock).toHaveBeenCalledTimes(1)
 		expect(openMock).toHaveBeenCalledWith('http://localhost:7777/start')
 
@@ -372,7 +374,7 @@ describe('login', () => {
 		postMock.mockRejectedValueOnce({ name: 'forced error', message: 'forced failure' })
 		const authenticator = setupAuthenticator()
 
-		const loginPromise = authenticator.login()
+		const loginPromise = authenticator.login?.()
 
 		await mockBrowser()
 		await expect(loginPromise).rejects.toBe('unable to get authentication info')
@@ -383,8 +385,8 @@ describe('login', () => {
 
 		expect(expressListenMock).toHaveBeenCalledTimes(1)
 		expect(expressListenMock).toHaveBeenCalledWith(7777, expect.any(Function))
-		const listenHandler: () => Promise<void> = expressListenMock.mock.calls[0][1]
-		await listenHandler()
+		const listenHandler = expressListenMock.mock.calls[0][1]
+		listenHandler?.()
 		expect(openMock).toHaveBeenCalledTimes(1)
 		expect(openMock).toHaveBeenCalledWith('http://localhost:7777/start')
 
@@ -414,7 +416,7 @@ describe('login', () => {
 		postMock.mockRejectedValueOnce({ isAxiosError: true, response: { data: 'axios error data' } })
 		const authenticator = setupAuthenticator()
 
-		const loginPromise = authenticator.login()
+		const loginPromise = authenticator.login?.()
 
 		await mockBrowser()
 		await expect(loginPromise).rejects.toBe('unable to get authentication info')
@@ -427,7 +429,7 @@ describe('login', () => {
 		const closeError = Error('express close error')
 		const authenticator = setupAuthenticator()
 
-		const loginPromise = authenticator.login()
+		const loginPromise = authenticator.login?.()
 
 		await mockBrowser(finishHappy, closeError)
 		await loginPromise
@@ -441,7 +443,7 @@ describe('logout', () => {
 		readFileSyncMock.mockReturnValue(Buffer.from(JSON.stringify(credentialsFileData)))
 		const authenticator = setupAuthenticator()
 
-		await expect(authenticator.logout()).resolves.toBe(undefined)
+		await expect(authenticator.logout?.()).resolves.toBe(undefined)
 
 		expect(readFileSyncMock).toHaveBeenCalledTimes(2)
 		expect(writeFileSyncMock).toHaveBeenCalledTimes(1)
@@ -452,7 +454,7 @@ describe('logout', () => {
 		readFileSyncMock.mockReturnValue(Buffer.from(JSON.stringify(otherCredentialsFileData)))
 		const authenticator = setupAuthenticator()
 
-		await expect(authenticator.logout()).resolves.toBe(undefined)
+		await expect(authenticator.logout?.()).resolves.toBe(undefined)
 
 		expect(readFileSyncMock).toHaveBeenCalledTimes(2)
 		expect(writeFileSyncMock).toHaveBeenCalledTimes(1)
@@ -480,9 +482,8 @@ describe('authenticateGeneric', () => {
 		readFileSyncMock.mockReturnValueOnce(Buffer.from(JSON.stringify(refreshableCredentialsFileData)))
 
 		const authenticator = setupAuthenticator()
-		const requestConfig = {}
 
-		const response = await authenticator.authenticate(requestConfig)
+		const response = await authenticator.authenticate({})
 
 		expect(response.headers?.Authorization).toEqual('Bearer access token')
 
@@ -503,9 +504,8 @@ describe('authenticateGeneric', () => {
 	it('includes User-Agent on refresh', async () => {
 		readFileSyncMock.mockReturnValueOnce(Buffer.from(JSON.stringify(refreshableCredentialsFileData)))
 		const authenticator = setupAuthenticator()
-		const requestConfig = {}
 
-		await authenticator.authenticate(requestConfig)
+		await authenticator.authenticate({})
 
 		expect(postMock).toHaveBeenCalledTimes(1)
 		expect(postMock).toHaveBeenCalledWith(
@@ -524,9 +524,8 @@ describe('authenticateGeneric', () => {
 		postMock.mockResolvedValueOnce(tokenResponse)
 
 		const authenticator = setupAuthenticator()
-		const requestConfig = {}
 
-		const promise = authenticator.authenticate(requestConfig)
+		const promise = authenticator.authenticate({})
 		await mockBrowser()
 		const response = await promise
 
@@ -560,9 +559,8 @@ describe('authenticateGeneric', () => {
 
 	it('logs in not logged in', async () => {
 		const authenticator = setupAuthenticator()
-		const requestConfig = {}
 
-		const promise = authenticator.authenticate(requestConfig)
+		const promise = authenticator.authenticate({})
 		await mockBrowser()
 		const response = await promise
 
@@ -577,8 +575,8 @@ describe('authenticateGeneric', () => {
 
 		expect(expressListenMock).toHaveBeenCalledTimes(1)
 		expect(expressListenMock).toHaveBeenCalledWith(7777, expect.any(Function))
-		const listenHandler: () => Promise<void> = expressListenMock.mock.calls[0][1]
-		await listenHandler()
+		const listenHandler = expressListenMock.mock.calls[0][1]
+		listenHandler?.()
 		expect(openMock).toHaveBeenCalledTimes(1)
 		expect(openMock).toHaveBeenCalledWith('http://localhost:7777/start')
 
@@ -613,9 +611,8 @@ describe('authenticateGeneric', () => {
 		})
 
 		const authenticator = setupAuthenticator()
-		const requestConfig = {}
 
-		const promise = authenticator.authenticate(requestConfig)
+		const promise = authenticator.authenticate({})
 		await mockBrowser()
 		const response = await promise
 
