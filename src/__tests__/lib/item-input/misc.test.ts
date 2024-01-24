@@ -2,7 +2,13 @@ import { jest } from '@jest/globals'
 
 import inquirer from 'inquirer'
 
-import { cancelOption, uneditable } from '../../../lib/item-input/defs.js'
+import {
+	cancelOption,
+	DefaultValueFunction,
+	InputDefinition,
+	InputDefinitionValidateFunction,
+	uneditable,
+} from '../../../lib/item-input/defs.js'
 import {
 	askForBoolean,
 	askForInteger,
@@ -12,6 +18,7 @@ import {
 	ValidateFunction,
 } from '../../../lib/user-query.js'
 import { stringFromUnknown } from '../../../lib/util.js'
+import { ListSelectionDefOptions, OptionalDefPredicateFn } from '../../../lib/item-input/misc.js'
 
 
 const promptMock: jest.Mock<typeof inquirer.prompt> = jest.fn()
@@ -61,7 +68,7 @@ describe('validateWithContext', () => {
 		['string1'],
 		['string1', 'string2'],
 	])('passes specified context, %s, to new validation function', (context) => {
-		const validate = jest.fn()
+		const validate = jest.fn<ValidateFunction>()
 		validate.mockReturnValue('validation result')
 		const withContext = validateWithContextFn(validate, context) as ValidateFunction
 
@@ -83,7 +90,7 @@ describe('defaultWithContextFn', () => {
 		['string1'],
 		['string1', 'string2'],
 	])('passes specified context, %s, to new default function', (context) => {
-		const originalDefaultFunction = jest.fn()
+		const originalDefaultFunction = jest.fn<DefaultValueFunction<string>>()
 		originalDefaultFunction.mockReturnValue('validation result')
 		const withContext = defaultWithContextFn(originalDefaultFunction, context) as () => string
 
@@ -129,7 +136,7 @@ describe('optionalStringDef', () => {
 	})
 
 	describe('with validation', () => {
-		const validateMock = jest.fn()
+		const validateMock = jest.fn<InputDefinitionValidateFunction>()
 		const def = optionalStringDef('String Def', { validate: validateMock })
 
 		test('build', async () => {
@@ -200,7 +207,7 @@ describe('stringDef', () => {
 	})
 
 	describe('with validation', () => {
-		const validateMock = jest.fn()
+		const validateMock = jest.fn<InputDefinitionValidateFunction>()
 		const def = stringDef('String Def', { validate: validateMock })
 
 		test('build', async () => {
@@ -273,7 +280,7 @@ describe('optionalIntegerDef', () => {
 	})
 
 	describe('with validation', () => {
-		const validateMock = jest.fn()
+		const validateMock = jest.fn<InputDefinitionValidateFunction>()
 		const def = optionalIntegerDef('Integer Def', { validate: validateMock })
 
 		test('build', async () => {
@@ -344,7 +351,7 @@ describe('integerDef', () => {
 	})
 
 	describe('with validation', () => {
-		const validateMock = jest.fn()
+		const validateMock = jest.fn<InputDefinitionValidateFunction>()
 		const def = integerDef('Integer Def', { validate: validateMock })
 
 		test('build', async () => {
@@ -472,7 +479,8 @@ describe('listSelectionDef', () => {
 
 	describe('updateFromUserInput', () => {
 		it('builds choices from given options and adds cancel option', async () => {
-			const summarizeForEditMock = jest.fn().mockImplementation((input: string): string => `${input} summary`)
+			const summarizeForEditMock = jest.fn<Required<ListSelectionDefOptions<string>>['summarizeForEdit']>()
+				.mockImplementation((input: string): string => `${input} summary`)
 			promptMock.mockResolvedValueOnce({ chosen: 'updated value' })
 			const def = listSelectionDef('Thing One', ['un', 'dos', 'tres'], { summarizeForEdit: summarizeForEditMock })
 
@@ -528,9 +536,10 @@ describe('listSelectionDef', () => {
 })
 
 describe('optionalDef', () => {
-	const inputBuildFromUserInputMock = jest.fn()
-	const inputSummarizeForEditMock = jest.fn().mockImplementation(item => `summarized ${item}`)
-	const inputUpdateFromUserInputMock = jest.fn()
+	const inputBuildFromUserInputMock = jest.fn<InputDefinition<string>['buildFromUserInput']>()
+	const inputSummarizeForEditMock = jest.fn<InputDefinition<string>['summarizeForEdit']>()
+		.mockImplementation(item => `summarized ${item}`)
+	const inputUpdateFromUserInputMock = jest.fn<InputDefinition<string>['updateFromUserInput']>()
 	const inputDefMock: InputDefinition<string> = {
 		name: 'Input Def',
 		buildFromUserInput: inputBuildFromUserInputMock,
@@ -545,7 +554,7 @@ describe('optionalDef', () => {
 
 	describe('buildFromUserInput', () => {
 		it('returns undefined when predicate not active', async () => {
-			const checkIfActiveMock = jest.fn().mockReturnValue(false)
+			const checkIfActiveMock = jest.fn<OptionalDefPredicateFn>().mockReturnValue(false)
 			const def = optionalDef(inputDefMock, checkIfActiveMock)
 
 			expect(await def.buildFromUserInput()).toBe(undefined)
@@ -557,7 +566,7 @@ describe('optionalDef', () => {
 		})
 
 		it('uses inputDef.buildFromUserInput when active', async () => {
-			const checkIfActiveMock = jest.fn().mockReturnValue(true)
+			const checkIfActiveMock = jest.fn<OptionalDefPredicateFn>().mockReturnValue(true)
 			inputBuildFromUserInputMock.mockResolvedValueOnce('entered value')
 			const def = optionalDef(inputDefMock, checkIfActiveMock)
 
@@ -572,7 +581,7 @@ describe('optionalDef', () => {
 
 	describe('summarizeForEdit', () => {
 		it('uses inputDef.summarizeForEdit when active', () => {
-			const checkIfActiveMock = jest.fn()
+			const checkIfActiveMock = jest.fn<OptionalDefPredicateFn>()
 			inputSummarizeForEditMock.mockReturnValueOnce('summarized value')
 			const def = optionalDef(inputDefMock, checkIfActiveMock, { initiallyActive: true })
 
@@ -585,7 +594,7 @@ describe('optionalDef', () => {
 		})
 
 		it('returns uneditable when not active', () => {
-			const checkIfActiveMock = jest.fn()
+			const checkIfActiveMock = jest.fn<OptionalDefPredicateFn>()
 			const def = optionalDef(inputDefMock, checkIfActiveMock, { initiallyActive: false })
 
 			expect(def.summarizeForEdit('value to summarize')).toBe(uneditable)
@@ -597,8 +606,8 @@ describe('optionalDef', () => {
 
 	describe('updateFromUserInput', () => {
 		it('uses inputDef.updateFromUserInput when active', async () => {
-			const checkIfActiveMock = jest.fn()
-			inputUpdateFromUserInputMock.mockReturnValueOnce('updated value')
+			const checkIfActiveMock = jest.fn<OptionalDefPredicateFn>()
+			inputUpdateFromUserInputMock.mockResolvedValueOnce('updated value')
 			const def = optionalDef(inputDefMock, checkIfActiveMock, { initiallyActive: true })
 
 			expect(await def.updateFromUserInput('value to update', ['context'])).toBe('updated value')
@@ -611,9 +620,9 @@ describe('optionalDef', () => {
 		})
 
 		it('uses inputDef.buildFromUserInput when no original value passed in', async () => {
-			const checkIfActiveMock = jest.fn()
+			const checkIfActiveMock = jest.fn<OptionalDefPredicateFn>()
 			const def = optionalDef(inputDefMock, checkIfActiveMock, { initiallyActive: true })
-			inputBuildFromUserInputMock.mockReturnValueOnce('new value')
+			inputBuildFromUserInputMock.mockResolvedValueOnce('new value')
 
 			expect(await def.updateFromUserInput(undefined, ['context'])).toBe('new value')
 
@@ -625,7 +634,7 @@ describe('optionalDef', () => {
 		})
 
 		it('returns undefined when not active', async () => {
-			const checkIfActiveMock = jest.fn()
+			const checkIfActiveMock = jest.fn<OptionalDefPredicateFn>()
 			const def = optionalDef(inputDefMock, checkIfActiveMock, { initiallyActive: false })
 
 			expect(await def.updateFromUserInput('value to update')).toBe(undefined)
@@ -636,15 +645,15 @@ describe('optionalDef', () => {
 	})
 
 	describe('updateIfNeeded', () => {
-		const inputDefUpdateIfNeededMock = jest.fn()
-		const inputDefWithUpdateIfNeededMock = {
+		const inputDefUpdateIfNeededMock = jest.fn<Required<InputDefinition<string>>['updateIfNeeded']>()
+		const inputDefWithUpdateIfNeededMock: InputDefinition<string> = {
 			...inputDefMock,
 			updateIfNeeded: inputDefUpdateIfNeededMock,
 		}
 
 		it('uses inputDef.updateIfNeeded when active and had been active', async () => {
-			const checkIfActiveMock = jest.fn().mockReturnValue(true)
-			inputDefUpdateIfNeededMock.mockReturnValueOnce('updated value')
+			const checkIfActiveMock = jest.fn<OptionalDefPredicateFn>().mockReturnValue(true)
+			inputDefUpdateIfNeededMock.mockResolvedValueOnce('updated value')
 			const def = optionalDef(inputDefWithUpdateIfNeededMock, checkIfActiveMock, { initiallyActive: true })
 
 			expect(await def.updateIfNeeded?.('original', 'initiating updated prop', ['context'])).toBe('updated value')
@@ -658,7 +667,7 @@ describe('optionalDef', () => {
 		})
 
 		it('returns original when active and had been active and there is no `inputDef.updateIfNeeded`', async () => {
-			const checkIfActiveMock = jest.fn().mockReturnValue(true)
+			const checkIfActiveMock = jest.fn<OptionalDefPredicateFn>().mockReturnValue(true)
 			const def = optionalDef(inputDefMock, checkIfActiveMock, { initiallyActive: true })
 
 			expect(await def.updateIfNeeded?.('original', 'initiating updated prop', ['context'])).toBe('original')
@@ -669,8 +678,8 @@ describe('optionalDef', () => {
 		})
 
 		it('uses inputDef.buildFromUserInput if previously inactive', async () => {
-			const checkIfActiveMock = jest.fn().mockReturnValue(true)
-			inputBuildFromUserInputMock.mockReturnValueOnce('newly entered value')
+			const checkIfActiveMock = jest.fn<OptionalDefPredicateFn>().mockReturnValue(true)
+			inputBuildFromUserInputMock.mockResolvedValueOnce('newly entered value')
 			const def = optionalDef(inputDefWithUpdateIfNeededMock, checkIfActiveMock, { initiallyActive: false })
 
 			expect(await def.updateIfNeeded?.('original', 'initiating updated prop', ['context'])).toBe('newly entered value')
@@ -684,8 +693,8 @@ describe('optionalDef', () => {
 		})
 
 		it('returns undefined if not active', async () => {
-			const checkIfActiveMock = jest.fn().mockReturnValue(false)
-			inputBuildFromUserInputMock.mockReturnValueOnce('delete this line!!!')
+			const checkIfActiveMock = jest.fn<OptionalDefPredicateFn>().mockReturnValue(false)
+			inputBuildFromUserInputMock.mockResolvedValueOnce('delete this line!!!')
 			const def = optionalDef(inputDefWithUpdateIfNeededMock, checkIfActiveMock)
 
 			expect(await def.updateIfNeeded?.('original', 'initiating updated prop', ['context'])).toBe(undefined)

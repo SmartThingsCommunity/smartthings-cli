@@ -16,6 +16,7 @@ import {
 	uneditable,
 } from '../../../lib/item-input/defs.js'
 import { clipToMaximum, stringFromUnknown } from '../../../lib/util.js'
+import { ArrayDefOptions, CheckboxDefOptions } from '../../../lib/item-input/array.js'
 
 
 const promptMock: jest.Mock<typeof inquirer.prompt> = jest.fn()
@@ -42,9 +43,10 @@ const { arrayDef, checkboxDef } = await import('../../../lib/item-input/array.js
 
 
 describe('arrayDef', () => {
-	const itemBuildFromUserInputMock = jest.fn()
-	const itemSummarizeForEditMock = jest.fn().mockImplementation(item => `summarized ${item}`)
-	const itemUpdateFromUserInputMock = jest.fn()
+	const itemBuildFromUserInputMock = jest.fn<InputDefinition<string>['buildFromUserInput']>()
+	const itemSummarizeForEditMock = jest.fn<InputDefinition<string>['summarizeForEdit']>()
+		.mockImplementation(item => `summarized ${item}`)
+	const itemUpdateFromUserInputMock = jest.fn<InputDefinition<string>['updateFromUserInput']>()
 	const itemDefMock: InputDefinition<string> = {
 		name: 'Item Def',
 		buildFromUserInput: itemBuildFromUserInputMock,
@@ -405,7 +407,7 @@ describe('arrayDef', () => {
 		})
 
 		it('uses given summarizeForEdit', async () => {
-			const summarizeForEdit = jest.fn()
+			const summarizeForEdit = jest.fn<Required<ArrayDefOptions<string>>['summarizeForEdit']>()
 			const def = arrayDef('Array Def', itemDefMock, { summarizeForEdit })
 
 			expect(def.summarizeForEdit).toBe(summarizeForEdit)
@@ -595,7 +597,7 @@ describe('checkboxDef', () => {
 		})
 
 		it('uses supplied validate method', async () => {
-			const validate = jest.fn()
+			const validate = jest.fn<Required<CheckboxDefOptions<string>>['validate']>()
 			const def = checkboxDef<string>('Checkbox Def', ['Item 1', 'Item 2', 'Item 3'], { validate })
 			promptMock.mockResolvedValueOnce({ values: simpleResults })
 
@@ -650,7 +652,7 @@ describe('checkboxDef', () => {
 		})
 
 		it('uses given summarizeForEdit', async () => {
-			const summarizeForEdit = jest.fn()
+			const summarizeForEdit = jest.fn<Required<CheckboxDefOptions<string>>['summarizeForEdit']>()
 			const def = checkboxDef<string>('Checkbox Def', ['Item 1', 'Item 2', 'Item 3'], { summarizeForEdit })
 
 			expect(def.summarizeForEdit).toBe(summarizeForEdit)

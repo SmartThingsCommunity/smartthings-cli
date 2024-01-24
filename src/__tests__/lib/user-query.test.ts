@@ -3,9 +3,11 @@ import { jest } from '@jest/globals'
 import {
 	ValidateFunction,
 } from '../../lib/user-query.js'
+import inquirer from 'inquirer'
+import { DefaultValueFunction } from '../../lib/item-input/defs.js'
 
 
-const promptMock = jest.fn()
+const promptMock = jest.fn<typeof inquirer.prompt>()
 jest.unstable_mockModule('inquirer', () => ({
 	default: {
 		prompt: promptMock,
@@ -64,7 +66,7 @@ describe('askForOptionalString', () => {
 	it('passes validate to inquirer', async () => {
 		promptMock.mockResolvedValue({ value: '' })
 
-		const validateMock = jest.fn().mockReturnValueOnce(true)
+		const validateMock = jest.fn<ValidateFunction>().mockReturnValueOnce(true)
 
 		expect(await askForOptionalString('prompt message', { validate: validateMock })).toBe(undefined)
 
@@ -91,7 +93,7 @@ describe('askForOptionalString', () => {
 	})
 
 	it('calls default function to get default', async () => {
-		const defaultMock = jest.fn().mockReturnValueOnce('calculated default')
+		const defaultMock = jest.fn<DefaultValueFunction<string>>().mockReturnValueOnce('calculated default')
 		promptMock.mockResolvedValue({ value: 'entered value' })
 
 		expect(await askForOptionalString('prompt message', { default: defaultMock })).toBe('entered value')
@@ -117,7 +119,7 @@ describe('askForOptionalString', () => {
 	})
 
 	it('allows "?" even with custom validate function', async () => {
-		const validateMock = jest.fn().mockReturnValue(true)
+		const validateMock = jest.fn<ValidateFunction>().mockReturnValue(true)
 		promptMock.mockResolvedValueOnce({ value: '?' })
 		promptMock.mockResolvedValueOnce({ value: 'entered value' })
 
@@ -161,7 +163,7 @@ describe('askForString', () => {
 	it('incorporates supplied validation', async () => {
 		promptMock.mockResolvedValue({ value: 'entered value' })
 
-		const validateMock: jest.Mock<true, [string]> = jest.fn()
+		const validateMock = jest.fn<ValidateFunction>()
 
 		expect(await askForString('prompt message', { validate: validateMock })).toBe('entered value')
 
@@ -212,7 +214,7 @@ describe('askForOptionalInteger', () => {
 	it('passes validate to inquirer', async () => {
 		promptMock.mockResolvedValue({ value: '' })
 
-		const validateMock = jest.fn().mockReturnValueOnce(true)
+		const validateMock = jest.fn<ValidateFunction>().mockReturnValueOnce(true)
 
 		expect(await askForOptionalInteger('prompt message', { validate: validateMock })).toBe(undefined)
 
@@ -239,7 +241,7 @@ describe('askForOptionalInteger', () => {
 	})
 
 	it('calls default function to get default', async () => {
-		const defaultMock = jest.fn().mockReturnValueOnce(27)
+		const defaultMock = jest.fn<DefaultValueFunction<number>>().mockReturnValueOnce(27)
 		promptMock.mockResolvedValue({ value: '72' })
 
 		expect(await askForOptionalInteger('prompt message', { default: defaultMock })).toBe(72)
@@ -265,7 +267,7 @@ describe('askForOptionalInteger', () => {
 	})
 
 	it('allows "?" even with custom validate function', async () => {
-		const validateMock = jest.fn().mockReturnValue(true)
+		const validateMock = jest.fn<ValidateFunction>().mockReturnValue(true)
 		promptMock.mockResolvedValueOnce({ value: '?' })
 		promptMock.mockResolvedValueOnce({ value: 32 })
 
@@ -309,7 +311,7 @@ describe('askForInteger', () => {
 	it('incorporates supplied validation', async () => {
 		promptMock.mockResolvedValue({ value: '7' })
 
-		const validateMock: jest.Mock<true, [string]> = jest.fn()
+		const validateMock = jest.fn<ValidateFunction>()
 
 		expect(await askForInteger('prompt message', { validate: validateMock })).toBe(7)
 

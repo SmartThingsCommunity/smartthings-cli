@@ -30,8 +30,8 @@ jest.unstable_mockModule('../../../lib/log-utils.js', async () => ({
 	coreSDKLoggerFromLog4JSLogger: coreSDKLoggerFromLog4JSLoggerMock,
 }))
 
-const stringConfigValueMock: jest.Mock<SmartThingsCommand['stringConfigValue']> = jest.fn()
-const buildTableFromListMock = jest.Mock<TableGenerator['buildTableFromList']> = jest.fn()
+const stringConfigValueMock = jest.fn<SmartThingsCommand['stringConfigValue']>()
+const buildTableFromListMock = jest.fn<TableGenerator['buildTableFromList']>()
 buildTableFromListMock.mockReturnValue('table built from list')
 const stCommandMock = {
 	configDir: 'test-config-dir',
@@ -58,8 +58,8 @@ jest.unstable_mockModule('../../../lib/login-authenticator.js', () => ({
 	loginAuthenticator: loginAuthenticatorMock,
 }))
 
-const newBearerTokenAuthenticatorMock = jest.Mock<typeof newBearerTokenAuthenticator> = jest.fn()
-const newSmartThingsClientMock = jest.Mock<typeof newSmartThingsClient> = jest.fn()
+const newBearerTokenAuthenticatorMock = jest.fn<typeof newBearerTokenAuthenticator>()
+const newSmartThingsClientMock = jest.fn<typeof newSmartThingsClient>()
 const clientMock = { fake: 'client' } as unknown as SmartThingsClient
 newSmartThingsClientMock.mockReturnValue(clientMock)
 jest.unstable_mockModule('../../../lib/command/util/st-client-wrapper.js', () => ({
