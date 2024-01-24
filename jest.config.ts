@@ -4,9 +4,7 @@ import { defaultsESM as tsjPreset } from 'ts-jest/presets'
 
 const config: JestConfigWithTsJest = {
 	testMatch: [
-		// TODO: put this back when all unit tests are converted
-		// '**/__tests__/**/*.test.ts',
-		'**/__tests__/lib/**/*.test.ts',
+		'**/__tests__/**/*.test.ts',
 	],
 	setupFilesAfterEnv: ['jest-extended/all'],
 	collectCoverageFrom: ['src/**/*.ts'],
@@ -25,7 +23,7 @@ const config: JestConfigWithTsJest = {
 	reporters: [
 		'default',
 		'github-actions',
-		'jest-html-reporters',
+		['jest-html-reporters', { darkTheme: true }],
 	],
 	extensionsToTreatAsEsm: ['.ts'],
 	// moduleNameMapper and transform are for ES module support.
