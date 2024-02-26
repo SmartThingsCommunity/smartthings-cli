@@ -10,9 +10,7 @@ import {
 import { arrayDef, checkboxDef, stringDef } from '../../item-input/index.js'
 import { TableFieldDefinition, TableGenerator } from '../../table-generator.js'
 import { localhostOrHTTPSValidate } from '../../validate-util.js'
-import { APICommand } from '../api-command.js'
-import { ChooseOptions, chooseOptionsWithDefaults, stringTranslateToId } from '../command-util.js'
-import { SelectFromListConfig, SelectFromListFlags, selectFromList } from '../select.js'
+import { createChooseFn } from './util-util.js'
 
 
 export const isWebhookSmartApp = (app: AppResponse): boolean => !!app.webhookSmartApp
@@ -47,19 +45,14 @@ export const tableFieldDefinitions: TableFieldDefinition<AppResponse>[] = [
 
 export const oauthTableFieldDefinitions: TableFieldDefinition<AppOAuthRequest>[] = ['clientName', 'scope', 'redirectUris']
 
-export const chooseApp = async (command: APICommand<SelectFromListFlags>, appFromArg?: string, options?: Partial<ChooseOptions<PagedApp>>): Promise<string> => {
-	const opts = chooseOptionsWithDefaults(options)
-	const config: SelectFromListConfig<PagedApp> = {
+export const chooseApp = createChooseFn(
+	{
 		itemName: 'app',
 		primaryKeyName: 'appId',
 		sortKeyName: 'displayName',
-	}
-	const listItems = (): Promise<PagedApp[]> => command.client.apps.list()
-	const preselectedId = opts.allowIndex
-		? await stringTranslateToId(config, appFromArg, listItems)
-		: appFromArg
-	return selectFromList(command, config, { preselectedId, listItems })
-}
+	},
+	(client: SmartThingsClient) => client.apps.list(),
+)
 
 export const buildTableOutput = (tableGenerator: TableGenerator, appSettings: AppSettingsResponse): string => {
 	if (!appSettings.settings || Object.keys(appSettings.settings).length === 0) {

@@ -1,59 +1,46 @@
+import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs'
+
 import { Location, LocationItem } from '@smartthings/core-sdk'
 
-import { APICommand, outputItemOrList, OutputItemOrListConfig, selectFromList, SelectFromListConfig, stringTranslateToId, TableFieldDefinition } from '@smartthings/cli-lib'
+import { APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../lib/command/api-command.js'
+import { OutputItemOrListConfig, OutputItemOrListFlags, outputItemOrList, outputItemOrListBuilder } from '../lib/command/listing-io.js'
+import { tableFieldDefinitions } from '../lib/command/util/locations-util.js'
 
 
-export const tableFieldDefinitions: TableFieldDefinition<Location>[] = [
-	'name', 'locationId', 'countryCode', 'timeZoneId', 'backgroundImage',
-	'latitude', 'longitude', 'regionRadius', 'temperatureScale', 'locale',
-]
+export type CommandArgs = APICommandFlags & OutputItemOrListFlags & {
+	idOrIndex?: string
+}
 
-export async function chooseLocation(
-		command: APICommand<typeof APICommand.flags>,
-		locationFromArg?: string,
-		autoChoose?: boolean,
-		allowIndex?: boolean): Promise<string> {
-	const config: SelectFromListConfig<LocationItem> = {
-		itemName: 'location',
+
+const command = 'locations [id-or-index]'
+
+const describe = 'list locations or get information for a specific Location'
+
+const builder = (yargs: Argv): Argv<CommandArgs> =>
+	outputItemOrListBuilder(apiCommandBuilder(yargs))
+		.positional('id-or-index', { describe: 'the location id or number in list', type: 'string' })
+		.example([
+			['$0 locations', 'list all locations'],
+			['$0 locations 1', 'display details for the first location in the list retrieved by running "smartthings locations"'],
+			['$0 locations 5dfd6626-ab1d-42da-bb76-90def3153998', 'display details for a location by id'],
+		])
+		.epilog(apiDocsURL('listLocations', 'getLocation'))
+
+const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
+	const command = await apiCommand(argv)
+	const config: OutputItemOrListConfig<Location, LocationItem> = {
 		primaryKeyName: 'locationId',
 		sortKeyName: 'name',
+		tableFieldDefinitions,
 	}
-
-	const listItems = (): Promise<LocationItem[]> => command.client.locations.list()
-
-	const preselectedId = allowIndex
-		? await stringTranslateToId(config, locationFromArg, listItems)
-		: locationFromArg
-
-	return selectFromList(command, config, {
-		preselectedId,
-		autoChoose,
-		listItems,
-	})
+	await outputItemOrList<Location, LocationItem>(
+		command,
+		config,
+		argv.idOrIndex,
+		() => command.client.locations.list(),
+		id => command.client.locations.get(id),
+	)
 }
 
-export default class LocationsCommand extends APICommand<typeof LocationsCommand.flags> {
-	static description = 'list locations or get information for a specific Location' +
-		this.apiDocsURL('listLocations', 'getLocation')
-
-	static flags = {
-		...APICommand.flags,
-		...outputItemOrList.flags,
-	}
-
-	static args = [{
-		name: 'idOrIndex',
-		description: 'the location id or number in list',
-	}]
-
-	async run(): Promise<void> {
-		const config: OutputItemOrListConfig<Location, LocationItem> = {
-			primaryKeyName: 'locationId',
-			sortKeyName: 'name',
-			tableFieldDefinitions,
-		}
-		await outputItemOrList<Location, LocationItem>(this, config, this.args.idOrIndex,
-			() => this.client.locations.list(),
-			id => this.client.locations.get(id))
-	}
-}
+const cmd: CommandModule<object, CommandArgs> = { command, describe, builder, handler }
+export default cmd
