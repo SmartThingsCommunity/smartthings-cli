@@ -240,6 +240,7 @@ describe('chooseOptionsWithDefaults', () => {
 			allowIndex: true,
 			verbose: true,
 			useConfigDefault: true,
+			autoChoose: true,
 		}
 		expect(chooseOptionsWithDefaults(optionsDifferentThanDefault))
 			.toEqual(optionsDifferentThanDefault)

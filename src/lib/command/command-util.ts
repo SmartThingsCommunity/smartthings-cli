@@ -107,12 +107,14 @@ export type ChooseOptions<T extends object> = {
 	verbose: boolean
 	useConfigDefault: boolean
 	listItems?: ListDataFunction<T>
+	autoChoose?: boolean
 }
 
 export const chooseOptionsDefaults = <T extends object>(): ChooseOptions<T> => ({
 	allowIndex: false,
 	verbose: false,
 	useConfigDefault: false,
+	autoChoose: false,
 })
 
 export const chooseOptionsWithDefaults = <T extends object>(options: Partial<ChooseOptions<T>> | undefined): ChooseOptions<T> => ({

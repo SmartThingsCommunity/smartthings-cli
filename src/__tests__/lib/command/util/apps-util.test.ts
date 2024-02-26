@@ -5,13 +5,11 @@ import { AppResponse, AppsEndpoint, AppType, PagedApp, SmartThingsClient } from 
 import { PropertyTableFieldDefinition, Table, TableGenerator, ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
 import { APICommand } from '../../../../lib/command/api-command.js'
 import {
-	ChooseOptions,
 	chooseOptionsDefaults,
 	chooseOptionsWithDefaults,
 	stringTranslateToId,
 } from '../../../../lib/command/command-util.js'
 import { selectFromList, SelectFromListFlags } from '../../../../lib/command/select.js'
-import { ListDataFunction } from '../../../../lib/command/basic-io.js'
 
 
 const chooseOptionsWithDefaultsMock: jest.Mock<typeof chooseOptionsWithDefaults> = jest.fn()
@@ -141,12 +139,11 @@ describe('tableFieldDefinitions functions', () => {
 	})
 })
 
-describe('chooseApp', () => {
-	stringTranslateToIdMock.mockResolvedValue('translated-app-id')
+test('chooseApp uses correct endpoint to list apps', async () => {
 	selectFromListMock.mockResolvedValue('selected-app-id')
 	chooseOptionsWithDefaultsMock.mockReturnValue(chooseOptionsDefaults())
 
-	const apiAppsListMock: jest.Mock<typeof AppsEndpoint.prototype.list> = jest.fn()
+	const apiAppsListMock = jest.fn<typeof AppsEndpoint.prototype.list>()
 	const command = {
 		client: {
 			apps: {
@@ -155,97 +152,16 @@ describe('chooseApp', () => {
 		},
 	} as unknown as APICommand<SelectFromListFlags>
 
-	it('sets defaults for passed options', async () => {
-		const listItemsMock: jest.Mock<ListDataFunction<PagedApp>> = jest.fn()
-		const opts: Partial<ChooseOptions<PagedApp>> = { listItems: listItemsMock }
+	expect(await chooseApp(command)).toBe('selected-app-id')
 
-		expect(await chooseApp(command, undefined, opts)).toBe('selected-app-id')
+	const listItems = selectFromListMock.mock.calls[0][2].listItems
+	const appsList = [{ appId: 'listed-app-id' } as PagedApp]
+	apiAppsListMock.mockResolvedValueOnce(appsList)
 
-		expect(listItemsMock).toHaveBeenCalledTimes(0)
-		expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledTimes(1)
-		expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledWith(opts)
-	})
+	expect(await listItems()).toBe(appsList)
 
-	it('resolves id from index when allowed', async () => {
-		const opts: ChooseOptions<PagedApp> = {
-			...chooseOptionsDefaults(),
-			allowIndex: true,
-		}
-		chooseOptionsWithDefaultsMock.mockReturnValueOnce(opts)
-
-		const expectedConfig = {
-			itemName: 'app',
-			primaryKeyName: 'appId',
-			sortKeyName: 'displayName',
-		}
-
-		expect(await chooseApp(command, 'app-from-arg', opts)).toBe('selected-app-id')
-
-		expect(stringTranslateToIdMock).toHaveBeenCalledTimes(1)
-		expect(stringTranslateToIdMock).toHaveBeenCalledWith(
-			expect.objectContaining(expectedConfig),
-			'app-from-arg',
-			expect.any(Function),
-		)
-
-		expect(selectFromListMock).toHaveBeenCalledTimes(1)
-		expect(selectFromListMock).toHaveBeenCalledWith(
-			command,
-			expect.objectContaining(expectedConfig),
-			expect.objectContaining({ preselectedId: 'translated-app-id' }),
-		)
-	})
-
-	it('uses app id arg when index not allowed', async () => {
-		const opts: Partial<ChooseOptions<PagedApp>> = {
-			allowIndex: false,
-		}
-		const expectedConfig = {
-			itemName: 'app',
-			primaryKeyName: 'appId',
-			sortKeyName: 'displayName',
-		}
-
-		expect(await chooseApp(command, 'app-from-arg', opts)).toBe('selected-app-id')
-
-		expect(stringTranslateToIdMock).toHaveBeenCalledTimes(0)
-		expect(selectFromListMock).toHaveBeenCalledWith(
-			command,
-			expect.objectContaining(expectedConfig),
-			expect.objectContaining({ preselectedId: 'app-from-arg' }),
-		)
-	})
-
-	it('uses same list function for index resolution and app selection', async () => {
-		const opts: ChooseOptions<PagedApp> = {
-			...chooseOptionsDefaults(),
-			allowIndex: true,
-		}
-		chooseOptionsWithDefaultsMock.mockReturnValueOnce(opts)
-
-		expect(await chooseApp(command, 'app-from-arg', opts)).toBe('selected-app-id')
-
-		expect(stringTranslateToIdMock).toHaveBeenCalledTimes(1)
-		expect(selectFromListMock).toHaveBeenCalledTimes(1)
-
-		const listFromTranslateCall = stringTranslateToIdMock.mock.calls[0][2]
-		const listFromSelectCall = selectFromListMock.mock.calls[0][2].listItems
-
-		expect(listFromTranslateCall).toBe(listFromSelectCall)
-	})
-
-	it('uses correct endpoint to list apps', async () => {
-		expect(await chooseApp(command)).toBe('selected-app-id')
-
-		const listItems = selectFromListMock.mock.calls[0][2].listItems
-		const appsList = [{ appId: 'listed-app-id' } as PagedApp]
-		apiAppsListMock.mockResolvedValueOnce(appsList)
-
-		expect(await listItems()).toBe(appsList)
-
-		expect(apiAppsListMock).toHaveBeenCalledTimes(1)
-		expect(apiAppsListMock).toHaveBeenCalledWith()
-	})
+	expect(apiAppsListMock).toHaveBeenCalledTimes(1)
+	expect(apiAppsListMock).toHaveBeenCalledWith()
 })
 
 describe('buildTableOutput', () => {
