@@ -8,9 +8,9 @@ import { OutputItemOrListConfig, OutputItemOrListFlags, outputItemOrList, output
 import { shortARNorURL, tableFieldDefinitions, verboseApps } from '../lib/command/util/apps-util.js'
 
 
-type CommandArgs = APICommandFlags & OutputItemOrListFlags & {
-	type?: string
-	classification?: string[]
+export type CommandArgs = APICommandFlags & OutputItemOrListFlags & {
+	type?: AppType
+	classification?: AppClassification[]
 	verbose: boolean
 	idOrIndex?: string
 }
@@ -22,12 +22,18 @@ const describe = 'get a specific app or a list of apps'
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	outputItemOrListBuilder(apiCommandBuilder(yargs))
 		.positional('id-or-index', { describe: 'the app id or number from list', type: 'string' })
-		.option('type',
-			{ describe: 'filter results by appType: WEBHOOK_SMART_APP, LAMBDA_SMART_APP, API_ONLY', type: 'string' })
+		.option('type', {
+			describe: 'filter results by appType',
+			type: 'string',
+			choices: Object.values(AppType),
+			coerce: arg => arg.toUpperCase() as AppType,
+		})
 		.option('classification', {
-			describe: 'filter results by one or more classifications: AUTOMATION, SERVICE, DEVICE, CONNECTED_SERVICE',
+			describe: 'filter results by one or more classifications',
 			type: 'string',
 			array: true,
+			choices: Object.values(AppClassification),
+			coerce: arg => arg?.map((str: string) => str.toUpperCase() as AppClassification),
 		})
 		.option('verbose',
 			{ alias: 'v', describe: 'include URLs and ARNs in table output', type: 'boolean', default: false })
