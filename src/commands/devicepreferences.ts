@@ -4,9 +4,18 @@ import { DevicePreference } from '@smartthings/core-sdk'
 
 import { WithOrganization, forAllOrganizations } from '../lib/api-helpers.js'
 import { APICommand, APICommandFlags, apiDocsURL } from '../lib/command/api-command.js'
-import { APIOrganizationCommandFlags, apiOrganizationCommand, apiOrganizationCommandBuilder } from '../lib/command/api-organization-command.js'
+import {
+	APIOrganizationCommandFlags,
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+} from '../lib/command/api-organization-command.js'
 import { AllOrganizationFlags, allOrganizationsBuilder } from '../lib/command/common-flags.js'
-import { OutputItemOrListConfig, OutputItemOrListFlags, outputItemOrList, outputItemOrListBuilder } from '../lib/command/listing-io.js'
+import {
+	OutputItemOrListConfig,
+	OutputItemOrListFlags,
+	outputItemOrList,
+	outputItemOrListBuilder,
+} from '../lib/command/listing-io.js'
 import { tableFieldDefinitions } from '../lib/command/util/devicepreferences-util.js'
 import { TableFieldDefinition } from '../lib/table-generator.js'
 
@@ -33,7 +42,7 @@ export async function preferencesForAllOrganizations(command: APICommand<APIComm
 }
 
 
-type CommandArgs = APIOrganizationCommandFlags & AllOrganizationFlags & OutputItemOrListFlags & {
+export type CommandArgs = APIOrganizationCommandFlags & AllOrganizationFlags & OutputItemOrListFlags & {
 	namespace?: string
 	standard: boolean
 	idOrIndex?: string
@@ -77,20 +86,24 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 		listTableFieldDefinitions,
 	}
 
-	await outputItemOrList(command, config, argv.idOrIndex,
+	await outputItemOrList(
+		command,
+		config,
+		argv.idOrIndex,
 		async () => {
 			if (argv.standard) {
 				return standardPreferences(command)
 			} else if (argv.namespace) {
 				return command.client.devicePreferences.list(argv.namespace)
 			}
-			else if (argv['all-organizations']) {
+			else if (argv.allOrganizations) {
 				listTableFieldDefinitions.push('organization')
 				return preferencesForAllOrganizations(command)
 			}
 			return customPreferences(command)
 		},
-		id => command.client.devicePreferences.get(id))
+		id => command.client.devicePreferences.get(id),
+	)
 }
 
 const cmd: CommandModule<object, CommandArgs> = { command, describe, builder, handler }
