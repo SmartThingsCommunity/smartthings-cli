@@ -16,7 +16,7 @@ const toURL = (nameOrURL: string): string => nameOrURL.startsWith('http')
 	? nameOrURL
 	: `https://developer.smartthings.com/docs/api/public/#operation/${nameOrURL}`
 
-export const apiDocsURL = (...names: string[]): string => '\n\nFor API information, see:\n\n  ' +
+export const apiDocsURL = (...names: string[]): string => 'For API information, see:\n\n  ' +
 	names.map(name => toURL(name)).join('\n  ')
 
 export const itemInputHelpText = (...namesOrURLs: string[]): string => 'More information can be found at:\n  ' +
