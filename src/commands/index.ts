@@ -4,6 +4,7 @@ import appsCommand from './apps.js'
 import configCommand from './config.js'
 import devicepreferencesCommand from './devicepreferences.js'
 import locationsCommand from './locations.js'
+import locationsCreateCommand from './locations/create.js'
 import locationsDeleteCommand from './locations/delete.js'
 
 
@@ -13,5 +14,6 @@ export const commands: CommandModule<object, any>[] = [
 	configCommand,
 	devicepreferencesCommand,
 	locationsCommand,
+	locationsCreateCommand,
 	locationsDeleteCommand,
 ]
