@@ -73,13 +73,13 @@ const { apiCommand, apiDocsURL, itemInputHelpText, userAgent } = await import('.
 describe('apiDocsURL', () => {
 	it('produces URL', () => {
 		expect(apiDocsURL('getDevice'))
-			.toBe('\n\nFor API information, see:\n\n' +
+			.toBe('For API information, see:\n\n' +
 				'  https://developer.smartthings.com/docs/api/public/#operation/getDevice')
 	})
 
 	it('joins multiple pages with line breaks', () => {
 		expect(apiDocsURL('getDevice', 'getDevices'))
-			.toBe('\n\nFor API information, see:\n\n' +
+			.toBe('For API information, see:\n\n' +
 				'  https://developer.smartthings.com/docs/api/public/#operation/getDevice\n' +
 				'  https://developer.smartthings.com/docs/api/public/#operation/getDevices')
 	})
