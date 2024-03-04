@@ -25,7 +25,7 @@ type InputtedThing = {
 	prop4: string
 }
 describe('objectDef', () => {
-	const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => true)
+	const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /*no-op*/ })
 
 	const input1BuildFromUserInputMock = jest.fn<InputDefinition<string>['buildFromUserInput']>()
 	const input1SummarizeForEditMock = jest.fn<InputDefinition<string>['summarizeForEdit']>()

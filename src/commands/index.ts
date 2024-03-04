@@ -6,6 +6,7 @@ import devicepreferencesCommand from './devicepreferences.js'
 import locationsCommand from './locations.js'
 import locationsCreateCommand from './locations/create.js'
 import locationsDeleteCommand from './locations/delete.js'
+import locationsUpdateCommand from './locations/update.js'
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -16,4 +17,5 @@ export const commands: CommandModule<object, any>[] = [
 	locationsCommand,
 	locationsCreateCommand,
 	locationsDeleteCommand,
+	locationsUpdateCommand,
 ]

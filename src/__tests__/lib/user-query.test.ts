@@ -14,7 +14,7 @@ jest.unstable_mockModule('inquirer', () => ({
 	},
 }))
 
-const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => true)
+const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /*no-op*/ })
 
 const {
 	askForBoolean,

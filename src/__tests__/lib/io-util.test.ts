@@ -109,7 +109,7 @@ describe('yamlExists', () => {
 		'/Users/user/.config/@smartthings/cli/config.yaml',
 		'c:\\users\\user\\AppData\\Local\\config.yaml',
 	])('warns and returns false when %s is checked but .yml exists', (path) => {
-		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+		const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { /*no-op*/ })
 		existsSyncMock
 			.mockReturnValueOnce(false)
 			.mockReturnValueOnce(true)

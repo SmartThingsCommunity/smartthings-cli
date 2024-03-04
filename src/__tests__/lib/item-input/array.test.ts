@@ -36,7 +36,7 @@ jest.unstable_mockModule('../../../lib/util.js', () => ({
 
 // ignore console output
 jest.spyOn(process.stdout, 'write').mockImplementation(() => true)
-const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => true)
+const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /*no-op*/ })
 
 
 const { arrayDef, checkboxDef } = await import('../../../lib/item-input/array.js')

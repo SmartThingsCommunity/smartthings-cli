@@ -286,7 +286,7 @@ describe('apiCommand', () => {
 	})
 
 	describe('warningLogger', () => {
-		const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+		const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { /*no-op*/ })
 
 		type WarningLoggerFunc = (warnings: WarningFromHeader[] | string) => void
 		const getWarningLogger = async (): Promise<WarningLoggerFunc> => {
