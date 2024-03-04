@@ -24,7 +24,7 @@ jest.unstable_mockModule('../../../lib/command/util/locations-util.js', () => ({
 	chooseLocation: chooseLocationMock,
 }))
 
-const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => true)
+const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /*no-op*/ })
 
 
 const { default: cmd } = await import('../../../commands/locations/delete.js')

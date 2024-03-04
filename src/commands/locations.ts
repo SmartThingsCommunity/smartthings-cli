@@ -11,7 +11,6 @@ export type CommandArgs = APICommandFlags & OutputItemOrListFlags & {
 	idOrIndex?: string
 }
 
-
 const command = 'locations [id-or-index]'
 
 const describe = 'list locations or get information for a specific Location'

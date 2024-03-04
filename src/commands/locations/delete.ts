@@ -8,7 +8,7 @@ export type CommandArgs = APICommandFlags & {
 	id?: string
 }
 
-export const command = 'locations:delete'
+export const command = 'locations:delete [id]'
 
 const describe = 'delete a location'
 

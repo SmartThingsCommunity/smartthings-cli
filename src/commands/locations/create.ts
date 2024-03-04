@@ -16,7 +16,7 @@ const describe = 'create a Location for a user'
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	inputAndOutputItemBuilder(apiCommandBuilder(yargs))
 		.example([
-			['$0 locations:create -i my-location.yaml', 'create a location defined in my-location.yaml'],
+			['$0 locations:create -i my-location.yaml', 'create a location defined in "my-location.yaml"'],
 		])
 		.epilog(apiDocsURL('createLocation'))
 
