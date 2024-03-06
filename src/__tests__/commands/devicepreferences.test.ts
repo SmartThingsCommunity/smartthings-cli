@@ -1,5 +1,4 @@
 import { jest } from '@jest/globals'
-import { FunctionLike } from 'jest-mock'
 
 import { ArgumentsCamelCase, Argv } from 'yargs'
 
@@ -14,9 +13,10 @@ import {
 	apiOrganizationCommandBuilder,
 } from '../../lib/command/api-organization-command.js'
 import { AllOrganizationFlags, allOrganizationsBuilder } from '../../lib/command/common-flags.js'
-import { OutputItemOrListFlags, outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
+import { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
 import { CommandArgs } from '../../commands/devicepreferences.js'
 import { shortARNorURL, verboseApps } from '../../lib/command/util/apps-util.js'
+import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
 
 const forAllOrganizationsMock = jest.fn<typeof forAllOrganizations>()
@@ -59,44 +59,33 @@ jest.unstable_mockModule('../../lib/command/util/apps-util.js', () => ({
 
 const { default: cmd } = await import('../../commands/devicepreferences.js')
 
-type BuilderFunctionMock<T extends FunctionLike> = jest.Mock<T> & T
 
 test('builder', () => {
-	type APIOrganizationFlags = object & APIOrganizationCommandFlags
-	const apiOrganizationCommandArgvMock = jest.fn() as BuilderFunctionMock<Argv<APIOrganizationFlags>>
-	apiOrganizationCommandBuilderMock.mockReturnValue(apiOrganizationCommandArgvMock)
+	const yargsMock = buildArgvMockStub<object>()
+	const apiOrganizationCommandBuilderArgvMock = buildArgvMockStub<APIOrganizationCommandFlags>()
+	const {
+		yargsMock: allOrganizationsBuilderArgvMock,
+		positionalMock,
+		optionMock,
+		exampleMock,
+		epilogMock,
+		argvMock,
+	} = buildArgvMock<APIOrganizationCommandFlags & AllOrganizationFlags, CommandArgs>()
 
-	type AllOrganizationReturnFlags = APIOrganizationFlags & AllOrganizationFlags
-	const allOrganizationsBuilderArgvMock = jest.fn() as BuilderFunctionMock<Argv<AllOrganizationReturnFlags>>
-	allOrganizationsBuilderMock.mockReturnValue(allOrganizationsBuilderArgvMock)
-
-	type OutputItemOrListReturnFlags = AllOrganizationReturnFlags & OutputItemOrListFlags
-	const outputItemOrListArgvMock = jest.fn() as BuilderFunctionMock<Argv<OutputItemOrListReturnFlags>>
-
-	const positionalMock = jest.fn() as BuilderFunctionMock<Argv<OutputItemOrListReturnFlags>['positional']>
-	positionalMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.positional = positionalMock
-
-	const optionMock = jest.fn() as BuilderFunctionMock<Argv<OutputItemOrListReturnFlags>['option']>
-	optionMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.option = optionMock
-
-	const exampleMock = jest.fn() as BuilderFunctionMock<Argv<OutputItemOrListReturnFlags>['example']>
-	exampleMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.example = exampleMock
-
-	const epilogMock = jest.fn() as BuilderFunctionMock<Argv<OutputItemOrListReturnFlags>['epilog']>
-	epilogMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.epilog = epilogMock
-
-	outputItemOrListBuilderMock.mockReturnValue(outputItemOrListArgvMock)
-
-	type CommandFlags = APIOrganizationCommandFlags & { testOption?: string }
-	const yargsMock = jest.fn() as jest.Mock<Argv<CommandFlags>> & Argv<CommandFlags>
+	apiOrganizationCommandBuilderMock.mockReturnValueOnce(apiOrganizationCommandBuilderArgvMock)
+	allOrganizationsBuilderMock.mockReturnValueOnce(allOrganizationsBuilderArgvMock)
+	outputItemOrListBuilderMock.mockReturnValueOnce(argvMock)
 
 	const builder = cmd.builder as (yargs: Argv<object>) => Argv<CommandArgs>
 
-	expect(builder(yargsMock)).toBe(outputItemOrListArgvMock)
+	expect(builder(yargsMock)).toBe(argvMock)
+
+	expect(apiOrganizationCommandBuilderMock).toHaveBeenCalledTimes(1)
+	expect(apiOrganizationCommandBuilderMock).toHaveBeenCalledWith(yargsMock)
+	expect(allOrganizationsBuilderMock).toHaveBeenCalledTimes(1)
+	expect(allOrganizationsBuilderMock).toHaveBeenCalledWith(apiOrganizationCommandBuilderArgvMock)
+	expect(outputItemOrListBuilderMock).toHaveBeenCalledTimes(1)
+	expect(outputItemOrListBuilderMock).toHaveBeenCalledWith(allOrganizationsBuilderArgvMock)
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(2)

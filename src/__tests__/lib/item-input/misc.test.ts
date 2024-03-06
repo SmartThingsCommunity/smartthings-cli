@@ -21,18 +21,18 @@ import { stringFromUnknown } from '../../../lib/util.js'
 import { ListSelectionDefOptions, OptionalDefPredicateFn } from '../../../lib/item-input/misc.js'
 
 
-const promptMock: jest.Mock<typeof inquirer.prompt> = jest.fn()
+const promptMock = jest.fn<typeof inquirer.prompt>()
 jest.unstable_mockModule('inquirer', () => ({
 	default: {
 		prompt: promptMock,
 		Separator: inquirer.Separator,
 	},
 }))
-const askForBooleanMock: jest.Mock<typeof askForBoolean> = jest.fn()
-const askForIntegerMock: jest.Mock<typeof askForInteger> = jest.fn()
-const askForOptionalIntegerMock: jest.Mock<typeof askForOptionalInteger> = jest.fn()
-const askForStringMock: jest.Mock<typeof askForString> = jest.fn()
-const askForOptionalStringMock: jest.Mock<typeof askForOptionalString> = jest.fn()
+const askForBooleanMock = jest.fn<typeof askForBoolean>()
+const askForIntegerMock = jest.fn<typeof askForInteger>()
+const askForOptionalIntegerMock = jest.fn<typeof askForOptionalInteger>()
+const askForStringMock = jest.fn<typeof askForString>()
+const askForOptionalStringMock = jest.fn<typeof askForOptionalString>()
 jest.unstable_mockModule('../../../lib/user-query.js', () => ({
 	askForBoolean: askForBooleanMock,
 	askForInteger: askForIntegerMock,

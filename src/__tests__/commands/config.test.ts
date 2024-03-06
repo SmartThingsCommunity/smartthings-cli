@@ -13,7 +13,7 @@ import {
 	calculateOutputFormat,
 	writeOutput,
 } from '../../lib/command/output.js'
-import { buildOutputFormatter } from '../../lib/command/output-builder.js'
+import { BuildOutputFormatterFlags, buildOutputFormatter } from '../../lib/command/output-builder.js'
 import {
 	SmartThingsCommand,
 	SmartThingsCommandFlags,
@@ -21,40 +21,41 @@ import {
 	smartThingsCommandBuilder,
 } from '../../lib/command/smartthings-command.js'
 import { ValueTableFieldDefinition } from '../../lib/table-generator.js'
+import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
 
-const outputItemMock: jest.Mock<typeof outputItem> = jest.fn()
-const outputListMock: jest.Mock<typeof outputList> = jest.fn()
+const outputItemMock = jest.fn<typeof outputItem>()
+const outputListMock = jest.fn<typeof outputList>()
 jest.unstable_mockModule('../../lib/command/basic-io.js', () => ({
 	outputListBuilder,
 	outputItem: outputItemMock,
 	outputList: outputListMock,
 }))
 
-const stringTranslateToIdMock: jest.Mock<typeof stringTranslateToId> = jest.fn()
+const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
 jest.unstable_mockModule('../../lib/command/command-util.js', () => ({
 	stringTranslateToId: stringTranslateToIdMock,
 }))
 
-const outputItemOrListBuilderMock: jest.Mock<typeof outputItemOrListBuilder> = jest.fn()
+const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
 jest.unstable_mockModule('../../lib/command/listing-io.js', () => ({
 	outputItemOrListBuilder: outputItemOrListBuilderMock,
 }))
 
-const calculateOutputFormatMock: jest.Mock<typeof calculateOutputFormat> = jest.fn()
-const writeOutputMock: jest.Mock<typeof writeOutput> = jest.fn()
+const calculateOutputFormatMock = jest.fn<typeof calculateOutputFormat>()
+const writeOutputMock = jest.fn<typeof writeOutput>()
 jest.unstable_mockModule('../../lib/command/output.js', () => ({
 	calculateOutputFormat: calculateOutputFormatMock,
 	writeOutput: writeOutputMock,
 }))
 
-const buildOutputFormatterMock: jest.Mock<typeof buildOutputFormatter> = jest.fn()
+const buildOutputFormatterMock = jest.fn<typeof buildOutputFormatter>()
 jest.unstable_mockModule('../../lib/command/output-builder.js', () => ({
 	buildOutputFormatter: buildOutputFormatterMock,
 }))
 
-const smartThingsCommandMock: jest.Mock<typeof smartThingsCommand> = jest.fn()
-const smartThingsCommandBuilderMock: jest.Mock<typeof smartThingsCommandBuilder> = jest.fn()
+const smartThingsCommandMock = jest.fn<typeof smartThingsCommand>()
+const smartThingsCommandBuilderMock = jest.fn<typeof smartThingsCommandBuilder>()
 jest.unstable_mockModule('../../lib/command/smartthings-command.js', () => ({
 	smartThingsCommand: smartThingsCommandMock,
 	smartThingsCommandBuilder: smartThingsCommandBuilderMock,
@@ -65,30 +66,20 @@ const { default: cmd } = await import('../../commands/config.js')
 
 
 test('builder', () => {
-	const smartThingsCommandArgvMock = jest.fn() as jest.Mock<Argv<object & SmartThingsCommandFlags>> & Argv<object & SmartThingsCommandFlags>
-	smartThingsCommandBuilderMock.mockReturnValue(smartThingsCommandArgvMock)
+	const yargsMock = buildArgvMockStub<object>()
+	const {
+		yargsMock: smartThingsCommandBuilderArgvMock,
+		positionalMock,
+		optionMock,
+		exampleMock,
+		argvMock,
+	} = buildArgvMock<SmartThingsCommandFlags, BuildOutputFormatterFlags>()
 
-	const outputItemOrListArgvMock = jest.fn() as jest.Mock<Argv<object & SmartThingsCommandFlags>> & Argv<object & SmartThingsCommandFlags>
-
-	const optionMock = jest.fn() as jest.Mock<Argv<object & SmartThingsCommandFlags>['option']> & Argv<object & SmartThingsCommandFlags>['option']
-	optionMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.option = optionMock
-
-	const positionalMock = jest.fn() as jest.Mock<Argv<object & SmartThingsCommandFlags>['positional']> & Argv<object & SmartThingsCommandFlags>['positional']
-	positionalMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.positional = positionalMock
-
-	const exampleMock = jest.fn() as jest.Mock<Argv<object & SmartThingsCommandFlags>['example']> & Argv<object & SmartThingsCommandFlags>['example']
-	exampleMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.example = exampleMock
-
-	outputItemOrListBuilderMock.mockReturnValueOnce(outputItemOrListArgvMock)
-
-	type CommandFlags = SmartThingsCommandFlags & { testOption?: string }
-	const yargsMock = jest.fn() as jest.Mock<Argv<CommandFlags>> & Argv<CommandFlags>
+	smartThingsCommandBuilderMock.mockReturnValue(smartThingsCommandBuilderArgvMock)
+	outputItemOrListBuilderMock.mockReturnValueOnce(argvMock)
 
 	const builder = cmd.builder as (yargs: Argv<object>) => Argv<CommandArgs>
-	expect(builder(yargsMock)).toBe(outputItemOrListArgvMock)
+	expect(builder(yargsMock)).toBe(argvMock)
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
@@ -112,8 +103,7 @@ describe('handler', () => {
 	outputListMock.mockResolvedValue([profile1WithName, profile2WithName])
 	stringTranslateToIdMock.mockResolvedValue('translated-id')
 	calculateOutputFormatMock.mockReturnValue('common')
-	const outputFormatterMock: jest.Mock<OutputFormatter<object>> = jest.fn()
-	outputFormatterMock.mockReturnValue('formatted output')
+	const outputFormatterMock = jest.fn<OutputFormatter<object>>().mockReturnValue('formatted output')
 	buildOutputFormatterMock.mockReturnValue(outputFormatterMock)
 
 	it('lists configs without args', async () => {

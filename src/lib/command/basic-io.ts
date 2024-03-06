@@ -6,7 +6,7 @@ import { buildInputProcessor, inputProcessorBuilder, InputProcessorFlags } from 
 import { IOFormat } from '../io-util.js'
 import { sort, writeOutput } from './output.js'
 import { buildOutputFormatter, buildOutputFormatterBuilder, BuildOutputFormatterFlags } from './output-builder.js'
-import { SmartThingsCommand } from './smartthings-command.js'
+import { SmartThingsCommand, SmartThingsCommandFlags } from './smartthings-command.js'
 
 
 export type GetDataFunction<O extends object> = () => Promise<O>
@@ -98,7 +98,7 @@ export type InputAndOutputItemFlags = InputProcessorFlags & BuildOutputFormatter
 	dryRun?: boolean
 }
 export type InputAndOutputItemConfig<O extends object> = FormatAndWriteItemConfig<O>
-export const inputAndOutputItemBuilder = <T extends InputAndOutputItemFlags>(yargs: Argv<T>): Argv<T & InputAndOutputItemFlags> =>
+export const inputAndOutputItemBuilder = <T extends SmartThingsCommandFlags>(yargs: Argv<T>): Argv<T & InputAndOutputItemFlags> =>
 	inputItemBuilder(buildOutputFormatterBuilder(yargs))
 		.option('dry-run', { alias: 'd', describe: "produce JSON but don't actually submit", type: 'boolean' })
 /**

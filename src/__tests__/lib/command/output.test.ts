@@ -3,26 +3,34 @@ import { jest } from '@jest/globals'
 import { writeFile } from 'fs/promises'
 
 import { formatFromFilename, stdoutIsTTY } from '../../../lib/io-util.js'
-import { Table, TableFieldDefinition, TableGenerator, TableOptions, ValueTableFieldDefinition } from '../../../lib/table-generator.js'
+import {
+	Table,
+	TableFieldDefinition,
+	TableGenerator,
+	TableOptions,
+	ValueTableFieldDefinition,
+} from '../../../lib/table-generator.js'
 
 import { SimpleType } from '../../test-lib/simple-type.js'
+import { buildArgvMock } from '../../test-lib/builder-mock.js'
+import { CalculateOutputFormatFlags } from '../../../lib/command/output.js'
 
 
-const writeFileMock: jest.Mock<typeof writeFile> = jest.fn()
+const writeFileMock = jest.fn<typeof writeFile>()
 jest.unstable_mockModule('fs/promises', () => ({
 	writeFile: writeFileMock,
 }))
 
-const formatFromFilenameMock: jest.Mock<typeof formatFromFilename> = jest.fn()
-const stdoutIsTTYMock: jest.Mock<typeof stdoutIsTTY> = jest.fn()
+const formatFromFilenameMock = jest.fn<typeof formatFromFilename>()
+const stdoutIsTTYMock = jest.fn<typeof stdoutIsTTY>()
 jest.unstable_mockModule('../../../lib/io-util.js', () => ({
 	formatFromFilename: formatFromFilenameMock,
 	stdoutIsTTY: stdoutIsTTYMock,
 }))
 
-const newOutputTableMock: jest.Mock<(options?: Partial<TableOptions>) => Table> = jest.fn()
-const buildTableFromItemMock: jest.Mock<(item: object, tableFieldDefinitions: TableFieldDefinition<object>[]) => string> = jest.fn()
-const buildTableFromListMock: jest.Mock<(items: object[], tableFieldDefinitions: TableFieldDefinition<object>[]) => string> = jest.fn()
+const newOutputTableMock = jest.fn<(options?: Partial<TableOptions>) => Table>()
+const buildTableFromItemMock = jest.fn<(item: object, tableFieldDefinitions: TableFieldDefinition<object>[]) => string>()
+const buildTableFromListMock = jest.fn<(items: object[], tableFieldDefinitions: TableFieldDefinition<object>[]) => string>()
 const tableGeneratorMock: TableGenerator = {
 	newOutputTable: newOutputTableMock,
 	buildTableFromItem: buildTableFromItemMock,
@@ -32,6 +40,7 @@ const tableGeneratorMock: TableGenerator = {
 
 const {
 	calculateOutputFormat,
+	calculateOutputFormatBuilder,
 	itemTableFormatter,
 	jsonFormatter,
 	listTableFormatter,
@@ -60,6 +69,14 @@ describe('sort', () => {
 		const result = sort(input, 'str')
 		expect(result).toEqual([st('abc'), st('ABC'), st('that'), st('this'), st('xyz')])
 	})
+})
+
+test('calculateOutputFormatBuilder', () => {
+	const { optionMock, argvMock } = buildArgvMock<object, CalculateOutputFormatFlags>()
+
+	expect(calculateOutputFormatBuilder(argvMock)).toBe(argvMock)
+
+	expect(optionMock).toHaveBeenCalledTimes(3)
 })
 
 describe('calculateOutputFormat', () => {

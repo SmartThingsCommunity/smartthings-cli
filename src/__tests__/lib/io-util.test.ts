@@ -6,7 +6,7 @@ import { stdin as mockStdin } from 'mock-stdin'
 import { validData, validYAML, SimpleType } from '../test-lib/simple-type.js'
 
 
-const existsSyncMock: jest.Mock<typeof existsSync> = jest.fn()
+const existsSyncMock = jest.fn<typeof existsSync>()
 jest.unstable_mockModule('fs', () => ({
 	default: {
 		existsSync: existsSyncMock,

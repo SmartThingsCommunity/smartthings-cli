@@ -7,20 +7,21 @@ import { Location, LocationsEndpoint, SmartThingsClient } from '@smartthings/cor
 import { APICommand, APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../../lib/command/api-command.js'
 import { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
 import { CommandArgs } from '../../commands/locations.js'
+import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
 
 
-const apiCommandMock: jest.Mock<typeof apiCommand> = jest.fn()
-const apiCommandBuilderMock: jest.Mock<typeof apiCommandBuilder> = jest.fn()
-const apiDocsURLMock: jest.Mock<typeof apiDocsURL> = jest.fn()
+const apiCommandMock = jest.fn<typeof apiCommand>()
+const apiCommandBuilderMock = jest.fn<typeof apiCommandBuilder>()
+const apiDocsURLMock = jest.fn<typeof apiDocsURL>()
 jest.unstable_mockModule('../../lib/command/api-command.js', () => ({
 	apiCommand: apiCommandMock,
 	apiCommandBuilder: apiCommandBuilderMock,
 	apiDocsURL: apiDocsURLMock,
 }))
 
-const outputItemOrListMock: jest.Mock<typeof outputItemOrList> = jest.fn()
-const outputItemOrListBuilderMock: jest.Mock<typeof outputItemOrListBuilder> = jest.fn()
+const outputItemOrListMock = jest.fn<typeof outputItemOrList>()
+const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
 jest.unstable_mockModule('../../lib/command/listing-io.js', () => ({
 	outputItemOrList: outputItemOrListMock,
 	outputItemOrListBuilder: outputItemOrListBuilderMock,
@@ -32,30 +33,25 @@ const { default: cmd } = await import('../../commands/locations.js')
 
 
 test('builder', () => {
-	const apiCommandArgvMock = jest.fn() as jest.Mock<Argv<object & APICommandFlags>> & Argv<object & APICommandFlags>
-	apiCommandBuilderMock.mockReturnValue(apiCommandArgvMock)
+	const yargsMock = buildArgvMockStub<object>()
+	const {
+		yargsMock: outputItemOrListBuilderArgvMock,
+		positionalMock,
+		exampleMock,
+		epilogMock,
+		argvMock,
+	} = buildArgvMock<APICommandFlags, CommandArgs>()
 
-	const outputItemOrListArgvMock = jest.fn() as jest.Mock<Argv<object & APICommandFlags>> & Argv<object & APICommandFlags>
-
-	const positionalMock = jest.fn() as jest.Mock<Argv<object & APICommandFlags>['positional']> & Argv<object & APICommandFlags>['positional']
-	positionalMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.positional = positionalMock
-
-	const exampleMock = jest.fn() as jest.Mock<Argv<object & APICommandFlags>['example']> & Argv<object & APICommandFlags>['example']
-	exampleMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.example = exampleMock
-
-	const epilogMock = jest.fn() as jest.Mock<Argv<object & APICommandFlags>['epilog']> & Argv<object & APICommandFlags>['epilog']
-	epilogMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.epilog = epilogMock
-
-	outputItemOrListBuilderMock.mockReturnValueOnce(outputItemOrListArgvMock)
-
-	type CommandFlags = APICommandFlags & { testOption?: string }
-	const yargsMock = jest.fn() as jest.Mock<Argv<CommandFlags>> & Argv<CommandFlags>
+	apiCommandBuilderMock.mockReturnValue(outputItemOrListBuilderArgvMock)
+	outputItemOrListBuilderMock.mockReturnValueOnce(argvMock)
 
 	const builder = cmd.builder as (yargs: Argv<object>) => Argv<CommandArgs>
-	expect(builder(yargsMock)).toBe(outputItemOrListArgvMock)
+	expect(builder(yargsMock)).toBe(argvMock)
+
+	expect(apiCommandBuilderMock).toHaveBeenCalledTimes(1)
+	expect(apiCommandBuilderMock).toHaveBeenCalledWith(yargsMock)
+	expect(outputItemOrListBuilderMock).toHaveBeenCalledTimes(1)
+	expect(outputItemOrListBuilderMock).toHaveBeenCalledWith(outputItemOrListBuilderArgvMock)
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)

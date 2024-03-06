@@ -8,15 +8,15 @@ import { SmartThingsCommand } from '../../../lib/command/smartthings-command.js'
 import { BuildOutputFormatterFlags } from '../../../lib/command/output-builder.js'
 
 
-const outputItemMock: jest.Mock<typeof outputItem<SimpleType>> = jest.fn()
-const outputListMock: jest.Mock<typeof outputList<SimpleType>> = jest.fn()
+const outputItemMock = jest.fn<typeof outputItem<SimpleType>>()
+const outputListMock = jest.fn<typeof outputList<SimpleType>>()
 jest.unstable_mockModule('../../../lib/command/basic-io.js', () => ({
 	outputItem: outputItemMock,
 	outputList: outputListMock,
 	outputListBuilder,
 }))
 
-const stringTranslateToIdMock: jest.Mock<typeof stringTranslateToId> = jest.fn()
+const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
 stringTranslateToIdMock.mockResolvedValue('string translated id')
 jest.unstable_mockModule('../../../lib/command/command-util.js', () => ({
 	stringTranslateToId: stringTranslateToIdMock,
@@ -39,10 +39,9 @@ const config: OutputItemOrListConfig<SimpleType, SimpleType> = {
 	sortKeyName: 'num',
 }
 
-const getFunction: jest.Mock<LookupDataFunction<string, SimpleType>> = jest.fn()
-getFunction.mockResolvedValue(item)
-const listFunction: jest.Mock<ListDataFunction<SimpleType>> = jest.fn()
-const translateToId: jest.Mock<IdTranslationFunction<string, SimpleType>> = jest.fn()
+const getFunction = jest.fn<LookupDataFunction<string, SimpleType>>().mockResolvedValue(item)
+const listFunction = jest.fn<ListDataFunction<SimpleType>>()
+const translateToId = jest.fn<IdTranslationFunction<string, SimpleType>>()
 translateToId.mockResolvedValue('translated id')
 
 describe('outputItemOrListGeneric', () => {

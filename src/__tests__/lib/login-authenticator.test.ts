@@ -14,10 +14,10 @@ import { delay } from '../../lib/util.js'
 import { Server } from 'http'
 
 
-const chmodMock: jest.Mock<typeof chmod> = jest.fn()
-const mkdirSyncMock: jest.Mock<typeof mkdirSync> = jest.fn()
-const readFileSyncMock: jest.Mock<typeof readFileSync> = jest.fn()
-const writeFileSyncMock: jest.Mock<typeof writeFileSync> = jest.fn()
+const chmodMock = jest.fn<typeof chmod>()
+const mkdirSyncMock = jest.fn<typeof mkdirSync>()
+const readFileSyncMock = jest.fn<typeof readFileSync>()
+const writeFileSyncMock = jest.fn<typeof writeFileSync>()
 jest.unstable_mockModule('fs', () => ({
 	chmod: chmodMock,
 	mkdirSync: mkdirSyncMock,
@@ -25,30 +25,30 @@ jest.unstable_mockModule('fs', () => ({
 	writeFileSync: writeFileSyncMock,
 }))
 
-const expressMock: jest.Mock<typeof express> = jest.fn()
+const expressMock = jest.fn<typeof express>()
 jest.unstable_mockModule('express', () => ({ default: expressMock }))
 
-const getPortMock: jest.Mock<typeof getPort> = jest.fn()
+const getPortMock = jest.fn<typeof getPort>()
 jest.unstable_mockModule('get-port-please', () => ({
 	getPort: getPortMock,
 }))
 
 const { debugMock, errorMock, traceMock } = await import('../test-lib/logger-mock.js')
 
-const openMock: jest.Mock<typeof open> = jest.fn()
+const openMock = jest.fn<typeof open>()
 jest.unstable_mockModule('open', () => ({ default: openMock }))
 
-const oraMock: jest.Mock<typeof ora> = jest.fn()
+const oraMock = jest.fn<typeof ora>()
 jest.unstable_mockModule('ora', () => ({ default: oraMock }))
 
-const postMock: jest.Mock<typeof axios.post> = jest.fn()
+const postMock = jest.fn<typeof axios.post>()
 jest.unstable_mockModule('axios', () => ({
 	default: {
 		post: postMock,
 	},
 }))
 
-const delayMock: jest.Mock<typeof delay> = jest.fn()
+const delayMock = jest.fn<typeof delay>()
 delayMock.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 5)))
 jest.unstable_mockModule('../../lib/util.js', () => ({
 	delay: delayMock,

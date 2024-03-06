@@ -12,15 +12,15 @@ import {
 import { selectFromList, SelectFromListFlags } from '../../../../lib/command/select.js'
 
 
-const chooseOptionsWithDefaultsMock: jest.Mock<typeof chooseOptionsWithDefaults> = jest.fn()
-const stringTranslateToIdMock: jest.Mock<typeof stringTranslateToId> = jest.fn()
+const chooseOptionsWithDefaultsMock = jest.fn<typeof chooseOptionsWithDefaults>()
+const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
 jest.unstable_mockModule('../../../../lib/command/command-util.js', () => ({
 	chooseOptionsDefaults,
 	chooseOptionsWithDefaults: chooseOptionsWithDefaultsMock,
 	stringTranslateToId: stringTranslateToIdMock,
 }))
 
-const selectFromListMock: jest.Mock<typeof selectFromList> = jest.fn()
+const selectFromListMock = jest.fn<typeof selectFromList>()
 jest.unstable_mockModule('../../../../lib/command/select.js', () => ({
 	selectFromList: selectFromListMock,
 }))
@@ -165,7 +165,7 @@ test('chooseApp uses correct endpoint to list apps', async () => {
 })
 
 describe('buildTableOutput', () => {
-	const newOutputTableMock: jest.Mock<TableGenerator['newOutputTable']> = jest.fn()
+	const newOutputTableMock = jest.fn<TableGenerator['newOutputTable']>()
 	const mockTableGenerator = {
 		newOutputTable: newOutputTableMock,
 	} as unknown as TableGenerator
@@ -191,8 +191,8 @@ describe('buildTableOutput', () => {
 })
 
 describe('verboseApps', () => {
-	const listMock: jest.Mock<typeof AppsEndpoint.prototype.list> = jest.fn()
-	const getMock: jest.Mock<typeof AppsEndpoint.prototype.get> = jest.fn()
+	const listMock = jest.fn<typeof AppsEndpoint.prototype.list>()
+	const getMock = jest.fn<typeof AppsEndpoint.prototype.get>()
 	const apps = { list: listMock, get: getMock } as unknown as AppsEndpoint
 	const client = { apps } as SmartThingsClient
 

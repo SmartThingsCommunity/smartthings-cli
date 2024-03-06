@@ -5,30 +5,41 @@ import log4js from 'log4js'
 import { CLIConfig, loadConfig } from '../../../lib/cli-config.js'
 import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../../../lib/log-utils.js'
 import { defaultTableGenerator } from '../../../lib/table-generator.js'
+import { buildArgvMock } from '../../test-lib/builder-mock.js'
+import { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
 
 
 const { configureMock, getLoggerMock } = await import('../../test-lib/logger-mock.js')
 
-const loadConfigMock: jest.Mock<typeof loadConfig> = jest.fn()
+const loadConfigMock = jest.fn<typeof loadConfig>()
 jest.unstable_mockModule('../../../lib/cli-config.js', () => ({
 	loadConfig: loadConfigMock,
 }))
 
-const buildDefaultLog4jsConfigMock: jest.Mock<typeof buildDefaultLog4jsConfig> = jest.fn()
-const loadLog4jsConfigMock: jest.Mock<typeof loadLog4jsConfig> = jest.fn()
+const buildDefaultLog4jsConfigMock = jest.fn<typeof buildDefaultLog4jsConfig>()
+const loadLog4jsConfigMock = jest.fn<typeof loadLog4jsConfig>()
 jest.unstable_mockModule('../../../lib/log-utils.js', () => ({
 	buildDefaultLog4jsConfig: buildDefaultLog4jsConfigMock,
 	loadLog4jsConfig: loadLog4jsConfigMock,
 }))
 
-const defaultTableGeneratorMock: jest.Mock<typeof defaultTableGenerator> = jest.fn()
+const defaultTableGeneratorMock = jest.fn<typeof defaultTableGenerator>()
 jest.unstable_mockModule('../../../lib//table-generator', () => ({
 	defaultTableGenerator: defaultTableGeneratorMock,
 }))
 
 
-const { smartThingsCommand } = await import('../../../lib/command/smartthings-command.js')
+const { smartThingsCommandBuilder, smartThingsCommand } = await import('../../../lib/command/smartthings-command.js')
 
+
+test('smartThingsCommandBuilder', () => {
+	const { envMock, optionMock, argvMock } = buildArgvMock<object, SmartThingsCommandFlags>()
+
+	expect(smartThingsCommandBuilder(argvMock)).toBe(argvMock)
+
+	expect(envMock).toHaveBeenCalledTimes(1)
+	expect(optionMock).toHaveBeenCalledTimes(1)
+})
 
 describe('smartThingsCommand', () => {
 	const defaultLogConfig = { config: 'default' } as unknown as log4js.Configuration

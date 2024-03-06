@@ -11,26 +11,26 @@ import { SmartThingsCommand, SmartThingsCommandFlags } from '../../../lib/comman
 import { SimpleType } from '../../test-lib/simple-type.js'
 
 
-const promptMock: jest.Mock<typeof inquirer.prompt> = jest.fn()
+const promptMock = jest.fn<typeof inquirer.prompt>()
 jest.unstable_mockModule('inquirer', () => ({
 	default: {
 		prompt: promptMock,
 	},
 }))
 
-const resetManagedConfigKeyMock: jest.Mock<typeof resetManagedConfigKey> = jest.fn()
-const setConfigKeyMock: jest.Mock<typeof setConfigKey> = jest.fn()
+const resetManagedConfigKeyMock = jest.fn<typeof resetManagedConfigKey>()
+const setConfigKeyMock = jest.fn<typeof setConfigKey>()
 jest.unstable_mockModule('../../../lib/cli-config.js', () => ({
 	resetManagedConfigKey: resetManagedConfigKeyMock,
 	setConfigKey: setConfigKeyMock,
 }))
 
-const outputListMock: jest.Mock<typeof outputList> = jest.fn()
+const outputListMock = jest.fn<typeof outputList>()
 jest.unstable_mockModule('../../../lib/command/basic-io.js', () => ({
 	outputList: outputListMock,
 }))
 
-const stringGetIdFromUserMock: jest.Mock<typeof stringGetIdFromUser> = jest.fn()
+const stringGetIdFromUserMock = jest.fn<typeof stringGetIdFromUser>()
 jest.unstable_mockModule('../../../lib/command/command-util.js', () => ({
 	stringGetIdFromUser: stringGetIdFromUserMock,
 }))
@@ -61,8 +61,7 @@ describe('select', () => {
 		sortKeyName: 'num',
 	}
 
-	const listItemsMock: jest.Mock<ListDataFunction<SimpleType>> = jest.fn()
-	listItemsMock.mockResolvedValue(list)
+	const listItemsMock = jest.fn<ListDataFunction<SimpleType>>().mockResolvedValue(list)
 
 	const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /*no-op*/ })
 
@@ -139,8 +138,7 @@ describe('select', () => {
 		it('calls custom getIdFromUser when specified', async () => {
 			outputListMock.mockResolvedValueOnce(list)
 
-			const getIdFromUser: jest.Mock<IdRetrievalFunction<string, SimpleType>> = jest.fn()
-			getIdFromUser.mockResolvedValueOnce('special-id')
+			const getIdFromUser = jest.fn<IdRetrievalFunction<string, SimpleType>>().mockResolvedValueOnce('special-id')
 
 			expect(await promptUser(command, config, { listItems: listItemsMock, getIdFromUser })).toBe('special-id')
 
@@ -181,8 +179,8 @@ describe('select', () => {
 	})
 
 	describe('selectFromList', () => {
-		const getItemMock: jest.Mock<LookupDataFunction<string, SimpleType>> = jest.fn()
-		const userMessageMock: jest.Mock<(item: SimpleType) => string> = jest.fn()
+		const getItemMock = jest.fn<LookupDataFunction<string, SimpleType>>()
+		const userMessageMock = jest.fn<(item: SimpleType) => string>()
 		const defaultValue: SelectOptions<SimpleType>['defaultValue'] = {
 			configKey: 'defaultItem',
 			getItem: getItemMock,

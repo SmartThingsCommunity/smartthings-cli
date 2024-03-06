@@ -6,7 +6,7 @@ import { cancelAction, finishAction, helpAction, InputDefinition, inquirerPageSi
 import { ObjectDefOptions, ObjectItemTypeData } from '../../../lib/item-input/object.js'
 
 
-const promptMock: jest.Mock<typeof inquirer.prompt> = jest.fn()
+const promptMock = jest.fn<typeof inquirer.prompt>()
 jest.unstable_mockModule('inquirer', () => ({
 	default: {
 		prompt: promptMock,

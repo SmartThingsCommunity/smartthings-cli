@@ -13,15 +13,15 @@ import {
 import { SimpleType } from '../../../test-lib/simple-type.js'
 
 
-const chooseOptionsWithDefaultsMock: jest.Mock<typeof chooseOptionsWithDefaults> = jest.fn()
-const stringTranslateToIdMock: jest.Mock<typeof stringTranslateToId> = jest.fn()
+const chooseOptionsWithDefaultsMock = jest.fn<typeof chooseOptionsWithDefaults>()
+const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
 jest.unstable_mockModule('../../../../lib/command/command-util.js', () => ({
 	chooseOptionsDefaults,
 	chooseOptionsWithDefaults: chooseOptionsWithDefaultsMock,
 	stringTranslateToId: stringTranslateToIdMock,
 }))
 
-const selectFromListMock: jest.Mock<typeof selectFromList> = jest.fn()
+const selectFromListMock = jest.fn<typeof selectFromList>()
 jest.unstable_mockModule('../../../../lib/command/select.js', () => ({
 	selectFromList: selectFromListMock,
 }))

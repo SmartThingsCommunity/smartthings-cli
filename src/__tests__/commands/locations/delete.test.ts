@@ -1,5 +1,4 @@
 import { jest } from '@jest/globals'
-import { FunctionLike } from 'jest-mock'
 
 import { ArgumentsCamelCase, Argv } from 'yargs'
 
@@ -8,6 +7,7 @@ import { LocationsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 import { CommandArgs } from '../../../commands/locations/delete.js'
 import { APICommand, APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../../../lib/command/api-command.js'
 import { chooseLocation } from '../../../lib/command/util/locations-util.js'
+import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
 
 const apiCommandMock = jest.fn<typeof apiCommand>()
@@ -30,28 +30,22 @@ const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /*no
 const { default: cmd } = await import('../../../commands/locations/delete.js')
 
 
-type BuilderFunctionMock<T extends FunctionLike> = jest.Mock<T> & T
-
 test('builder', () => {
-	const apiCommandArgvMock = jest.fn() as BuilderFunctionMock<Argv<APICommandFlags>>
-	apiCommandBuilderMock.mockReturnValue(apiCommandArgvMock)
+	const {
+		yargsMock,
+		positionalMock,
+		exampleMock,
+		epilogMock,
+		argvMock,
+	} = buildArgvMock<object, CommandArgs>()
 
-	const positionalMock = jest.fn() as BuilderFunctionMock<Argv<APICommandFlags>['positional']>
-	positionalMock.mockReturnValue(apiCommandArgvMock)
-	apiCommandArgvMock.positional = positionalMock
-
-	const exampleMock = jest.fn() as BuilderFunctionMock<Argv<APICommandFlags>['example']>
-	exampleMock.mockReturnValue(apiCommandArgvMock)
-	apiCommandArgvMock.example = exampleMock
-
-	const epilogMock = jest.fn() as BuilderFunctionMock<Argv<APICommandFlags>['epilog']>
-	epilogMock.mockReturnValue(apiCommandArgvMock)
-	apiCommandArgvMock.epilog = epilogMock
-
-	const yargsMock = jest.fn() as BuilderFunctionMock<Argv<CommandArgs>>
+	apiCommandBuilderMock.mockReturnValue(argvMock)
 
 	const builder = cmd.builder as (yargs: Argv<object>) => Argv<CommandArgs>
-	expect(builder(yargsMock)).toBe(apiCommandArgvMock)
+	expect(builder(yargsMock)).toBe(argvMock)
+
+	expect(apiCommandBuilderMock).toHaveBeenCalledTimes(1)
+	expect(apiCommandBuilderMock).toHaveBeenCalledWith(yargsMock)
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)

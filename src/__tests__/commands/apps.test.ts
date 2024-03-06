@@ -8,7 +8,10 @@ import { APICommand, APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL 
 import { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
 import { CommandArgs } from '../../commands/apps.js'
 import { ListDataFunction } from '../../lib/command/basic-io.js'
+import { BuildOutputFormatterFlags } from '../../lib/command/output-builder.js'
+import { SmartThingsCommandFlags } from '../../lib/command/smartthings-command.js'
 import { shortARNorURL, verboseApps } from '../../lib/command/util/apps-util.js'
+import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
 
 
@@ -41,37 +44,28 @@ const { default: cmd } = await import('../../commands/apps.js')
 
 
 describe('builder', () => {
-	const apiCommandArgvMock = jest.fn() as jest.Mock<Argv<object & APICommandFlags>> & Argv<object & APICommandFlags>
-	apiCommandBuilderMock.mockReturnValue(apiCommandArgvMock)
+	const yargsMock = buildArgvMockStub<object>()
+	const {
+		yargsMock: apiCommandBuilderArgvMock,
+		positionalMock,
+		optionMock,
+		exampleMock,
+		epilogMock,
+		argvMock,
+	} = buildArgvMock<SmartThingsCommandFlags, BuildOutputFormatterFlags>()
 
-	const outputItemOrListArgvMock = jest.fn() as jest.Mock<Argv<object & APICommandFlags>> & Argv<object & APICommandFlags>
-
-	const positionalMock = jest.fn() as jest.Mock<Argv<object & APICommandFlags>['positional']> & Argv<object & APICommandFlags>['positional']
-	positionalMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.positional = positionalMock
-
-	const optionMock = jest.fn() as jest.Mock<Argv<object & APICommandFlags>['option']> & Argv<object & APICommandFlags>['option']
-	optionMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.option = optionMock
-
-	const exampleMock = jest.fn() as jest.Mock<Argv<object & APICommandFlags>['example']> & Argv<object & APICommandFlags>['example']
-	exampleMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.example = exampleMock
-
-	const epilogMock = jest.fn() as jest.Mock<Argv<object & APICommandFlags>['epilog']> & Argv<object & APICommandFlags>['epilog']
-	epilogMock.mockReturnValue(outputItemOrListArgvMock)
-	outputItemOrListArgvMock.epilog = epilogMock
-
-	outputItemOrListBuilderMock.mockReturnValue(outputItemOrListArgvMock)
-
-	type CommandFlags = APICommandFlags & { testOption?: string }
-	const yargsMock = jest.fn() as jest.Mock<Argv<CommandFlags>> & Argv<CommandFlags>
+	apiCommandBuilderMock.mockReturnValue(apiCommandBuilderArgvMock)
+	outputItemOrListBuilderMock.mockReturnValue(argvMock)
 
 	const builder = cmd.builder as (yargs: Argv<object>) => Argv<CommandArgs>
 
 	it('calls correct parent and yargs functions', () => {
-		expect(builder(yargsMock)).toBe(outputItemOrListArgvMock)
+		expect(builder(yargsMock)).toBe(argvMock)
 
+		expect(apiCommandBuilderMock).toHaveBeenCalledTimes(1)
+		expect(apiCommandBuilderMock).toHaveBeenCalledWith(yargsMock)
+		expect(outputItemOrListBuilderMock).toHaveBeenCalledTimes(1)
+		expect(outputItemOrListBuilderMock).toHaveBeenCalledWith(apiCommandBuilderArgvMock)
 		expect(positionalMock).toHaveBeenCalledTimes(1)
 		expect(optionMock).toHaveBeenCalledTimes(3)
 		expect(exampleMock).toHaveBeenCalledTimes(1)
@@ -82,7 +76,7 @@ describe('builder', () => {
 	type OptionMock = jest.Mock<(key: string, options?: Options) => Argv<object & APICommandFlags>>
 
 	it('accepts upper or lowercase types', () => {
-		expect(builder(yargsMock)).toBe(outputItemOrListArgvMock)
+		expect(builder(yargsMock)).toBe(argvMock)
 
 		const typeCoerce = (optionMock as OptionMock).mock.calls[0][1]?.coerce
 		expect(typeCoerce).toBeDefined()
@@ -91,7 +85,7 @@ describe('builder', () => {
 	})
 
 	it('accepts upper or lowercase classifications', () => {
-		expect(builder(yargsMock)).toBe(outputItemOrListArgvMock)
+		expect(builder(yargsMock)).toBe(argvMock)
 
 		const typeCoerce = (optionMock as OptionMock).mock.calls[1][1]?.coerce
 		expect(typeCoerce).toBeDefined()

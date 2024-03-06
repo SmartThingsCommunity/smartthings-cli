@@ -8,21 +8,21 @@ import yaml from 'js-yaml'
 import { yamlExists } from '../../lib/io-util.js'
 
 
-const readFileSyncMock: jest.Mock<typeof readFileSync> = jest.fn()
+const readFileSyncMock = jest.fn<typeof readFileSync>()
 jest.unstable_mockModule('fs', () => ({
 	default: {
 		readFileSync: readFileSyncMock,
 	},
 }))
 
-const yamlLoadMock: jest.Mock<typeof yaml.load> = jest.fn()
+const yamlLoadMock = jest.fn<typeof yaml.load>()
 jest.unstable_mockModule('js-yaml', () => ({
 	default: {
 		load: yamlLoadMock,
 	},
 }))
 
-const yamlExistsMock: jest.Mock<typeof yamlExists> = jest.fn()
+const yamlExistsMock = jest.fn<typeof yamlExists>()
 jest.unstable_mockModule('../../lib/io-util.js', () => ({
 	yamlExists: yamlExistsMock,
 }))
