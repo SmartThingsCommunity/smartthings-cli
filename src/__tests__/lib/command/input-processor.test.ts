@@ -16,15 +16,15 @@ import {
 import { SimpleType, validData } from '../../test-lib/simple-type.js'
 
 
-const readFileMock: jest.Mock<typeof readFile> = jest.fn()
+const readFileMock = jest.fn<typeof readFile>()
 jest.unstable_mockModule('fs/promises', () => ({
 	readFile: readFileMock,
 }))
 
-const formatFromFilenameMock: jest.Mock<typeof formatFromFilename> = jest.fn()
-const parseJSONOrYAMLMock: jest.Mock<typeof parseJSONOrYAML> = jest.fn()
-const readDataFromStdinMock: jest.Mock<typeof readDataFromStdin> = jest.fn()
-const stdinIsTTYMock: jest.Mock<typeof stdinIsTTY> = jest.fn()
+const formatFromFilenameMock = jest.fn<typeof formatFromFilename>()
+const parseJSONOrYAMLMock = jest.fn<typeof parseJSONOrYAML>()
+const readDataFromStdinMock = jest.fn<typeof readDataFromStdin>()
+const stdinIsTTYMock = jest.fn<typeof stdinIsTTY>()
 jest.unstable_mockModule('../../../lib/io-util.js', () => ({
 	formatFromFilename: formatFromFilenameMock,
 	parseJSONOrYAML: parseJSONOrYAMLMock,
@@ -130,8 +130,8 @@ describe('stdinInputProcessor', () => {
 })
 
 describe('simple input processor builder functions', () => {
-	const hasInputMock: jest.Mock<() => boolean> = jest.fn()
-	const readMock: jest.Mock<() => Promise<string>> = jest.fn()
+	const hasInputMock = jest.fn<() => boolean>()
+	const readMock = jest.fn<() => Promise<string>>()
 
 	it('inputBuilder defaults to common input', () => {
 		const result = inputProcessor(hasInputMock, readMock)
@@ -197,13 +197,13 @@ describe('simple input processor builder functions', () => {
 })
 
 describe('combinedInputProcessor', () => {
-	const hasInputMock1: jest.Mock<() => boolean> = jest.fn()
-	const hasInputMock2: jest.Mock<() => Promise<boolean>> = jest.fn()
-	const hasInputMock3: jest.Mock<() => Promise<boolean>> = jest.fn()
+	const hasInputMock1 = jest.fn<() => boolean>()
+	const hasInputMock2 = jest.fn<() => Promise<boolean>>()
+	const hasInputMock3 = jest.fn<() => Promise<boolean>>()
 
-	const readMock1: jest.Mock<() => Promise<SimpleType>> = jest.fn()
-	const readMock2: jest.Mock<() => Promise<SimpleType>> = jest.fn()
-	const readMock3: jest.Mock<() => Promise<SimpleType>> = jest.fn()
+	const readMock1 = jest.fn<() => Promise<SimpleType>>()
+	const readMock2 = jest.fn<() => Promise<SimpleType>>()
+	const readMock3 = jest.fn<() => Promise<SimpleType>>()
 
 	const makeProcessor = (hasInputMock: () => boolean | Promise<boolean>, readMock?: () => Promise<SimpleType>): InputProcessor<SimpleType> => ({
 		ioFormat: 'common',

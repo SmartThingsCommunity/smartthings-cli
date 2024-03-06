@@ -1,9 +1,6 @@
 import { jest } from '@jest/globals'
 
-import { Argv } from 'yargs'
-
 import {
-	CalculateOutputFormatFlags,
 	OutputFormatter,
 	calculateOutputFormat,
 	calculateOutputFormatBuilder,
@@ -14,12 +11,13 @@ import { BuildOutputFormatterFlags } from '../../../lib/command/output-builder.j
 import { SimpleType } from '../../test-lib/simple-type.js'
 import { CLIConfig } from '../../../lib/cli-config.js'
 import { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
+import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
 
-const calculateOutputFormatMock: jest.Mock<typeof calculateOutputFormat> = jest.fn()
-const calculateOutputFormatBuilderMock: jest.Mock<typeof calculateOutputFormatBuilder> = jest.fn()
-const jsonFormatterMock: jest.Mock<typeof jsonFormatter<SimpleType>> = jest.fn()
-const yamlFormatterMock: jest.Mock<typeof yamlFormatter<SimpleType>> = jest.fn()
+const calculateOutputFormatMock = jest.fn<typeof calculateOutputFormat>()
+const calculateOutputFormatBuilderMock = jest.fn<typeof calculateOutputFormatBuilder>()
+const jsonFormatterMock = jest.fn<typeof jsonFormatter<SimpleType>>()
+const yamlFormatterMock = jest.fn<typeof yamlFormatter<SimpleType>>()
 jest.unstable_mockModule('../../../lib/command/output.js', () => ({
 	calculateOutputFormat: calculateOutputFormatMock,
 	calculateOutputFormatBuilder: calculateOutputFormatBuilderMock,
@@ -32,15 +30,15 @@ const { buildOutputFormatter, buildOutputFormatterBuilder } = await import('../.
 
 
 test('buildOutputFormatterBuilder', () => {
-	const calculateOutputFormatArgvMock = jest.fn() as jest.Mock<Argv<CalculateOutputFormatFlags>> & Argv<CalculateOutputFormatFlags>
-	const optionMock: jest.Mock<Argv['option']> = jest.fn()
-	optionMock.mockReturnValue(calculateOutputFormatArgvMock)
-	calculateOutputFormatArgvMock.option = optionMock
-	calculateOutputFormatBuilderMock.mockReturnValue(calculateOutputFormatArgvMock)
-	type CommandFlags = SmartThingsCommandFlags & { testOption?: string }
-	const yargsMock = jest.fn() as jest.Mock<Argv<CommandFlags>> & Argv<CommandFlags>
+	const {
+		yargsMock,
+		optionMock,
+		argvMock,
+	} = buildArgvMock<SmartThingsCommandFlags, BuildOutputFormatterFlags>()
 
-	expect(buildOutputFormatterBuilder(yargsMock)).toBe(calculateOutputFormatArgvMock)
+	calculateOutputFormatBuilderMock.mockReturnValue(argvMock)
+
+	expect(buildOutputFormatterBuilder(yargsMock)).toBe(argvMock)
 
 	expect(calculateOutputFormatBuilderMock).toHaveBeenCalledTimes(1)
 	expect(calculateOutputFormatBuilderMock).toHaveBeenCalledWith(yargsMock)
@@ -50,9 +48,9 @@ test('buildOutputFormatterBuilder', () => {
 })
 
 describe('buildOutputFormatter', () => {
-	const jsonOutputFormatter: jest.Mock<OutputFormatter<SimpleType>> = jest.fn()
+	const jsonOutputFormatter = jest.fn<OutputFormatter<SimpleType>>()
 	jsonFormatterMock.mockReturnValue(jsonOutputFormatter)
-	const yamlOutputFormatter: jest.Mock<OutputFormatter<SimpleType>> = jest.fn()
+	const yamlOutputFormatter = jest.fn<OutputFormatter<SimpleType>>()
 	yamlFormatterMock.mockReturnValue(yamlOutputFormatter)
 
 	const flags = { output: 'output.yaml' } as BuildOutputFormatterFlags
@@ -62,7 +60,7 @@ describe('buildOutputFormatter', () => {
 
 	it('uses commonOutputFormatter when it exists', () => {
 		calculateOutputFormatMock.mockReturnValue('common')
-		const commonFormatter: jest.Mock<OutputFormatter<SimpleType>> = jest.fn()
+		const commonFormatter = jest.fn<OutputFormatter<SimpleType>>()
 
 		expect(buildOutputFormatter<SimpleType>(flags, cliConfig, undefined, commonFormatter)).toBe(commonFormatter)
 

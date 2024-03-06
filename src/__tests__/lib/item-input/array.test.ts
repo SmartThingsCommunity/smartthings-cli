@@ -19,16 +19,16 @@ import { clipToMaximum, stringFromUnknown } from '../../../lib/util.js'
 import { ArrayDefOptions, CheckboxDefOptions } from '../../../lib/item-input/array.js'
 
 
-const promptMock: jest.Mock<typeof inquirer.prompt> = jest.fn()
+const promptMock = jest.fn<typeof inquirer.prompt>()
 jest.unstable_mockModule('inquirer', () => ({
 	default: {
 		prompt: promptMock,
 		Separator: inquirer.Separator,
 	},
 }))
-const clipToMaximumMock: jest.Mock<typeof clipToMaximum> = jest.fn()
+const clipToMaximumMock = jest.fn<typeof clipToMaximum>()
 clipToMaximumMock.mockReturnValue('clipped')
-const stringFromUnknownMock: jest.Mock<typeof stringFromUnknown> = jest.fn()
+const stringFromUnknownMock = jest.fn<typeof stringFromUnknown>()
 jest.unstable_mockModule('../../../lib/util.js', () => ({
 	clipToMaximum: clipToMaximumMock,
 	stringFromUnknown: stringFromUnknownMock,

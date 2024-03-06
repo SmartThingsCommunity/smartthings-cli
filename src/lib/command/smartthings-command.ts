@@ -11,8 +11,8 @@ export type SmartThingsCommandFlags = {
 	profile: string
 }
 
-export const smartThingsCommandBuilder = <T extends object = object>(argv: Argv<T>): Argv<T & SmartThingsCommandFlags> =>
-	argv.env('SMARTTHINGS')
+export const smartThingsCommandBuilder = <T extends object = object>(yargs: Argv<T>): Argv<T & SmartThingsCommandFlags> =>
+	yargs.env('SMARTTHINGS')
 		.option('profile', {
 			alias: 'p',
 			describe: 'configuration profile',

@@ -1,13 +1,15 @@
 import { jest } from '@jest/globals'
 
+import { InputProcessorFlags } from '../../../lib/command/input-builder.js'
 import { combinedInputProcessor, fileInputProcessor, InputProcessor, stdinInputProcessor }
 	from '../../../lib/command/input-processor.js'
 import { SimpleType } from '../../test-lib/simple-type.js'
+import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
 
-const combinedInputProcessorMock: jest.Mock<typeof combinedInputProcessor> = jest.fn()
-const fileInputProcessorMock: jest.Mock<typeof fileInputProcessor> = jest.fn()
-const stdinInputProcessorMock: jest.Mock<typeof stdinInputProcessor> = jest.fn()
+const combinedInputProcessorMock = jest.fn<typeof combinedInputProcessor>()
+const fileInputProcessorMock = jest.fn<typeof fileInputProcessor>()
+const stdinInputProcessorMock = jest.fn<typeof stdinInputProcessor>()
 jest.unstable_mockModule('../../../lib/command/input-processor.js', () => ({
 	combinedInputProcessor: combinedInputProcessorMock,
 	fileInputProcessor: fileInputProcessorMock,
@@ -15,8 +17,16 @@ jest.unstable_mockModule('../../../lib/command/input-processor.js', () => ({
 }))
 
 
-const { buildInputProcessor } = await import('../../../lib/command/input-builder.js')
+const { buildInputProcessor, inputProcessorBuilder } = await import('../../../lib/command/input-builder.js')
 
+
+test('inputProcessorBuilder', () => {
+	const { optionMock, argvMock } = buildArgvMock<InputProcessorFlags>()
+
+	expect(inputProcessorBuilder(argvMock)).toBe(argvMock)
+
+	expect(optionMock).toHaveBeenCalledTimes(1)
+})
 
 describe('buildInputProcessor', () => {
 	it('includes file and stdin input processors', () => {

@@ -7,7 +7,7 @@ import { SelectFromListFlags, selectFromList } from '../../../../lib/command/sel
 import { ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
 
 
-const selectFromListMock: jest.Mock<typeof selectFromList> = jest.fn()
+const selectFromListMock = jest.fn<typeof selectFromList>()
 jest.unstable_mockModule('../../../../lib/command/select', () => ({
 	selectFromList: selectFromListMock,
 }))
@@ -40,7 +40,7 @@ describe('tableFieldDefinitions options definition', () => {
 
 test('chooseDevicePreference', async () => {
 	selectFromListMock.mockResolvedValueOnce('chosen-id')
-	const listMock: jest.Mock<typeof DevicePreferencesEndpoint.prototype.list> = jest.fn()
+	const listMock = jest.fn<typeof DevicePreferencesEndpoint.prototype.list>()
 	const client = { devicePreferences: { list: listMock } } as unknown as SmartThingsClient
 	const command = { client } as APICommand<SelectFromListFlags>
 

@@ -1,5 +1,4 @@
 import { jest } from '@jest/globals'
-import { FunctionLike } from 'jest-mock'
 
 import { ArgumentsCamelCase, Argv } from 'yargs'
 
@@ -9,25 +8,26 @@ import { chooseLocation, tableFieldDefinitions } from '../../../lib/command/util
 import { APICommand, APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../../../lib/command/api-command.js'
 import { inputAndOutputItem, inputAndOutputItemBuilder } from '../../../lib/command/basic-io.js'
 import { CommandArgs } from '../../../commands/locations/update.js'
+import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
 
-const chooseLocationMock: jest.Mock<typeof chooseLocation> = jest.fn()
+const chooseLocationMock = jest.fn<typeof chooseLocation>()
 jest.unstable_mockModule('../../../lib/command/util/locations-util.js', () => ({
 	chooseLocation: chooseLocationMock,
 	tableFieldDefinitions,
 }))
 
-const apiCommandMock: jest.Mock<typeof apiCommand> = jest.fn()
-const apiCommandBuilderMock: jest.Mock<typeof apiCommandBuilder> = jest.fn()
-const apiDocsURLMock: jest.Mock<typeof apiDocsURL> = jest.fn()
+const apiCommandMock = jest.fn<typeof apiCommand>()
+const apiCommandBuilderMock = jest.fn<typeof apiCommandBuilder>()
+const apiDocsURLMock = jest.fn<typeof apiDocsURL>()
 jest.unstable_mockModule('../../../lib/command/api-command.js', () => ({
 	apiCommand: apiCommandMock,
 	apiCommandBuilder: apiCommandBuilderMock,
 	apiDocsURL: apiDocsURLMock,
 }))
 
-const inputAndOutputItemMock: jest.Mock<typeof inputAndOutputItem> = jest.fn()
-const inputAndOutputItemBuilderMock: jest.Mock<typeof inputAndOutputItemBuilder> = jest.fn()
+const inputAndOutputItemMock = jest.fn<typeof inputAndOutputItem>()
+const inputAndOutputItemBuilderMock = jest.fn<typeof inputAndOutputItemBuilder>()
 jest.unstable_mockModule('../../../lib/command/basic-io.js', () => ({
 	inputAndOutputItem: inputAndOutputItemMock,
 	inputAndOutputItemBuilder: inputAndOutputItemBuilderMock,
@@ -37,32 +37,26 @@ jest.unstable_mockModule('../../../lib/command/basic-io.js', () => ({
 const { default: cmd } = await import('../../../commands/locations/update.js')
 
 
-type BuilderFunctionMock<T extends FunctionLike> = jest.Mock<T> & T
-
 test('builder', () => {
-	const apiCommandArgvMock = jest.fn() as BuilderFunctionMock<Argv<object & APICommandFlags>>
-	apiCommandBuilderMock.mockReturnValue(apiCommandArgvMock)
+	const yargsMock = buildArgvMockStub<object>()
+	const {
+		yargsMock: apiCommandBuilderArgvMock,
+		positionalMock,
+		exampleMock,
+		epilogMock,
+		argvMock,
+	} = buildArgvMock<APICommandFlags, CommandArgs>()
 
-	const inputAndOutputItemArgvMock = jest.fn() as BuilderFunctionMock<Argv<CommandArgs>>
-
-	const positionalMock = jest.fn() as BuilderFunctionMock<Argv<APICommandFlags>['positional']>
-	positionalMock.mockReturnValue(inputAndOutputItemArgvMock)
-	inputAndOutputItemArgvMock.positional = positionalMock
-
-	const exampleMock = jest.fn() as BuilderFunctionMock<Argv<CommandArgs>['example']>
-	exampleMock.mockReturnValue(inputAndOutputItemArgvMock)
-	inputAndOutputItemArgvMock.example = exampleMock
-
-	const epilogMock = jest.fn() as BuilderFunctionMock<Argv<CommandArgs>['epilog']>
-	epilogMock.mockReturnValue(inputAndOutputItemArgvMock)
-	inputAndOutputItemArgvMock.epilog = epilogMock
-
-	inputAndOutputItemBuilderMock.mockReturnValueOnce(inputAndOutputItemArgvMock)
-
-	const yargsMock = jest.fn() as BuilderFunctionMock<Argv<CommandArgs>>
+	apiCommandBuilderMock.mockReturnValueOnce(apiCommandBuilderArgvMock)
+	inputAndOutputItemBuilderMock.mockReturnValueOnce(argvMock)
 
 	const builder = cmd.builder as (yargs: Argv<object>) => Argv<CommandArgs>
-	expect(builder(yargsMock)).toBe(inputAndOutputItemArgvMock)
+	expect(builder(yargsMock)).toBe(argvMock)
+
+	expect(apiCommandBuilderMock).toHaveBeenCalledTimes(1)
+	expect(apiCommandBuilderMock).toHaveBeenCalledWith(yargsMock)
+	expect(inputAndOutputItemBuilderMock).toHaveBeenCalledTimes(1)
+	expect(inputAndOutputItemBuilderMock).toHaveBeenCalledWith(apiCommandBuilderArgvMock)
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)

@@ -8,14 +8,14 @@ import { ListDataFunction, Sorting } from '../../../lib/command/basic-io.js'
 import { SimpleType } from '../../test-lib/simple-type.js'
 
 
-const promptMock: jest.Mock<typeof inquirer.prompt> = jest.fn()
+const promptMock = jest.fn<typeof inquirer.prompt>()
 jest.unstable_mockModule('inquirer', () => ({
 	default: {
 		prompt: promptMock,
 	},
 }))
 
-const sortMock: jest.Mock<typeof sort> = jest.fn()
+const sortMock = jest.fn<typeof sort>()
 jest.unstable_mockModule('../../../lib/command/output.js', () => ({
 	sort: sortMock,
 }))
@@ -78,7 +78,7 @@ const config: Sorting<SimpleType> = {
 }
 
 describe('stringTranslateToId', () => {
-	const listFunction: jest.Mock<ListDataFunction<SimpleType>> = jest.fn()
+	const listFunction = jest.fn<ListDataFunction<SimpleType>>()
 
 	it('simply returns undefined given undefined idOrIndex', async () => {
 		const computedId = await stringTranslateToId(config, undefined, listFunction)

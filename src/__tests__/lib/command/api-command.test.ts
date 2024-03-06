@@ -4,24 +4,25 @@ import { osLocale } from 'os-locale'
 
 import { Authenticator, Logger, RESTClientConfig, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
 
-import { SmartThingsCommand, smartThingsCommand, smartThingsCommandBuilder } from '../../../lib/command/smartthings-command.js'
+import { SmartThingsCommand, SmartThingsCommandFlags, smartThingsCommand, smartThingsCommandBuilder } from '../../../lib/command/smartthings-command.js'
 import { newBearerTokenAuthenticator, newSmartThingsClient } from '../../../lib/command/util/st-client-wrapper.js'
 import { coreSDKLoggerFromLog4JSLogger } from '../../../lib/log-utils.js'
 import { defaultClientIdProvider, loginAuthenticator } from '../../../lib/login-authenticator.js'
 import { TableGenerator } from '../../../lib/table-generator.js'
+import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
 
 const { errorMock, loggerMock } = await import('../../test-lib/logger-mock.js')
 
-const osLocaleMock: jest.Mock<typeof osLocale> = jest.fn()
+const osLocaleMock = jest.fn<typeof osLocale>()
 osLocaleMock.mockResolvedValue('OS Locale')
 jest.unstable_mockModule('os-locale', () => ({
 	osLocale: osLocaleMock,
 }))
 
-const coreSDKLoggerFromLog4JSLoggerMock: jest.Mock<typeof coreSDKLoggerFromLog4JSLogger> = jest.fn()
+const coreSDKLoggerFromLog4JSLoggerMock = jest.fn<typeof coreSDKLoggerFromLog4JSLogger>()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const coreSDKWarnMock: jest.Mock<(message: any, ...args: any[]) => void> = jest.fn()
+const coreSDKWarnMock = jest.fn<(message: any, ...args: any[]) => void>()
 const coreSDKLogger = {
 	warn: coreSDKWarnMock,
 } as unknown as Logger
@@ -43,14 +44,15 @@ const stCommandMock = {
 		buildTableFromList: buildTableFromListMock,
 	},
 } as unknown as SmartThingsCommand
-const smartThingsCommandMock: jest.Mock<typeof smartThingsCommand> = jest.fn()
+const smartThingsCommandBuilderMock = jest.fn<typeof smartThingsCommandBuilder>()
+const smartThingsCommandMock = jest.fn<typeof smartThingsCommand>()
 smartThingsCommandMock.mockResolvedValue(stCommandMock)
 jest.unstable_mockModule('../../../lib/command/smartthings-command.js', () => ({
-	smartThingsCommandBuilder,
+	smartThingsCommandBuilder: smartThingsCommandBuilderMock,
 	smartThingsCommand: smartThingsCommandMock,
 }))
 
-const loginAuthenticatorMock: jest.Mock<typeof loginAuthenticator> = jest.fn()
+const loginAuthenticatorMock = jest.fn<typeof loginAuthenticator>()
 const mockAuthenticator = { mock: 'authenticator' } as unknown as Authenticator
 loginAuthenticatorMock.mockReturnValue(mockAuthenticator)
 jest.unstable_mockModule('../../../lib/login-authenticator.js', () => ({
@@ -67,7 +69,14 @@ jest.unstable_mockModule('../../../lib/command/util/st-client-wrapper.js', () =>
 	newSmartThingsClient: newSmartThingsClientMock,
 }))
 
-const { apiCommand, apiDocsURL, itemInputHelpText, userAgent } = await import('../../../lib/command/api-command.js')
+
+const {
+	apiCommand,
+	apiCommandBuilder,
+	apiDocsURL,
+	itemInputHelpText,
+	userAgent,
+} = await import('../../../lib/command/api-command.js')
 
 
 describe('apiDocsURL', () => {
@@ -98,6 +107,17 @@ describe('itemInputHelpText', () => {
 			.toBe('More information can be found at:\n' +
 				'  https://developer.smartthings.com/docs/api/public/#operation/getDevice')
 	})
+})
+
+test('apiCommandBuilder', () => {
+	const { optionMock, argvMock } = buildArgvMock<SmartThingsCommandFlags>()
+	smartThingsCommandBuilderMock.mockReturnValueOnce(argvMock)
+
+	expect(apiCommandBuilder(argvMock)).toBe(argvMock)
+
+	expect(smartThingsCommandBuilderMock).toHaveBeenCalledTimes(1)
+	expect(smartThingsCommandBuilderMock).toHaveBeenCalledWith(argvMock)
+	expect(optionMock).toHaveBeenCalledTimes(2)
 })
 
 describe('apiCommand', () => {

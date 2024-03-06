@@ -7,8 +7,8 @@ import yaml from 'js-yaml'
 import { YAMLFileData } from '../../lib/file-util.js'
 
 
-const readFileSyncMock: jest.Mock<typeof fs.readFileSync> = jest.fn()
-const statMock: jest.Mock<typeof fs.promises.stat> = jest.fn()
+const readFileSyncMock = jest.fn<typeof fs.readFileSync>()
+const statMock = jest.fn<typeof fs.promises.stat>()
 jest.unstable_mockModule('fs', () => ({
 	default: {
 		readFileSync: readFileSyncMock,
@@ -17,8 +17,8 @@ jest.unstable_mockModule('fs', () => ({
 		},
 	},
 }))
-const yamlLoadMock: jest.Mock<typeof yaml.load> = jest.fn()
-const yamlDumpMock: jest.Mock<typeof yaml.dump> = jest.fn()
+const yamlLoadMock = jest.fn<typeof yaml.load>()
+const yamlDumpMock = jest.fn<typeof yaml.dump>()
 jest.unstable_mockModule('js-yaml', () => ({
 	default: {
 		load: yamlLoadMock,

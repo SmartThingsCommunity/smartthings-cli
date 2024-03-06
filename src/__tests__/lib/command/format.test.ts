@@ -16,9 +16,9 @@ import { SmartThingsCommand } from '../../../lib/command/smartthings-command.js'
 import { SimpleType } from '../../test-lib/simple-type.js'
 
 
-const itemTableFormatterMock: jest.Mock<typeof itemTableFormatter<SimpleType>> = jest.fn()
-const listTableFormatterMock: jest.Mock<typeof listTableFormatter<SimpleType>> = jest.fn()
-const writeOutputMock: jest.Mock<typeof writeOutput> = jest.fn()
+const itemTableFormatterMock = jest.fn<typeof itemTableFormatter<SimpleType>>()
+const listTableFormatterMock = jest.fn<typeof listTableFormatter<SimpleType>>()
+const writeOutputMock = jest.fn<typeof writeOutput>()
 writeOutputMock.mockResolvedValue()
 jest.unstable_mockModule('../../../lib/command/output.js', () => ({
 	itemTableFormatter: itemTableFormatterMock,
@@ -26,8 +26,8 @@ jest.unstable_mockModule('../../../lib/command/output.js', () => ({
 	writeOutput: writeOutputMock,
 }))
 
-const buildOutputFormatterMock: jest.Mock<typeof buildOutputFormatter<SimpleType>> = jest.fn()
-const outputFormatterMock: jest.Mock<OutputFormatter<SimpleType>> = jest.fn()
+const buildOutputFormatterMock = jest.fn<typeof buildOutputFormatter<SimpleType>>()
+const outputFormatterMock = jest.fn<OutputFormatter<SimpleType>>()
 outputFormatterMock.mockReturnValue('output')
 buildOutputFormatterMock.mockReturnValue(outputFormatterMock)
 jest.unstable_mockModule('../../../lib/command/output-builder.js', () => ({
@@ -53,14 +53,14 @@ const command = {
 } as unknown as SmartThingsCommand<BuildOutputFormatterFlags>
 
 describe('formatAndWriteItem', () => {
-	const buildTableOutputMock: jest.Mock<CustomCommonOutputProducer<SimpleType>['buildTableOutput']> = jest.fn()
+	const buildTableOutputMock = jest.fn<CustomCommonOutputProducer<SimpleType>['buildTableOutput']>()
 
 	it('uses tableFieldDefinitions when specified', async () => {
 		const config: FormatAndWriteItemConfig<SimpleType> = {
 			tableFieldDefinitions: [],
 		}
 
-		const commonFormatter: jest.Mock<OutputFormatter<SimpleType>> = jest.fn()
+		const commonFormatter = jest.fn<OutputFormatter<SimpleType>>()
 		itemTableFormatterMock.mockReturnValue(commonFormatter)
 
 		await formatAndWriteItem(command, config, item, 'common')
@@ -126,7 +126,7 @@ describe('formatAndWriteList', () => {
 	// `SimpleType` for `buildOutputFormatter`'s generic.
 	const listBuildOutputFormatterMock =
 		buildOutputFormatterMock as unknown as jest.Mock<typeof buildOutputFormatter<SimpleType[]>>
-	const buildListTableOutputMock: jest.Mock<CustomCommonListOutputProducer<SimpleType>['buildListTableOutput']> = jest.fn()
+	const buildListTableOutputMock = jest.fn<CustomCommonListOutputProducer<SimpleType>['buildListTableOutput']>()
 
 	it('returns no items found when none found', async () => {
 		const config: FormatAndWriteListConfig<SimpleType> = {
@@ -199,7 +199,7 @@ describe('formatAndWriteList', () => {
 			primaryKeyName: 'num',
 		}
 
-		const commonFormatter: jest.Mock<OutputFormatter<SimpleType[]>> = jest.fn()
+		const commonFormatter = jest.fn<OutputFormatter<SimpleType[]>>()
 		listTableFormatterMock.mockReturnValue(commonFormatter)
 
 		await formatAndWriteList(command, config, list)
@@ -267,7 +267,7 @@ describe('formatAndWriteList', () => {
 			sortKeyName: 'str',
 		}
 
-		const commonFormatter: jest.Mock<OutputFormatter<SimpleType[]>> = jest.fn()
+		const commonFormatter = jest.fn<OutputFormatter<SimpleType[]>>()
 		listTableFormatterMock.mockReturnValue(commonFormatter)
 
 		await formatAndWriteList(command, config, list)
@@ -288,8 +288,7 @@ describe('formatAndWriteList', () => {
 			primaryKeyName: 'num',
 		}
 
-		const commonFormatter: jest.Mock<OutputFormatter<SimpleType[]>> = jest.fn()
-		commonFormatter.mockReturnValue('common output')
+		const commonFormatter = jest.fn<OutputFormatter<SimpleType[]>>().mockReturnValue('common output')
 		listTableFormatterMock.mockReturnValue(commonFormatter)
 
 		await formatAndWriteList(command, config, list, false, true)

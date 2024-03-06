@@ -15,6 +15,7 @@ const config: JestConfigWithTsJest = {
 		'/src/index.ts',
 		'/src/commands/index.ts',
 		'/src/lib/command/util/st-client-wrapper.ts',
+		'/src/lib/colors.ts',
 	],
 	modulePathIgnorePatterns: [
 		'<rootDir>/dist',

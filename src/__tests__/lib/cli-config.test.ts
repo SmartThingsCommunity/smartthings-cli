@@ -12,15 +12,15 @@ import {
 import { yamlExists } from '../../lib/io-util.js'
 
 
-const readFileMock: jest.Mock<typeof readFile> = jest.fn()
-const writeFileMock: jest.Mock<typeof writeFile> = jest.fn()
+const readFileMock = jest.fn<typeof readFile>()
+const writeFileMock = jest.fn<typeof writeFile>()
 jest.unstable_mockModule('fs/promises', () => ({
 	readFile: readFileMock,
 	writeFile: writeFileMock,
 }))
 
-const yamlLoadMock: jest.Mock<typeof yaml.load> = jest.fn()
-const yamlDumpMock: jest.Mock<typeof yaml.dump> = jest.fn()
+const yamlLoadMock = jest.fn<typeof yaml.load>()
+const yamlDumpMock = jest.fn<typeof yaml.dump>()
 jest.unstable_mockModule('js-yaml', () => ({
 	default: {
 		load: yamlLoadMock,
@@ -28,7 +28,7 @@ jest.unstable_mockModule('js-yaml', () => ({
 	},
 }))
 
-const yamlExistsMock: jest.Mock<typeof yamlExists> = jest.fn()
+const yamlExistsMock = jest.fn<typeof yamlExists>()
 yamlExistsMock.mockReturnValue(true)
 jest.unstable_mockModule('../../lib/io-util.js', () => ({
 	yamlExists: yamlExistsMock,
@@ -330,7 +330,7 @@ describe('cli-config', () => {
 			profile2: {},
 		}
 
-		const predicateMock: jest.Mock<(value: unknown) => boolean> = jest.fn()
+		const predicateMock = jest.fn<(value: unknown) => boolean>()
 
 		it('does nothing when key not present', async () => {
 			const cliConfig = makeConfig(profiles, managedProfiles)

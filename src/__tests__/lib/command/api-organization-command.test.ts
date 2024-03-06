@@ -1,24 +1,46 @@
 import { jest } from '@jest/globals'
 
 import { APICommand, apiCommand, apiCommandBuilder } from '../../../lib/command/api-command.js'
-import { SmartThingsCommand } from '../../../lib/command/smartthings-command.js'
+import { SmartThingsCommand, SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
+import { buildArgvMock } from '../../test-lib/builder-mock.js'
+import { APIOrganizationCommandFlags } from '../../../lib/command/api-organization-command.js'
 
 
-const stringConfigValueMock: jest.Mock<SmartThingsCommand['stringConfigValue']> = jest.fn()
+const stringConfigValueMock = jest.fn<SmartThingsCommand['stringConfigValue']>()
 const apiCommandResultMock = {
 	configDir: 'test-config-dir',
 	profileName: 'profile-from-parent',
 	stringConfigValue: stringConfigValueMock,
 } as unknown as APICommand
-const apiCommandMock: jest.Mock<typeof apiCommand> = jest.fn()
+const apiCommandBuilderMock = jest.fn<typeof apiCommandBuilder>()
+const apiCommandMock = jest.fn<typeof apiCommand>()
 apiCommandMock.mockResolvedValue(apiCommandResultMock)
 jest.unstable_mockModule('../../../lib/command/api-command.js', () => ({
-	apiCommandBuilder,
+	apiCommandBuilder: apiCommandBuilderMock,
 	apiCommand: apiCommandMock,
 }))
 
-const { apiOrganizationCommand } = await import('../../../lib/command/api-organization-command.js')
+const {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+} = await import('../../../lib/command/api-organization-command.js')
 
+
+test('apiOrganizationCommandBuilder', () => {
+	const {
+		yargsMock,
+		optionMock,
+		argvMock,
+	} = buildArgvMock<SmartThingsCommandFlags, APIOrganizationCommandFlags>()
+	apiCommandBuilderMock.mockReturnValueOnce(argvMock)
+
+	expect(apiOrganizationCommandBuilder(yargsMock)).toBe(argvMock)
+
+	expect(apiCommandBuilderMock).toHaveBeenCalledTimes(1)
+	expect(apiCommandBuilderMock).toHaveBeenCalledWith(yargsMock)
+
+	expect(optionMock).toHaveBeenCalledTimes(1)
+})
 
 describe('apiOrganizationCommand', () => {
 	const flags = { profile: 'cmd-line-profile' }
