@@ -50,32 +50,6 @@ export type SmartThingsCommand<T extends SmartThingsCommandFlags = SmartThingsCo
 	tableGenerator: TableGenerator
 
 	logger: log4js.Logger
-
-	// convenience methods for safely accessing configuration values
-
-	/**
-	 * If the configured `keyName` value exists and is a string, return it. Otherwise, return
-	 * the default value. This method logs a warning (and returns the default value) if the
-	 * configured keyName exists but is not a string. (The default `defaultValue` is `undefined`.)
-	 */
-	stringConfigValue(keyName: string): string | undefined
-	stringConfigValue(keyName: string, defaultValue: string): string
-	stringConfigValue(keyName: string, defaultValue?: string): string | undefined
-
-	/**
-	 * If the configured `keyName` exists and is a string or a string array, return it. (A simple
-	 * string will be returned as a single-element array.) Otherwise, return the default value.
-	 * This method logs a warning (and returns the default value) if the configured keyName exists
-	 * but is not a string or array of strings. (The default `defaultValue` is an empty array.)
-	 */
-	stringArrayConfigValue(keyName: string, defaultValue?: string[]): string[]
-
-	/**
-	 * If the configured `keyName` value exists and is a boolean, return it. Otherwise, return
-	 * the default value. This method logs a warning if the configured keyName
-	 * exists but is not a boolean.
-	 */
-	booleanConfigValue(keyName: string, defaultValue?: boolean): boolean
 }
 
 /**
@@ -99,57 +73,14 @@ export const smartThingsCommand = async <T extends SmartThingsCommandFlags>(flag
 		configFilename: `${configDir}/config.yaml`,
 		managedConfigFilename: `${configDir}/config-managed.yaml`,
 		profileName,
-	})
+	}, logger)
 
 	const profile = cliConfig.profile
 
 	const groupRowsFlag = (flags as Pick<BuildOutputFormatterFlags, 'groupRows'>).groupRows
-	const groupRows = groupRowsFlag ?? booleanConfigValue('groupTableOutputRows', true)
+	const groupRows = groupRowsFlag ?? cliConfig.booleanConfigValue('groupTableOutputRows', true)
 
 	const tableGenerator = defaultTableGenerator({ groupRows })
-
-	function stringConfigValue(keyName: string): string
-	function stringConfigValue(keyName: string, defaultValue: string): string
-	function stringConfigValue(keyName: string, defaultValue?: string): string | undefined {
-		if (keyName in profile) {
-			const configValue = profile[keyName]
-			if (typeof configValue === 'string') {
-				return configValue
-			}
-			logger.warn(`expected string value for config key ${keyName} but got ${typeof profile[keyName]}`)
-			return defaultValue
-		}
-		logger.trace(`key ${keyName} not found in ${profileName} config`)
-		return defaultValue
-	}
-
-	function stringArrayConfigValue(keyName: string, defaultValue: string[] = []): string[] {
-		if (keyName in profile) {
-			const configValue = profile[keyName]
-			if (typeof configValue === 'string') {
-				return [configValue]
-			}
-			if (Array.isArray(configValue) && configValue.every(dir => typeof dir === 'string')) {
-				return configValue
-			}
-			logger.warn(`expected string or array of strings for config key ${keyName} but got ${typeof configValue}`)
-			return defaultValue
-		}
-		return defaultValue
-	}
-
-	function booleanConfigValue(keyName: string, defaultValue = false): boolean {
-		if (keyName in profile) {
-			const configValue = profile[keyName]
-			if (typeof configValue === 'boolean') {
-				return configValue
-			}
-			logger.warn(`expected boolean value for config key ${keyName} but got ${typeof profile[keyName]}`)
-			return defaultValue
-		}
-		logger.trace(`key ${keyName} not found in ${profileName} config`)
-		return defaultValue
-	}
 
 	return {
 		flags,
@@ -159,9 +90,6 @@ export const smartThingsCommand = async <T extends SmartThingsCommandFlags>(flag
 		profileName,
 		profile,
 		tableGenerator,
-		stringConfigValue,
-		stringArrayConfigValue,
-		booleanConfigValue,
 		logger,
 	}
 }

@@ -72,11 +72,9 @@ describe('readDataFromStdin', () => {
 	})
 })
 
-describe('stdinIsTTY', () => {
-	it('returns true inside a test', function () {
-		Object.defineProperty(process.stdin, 'isTTY', { value: true })
-		expect(stdinIsTTY()).toBe(true)
-	})
+test('stdinIsTTY', () => {
+	Object.defineProperty(process.stdin, 'isTTY', { value: true })
+	expect(stdinIsTTY()).toBe(true)
 })
 
 describe('yamlExists', () => {

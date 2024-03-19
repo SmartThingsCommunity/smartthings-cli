@@ -80,7 +80,7 @@ describe('loadLog4jsConfig', () => {
 		yamlExistsMock.mockReturnValueOnce(false)
 
 		expect(loadLog4jsConfig('filename', defaultConfig)).toStrictEqual(defaultConfig)
-		expect(yamlExistsMock).toBeCalledWith('filename')
+		expect(yamlExistsMock).toHaveBeenCalledWith('filename')
 	})
 
 	it('returns valid config if found', () => {
@@ -108,7 +108,8 @@ describe('loadLog4jsConfig', () => {
 		readFileSyncMock.mockReturnValueOnce('bad file contents')
 		yamlLoadMock.mockReturnValueOnce(invalidConfig)
 
-		expect(() => loadLog4jsConfig('filename', defaultConfig)).toThrow('invalid or unreadable logging config file format')
+		expect(() => loadLog4jsConfig('filename', defaultConfig))
+			.toThrow('invalid or unreadable logging config file format')
 
 		expect(readFileSyncMock).toHaveBeenCalledTimes(1)
 		expect(yamlLoadMock).toHaveBeenCalledTimes(1)
