@@ -2,14 +2,26 @@ import { jest } from '@jest/globals'
 
 import { osLocale } from 'os-locale'
 
-import { Authenticator, Logger, RESTClientConfig, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
+import {
+	Authenticator,
+	Logger,
+	RESTClientConfig,
+	SmartThingsClient,
+	WarningFromHeader,
+} from '@smartthings/core-sdk'
 
-import { SmartThingsCommand, SmartThingsCommandFlags, smartThingsCommand, smartThingsCommandBuilder } from '../../../lib/command/smartthings-command.js'
+import {
+	SmartThingsCommand,
+	SmartThingsCommandFlags,
+	smartThingsCommand,
+	smartThingsCommandBuilder,
+} from '../../../lib/command/smartthings-command.js'
 import { newBearerTokenAuthenticator, newSmartThingsClient } from '../../../lib/command/util/st-client-wrapper.js'
 import { coreSDKLoggerFromLog4JSLogger } from '../../../lib/log-utils.js'
 import { defaultClientIdProvider, loginAuthenticator } from '../../../lib/login-authenticator.js'
 import { TableGenerator } from '../../../lib/table-generator.js'
 import { buildArgvMock } from '../../test-lib/builder-mock.js'
+import { CLIConfig } from '../../../lib/cli-config.js'
 
 
 const { errorMock, loggerMock } = await import('../../test-lib/logger-mock.js')
@@ -31,15 +43,19 @@ jest.unstable_mockModule('../../../lib/log-utils.js', async () => ({
 	coreSDKLoggerFromLog4JSLogger: coreSDKLoggerFromLog4JSLoggerMock,
 }))
 
-const stringConfigValueMock = jest.fn<SmartThingsCommand['stringConfigValue']>()
+const stringConfigValueMock = jest.fn<CLIConfig['stringConfigValue']>()
+const cliConfigMock = {
+	stringConfigValue: stringConfigValueMock,
+}
+
 const buildTableFromListMock = jest.fn<TableGenerator['buildTableFromList']>()
 buildTableFromListMock.mockReturnValue('table built from list')
 const stCommandMock = {
 	configDir: 'test-config-dir',
+	cliConfig: cliConfigMock,
 	profileName: 'profile-from-parent',
 	profile: {},
 	logger: loggerMock,
-	stringConfigValue: stringConfigValueMock,
 	tableGenerator: {
 		buildTableFromList: buildTableFromListMock,
 	},

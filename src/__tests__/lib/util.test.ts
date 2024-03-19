@@ -1,4 +1,4 @@
-import { clipToMaximum, sanitize, stringFromUnknown } from '../../lib/util.js'
+import { clipToMaximum, delay, sanitize, stringFromUnknown } from '../../lib/util.js'
 
 
 describe('stringFromUnknown', () => {
@@ -41,4 +41,10 @@ describe('sanitize', () => {
 	`('converts $input to $result', ({ input, result }) => {
 		expect(sanitize(input)).toBe(result)
 	})
+})
+
+test('delay', async () => {
+	const beforeDate = new Date().getTime()
+	await delay(3)
+	expect(new Date().getTime()).toBeGreaterThanOrEqual(beforeDate + 2)
 })

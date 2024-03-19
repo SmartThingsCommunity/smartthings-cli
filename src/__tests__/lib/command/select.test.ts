@@ -43,7 +43,7 @@ const item1: SimpleType = { str: 'string-id-1', num: 5 }
 const item2: SimpleType = { str: 'string-id-2', num: 7 }
 const list = [item1, item2]
 const singleItemList = [item1]
-const booleanConfigValueMock = jest.fn()
+const booleanConfigValueMock = jest.fn<CLIConfig['booleanConfigValue']>()
 
 const commandWithProfile = (profile: Profile): SmartThingsCommand<SmartThingsCommandFlags> => ({
 	logger: log4js.getLogger('cli'),
@@ -51,8 +51,8 @@ const commandWithProfile = (profile: Profile): SmartThingsCommand<SmartThingsCom
 		profileName: 'default',
 		mergedProfiles: { default: { profile } } as ProfilesByName,
 		profile,
-	} as CLIConfig,
-	booleanConfigValue: booleanConfigValueMock,
+		booleanConfigValue: booleanConfigValueMock,
+	} as unknown as CLIConfig,
 } as unknown as SmartThingsCommand<SmartThingsCommandFlags>)
 const command = commandWithProfile({})
 const config: SelectFromListConfig<SimpleType> = {

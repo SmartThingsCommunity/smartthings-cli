@@ -49,7 +49,7 @@ export const apiCommand = async <T extends APICommandFlags>(flags: T, addAdditio
 	const stCommand = await smartThingsCommand(flags)
 
 	// The `|| undefined` at then end of this line is to normalize falsy values to `undefined`.
-	const token = (flags.token ?? stCommand.stringConfigValue('token')) || undefined
+	const token = (flags.token ?? stCommand.cliConfig.stringConfigValue('token')) || undefined
 
 	const calculateClientIdProvider = (): ClientIdProvider => {
 		const configClientIdProvider = stCommand.profile.clientIdProvider

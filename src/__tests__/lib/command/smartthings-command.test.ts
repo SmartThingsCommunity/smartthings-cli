@@ -9,7 +9,7 @@ import { buildArgvMock } from '../../test-lib/builder-mock.js'
 import { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
 
 
-const { configureMock, getLoggerMock } = await import('../../test-lib/logger-mock.js')
+const { configureMock, getLoggerMock, loggerMock } = await import('../../test-lib/logger-mock.js')
 
 const loadConfigMock = jest.fn<typeof loadConfig>()
 jest.unstable_mockModule('../../../lib/cli-config.js', () => ({
@@ -46,9 +46,15 @@ describe('smartThingsCommand', () => {
 	buildDefaultLog4jsConfigMock.mockReturnValue(defaultLogConfig)
 	const logConfig = { config: 'final' } as unknown as log4js.Configuration
 	loadLog4jsConfigMock.mockReturnValue(logConfig)
-	const cliConfig = { profile: {} } as CLIConfig
+	const booleanConfigValueMock = jest.fn<CLIConfig['booleanConfigValue']>()
+		.mockReturnValue(true)
+	const cliConfig = {
+		profile: {},
+		booleanConfigValue: booleanConfigValueMock,
+	} as unknown as CLIConfig
 	loadConfigMock.mockResolvedValue(cliConfig)
 
+	// TODO: write more complete tests here!
 	it('works', async () => {
 		const flags = { profile: 'default' }
 		const result = await smartThingsCommand(flags)
@@ -68,120 +74,8 @@ describe('smartThingsCommand', () => {
 			configFilename: expect.stringContaining('/.config/@smartthings/cli/config.yaml'),
 			managedConfigFilename: expect.stringContaining('/.config/@smartthings/cli/config-managed.yaml'),
 			profileName: 'default',
-		})
+		}, loggerMock)
 		expect(defaultTableGeneratorMock).toHaveBeenCalledTimes(1)
 		expect(defaultTableGeneratorMock).toHaveBeenCalledWith({ groupRows: true })
 	})
-
-	// TODO: these will eventually go in cli-config.test.ts
-	/*
-	describe('stringConfigValue', () => {
-		it('returns undefined when not set', async () => {
-			await smartThingsCommand.init()
-
-			expect('configKey' in smartThingsCommand.profile).toBeFalse()
-			expect(smartThingsCommand.stringConfigValue('configKey')).toBeUndefined()
-		})
-
-		it('returns config value when defined', async () => {
-			const profile: Profile = { configKey: 'config value' }
-			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-
-			await smartThingsCommand.init()
-
-			expect(smartThingsCommand.profile.configKey).toEqual('config value')
-			expect(smartThingsCommand.stringConfigValue('configKey')).toBe('config value')
-		})
-
-		it('returns undefined when configured value is not a string', async () => {
-			const profile: Profile = { configKey: ['value1', 'value2'] }
-			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-
-			await smartThingsCommand.init()
-
-			expect(smartThingsCommand.profile.configKey).toEqual(['value1', 'value2'])
-			expect(smartThingsCommand.stringConfigValue('configKey')).toBeUndefined()
-		})
-
-		it('returns default value when not set', async () => {
-			await smartThingsCommand.init()
-
-			expect('configKey' in smartThingsCommand.profile).toBeFalse()
-			expect(smartThingsCommand.stringConfigValue('configKey', 'default value'))
-				.toBe('default value')
-		})
-
-		it('returns default value when configured value is not a string', async () => {
-			const profile: Profile = { configKey: ['value1', 'value2'] }
-			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-
-			await smartThingsCommand.init()
-
-			expect(smartThingsCommand.profile.configKey).toEqual(['value1', 'value2'])
-			expect(smartThingsCommand.stringConfigValue('configKey', 'default value'))
-				.toBe('default value')
-		})
-	})
-
-	describe('stringArrayConfigValue', () => {
-		it('returns [] when not set', async () => {
-			await smartThingsCommand.init()
-
-			expect('configKey' in smartThingsCommand.profile).toBeFalse()
-			expect(smartThingsCommand.stringArrayConfigValue('configKey')).toEqual([])
-		})
-
-		it('returns string config value as single-item array', async () => {
-			const profile: Profile = { configKey: 'config value' }
-			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-
-			await smartThingsCommand.init()
-
-			expect(smartThingsCommand.profile.configKey).toEqual('config value')
-			expect(smartThingsCommand.stringArrayConfigValue('configKey')).toEqual(['config value'])
-		})
-
-		it('returns array config value when configured', async () => {
-			const items = ['config value 1', 'config value 2']
-			const profile: Profile = { configKey: items }
-			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-
-			await smartThingsCommand.init()
-
-			expect(smartThingsCommand.profile.configKey).toEqual(items)
-			expect(smartThingsCommand.stringArrayConfigValue('configKey')).toEqual(items)
-		})
-
-		it('returns default value when not set', async () => {
-			await smartThingsCommand.init()
-
-			expect('configKey' in smartThingsCommand.profile).toBeFalse()
-			expect(smartThingsCommand.stringArrayConfigValue('configKey', ['default value']))
-				.toEqual(['default value'])
-		})
-
-		it('returns default value when configured value is not a string or array', async () => {
-			const profile: Profile = { configKey: 5 }
-			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-
-			await smartThingsCommand.init()
-
-			expect(smartThingsCommand.profile.configKey).toEqual(5)
-			expect(smartThingsCommand.stringArrayConfigValue('configKey', ['default value']))
-				.toEqual(['default value'])
-		})
-
-		it('returns default value when configured value is array but not of strings', async () => {
-			const items = [5, { thing: 'one' }]
-			const profile: Profile = { configKey: items }
-			loadConfigMock.mockResolvedValueOnce({ profile } as CLIConfig)
-
-			await smartThingsCommand.init()
-
-			expect(smartThingsCommand.profile.configKey).toEqual(items)
-			expect(smartThingsCommand.stringArrayConfigValue('configKey', ['default value']))
-				.toEqual(['default value'])
-		})
-	})
-	*/
 })

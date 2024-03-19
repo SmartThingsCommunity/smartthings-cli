@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'fs/promises'
 
+import { Logger } from 'log4js'
 import yaml from 'js-yaml'
 
 import { yamlExists } from './io-util.js'
@@ -36,6 +37,32 @@ export type CLIConfig = CLIConfigDescription & {
 	 * A convenience reference to the selected profile (same as `mergedConfig[profileName]`).
 	 */
 	profile: Profile
+
+	// convenience methods for safely accessing configuration values
+
+	/**
+	 * If the configured `keyName` value exists and is a string, return it. Otherwise, return
+	 * the default value. This method logs a warning (and returns the default value) if the
+	 * configured keyName exists but is not a string. (The default `defaultValue` is `undefined`.)
+	 */
+	stringConfigValue(keyName: string): string | undefined
+	stringConfigValue(keyName: string, defaultValue: string): string
+	stringConfigValue(keyName: string, defaultValue?: string): string | undefined
+
+	/**
+	 * If the configured `keyName` exists and is a string or a string array, return it. (A simple
+	 * string will be returned as a single-element array.) Otherwise, return the default value.
+	 * This method logs a warning (and returns the default value) if the configured keyName exists
+	 * but is not a string or array of strings. (The default `defaultValue` is an empty array.)
+	 */
+	stringArrayConfigValue(keyName: string, defaultValue?: string[]): string[]
+
+	/**
+	 * If the configured `keyName` value exists and is a boolean, return it. Otherwise, return
+	 * the default value. This method logs a warning if the configured keyName
+	 * exists but is not a boolean.
+	 */
+	booleanConfigValue(keyName: string, defaultValue?: boolean): boolean
 }
 
 export const loadConfigFile = async (filename: string): Promise<ProfilesByName> => {
@@ -83,7 +110,7 @@ export const mergeProfiles = (preferred: ProfilesByName, secondary: ProfilesByNa
 	return mergeInto(mergeInto({}, secondary), preferred)
 }
 
-export const loadConfig = async (description: CLIConfigDescription): Promise<CLIConfig> => {
+export const loadConfig = async (description: CLIConfigDescription, logger: Logger): Promise<CLIConfig> => {
 	const config = await loadConfigFile(description.configFilename)
 	const managedProfiles = await loadConfigFile(description.managedConfigFilename)
 	const mergedProfiles = mergeProfiles(config, managedProfiles)
@@ -92,7 +119,59 @@ export const loadConfig = async (description: CLIConfigDescription): Promise<CLI
 		? mergedProfiles[description.profileName]
 		: {}
 
-	return { ...description, profiles: config, managedProfiles, mergedProfiles, profile }
+	function stringConfigValue(keyName: string): string
+	function stringConfigValue(keyName: string, defaultValue: string): string
+	function stringConfigValue(keyName: string, defaultValue?: string): string | undefined {
+		if (keyName in profile) {
+			const configValue = profile[keyName]
+			if (typeof configValue === 'string') {
+				return configValue
+			}
+			logger.warn(`expected string value for config key ${keyName} but got ${typeof profile[keyName]}`)
+			return defaultValue
+		}
+		logger.trace(`key ${keyName} not found in ${description.profileName} config`)
+		return defaultValue
+	}
+
+	function stringArrayConfigValue(keyName: string, defaultValue: string[] = []): string[] {
+		if (keyName in profile) {
+			const configValue = profile[keyName]
+			if (typeof configValue === 'string') {
+				return [configValue]
+			}
+			if (Array.isArray(configValue) && configValue.every(dir => typeof dir === 'string')) {
+				return configValue
+			}
+			logger.warn(`expected string or array of strings for config key ${keyName} but got ${typeof configValue}`)
+			return defaultValue
+		}
+		return defaultValue
+	}
+
+	function booleanConfigValue(keyName: string, defaultValue = false): boolean {
+		if (keyName in profile) {
+			const configValue = profile[keyName]
+			if (typeof configValue === 'boolean') {
+				return configValue
+			}
+			logger.warn(`expected boolean value for config key ${keyName} but got ${typeof profile[keyName]}`)
+			return defaultValue
+		}
+		logger.trace(`key ${keyName} not found in ${description.profileName} config`)
+		return defaultValue
+	}
+
+	return {
+		...description,
+		profiles: config,
+		managedProfiles,
+		mergedProfiles,
+		profile,
+		stringConfigValue,
+		stringArrayConfigValue,
+		booleanConfigValue,
+	}
 }
 
 const managedConfigHeader =

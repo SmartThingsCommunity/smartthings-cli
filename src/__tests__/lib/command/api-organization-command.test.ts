@@ -1,16 +1,19 @@
 import { jest } from '@jest/globals'
 
+import { CLIConfig } from '../../../lib/cli-config.js'
 import { APICommand, apiCommand, apiCommandBuilder } from '../../../lib/command/api-command.js'
-import { SmartThingsCommand, SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
-import { buildArgvMock } from '../../test-lib/builder-mock.js'
 import { APIOrganizationCommandFlags } from '../../../lib/command/api-organization-command.js'
+import { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
+import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
 
-const stringConfigValueMock = jest.fn<SmartThingsCommand['stringConfigValue']>()
+const stringConfigValueMock = jest.fn<CLIConfig['stringConfigValue']>()
 const apiCommandResultMock = {
 	configDir: 'test-config-dir',
+	cliConfig: {
+		stringConfigValue: stringConfigValueMock,
+	},
 	profileName: 'profile-from-parent',
-	stringConfigValue: stringConfigValueMock,
 } as unknown as APICommand
 const apiCommandBuilderMock = jest.fn<typeof apiCommandBuilder>()
 const apiCommandMock = jest.fn<typeof apiCommand>()

@@ -12,7 +12,7 @@ import {
 import { yamlExists } from '../../lib/io-util.js'
 
 
-const readFileMock = jest.fn<typeof readFile>()
+const readFileMock = jest.fn<typeof readFile>().mockResolvedValue('good contents')
 const writeFileMock = jest.fn<typeof writeFile>()
 jest.unstable_mockModule('fs/promises', () => ({
 	readFile: readFileMock,
@@ -27,6 +27,8 @@ jest.unstable_mockModule('js-yaml', () => ({
 		dump: yamlDumpMock,
 	},
 }))
+
+const { loggerMock, warnMock } = await import('../test-lib/logger-mock.js')
 
 const yamlExistsMock = jest.fn<typeof yamlExists>()
 yamlExistsMock.mockReturnValue(true)
@@ -118,7 +120,6 @@ describe('loadConfigFile', () => {
 				config3: { complex: 'config' },
 			},
 		}
-		readFileMock.mockResolvedValueOnce('good contents')
 		yamlLoadMock.mockReturnValueOnce(goodConfig)
 
 		expect(await loadConfigFile('good file')).toEqual(goodConfig)
@@ -230,22 +231,29 @@ const mergedProfiles: ProfilesByName = {
 	chosenProfile: { configKey: 'configured value' },
 }
 
+const cliConfigTemplate: CLIConfig = {
+	...descriptionTemplate,
+	profiles,
+	managedProfiles,
+	mergedProfiles,
+	profile: mergedProfiles.chosenProfile,
+	stringConfigValue: expect.any(Function),
+	stringArrayConfigValue: expect.any(Function),
+	booleanConfigValue: expect.any(Function),
+}
+
 describe('loadConfig', () => {
 	it('merges main and managed configurations', async () => {
 		const description = descriptionTemplate
 		const expected: CLIConfig = {
+			...cliConfigTemplate,
 			...description,
-			profiles,
-			managedProfiles,
-			mergedProfiles,
-			profile: mergedProfiles.chosenProfile,
 		}
 
-		readFileMock.mockResolvedValue('good contents')
 		yamlLoadMock.mockReturnValueOnce(profiles)
 		yamlLoadMock.mockReturnValueOnce(managedProfiles)
 
-		expect(await loadConfig(description)).toStrictEqual(expected)
+		expect(await loadConfig(description, loggerMock)).toStrictEqual(expected)
 
 		expect(readFileMock).toHaveBeenCalledTimes(2)
 		expect(readFileMock).toHaveBeenCalledWith(description.configFilename, 'utf-8')
@@ -257,23 +265,170 @@ describe('loadConfig', () => {
 			...descriptionTemplate,
 			profileName: 'nonExistentProfile',
 		}
-		const expected: CLIConfig = {
+		const expected = {
+			...cliConfigTemplate,
 			...description,
-			profiles,
-			managedProfiles,
-			mergedProfiles,
 			profile: {},
 		}
 
-		readFileMock.mockResolvedValue('good contents')
 		yamlLoadMock.mockReturnValueOnce(profiles)
 		yamlLoadMock.mockReturnValueOnce(managedProfiles)
 
-		expect(await loadConfig(description)).toStrictEqual(expected)
+		expect(await loadConfig(description, loggerMock)).toStrictEqual(expected)
 
 		expect(readFileMock).toHaveBeenCalledTimes(2)
 		expect(readFileMock).toHaveBeenCalledWith(description.configFilename, 'utf-8')
 		expect(readFileMock).toHaveBeenCalledWith(description.managedConfigFilename, 'utf-8')
+	})
+
+	const buildConfig = async (): Promise<CLIConfig> => {
+		yamlLoadMock.mockReturnValueOnce({
+			chosenProfile: {
+				validString: 'valid string value',
+				validNumber: 13,
+				validBoolean: true,
+				validStringArray: ['value1', 'value2'],
+				validNumberArray: [1, 2, 3, 5, 8],
+			},
+		})
+		yamlLoadMock.mockReturnValueOnce({})
+		return loadConfig(descriptionTemplate, loggerMock)
+	}
+
+	describe('stringConfigValue', () => {
+		it('returns undefined when not set', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.stringConfigValue('unsetKey')).toBe(undefined)
+
+			expect(warnMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('returns config value when defined', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.stringConfigValue('validString')).toBe('valid string value')
+
+			expect(warnMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('returns undefined when configured value is not a string', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.stringConfigValue('validStringArray')).toBeUndefined()
+
+			expect(warnMock).toHaveBeenCalledTimes(1)
+			expect(warnMock)
+				.toHaveBeenCalledWith('expected string value for config key validStringArray but got object')
+		})
+
+		it('returns default value when not set', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.stringConfigValue('unsetKey', 'default value')).toBe('default value')
+
+			expect(warnMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('returns default value when configured value is not a string', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.stringConfigValue('validStringArray', 'default value'))
+				.toBe('default value')
+
+			expect(warnMock).toHaveBeenCalledTimes(1)
+		})
+	})
+
+	describe('stringArrayConfigValue', () => {
+		it('returns [] when not set', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.stringArrayConfigValue('unsetKey')).toEqual([])
+
+			expect(warnMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('returns string config value as single-item array', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.stringArrayConfigValue('validString')).toEqual(['valid string value'])
+
+			expect(warnMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('returns array config value when configured', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.stringArrayConfigValue('validStringArray')).toEqual(['value1', 'value2'])
+
+			expect(warnMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('returns default value when not set', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.stringArrayConfigValue('unsetKey', ['default value']))
+				.toEqual(['default value'])
+
+			expect(warnMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('returns default value when configured value is not a string or array', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.stringArrayConfigValue('validNumber', ['default value']))
+				.toEqual(['default value'])
+
+			expect(warnMock).toHaveBeenCalledTimes(1)
+			expect(warnMock).toHaveBeenLastCalledWith('expected string or array of strings for ' +
+				'config key validNumber but got number')
+		})
+
+		it('returns default value when configured value is array but not of strings', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.stringArrayConfigValue('validNumberArray', ['default value']))
+				.toEqual(['default value'])
+
+			expect(warnMock).toHaveBeenCalledTimes(1)
+		})
+	})
+
+	describe('booleanConfigValue', () => {
+		it('returns false when not set', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.booleanConfigValue('unsetKey')).toEqual(false)
+
+			expect(warnMock).toHaveBeenCalledTimes(0)
+		})
+
+		it ('returns default value when not set', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.booleanConfigValue('unsetKey', true)).toEqual(true)
+
+			expect(warnMock).toHaveBeenCalledTimes(0)
+		})
+
+		it ('returns configured value when set as a boolean', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.booleanConfigValue('validBoolean')).toEqual(true)
+
+			expect(warnMock).toHaveBeenCalledTimes(0)
+		})
+
+		it ('returns default value when set but not a boolean', async () => {
+			const cliConfig = await buildConfig()
+
+			expect(cliConfig.booleanConfigValue('validNumber', true)).toEqual(true)
+
+			expect(warnMock).toHaveBeenCalledTimes(1)
+			expect(warnMock)
+				.toHaveBeenLastCalledWith('expected boolean value for config key validNumber but got number')
+		})
 	})
 })
 
@@ -286,7 +441,6 @@ test('setConfigKey writes updated file and updates config', async () => {
 		managedProfiles,
 	} as CLIConfig
 
-	readFileMock.mockResolvedValue('good contents')
 	yamlLoadMock.mockReturnValueOnce(profiles)
 	yamlLoadMock.mockReturnValueOnce(managedProfiles)
 

@@ -158,7 +158,7 @@ export async function selectFromList<L extends object, ID = string>(command: Sma
 	const userSelected = await promptUser(command, config, options)
 
 	const neverAgainKey = `${options.defaultValue?.configKey ?? ''}::neverAskForSaveAgain`
-	if (options.defaultValue && !command.booleanConfigValue(neverAgainKey)) {
+	if (options.defaultValue && !command.cliConfig.booleanConfigValue(neverAgainKey)) {
 		const answer = (await inquirer.prompt({
 			type: 'list',
 			name: 'answer',

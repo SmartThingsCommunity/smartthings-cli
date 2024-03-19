@@ -25,7 +25,7 @@ export const apiOrganizationCommand = async <T extends APIOrganizationCommandFla
 		if (flags.organization) {
 			headers['X-ST-Organization'] = flags.organization
 		} else {
-			const configOrganization = stCommand.stringConfigValue('organization')
+			const configOrganization = stCommand.cliConfig.stringConfigValue('organization')
 			if (configOrganization) {
 				headers['X-ST-Organization'] = configOrganization
 			}
