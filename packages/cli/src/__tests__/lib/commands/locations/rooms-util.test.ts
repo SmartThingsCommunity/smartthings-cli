@@ -8,134 +8,132 @@ import { getRoomsByLocation, chooseRoom } from '../../../../lib/commands/locatio
 import * as roomsUtil from '../../../../lib/commands/locations/rooms-util.js'
 
 
-describe('rooms-util', () => {
-	const locationId = 'locationId'
-	const roomId = 'roomId'
+const locationId = 'locationId'
+const roomId = 'roomId'
 
-	describe('getRoomsByLocation', () => {
-		const testClient = new SmartThingsClient(new NoOpAuthenticator)
-		const listRoomsSpy = jest.spyOn(RoomsEndpoint.prototype, 'list').mockImplementation()
-		const getLocationsSpy = jest.spyOn(LocationsEndpoint.prototype, 'get').mockImplementation()
-		const listLocationsSpy = jest.spyOn(LocationsEndpoint.prototype, 'list').mockImplementation()
+describe('getRoomsByLocation', () => {
+	const testClient = new SmartThingsClient(new NoOpAuthenticator)
+	const listRoomsSpy = jest.spyOn(RoomsEndpoint.prototype, 'list').mockImplementation()
+	const getLocationsSpy = jest.spyOn(LocationsEndpoint.prototype, 'get').mockImplementation()
+	const listLocationsSpy = jest.spyOn(LocationsEndpoint.prototype, 'list').mockImplementation()
 
-		it('throws error when no locations are found', async () => {
-			listLocationsSpy.mockResolvedValueOnce([])
-			const forbiddenError = new Error('Request failed with status code 403')
-			getLocationsSpy.mockRejectedValueOnce(forbiddenError)
+	it('throws error when no locations are found', async () => {
+		listLocationsSpy.mockResolvedValueOnce([])
+		const forbiddenError = new Error('Request failed with status code 403')
+		getLocationsSpy.mockRejectedValueOnce(forbiddenError)
 
-			await expect(getRoomsByLocation(testClient)).rejects.toThrow('could not find any locations')
-			await expect(getRoomsByLocation(testClient, locationId)).rejects.toThrow(forbiddenError)
-		})
-
-		it('returns rooms with location added', async () => {
-			const location: Location = {
-				locationId,
-				name: 'test',
-				timeZoneId: '',
-				backgroundImage: '',
-				countryCode: '',
-				temperatureScale: 'C',
-			}
-			const rooms: Room[] = [
-				{
-					locationId,
-					roomId,
-				},
-			]
-
-			getLocationsSpy.mockResolvedValueOnce(location)
-			listRoomsSpy.mockResolvedValueOnce(rooms)
-
-			const roomsWithLocations = await getRoomsByLocation(testClient, locationId)
-
-			expect(roomsWithLocations[0]).toEqual(expect.objectContaining(rooms[0]))
-			expect(roomsWithLocations[0].location).toBe(location.name)
-		})
+		await expect(getRoomsByLocation(testClient)).rejects.toThrow('could not find any locations')
+		await expect(getRoomsByLocation(testClient, locationId)).rejects.toThrow(forbiddenError)
 	})
 
-	describe('chooseRoom', () => {
-		const getRoomsByLocationSpy = jest.spyOn(roomsUtil, 'getRoomsByLocation')
-		class MockCommand extends APICommand<typeof MockCommand.flags> {
-			async run(): Promise<void> {
-				// eslint-disable-line @typescript-eslint/no-empty-function
-			}
+	it('returns rooms with location added', async () => {
+		const location: Location = {
+			locationId,
+			name: 'test',
+			timeZoneId: '',
+			backgroundImage: '',
+			countryCode: '',
+			temperatureScale: 'C',
 		}
-		const command = new MockCommand([], new Config({ root: '' }))
-		const mockSelectFromList = jest.mocked(selectFromList)
+		const rooms: Room[] = [
+			{
+				locationId,
+				roomId,
+			},
+		]
 
-		beforeAll(() => {
-			mockSelectFromList.mockResolvedValue(roomId)
-		})
+		getLocationsSpy.mockResolvedValueOnce(location)
+		listRoomsSpy.mockResolvedValueOnce(rooms)
 
-		it('throws error when room not found', async () => {
-			getRoomsByLocationSpy.mockResolvedValueOnce([])
-			mockSelectFromList.mockResolvedValueOnce(roomId)
+		const roomsWithLocations = await getRoomsByLocation(testClient, locationId)
 
-			await expect(chooseRoom(command)).rejects.toThrow('could not find room')
+		expect(roomsWithLocations[0]).toEqual(expect.objectContaining(rooms[0]))
+		expect(roomsWithLocations[0].location).toBe(location.name)
+	})
+})
 
-			const roomsWithLocation = [{
-				roomId: 'notFound',
-				locationId: locationId,
-				name: 'test',
-			}]
-			getRoomsByLocationSpy.mockResolvedValueOnce(roomsWithLocation)
-			mockSelectFromList.mockResolvedValueOnce(roomId)
+describe('chooseRoom', () => {
+	const getRoomsByLocationSpy = jest.spyOn(roomsUtil, 'getRoomsByLocation')
+	class MockCommand extends APICommand<typeof MockCommand.flags> {
+		async run(): Promise<void> {
+			// eslint-disable-line @typescript-eslint/no-empty-function
+		}
+	}
+	const command = new MockCommand([], new Config({ root: '' }))
+	const mockSelectFromList = jest.mocked(selectFromList)
 
-			await expect(chooseRoom(command)).rejects.toThrow('could not find room')
-		})
+	beforeAll(() => {
+		mockSelectFromList.mockResolvedValue(roomId)
+	})
 
-		it('throws error when locationId is missing', async () => {
-			const roomsWithLocation = [{
-				roomId: roomId,
-				name: 'test',
-			}]
-			getRoomsByLocationSpy.mockResolvedValueOnce(roomsWithLocation)
-			mockSelectFromList.mockResolvedValueOnce(roomId)
+	it('throws error when room not found', async () => {
+		getRoomsByLocationSpy.mockResolvedValueOnce([])
+		mockSelectFromList.mockResolvedValueOnce(roomId)
 
-			await expect(chooseRoom(command)).rejects.toThrow('could not determine location id for room')
-		})
+		await expect(chooseRoom(command)).rejects.toThrow('could not find room')
 
-		it('returns room tuple when room is found', async () => {
-			const roomsWithLocation = [{
-				roomId: roomId,
-				locationId: locationId,
-				name: 'test',
-			}]
+		const roomsWithLocation = [{
+			roomId: 'notFound',
+			locationId: locationId,
+			name: 'test',
+		}]
+		getRoomsByLocationSpy.mockResolvedValueOnce(roomsWithLocation)
+		mockSelectFromList.mockResolvedValueOnce(roomId)
 
-			getRoomsByLocationSpy.mockResolvedValueOnce(roomsWithLocation)
-			mockSelectFromList.mockResolvedValueOnce(roomId)
+		await expect(chooseRoom(command)).rejects.toThrow('could not find room')
+	})
 
-			await expect(chooseRoom(command, locationId)).resolves.toEqual([roomId, locationId])
-		})
+	it('throws error when locationId is missing', async () => {
+		const roomsWithLocation = [{
+			roomId: roomId,
+			name: 'test',
+		}]
+		getRoomsByLocationSpy.mockResolvedValueOnce(roomsWithLocation)
+		mockSelectFromList.mockResolvedValueOnce(roomId)
 
-		it('calls selectFromList with correct config', async () => {
-			getRoomsByLocationSpy.mockResolvedValueOnce([])
-			await expect(chooseRoom(command, undefined, roomId)).rejects.toThrow('could not find room')
+		await expect(chooseRoom(command)).rejects.toThrow('could not determine location id for room')
+	})
 
-			expect(mockSelectFromList).toBeCalledWith(
-				expect.anything(),
-				expect.objectContaining({
-					itemName: 'room',
-					primaryKeyName: 'roomId',
-					sortKeyName: 'name',
-					listTableFieldDefinitions: expect.anything(),
-				}),
-				expect.objectContaining({ preselectedId: roomId }),
-			)
-		})
+	it('returns room tuple when room is found', async () => {
+		const roomsWithLocation = [{
+			roomId: roomId,
+			locationId: locationId,
+			name: 'test',
+		}]
 
-		it('passes on locationId when retrieving rooms', async () => {
-			getRoomsByLocationSpy.mockResolvedValue([])
+		getRoomsByLocationSpy.mockResolvedValueOnce(roomsWithLocation)
+		mockSelectFromList.mockResolvedValueOnce(roomId)
 
-			await expect(chooseRoom(command)).rejects.toThrow('could not find room')
+		await expect(chooseRoom(command, locationId)).resolves.toEqual([roomId, locationId])
+	})
 
-			expect(getRoomsByLocationSpy).toBeCalledWith(expect.any(SmartThingsClient), undefined)
+	it('calls selectFromList with correct config', async () => {
+		getRoomsByLocationSpy.mockResolvedValueOnce([])
+		await expect(chooseRoom(command, undefined, roomId)).rejects.toThrow('could not find room')
 
-			getRoomsByLocationSpy.mockClear
+		expect(mockSelectFromList).toBeCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				itemName: 'room',
+				primaryKeyName: 'roomId',
+				sortKeyName: 'name',
+				listTableFieldDefinitions: expect.anything(),
+			}),
+			expect.objectContaining({ preselectedId: roomId }),
+		)
+	})
 
-			await expect(chooseRoom(command, locationId)).rejects.toThrow('could not find room')
+	it('passes on locationId when retrieving rooms', async () => {
+		getRoomsByLocationSpy.mockResolvedValue([])
 
-			expect(getRoomsByLocationSpy).toBeCalledWith(expect.any(SmartThingsClient), locationId)
-		})
+		await expect(chooseRoom(command)).rejects.toThrow('could not find room')
+
+		expect(getRoomsByLocationSpy).toBeCalledWith(expect.any(SmartThingsClient), undefined)
+
+		getRoomsByLocationSpy.mockClear
+
+		await expect(chooseRoom(command, locationId)).rejects.toThrow('could not find room')
+
+		expect(getRoomsByLocationSpy).toBeCalledWith(expect.any(SmartThingsClient), locationId)
 	})
 })
