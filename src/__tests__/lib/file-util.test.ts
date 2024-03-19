@@ -9,11 +9,15 @@ import { YAMLFileData } from '../../lib/file-util.js'
 
 const readFileSyncMock = jest.fn<typeof fs.readFileSync>()
 const statMock = jest.fn<typeof fs.promises.stat>()
+const lstatMock = jest.fn<typeof fs.promises.lstat>()
+const realpathMock = jest.fn<typeof fs.promises.realpath>()
 jest.unstable_mockModule('fs', () => ({
 	default: {
 		readFileSync: readFileSyncMock,
 		promises: {
 			stat: statMock,
+			lstat: lstatMock,
+			realpath: realpathMock,
 		},
 	},
 }))
@@ -27,7 +31,16 @@ jest.unstable_mockModule('js-yaml', () => ({
 }))
 
 
-const { fileExists, findYAMLFilename, isDir, isFile, readYAMLFile, requireDir } = await import('../../lib/file-util.js')
+const {
+	fileExists,
+	findYAMLFilename,
+	isDir,
+	isFile,
+	isSymbolicLink,
+	readYAMLFile,
+	realPathForSymbolicLink,
+	requireDir,
+} = await import('../../lib/file-util.js')
 
 
 describe('fileExists', () => {
@@ -53,7 +66,6 @@ describe('fileExists', () => {
 		statMock.mockRejectedValueOnce(Error('unexpected-error'))
 
 		await expect(fileExists('file-path')).rejects.toThrow('unexpected-error')
-
 		expect(statMock).toHaveBeenCalledTimes(1)
 		expect(statMock).toHaveBeenCalledWith('file-path')
 	})
@@ -128,6 +140,27 @@ describe('isDir', () => {
 	})
 })
 
+test('isSymbolicLink', async () => {
+	const lstatIsSymbolicLinkMock = jest.fn<fs.Stats['isSymbolicLink']>().mockReturnValueOnce(true)
+	lstatMock.mockResolvedValueOnce({ isSymbolicLink: lstatIsSymbolicLinkMock } as unknown as fs.Stats)
+
+	expect(await isSymbolicLink('/path/to/file')).toBe(true)
+
+	expect(lstatMock).toHaveBeenCalledTimes(1)
+	expect(lstatMock).toHaveBeenCalledWith('/path/to/file')
+	expect(lstatIsSymbolicLinkMock).toHaveBeenCalledTimes(1)
+	expect(lstatIsSymbolicLinkMock).toHaveBeenCalledWith()
+})
+
+test('realPathForSymbolicLink', async () => {
+	realpathMock.mockResolvedValueOnce('/real/file/path')
+
+	expect(await realPathForSymbolicLink('/symbolic/link/path')).toBe('/real/file/path')
+
+	expect(realpathMock).toHaveBeenCalledTimes(1)
+	expect(realpathMock).toHaveBeenCalledWith('/symbolic/link/path')
+})
+
 describe('findYAMLFilename', () => {
 	it('returns filename with yaml extension if that is found', async () => {
 		const statsIsFileMock = jest.fn().mockReturnValue(true)
@@ -135,10 +168,10 @@ describe('findYAMLFilename', () => {
 
 		expect(await findYAMLFilename('filename')).toBe('filename.yaml')
 
-		expect(statMock).toBeCalledTimes(2)
-		expect(statMock).toBeCalledWith('filename.yaml')
-		expect(statsIsFileMock).toBeCalledTimes(1)
-		expect(statsIsFileMock).toBeCalledWith()
+		expect(statMock).toHaveBeenCalledTimes(2)
+		expect(statMock).toHaveBeenCalledWith('filename.yaml')
+		expect(statsIsFileMock).toHaveBeenCalledTimes(1)
+		expect(statsIsFileMock).toHaveBeenCalledWith()
 	})
 
 	it('returns filename with yml extension if that is found', async () => {
@@ -152,9 +185,9 @@ describe('findYAMLFilename', () => {
 
 		expect(await findYAMLFilename('filename')).toBe('filename.yml')
 
-		expect(statMock).toBeCalledTimes(3)
-		expect(statMock).toBeCalledWith('filename.yaml')
-		expect(statMock).toBeCalledWith('filename.yml')
+		expect(statMock).toHaveBeenCalledTimes(3)
+		expect(statMock).toHaveBeenCalledWith('filename.yaml')
+		expect(statMock).toHaveBeenCalledWith('filename.yml')
 	})
 
 	it('returns false when no matching file found', async () => {
@@ -162,9 +195,9 @@ describe('findYAMLFilename', () => {
 
 		expect(await findYAMLFilename('filename')).toBe(false)
 
-		expect(statMock).toBeCalledTimes(2)
-		expect(statMock).toBeCalledWith('filename.yaml')
-		expect(statMock).toBeCalledWith('filename.yml')
+		expect(statMock).toHaveBeenCalledTimes(2)
+		expect(statMock).toHaveBeenCalledWith('filename.yaml')
+		expect(statMock).toHaveBeenCalledWith('filename.yml')
 	})
 })
 
@@ -176,8 +209,8 @@ describe('requireDir', () => {
 
 		expect(await requireDir('my-dir')).toBe('my-dir')
 
-		expect(statMock).toBeCalledTimes(2)
-		expect(statMock).toBeCalledWith('my-dir')
+		expect(statMock).toHaveBeenCalledTimes(2)
+		expect(statMock).toHaveBeenCalledWith('my-dir')
 	})
 
 	it('throws exception when directory does not exist', async () => {
@@ -186,8 +219,8 @@ describe('requireDir', () => {
 
 		await expect(requireDir('not-a-dir')).rejects.toThrow('missing required directory: not-a-dir')
 
-		expect(statMock).toBeCalledTimes(1)
-		expect(statMock).toBeCalledWith('not-a-dir')
+		expect(statMock).toHaveBeenCalledTimes(1)
+		expect(statMock).toHaveBeenCalledWith('not-a-dir')
 	})
 })
 
