@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.2.4
+
+### Patch Changes
+
+- [#581](https://github.com/SmartThingsCommunity/smartthings-cli/pull/581) [`a9d6398`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a9d6398634236462a232f94d2ec3f2b5ab1fe4fc) Thanks [@rossiam](https://github.com/rossiam)! - bump core SDK version
+
 ## 2.2.3
 
 ### Patch Changes
