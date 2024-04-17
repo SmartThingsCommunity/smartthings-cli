@@ -108,7 +108,7 @@ export const buildInputDefinition = (command: SmartThingsCommandInterface, initi
 		lambdaArnEU: arnDef('Lambda ARN for EU region', inChina, initialValue),
 		lambdaArnCN: arnDef('Lambda ARN for CN region', inChina, initialValue, { forChina: true }),
 		lambdaArnAP: arnDef('Lambda ARN for AP region', inChina, initialValue),
-		webhookUrl: webHookUrlDef(inChina),
+		webhookUrl: webHookUrlDef(inChina, initialValue),
 		includeAppLinks: booleanDef('Enable app-to-app linking?', { default: false }),
 		viperAppLinks: optionalDef(appLinksDef,
 			(context?: unknown[]) => (context?.[0] as Pick<InputData, 'includeAppLinks'>)?.includeAppLinks,
