@@ -220,6 +220,7 @@ test.each`
 
 describe('buildInputDefinition', () => {
 	const mockARNInputDef = {} as InputDefinition<string | undefined>
+	const mockWebHookUrlDef = {} as InputDefinition<string | undefined>
 	const chinaCommandMock = { profile: { clientIdProvider: { baseURL: 'base-url.cn' } } } as unknown as SmartThingsCommandInterface
 	const appLinksDefMock = { name: 'Generated App Links Def' } as InputDefinition<ViperAppLinks>
 	const generatedDef = { name: 'Final Generated Def' } as InputDefinition<InputData>
@@ -322,6 +323,16 @@ describe('buildInputDefinition', () => {
 
 		expect(optionalDefMock).toHaveBeenCalledTimes(2)
 		expect(optionalDefMock).toHaveBeenCalledWith(appLinksDefMock, expect.any(Function), { initiallyActive: true })
+	})
+
+	it('passes initial value on to webHookUrlDef', async () => {
+		const webHookUrlDefSpy = jest.spyOn(schemaUtil, 'webHookUrlDef').mockImplementation(() => mockWebHookUrlDef)
+
+		const initialValue = { appName: 'My Schema App' } as SchemaAppRequest
+		expect(buildInputDefinition(commandMock, initialValue)).toBe(generatedDef)
+
+		expect(webHookUrlDefSpy).toHaveBeenCalledTimes(1)
+		expect(webHookUrlDefSpy).toHaveBeenCalledWith(false, initialValue)
 	})
 })
 
