@@ -1,5 +1,19 @@
 # Change Log
 
+## 1.8.2
+
+### Patch Changes
+
+- [#566](https://github.com/SmartThingsCommunity/smartthings-cli/pull/566) [`fdf4250`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/fdf425001643484283baa83abd662ce7f6e63372) Thanks [@rossiam](https://github.com/rossiam)! - handle epoch timestamps for history, honor `after` flag strictly in JSON and YAML output
+
+- [#581](https://github.com/SmartThingsCommunity/smartthings-cli/pull/581) [`a9d6398`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a9d6398634236462a232f94d2ec3f2b5ab1fe4fc) Thanks [@rossiam](https://github.com/rossiam)! - bump core SDK version
+
+- [#607](https://github.com/SmartThingsCommunity/smartthings-cli/pull/607) [`b82345d`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b82345da6bdf03d0e43510c9ab24d5f752a5203e) Thanks [@rossiam](https://github.com/rossiam)! - fixed bug preventing editing of webhook URLs in Schema apps
+
+- Updated dependencies [[`a9d6398`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a9d6398634236462a232f94d2ec3f2b5ab1fe4fc)]:
+  - @smartthings/plugin-cli-edge@3.3.3
+  - @smartthings/cli-lib@2.2.4
+
 ## 1.8.1
 
 ### Patch Changes
