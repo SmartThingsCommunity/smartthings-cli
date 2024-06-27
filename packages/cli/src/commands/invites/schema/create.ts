@@ -75,11 +75,12 @@ export default class InvitesSchemaCreateCommand extends APICommand<typeof Invite
 		const createInputDefinition = objectDef<SchemaAppInvitationCreate>('Schema App Invitation', {
 			schemaAppId: schemaAppIdDef,
 			description: optionalStringDef('Description'),
-			acceptLimit: optionalIntegerDef('Accept Limit',
-				{
-					helpText: 'Enter the maximum number of users you want to be able to accept the invitation.\n' +
-						'Leave blank for no maximum.',
-				}),
+			acceptLimit: optionalIntegerDef('Accept (Install) Limit', {
+				helpText:
+					'Invitations are limited to a maximum of 500 installations (called "accept"s by the API) by default and are only valid for 30 days.\n' +
+					'Once either the install limit or the time limit is reached, you will need to create a new invitation.\n' +
+					'Leave blank to accept the default or enter a different install limit if desired.\n',
+			}),
 		})
 
 		return createFromUserInput(this, createInputDefinition, { dryRun: this.flags['dry-run'] })
