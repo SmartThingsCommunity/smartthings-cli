@@ -55,7 +55,7 @@ export default class SchemaCommand extends APIOrganizationCommand<typeof SchemaC
 		}
 
 		await outputItemOrList(this, config, this.args.id,
-			() => this.client.schema.list(),
+			() => this.client.schema.list({ includeAllOrganizations: this.flags['all-organizations'] }),
 			id => this.client.schema.get(id),
 		)
 	}
