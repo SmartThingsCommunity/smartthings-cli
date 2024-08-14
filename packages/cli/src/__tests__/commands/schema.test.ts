@@ -93,6 +93,7 @@ describe('SchemaCommand', () => {
 
 		await expect(listFunction()).resolves.toStrictEqual([schemaApp])
 		expect(listSpy).toHaveBeenCalledTimes(1)
-		expect(listSpy).toHaveBeenCalledWith()
+		// TODO: when converting to yargs add case for testing with this flag set to true
+		expect(listSpy).toHaveBeenCalledWith({ includeAllOrganizations: undefined })
 	})
 })
