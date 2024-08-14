@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.9.0
+
+### Minor Changes
+
+- [#612](https://github.com/SmartThingsCommunity/smartthings-cli/pull/612) [`77976d2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/77976d2389daad278048c66d2c231428c4faabd9) Thanks [@rossiam](https://github.com/rossiam)! - add support for listing Schema apps by organization
+
 ## 1.8.2
 
 ### Patch Changes
