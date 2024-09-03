@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.9.1
+
+### Patch Changes
+
+- [#615](https://github.com/SmartThingsCommunity/smartthings-cli/pull/615) [`146c66f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/146c66f98931cfcf714d9579e46eec4b57b1b66a) Thanks [@bflorian](https://github.com/bflorian)! - Allow port number in callback URLs of API_ONLY apps.
+
+- Updated dependencies [[`146c66f`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/146c66f98931cfcf714d9579e46eec4b57b1b66a)]:
+  - @smartthings/cli-lib@2.2.5
+
 ## 1.9.0
 
 ### Minor Changes

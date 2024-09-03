@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli",
-	"version": "1.9.0",
+	"version": "1.9.1",
 	"description": "Command Line Interface for the SmartThings APIs",
 	"author": "Samsung Electronics Co., LTD.",
 	"bin": {
@@ -76,7 +76,7 @@
 		"@oclif/plugin-help": "^5.1.12",
 		"@oclif/plugin-not-found": "^2.3.1",
 		"@oclif/plugin-plugins": "^2.1.0",
-		"@smartthings/cli-lib": "^2.2.4",
+		"@smartthings/cli-lib": "^2.2.5",
 		"@smartthings/core-sdk": "^8.2.0",
 		"@smartthings/plugin-cli-edge": "^3.3.3",
 		"inquirer": "^8.2.4",
