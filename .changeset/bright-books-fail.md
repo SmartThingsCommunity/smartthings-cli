@@ -1,4 +1,5 @@
 ---
+"@smartthings/cli": patch
 "@smartthings/cli-lib": patch
 ---
 
