@@ -172,6 +172,8 @@ describe('localhostOrHTTPSValidate', () => {
 		'https://www.adafruit.com/category/168',
 		'http://localhost/path/to/fun',
 		'http://127.0.0.1',
+		'http://localhost:3000',
+		'http://127.0.0.1:3000/callback',
 	])('accepts "%s" when https is required', (input) => {
 		expect(localhostOrHTTPSValidate(input)).toBe(true)
 	})
