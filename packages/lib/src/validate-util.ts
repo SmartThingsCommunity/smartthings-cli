@@ -99,7 +99,7 @@ const urlValidateFn = (options?: URLValidateFnOptions): ValidateFunction => {
 			if (options?.httpsRequired) {
 				if (options.allowLocalhostHTTP) {
 					return url.protocol === 'https:' ||
-						url.protocol === 'http:' && allowedHTTPHosts.includes(url.host) ||
+						url.protocol === 'http:' && allowedHTTPHosts.includes(url.hostname) ||
 						'https is required except for localhost'
 				}
 				return url.protocol === 'https:' || 'https protocol is required'
