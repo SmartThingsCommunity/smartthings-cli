@@ -1,4 +1,5 @@
 import inquirer, { ChoiceCollection } from 'inquirer'
+
 import {
 	askForString,
 	askForOptionalString,

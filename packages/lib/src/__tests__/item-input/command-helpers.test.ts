@@ -56,7 +56,7 @@ describe('updateFromUserInput', () => {
 				{ name: 'Preview JSON.', value: expect.any(Symbol) },
 				{ name: 'Preview YAML.', value: expect.any(Symbol) },
 				{ name: 'Finish and update Item-to-Input.', value: finishAction },
-				{ name: 'Cancel creating Item-to-Input.', value: cancelAction },
+				{ name: 'Cancel update of Item-to-Input.', value: cancelAction },
 			],
 		}))
 
@@ -82,13 +82,13 @@ describe('updateFromUserInput', () => {
 	it('uses specified finishVerb', async () => {
 		promptMock.mockResolvedValueOnce({ action: finishAction })
 
-		expect(await updateFromUserInput(commandMock, inputDefMock, 'input value', { dryRun: false, finishVerb: 'run' }))
+		expect(await updateFromUserInput(commandMock, inputDefMock, 'input value', { dryRun: false, finishVerb: 'create' }))
 			.toBe('input value')
 
 		expect(promptMock).toHaveBeenCalledTimes(1)
 		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
 			choices: expect.arrayContaining([
-				{ name: 'Finish and run Item-to-Input.', value: finishAction },
+				{ name: 'Finish and create Item-to-Input.', value: finishAction },
 			]),
 		}))
 	})
