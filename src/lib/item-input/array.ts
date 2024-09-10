@@ -1,4 +1,5 @@
 import inquirer, { ChoiceCollection, DistinctChoice } from 'inquirer'
+
 import { clipToMaximum, stringFromUnknown } from '../util.js'
 
 import {
@@ -51,7 +52,7 @@ export type ArrayDefOptions<T> = {
 }
 
 /**
- * InputDefinition for an array of items.
+ * InputDefinition for an array of items, entered via the supplied `InputDefinition`, `inputDef`.
  *
  * @param itemDef Definition used to input or edit a single item.
  * @param options See definition of `ArrayDefOptions` for more details.
@@ -233,7 +234,7 @@ export function checkboxDef<T>(name: string, items: CheckboxDefItem<T>[], option
 		return updatedValues as T[]
 	}
 
-	const buildFromUserInput = async (): Promise<T[] | CancelAction> => editValues(options?.default ?? [])
+	const buildFromUserInput = (): Promise<T[] | CancelAction> => editValues(options?.default ?? [])
 
 	const summarizeForEdit = options?.summarizeForEdit
 		?? ((value: T[]) => clipToMaximum(value.map(item => stringFromUnknown(item)).join(', '), maxItemValueLength))

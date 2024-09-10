@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core'
 
-import { SchemaAppRequest, SchemaCreateResponse } from '@smartthings/core-sdk'
+import { SchemaCreateResponse } from '@smartthings/core-sdk'
 
 import {
 	APIOrganizationCommand,
@@ -10,7 +10,11 @@ import {
 } from '@smartthings/cli-lib'
 
 import { addSchemaPermission } from '../../lib/aws-utils.js'
-import { SCHEMA_AWS_PRINCIPAL, getSchemaAppCreateFromUser } from '../../lib/commands/schema-util.js'
+import {
+	SCHEMA_AWS_PRINCIPAL,
+	SchemaAppWithOrganization,
+	getSchemaAppCreateFromUser,
+} from '../../lib/commands/schema-util.js'
 
 
 export default class SchemaAppCreateCommand extends APIOrganizationCommand<typeof SchemaAppCreateCommand.flags> {
@@ -27,7 +31,8 @@ export default class SchemaAppCreateCommand extends APIOrganizationCommand<typeo
 	}
 
 	async run(): Promise<void> {
-		const createApp = async (_: void, data: SchemaAppRequest): Promise<SchemaCreateResponse> => {
+		const createApp = async (_: void, request: SchemaAppWithOrganization): Promise<SchemaCreateResponse> => {
+			const { organizationId, ...data } = request
 			if (this.flags.authorize) {
 				if (data.hostingType === 'lambda') {
 					const principal = this.flags.principal ?? SCHEMA_AWS_PRINCIPAL
@@ -49,7 +54,7 @@ export default class SchemaAppCreateCommand extends APIOrganizationCommand<typeo
 					this.error('Authorization is not applicable to WebHook schema connectors')
 				}
 			}
-			return this.client.schema.create(data)
+			return this.client.schema.create(data, organizationId)
 		}
 		await inputAndOutputItem(this,
 			{ tableFieldDefinitions: ['endpointAppId', 'stClientId', 'stClientSecret'] },

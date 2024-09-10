@@ -1,4 +1,10 @@
-import { SchemaApp, SchemaAppRequest, SmartThingsClient, ViperAppLinks } from '@smartthings/core-sdk'
+import {
+	OrganizationResponse,
+	SchemaApp,
+	SchemaAppRequest,
+	SmartThingsClient,
+	ViperAppLinks,
+} from '@smartthings/core-sdk'
 
 import {
 	APICommand,
@@ -13,7 +19,6 @@ import {
 	optionalDef,
 	optionalStringDef,
 	selectFromList,
-	SmartThingsCommandInterface,
 	staticDef,
 	stringDef,
 	stringTranslateToId,
@@ -45,6 +50,7 @@ jest.mock('@smartthings/cli-lib', () => {
 		clipToMaximum: jest.fn(),
 		listSelectionDef: jest.fn(),
 		objectDef: jest.fn(),
+		selectDef: jest.fn(),
 		optionalDef: jest.fn(),
 		optionalStringDef: jest.fn(),
 		selectFromList: jest.fn(),
@@ -67,7 +73,20 @@ const stringDefMock = jest.mocked(stringDef)
 const generatedStringDef = { name: 'Generated String Def' } as InputDefinition<string>
 const lambdaInitialValue = { appName: 'Schema App', hostingType: 'lambda' } as SchemaAppRequest
 const webhookInitialValue = { appName: 'Schema App', hostingType: 'webhook' } as SchemaAppRequest
-const commandMock = { profile: {} } as unknown as SmartThingsCommandInterface
+const organizations = [
+	{ name: 'Organization 1', organizationId: 'organization-id-1' },
+	{ name: 'Organization 2', organizationId: 'organization-id-2' },
+] as OrganizationResponse[]
+const organizationListMock = jest.fn().mockResolvedValue(organizations)
+const clientMock = {
+	organizations:  {
+		list: organizationListMock,
+	},
+} as unknown as SmartThingsClient
+const commandMock = {
+	profile: {},
+	client: clientMock,
+} as unknown as APICommand<typeof APICommand.flags>
 
 describe('arnDef', () => {
 	const generatedARNDef = { name: 'Generated ARN Def' } as InputDefinition<string | undefined>
@@ -221,7 +240,10 @@ test.each`
 describe('buildInputDefinition', () => {
 	const mockARNInputDef = {} as InputDefinition<string | undefined>
 	const mockWebHookUrlDef = {} as InputDefinition<string | undefined>
-	const chinaCommandMock = { profile: { clientIdProvider: { baseURL: 'base-url.cn' } } } as unknown as SmartThingsCommandInterface
+	const chinaCommandMock = {
+		profile: { clientIdProvider: { baseURL: 'base-url.cn' } },
+		client: clientMock,
+	} as unknown as APICommand<typeof APICommand.flags>
 	const appLinksDefMock = { name: 'Generated App Links Def' } as InputDefinition<ViperAppLinks>
 	const generatedDef = { name: 'Final Generated Def' } as InputDefinition<InputData>
 
@@ -232,24 +254,24 @@ describe('buildInputDefinition', () => {
 
 	afterEach(() => jest.clearAllMocks())
 
-	it('includes choice of webhook or lambda for global', () => {
-		expect(buildInputDefinition(commandMock)).toBe(generatedDef)
+	it('includes choice of webhook or lambda for global', async () => {
+		expect(await buildInputDefinition(commandMock)).toBe(generatedDef)
 
 		expect(staticDefMock).toHaveBeenCalledTimes(2)
 		expect(listSelectionDef).toHaveBeenCalledTimes(1)
 		expect(listSelectionDef).toHaveBeenCalledWith('Hosting Type', ['lambda', 'webhook'], { default: 'webhook' })
 	})
 
-	it('skips webhook for China', () => {
-		expect(buildInputDefinition(chinaCommandMock)).toBe(generatedDef)
+	it('skips webhook for China', async () => {
+		expect(await buildInputDefinition(chinaCommandMock)).toBe(generatedDef)
 
 		expect(staticDefMock).toHaveBeenCalledTimes(3)
 		expect(staticDefMock).toHaveBeenCalledWith('lambda')
 		expect(listSelectionDefMock).toHaveBeenCalledTimes(0)
 	})
 
-	it('defaults appName to partnerName', () => {
-		expect(buildInputDefinition(commandMock)).toBe(generatedDef)
+	it('defaults appName to partnerName', async () => {
+		expect(await buildInputDefinition(commandMock)).toBe(generatedDef)
 
 		const defaultFunction = optionalStringDefMock.mock.calls[0][1]?.default as DefaultValueFunction<string>
 		expect(defaultFunction).toBeDefined()
@@ -260,11 +282,14 @@ describe('buildInputDefinition', () => {
 		expect(defaultFunction([{ partnerName: 'Partner Name' }])).toBe('Partner Name')
 	})
 
-	it('uses global ARN fields for global', () => {
+	it('uses global ARN fields for global', async () => {
 		const arnDefSpy = jest.spyOn(schemaUtil, 'arnDef').mockImplementation(() => mockARNInputDef)
-		const commandMock = { profile: { clientIdProvider: { baseURL: 'api.smartthings.com' } } } as unknown as SmartThingsCommandInterface
+		const commandMock = {
+			profile: { clientIdProvider: { baseURL: 'api.smartthings.com' } },
+			client: clientMock,
+		} as unknown as APICommand<typeof APICommand.flags>
 
-		expect(buildInputDefinition(commandMock)).toBe(generatedDef)
+		expect(await buildInputDefinition(commandMock)).toBe(generatedDef)
 
 		expect(arnDefSpy).toHaveBeenCalledTimes(4)
 		expect(arnDefSpy).toHaveBeenCalledWith('Lambda ARN for US region', false, undefined)
@@ -273,10 +298,10 @@ describe('buildInputDefinition', () => {
 		expect(arnDefSpy).toHaveBeenCalledWith('Lambda ARN for CN region', false, undefined, { forChina: true })
 	})
 
-	it('uses lambdaArnCN fields for China', () => {
+	it('uses lambdaArnCN fields for China', async () => {
 		const arnDefSpy = jest.spyOn(schemaUtil, 'arnDef').mockImplementation(() => mockARNInputDef)
 
-		expect(buildInputDefinition(chinaCommandMock, lambdaInitialValue)).toBe(generatedDef)
+		expect(await buildInputDefinition(chinaCommandMock, lambdaInitialValue)).toBe(generatedDef)
 
 		expect(arnDefSpy).toHaveBeenCalledTimes(4)
 		expect(arnDefSpy).toHaveBeenCalledWith('Lambda ARN for US region', true, lambdaInitialValue)
@@ -285,11 +310,11 @@ describe('buildInputDefinition', () => {
 		expect(arnDefSpy).toHaveBeenCalledWith('Lambda ARN for CN region', true, lambdaInitialValue, { forChina: true })
 	})
 
-	it('provides for app links when selected', () => {
+	it('provides for app links when selected', async () => {
 		// Spy on this function just to reduce calls to optionalDef, making it easier to isolate the one we are testing.
 		jest.spyOn(schemaUtil, 'arnDef').mockImplementation(() => mockARNInputDef)
 
-		expect(buildInputDefinition(commandMock)).toBe(generatedDef)
+		expect(await buildInputDefinition(commandMock)).toBe(generatedDef)
 
 		expect(optionalDefMock).toHaveBeenCalledTimes(2)
 		expect(optionalDefMock).toHaveBeenCalledWith(appLinksDefMock, expect.any(Function), { initiallyActive: false })
@@ -305,21 +330,21 @@ describe('buildInputDefinition', () => {
 		expect(isActiveFunction([{ includeAppLinks: false }])).toBe(false)
 	})
 
-	it('starts out with viperAppLinks initiallyActive set to false when initialValue has links', () => {
+	it('starts out with viperAppLinks initiallyActive set to false when initialValue has links', async () => {
 		// Spy on this function just to reduce calls to optionalDef, making it easier to isolate the one we are testing.
 		jest.spyOn(schemaUtil, 'arnDef').mockImplementation(() => mockARNInputDef)
 
-		expect(buildInputDefinition(commandMock, { viperAppLinks: undefined } as SchemaAppRequest)).toBe(generatedDef)
+		expect(await buildInputDefinition(commandMock, { viperAppLinks: undefined } as SchemaAppRequest)).toBe(generatedDef)
 
 		expect(optionalDefMock).toHaveBeenCalledTimes(2)
 		expect(optionalDefMock).toHaveBeenCalledWith(appLinksDefMock, expect.any(Function), { initiallyActive: false })
 	})
 
-	it('starts out with viperAppLinks initiallyActive set to true when initialValue has links', () => {
+	it('starts out with viperAppLinks initiallyActive set to true when initialValue has links', async () => {
 		// Spy on this function just to reduce calls to optionalDef, making it easier to isolate the one we are testing.
 		jest.spyOn(schemaUtil, 'arnDef').mockImplementation(() => mockARNInputDef)
 
-		expect(buildInputDefinition(commandMock, { viperAppLinks: {} } as SchemaAppRequest)).toBe(generatedDef)
+		expect(await buildInputDefinition(commandMock, { viperAppLinks: {} } as SchemaAppRequest)).toBe(generatedDef)
 
 		expect(optionalDefMock).toHaveBeenCalledTimes(2)
 		expect(optionalDefMock).toHaveBeenCalledWith(appLinksDefMock, expect.any(Function), { initiallyActive: true })
@@ -329,7 +354,7 @@ describe('buildInputDefinition', () => {
 		const webHookUrlDefSpy = jest.spyOn(schemaUtil, 'webHookUrlDef').mockImplementation(() => mockWebHookUrlDef)
 
 		const initialValue = { appName: 'My Schema App' } as SchemaAppRequest
-		expect(buildInputDefinition(commandMock, initialValue)).toBe(generatedDef)
+		expect(await buildInputDefinition(commandMock, initialValue)).toBe(generatedDef)
 
 		expect(webHookUrlDefSpy).toHaveBeenCalledTimes(1)
 		expect(webHookUrlDefSpy).toHaveBeenCalledWith(false, initialValue)
@@ -338,7 +363,7 @@ describe('buildInputDefinition', () => {
 
 test('getSchemaAppUpdateFromUser', async () => {
 	const generatedDef = { name: 'Final Generated Def' } as InputDefinition<InputData>
-	jest.spyOn(schemaUtil, 'buildInputDefinition').mockImplementation(() => generatedDef)
+	jest.spyOn(schemaUtil, 'buildInputDefinition').mockImplementation(() => Promise.resolve(generatedDef))
 	const updateFromUserInputMock = jest.mocked(updateFromUserInput).mockResolvedValueOnce({
 		appName: 'User-updated App Name',
 		includeAppLinks: true,
@@ -349,8 +374,8 @@ test('getSchemaAppUpdateFromUser', async () => {
 		appName: 'User-updated App Name',
 	})
 
-	expect(buildInputDefinition).toHaveBeenCalledTimes(1)
-	expect(buildInputDefinition).toHaveBeenCalledWith(commandMock, original)
+	expect(await buildInputDefinition).toHaveBeenCalledTimes(1)
+	expect(await buildInputDefinition).toHaveBeenCalledWith(commandMock, original)
 	expect(updateFromUserInputMock).toHaveBeenCalledTimes(1)
 	expect(updateFromUserInputMock).toHaveBeenCalledWith(commandMock,
 		generatedDef,
@@ -360,7 +385,7 @@ test('getSchemaAppUpdateFromUser', async () => {
 
 test('getSchemaAppCreateFromUser', async () => {
 	const generatedDef = { name: 'Final Generated Def' } as InputDefinition<InputData>
-	jest.spyOn(schemaUtil, 'buildInputDefinition').mockImplementation(() => generatedDef)
+	jest.spyOn(schemaUtil, 'buildInputDefinition').mockImplementation(() => Promise.resolve(generatedDef))
 	const createFromUserInputMock = jest.mocked(createFromUserInput).mockResolvedValueOnce({
 		appName: 'User-updated App Name',
 		includeAppLinks: false,
