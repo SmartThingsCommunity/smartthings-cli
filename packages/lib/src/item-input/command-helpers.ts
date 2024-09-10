@@ -24,7 +24,7 @@ export type UpdateFromUserInputOptions = {
 	/**
 	 * The verb to use when indicating completion. The default is 'update'.
 	 */
-	finishVerb?: string
+	finishVerb?: 'create' | 'update'
 }
 
 export const updateFromUserInput = async <T extends object>(command: SmartThingsCommandInterface, inputDefinition: InputDefinition<T>, previousValue: T, options: UpdateFromUserInputOptions): Promise<T> => {
@@ -69,7 +69,10 @@ export const updateFromUserInput = async <T extends object>(command: SmartThings
 				name: `Finish and ${options.dryRun ? 'output' : (options.finishVerb ?? 'update')} ${inputDefinition.name}.`,
 				value: finishAction,
 			},
-			{ name: `Cancel creating ${inputDefinition.name}.`, value: cancelAction },
+			{
+				name: `Cancel ${options.finishVerb === 'create' ? 'creation' : 'update'} of ${inputDefinition.name}.`,
+				value: cancelAction,
+			},
 		]
 
 		const action = (await inquirer.prompt({

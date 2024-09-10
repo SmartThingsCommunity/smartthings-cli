@@ -1,4 +1,4 @@
-import { SchemaApp, SchemaAppRequest, SmartThingsURLProvider, ViperAppLinks } from '@smartthings/core-sdk'
+import { OrganizationResponse, SchemaApp, SchemaAppRequest, SmartThingsURLProvider, ViperAppLinks } from '@smartthings/core-sdk'
 
 import {
 	APICommand,
@@ -15,9 +15,9 @@ import {
 	objectDef,
 	optionalDef,
 	optionalStringDef,
+	selectDef,
 	selectFromList,
 	SelectFromListConfig,
-	SmartThingsCommandInterface,
 	staticDef,
 	stringDef,
 	stringTranslateToId,
@@ -56,8 +56,14 @@ export const webHookUrlDef = (inChina: boolean, initialValue?: SchemaAppRequest)
 		{ initiallyActive })
 }
 
+export type SchemaAppWithOrganization = SchemaAppRequest & {
+	organizationId?: string
+}
+
 // Create a type with some extra temporary fields.
-export type InputData = SchemaAppRequest & { includeAppLinks: boolean }
+export type InputData = SchemaAppWithOrganization & {
+	includeAppLinks: boolean
+}
 
 export const validateFinal = (schemaAppRequest: InputData): true | string => {
 	if ( schemaAppRequest.hostingType === 'lambda'
@@ -73,7 +79,29 @@ export const validateFinal = (schemaAppRequest: InputData): true | string => {
 export const appLinksDefSummarize = (value?: ViperAppLinks): string =>
 	clipToMaximum(`android: ${value?.android}, ios: ${value?.ios}`, maxItemValueLength)
 
-export const buildInputDefinition = (command: SmartThingsCommandInterface, initialValue?: SchemaAppRequest): InputDefinition<InputData> => {
+export const organizationDef = (organizations: OrganizationResponse[]): InputDefinition<string | undefined> => {
+	if (organizations.length < 1) {
+		return undefinedDef
+	}
+	if (organizations.length === 1) {
+		return staticDef(organizations[0].organizationId)
+	}
+
+	const choices = organizations
+		.map(organization => ({
+			name: organization.name,
+			value: organization.organizationId,
+		}))
+
+	const helpText = 'The organization with which the Schema connector should be associated.'
+
+	return selectDef('Organization', choices, { helpText })
+}
+
+export const buildInputDefinition = async (
+		command: APICommand<typeof APICommand.flags>,
+		initialValue?: SchemaApp,
+): Promise<InputDefinition<InputData>> => {
 	// TODO: should do more type checking on this, perhaps using zod or
 	const baseURL = (command.profile.clientIdProvider as SmartThingsURLProvider | undefined)?.baseURL
 	const inChina = typeof baseURL === 'string' && baseURL.endsWith('cn')
@@ -89,6 +117,7 @@ export const buildInputDefinition = (command: SmartThingsCommandInterface, initi
 	}, { summarizeForEdit: appLinksDefSummarize })
 
 	return objectDef<InputData>('Schema App', {
+		organizationId: organizationDef(await command.client.organizations.list()),
 		partnerName: stringDef('Partner Name'),
 		userEmail: stringDef('User email', { validate: emailValidate }),
 		appName: optionalStringDef('App Name', {
@@ -116,7 +145,7 @@ export const buildInputDefinition = (command: SmartThingsCommandInterface, initi
 	}, { validateFinal })
 }
 
-const stripTempInputFields = (inputData: InputData): SchemaAppRequest => {
+const stripTempInputFields = (inputData: InputData): SchemaAppWithOrganization => {
 	// Strip out extra temporary data to make the `InputData` into a `SchemaAppRequest`.
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { includeAppLinks, ...result } = inputData
@@ -124,8 +153,11 @@ const stripTempInputFields = (inputData: InputData): SchemaAppRequest => {
 	return result
 }
 
-export const getSchemaAppUpdateFromUser = async (command: SmartThingsCommandInterface, original: SchemaApp, dryRun: boolean): Promise<SchemaAppRequest> => {
-	const inputDef = buildInputDefinition(command, original)
+export const getSchemaAppUpdateFromUser = async (
+		command: APICommand<typeof APICommand.flags>,
+		original: SchemaApp, dryRun: boolean,
+): Promise<SchemaAppWithOrganization> => {
+	const inputDef = await buildInputDefinition(command, original)
 
 	const inputData = await updateFromUserInput(command, inputDef,
 		{ ...original, includeAppLinks: !!original.viperAppLinks }, { dryRun })
@@ -133,8 +165,11 @@ export const getSchemaAppUpdateFromUser = async (command: SmartThingsCommandInte
 	return stripTempInputFields(inputData)
 }
 
-export const getSchemaAppCreateFromUser = async (command: SmartThingsCommandInterface, dryRun: boolean): Promise<SchemaAppRequest> => {
-	const inputDef = buildInputDefinition(command)
+export const getSchemaAppCreateFromUser = async (
+		command: APICommand<typeof APICommand.flags>,
+		dryRun: boolean,
+): Promise<SchemaAppWithOrganization> => {
+	const inputDef = await buildInputDefinition(command)
 
 	const inputData = await createFromUserInput(command, inputDef, { dryRun })
 

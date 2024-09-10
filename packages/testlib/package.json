@@ -29,7 +29,7 @@
 	},
 	"dependencies": {
 		"@smartthings/cli-lib": "^2.2.4",
-		"@smartthings/core-sdk": "^8.2.0"
+		"@smartthings/core-sdk": "^8.3.0"
 	},
 	"devDependencies": {
 		"@types/jest": "^28.1.5",
