@@ -1,5 +1,19 @@
 # Change Log
 
+## 1.10.0
+
+### Minor Changes
+
+- [#619](https://github.com/SmartThingsCommunity/smartthings-cli/pull/619) [`032a231`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/032a2317825c55a063ec02171cbd4178314092f4) Thanks [@rossiam](https://github.com/rossiam)! - query user for organization in schema:update and schema:create commands
+
+### Patch Changes
+
+- [#622](https://github.com/SmartThingsCommunity/smartthings-cli/pull/622) [`b99e397`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b99e3976ec87f241e0b2b800b36fa1b331f5a7a8) Thanks [@rossiam](https://github.com/rossiam)! - fix error when running invites:schema that could happen if user has a schema app without an organization
+
+- Updated dependencies [[`b99e397`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b99e3976ec87f241e0b2b800b36fa1b331f5a7a8), [`032a231`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/032a2317825c55a063ec02171cbd4178314092f4)]:
+  - @smartthings/plugin-cli-edge@3.3.4
+  - @smartthings/cli-lib@2.3.0
+
 ## 1.9.1
 
 ### Patch Changes
