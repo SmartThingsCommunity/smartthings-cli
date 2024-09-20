@@ -78,7 +78,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	const command = await apiOrganizationCommand(argv)
 	const listTableFieldDefinitions: TableFieldDefinition<DevicePreference & WithOrganization>[] =
 		['preferenceId', 'title', 'name', 'description', 'required', 'preferenceType']
-	const config: OutputItemOrListConfig<DevicePreference, DevicePreference & WithOrganization> = {
+	const config: OutputItemOrListConfig<DevicePreference & WithOrganization> = {
 		itemName: 'device preference',
 		primaryKeyName: 'preferenceId',
 		sortKeyName: 'preferenceId',
@@ -86,7 +86,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 		listTableFieldDefinitions,
 	}
 
-	await outputItemOrList(
+	await outputItemOrList<DevicePreference & WithOrganization>(
 		command,
 		config,
 		argv.idOrIndex,

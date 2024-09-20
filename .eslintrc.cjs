@@ -7,6 +7,7 @@ module.exports = {
 		'import',
 		'jest',
 		'eslint-comments',
+		'@stylistic',
 	],
 	env: {
 		commonjs: true,
@@ -30,7 +31,7 @@ module.exports = {
 	},
 	rules: {
 		indent: 'off',
-		'@typescript-eslint/indent': [
+		'@stylistic/indent': [
 			'error',
 			'tab',
 			{
@@ -40,8 +41,7 @@ module.exports = {
 			},
 		],
 		'linebreak-style': ['error',  'unix'],
-		quotes: 'off',
-		'@typescript-eslint/quotes': [
+		'@stylistic/quotes': [
 			'error',
 			'single',
 			{ avoidEscape: true },
@@ -55,9 +55,8 @@ module.exports = {
 		'no-process-exit': 'error',
 		'no-template-curly-in-string': 'error',
 		'require-await': 'off',
-		semi: 'off', // disable to allow @typescript-eslint/semi to do its job
-		'@typescript-eslint/semi': ['error', 'never'],
-		'@typescript-eslint/member-delimiter-style': [
+		'@stylistic/semi': ['error', 'never'],
+		'@stylistic/member-delimiter-style': [
 			'error',
 			{
 				multiline: {
@@ -85,13 +84,10 @@ module.exports = {
 		'@typescript-eslint/no-var-requires': 'error',
 		'@typescript-eslint/ban-ts-comment': 'error',
 		'@typescript-eslint/no-floating-promises': 'error',
-		'space-infix-ops': 'off',
-		'@typescript-eslint/space-infix-ops': 'error',
-		'object-curly-spacing': 'off',
-		'@typescript-eslint/object-curly-spacing': ['error', 'always'],
-		'comma-spacing': 'off',
-		'@typescript-eslint/comma-spacing': ['error'],
-		'@typescript-eslint/type-annotation-spacing': 'error',
+		'@stylistic/space-infix-ops': 'error',
+		'@stylistic/object-curly-spacing': ['error', 'always'],
+		'@stylistic/comma-spacing': ['error'],
+		'@stylistic/type-annotation-spacing': 'error',
 
 		// disallow non-import statements appearing before import statements
 		'import/first': 'error',
