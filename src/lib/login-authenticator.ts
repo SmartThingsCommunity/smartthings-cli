@@ -10,7 +10,7 @@ import open from 'open'
 import ora from 'ora'
 import qs from 'qs'
 
-import { SmartThingsURLProvider, defaultSmartThingsURLProvider, Authenticator } from '@smartthings/core-sdk'
+import { SmartThingsURLProvider, defaultSmartThingsURLProvider, Authenticator, HttpClientHeaders } from '@smartthings/core-sdk'
 
 import { delay } from './util.js'
 
@@ -266,7 +266,7 @@ export const loginAuthenticator = (credentialsFile: string, profileName: string,
 			})
 	}
 
-	const authenticateGeneric = async (): Promise<string> => {
+	const authenticate = async (): Promise<HttpClientHeaders> => {
 		logger.debug('authentication - enter')
 		// refresh if we have less than an hour left on the auth token
 		if (authenticationInfo && authenticationInfo.expires.getTime() < Date.now() + 60 * 60 * 1000) {
@@ -279,28 +279,15 @@ export const loginAuthenticator = (credentialsFile: string, profileName: string,
 		}
 
 		if (authenticationInfo) {
-			return authenticationInfo.accessToken
+			return { Authorization: `Bearer ${authenticationInfo.accessToken}` }
 		}
 
 		throw new Error('unable to obtain user credentials')
 	}
 
-	const authenticate = async (requestConfig: AxiosRequestConfig): Promise<AxiosRequestConfig> => {
-		const token = await authenticateGeneric()
-
-		return {
-			...requestConfig,
-			headers: {
-				...requestConfig.headers,
-				Authorization: `Bearer ${token}`,
-			},
-		}
-	}
-
 	return {
 		login,
 		logout,
-		authenticateGeneric,
 		authenticate,
 	}
 }

@@ -20,7 +20,7 @@ Thanks for contributing! Our community of developers is what put SmartThings on 
 
 ### Build
 
-1. Be sure you're using at least Node.js version 20.
+1. Be sure you're using at least Node.js version 22.
 1. run `npm install`
 1. run `npm run compile`
 1. To run the CLI that was just compiled, run the `run` command in bin. You can create
@@ -150,4 +150,4 @@ can read and share information.
 
 Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
-Copyright 2023 Samsung Electronics Co., LTD.
+Copyright 2024 Samsung Electronics Co., LTD.

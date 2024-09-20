@@ -33,7 +33,7 @@ jest.unstable_mockModule('get-port-please', () => ({
 	getPort: getPortMock,
 }))
 
-const { debugMock, errorMock, traceMock } = await import('../test-lib/logger-mock.js')
+const { errorMock, traceMock } = await import('../test-lib/logger-mock.js')
 
 const openMock = jest.fn<typeof open>()
 jest.unstable_mockModule('open', () => ({ default: openMock }))
@@ -463,29 +463,12 @@ describe('logout', () => {
 })
 
 describe('authenticate', () => {
-	it('calls generic authenticate', async () => {
-		readFileSyncMock.mockReturnValueOnce(Buffer.from(JSON.stringify(credentialsFileData)))
-
-		const authenticator = setupAuthenticator()
-
-		const requestConfig = {}
-
-		const response = await authenticator.authenticate(requestConfig)
-
-		expect(response.headers?.Authorization).toEqual('Bearer access token')
-		expect(debugMock).toHaveBeenCalledWith('authentication - enter')
-	})
-})
-
-describe('authenticateGeneric', () => {
 	it('refreshes token when necessary', async () => {
 		readFileSyncMock.mockReturnValueOnce(Buffer.from(JSON.stringify(refreshableCredentialsFileData)))
 
 		const authenticator = setupAuthenticator()
 
-		const response = await authenticator.authenticate({})
-
-		expect(response.headers?.Authorization).toEqual('Bearer access token')
+		expect(await authenticator.authenticate()).toStrictEqual({ Authorization: 'Bearer access token' })
 
 		expect(postMock).toHaveBeenCalledTimes(1)
 		const postData = postMock.mock.calls[0][1]
@@ -505,7 +488,7 @@ describe('authenticateGeneric', () => {
 		readFileSyncMock.mockReturnValueOnce(Buffer.from(JSON.stringify(refreshableCredentialsFileData)))
 		const authenticator = setupAuthenticator()
 
-		await authenticator.authenticate({})
+		await authenticator.authenticate()
 
 		expect(postMock).toHaveBeenCalledTimes(1)
 		expect(postMock).toHaveBeenCalledWith(
@@ -525,11 +508,10 @@ describe('authenticateGeneric', () => {
 
 		const authenticator = setupAuthenticator()
 
-		const promise = authenticator.authenticate({})
+		const promise = authenticator.authenticate()
 		await mockBrowser()
-		const response = await promise
 
-		expect(response.headers?.Authorization).toEqual('Bearer access token')
+		expect(await promise).toStrictEqual({ Authorization: 'Bearer access token' })
 
 		expect(postMock).toHaveBeenCalledTimes(2)
 		const postData = postMock.mock.calls[0][1]
@@ -560,11 +542,10 @@ describe('authenticateGeneric', () => {
 	it('logs in not logged in', async () => {
 		const authenticator = setupAuthenticator()
 
-		const promise = authenticator.authenticate({})
+		const promise = authenticator.authenticate()
 		await mockBrowser()
-		const response = await promise
 
-		expect(response.headers?.Authorization).toEqual('Bearer access token')
+		expect(await promise).toStrictEqual({ Authorization: 'Bearer access token' })
 
 		expect(getPortMock).toHaveBeenCalledTimes(1)
 		expect(getPortMock).toHaveBeenCalledWith({ ports: [61973, 61974, 61975] })
@@ -612,11 +593,10 @@ describe('authenticateGeneric', () => {
 
 		const authenticator = setupAuthenticator()
 
-		const promise = authenticator.authenticate({})
+		const promise = authenticator.authenticate()
 		await mockBrowser()
-		const response = await promise
 
-		expect(response.headers?.Authorization).toEqual('Bearer access token')
+		expect(await promise).toStrictEqual({ Authorization: 'Bearer access token' })
 
 		expect(errorMock).toHaveBeenCalledWith('error trying to refresh token:', 'token refresh failure')
 	})
