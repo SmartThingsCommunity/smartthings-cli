@@ -2,33 +2,36 @@ import { jest } from '@jest/globals'
 
 import { AppResponse, AppsEndpoint, AppType, PagedApp, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { PropertyTableFieldDefinition, Table, TableGenerator, ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
-import { APICommand } from '../../../../lib/command/api-command.js'
 import {
-	chooseOptionsDefaults,
+	PropertyTableFieldDefinition,
+	Table,
+	TableGenerator,
+	ValueTableFieldDefinition,
+} from '../../../../lib/table-generator.js'
+import { stringTranslateToId } from '../../../../lib/command/command-util.js'
+import {
+	createChooseFn,
+	type ChooseFunction,
 	chooseOptionsWithDefaults,
-	stringTranslateToId,
-} from '../../../../lib/command/command-util.js'
-import { selectFromList, SelectFromListFlags } from '../../../../lib/command/select.js'
+} from '../../../../lib/command/util/util-util.js'
 
 
-const chooseOptionsWithDefaultsMock = jest.fn<typeof chooseOptionsWithDefaults>()
 const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
 jest.unstable_mockModule('../../../../lib/command/command-util.js', () => ({
-	chooseOptionsDefaults,
-	chooseOptionsWithDefaults: chooseOptionsWithDefaultsMock,
 	stringTranslateToId: stringTranslateToIdMock,
 }))
 
-const selectFromListMock = jest.fn<typeof selectFromList>()
-jest.unstable_mockModule('../../../../lib/command/select.js', () => ({
-	selectFromList: selectFromListMock,
+const createChooseFnMock = jest.fn<typeof createChooseFn<PagedApp>>()
+const chooseOptionsWithDefaultsMock = jest.fn<typeof chooseOptionsWithDefaults>()
+jest.unstable_mockModule('../../../../lib/command/util/util-util.js', () => ({
+	chooseOptionsWithDefaults: chooseOptionsWithDefaultsMock,
+	createChooseFn: createChooseFnMock,
 }))
 
 
 const {
 	buildTableOutput,
-	chooseApp,
+	chooseAppFn,
 	hasSubscription,
 	isWebhookSmartApp,
 	shortARNorURL,
@@ -139,29 +142,32 @@ describe('tableFieldDefinitions functions', () => {
 	})
 })
 
-test('chooseApp uses correct endpoint to list apps', async () => {
-	selectFromListMock.mockResolvedValue('selected-app-id')
-	chooseOptionsWithDefaultsMock.mockReturnValue(chooseOptionsDefaults())
+test('chooseAppFn uses correct endpoint to list apps', async () => {
+	const chooseAppMock = jest.fn<ChooseFunction<PagedApp>>()
+	createChooseFnMock.mockReturnValueOnce(chooseAppMock)
 
+	const chooseApp = chooseAppFn()
+
+	expect(chooseApp).toBe(chooseAppMock)
+
+	expect(createChooseFnMock).toHaveBeenCalledExactlyOnceWith(
+		expect.objectContaining({ itemName: 'app' }),
+		expect.any(Function),
+	)
+
+	const appList = [{ appId: 'listed-app-id' } as PagedApp]
 	const apiAppsListMock = jest.fn<typeof AppsEndpoint.prototype.list>()
-	const command = {
-		client: {
-			apps: {
-				list: apiAppsListMock,
-			},
+		.mockResolvedValueOnce(appList)
+	const listItems = createChooseFnMock.mock.calls[0][1]
+	const client = {
+		apps: {
+			list: apiAppsListMock,
 		},
-	} as unknown as APICommand<SelectFromListFlags>
+	} as unknown as SmartThingsClient
 
-	expect(await chooseApp(command)).toBe('selected-app-id')
+	expect(await listItems(client)).toBe(appList)
 
-	const listItems = selectFromListMock.mock.calls[0][2].listItems
-	const appsList = [{ appId: 'listed-app-id' } as PagedApp]
-	apiAppsListMock.mockResolvedValueOnce(appsList)
-
-	expect(await listItems()).toBe(appsList)
-
-	expect(apiAppsListMock).toHaveBeenCalledTimes(1)
-	expect(apiAppsListMock).toHaveBeenCalledWith()
+	expect(apiAppsListMock).toHaveBeenCalledExactlyOnceWith()
 })
 
 describe('buildTableOutput', () => {
@@ -183,10 +189,8 @@ describe('buildTableOutput', () => {
 		expect(newOutputTableMock).toHaveBeenCalledWith(
 			expect.objectContaining({ head: ['Key', 'Value'] }),
 		)
-		expect(pushMock).toHaveBeenCalledTimes(1)
-		expect(pushMock).toHaveBeenCalledWith(['setting', 'setting value'])
-		expect(toStringMock).toHaveBeenCalledTimes(1)
-		expect(toStringMock).toHaveBeenCalledWith()
+		expect(pushMock).toHaveBeenCalledExactlyOnceWith(['setting', 'setting value'])
+		expect(toStringMock).toHaveBeenCalledExactlyOnceWith()
 	})
 })
 
@@ -202,8 +206,7 @@ describe('verboseApps', () => {
 
 		expect(await verboseApps(client, options))
 
-		expect(listMock).toHaveBeenCalledTimes(1)
-		expect(listMock).toHaveBeenCalledWith(options)
+		expect(listMock).toHaveBeenCalledExactlyOnceWith(options)
 		expect(getMock).toHaveBeenCalledTimes(0)
 	})
 
@@ -219,8 +222,7 @@ describe('verboseApps', () => {
 
 		expect(await verboseApps(client, {}))
 
-		expect(listMock).toHaveBeenCalledTimes(1)
-		expect(listMock).toHaveBeenCalledWith({})
+		expect(listMock).toHaveBeenCalledExactlyOnceWith({})
 		expect(getMock).toHaveBeenCalledTimes(2)
 		expect(getMock).toHaveBeenCalledWith('paged-app-1-id')
 		expect(getMock).toHaveBeenCalledWith('paged-app-2-id')

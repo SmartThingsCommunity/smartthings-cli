@@ -1,23 +1,16 @@
 import { jest } from '@jest/globals'
 
-import { selectFromList, SelectFromListConfig, SelectFromListFlags } from '../../../../lib/command/select.js'
-import { APICommand } from '../../../../lib/command/api-command.js'
-import { SmartThingsClient } from '@smartthings/core-sdk'
-import { ListDataFunction } from '../../../../lib/command/basic-io.js'
-import {
-	ChooseOptions,
-	chooseOptionsDefaults,
-	chooseOptionsWithDefaults,
-	stringTranslateToId,
-} from '../../../../lib/command/command-util.js'
-import { SimpleType } from '../../../test-lib/simple-type.js'
+import { selectFromList, type SelectFromListConfig, type SelectFromListFlags } from '../../../../lib/command/select.js'
+import { type APICommand } from '../../../../lib/command/api-command.js'
+import { type SmartThingsClient } from '@smartthings/core-sdk'
+import { type ListDataFunction } from '../../../../lib/command/basic-io.js'
+import { stringTranslateToId } from '../../../../lib/command/command-util.js'
+import { type ChooseOptions } from '../../../../lib/command/util/util-util.js'
+import { type SimpleType } from '../../../test-lib/simple-type.js'
 
 
-const chooseOptionsWithDefaultsMock = jest.fn<typeof chooseOptionsWithDefaults>()
 const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
 jest.unstable_mockModule('../../../../lib/command/command-util.js', () => ({
-	chooseOptionsDefaults,
-	chooseOptionsWithDefaults: chooseOptionsWithDefaultsMock,
 	stringTranslateToId: stringTranslateToIdMock,
 }))
 
@@ -27,7 +20,37 @@ jest.unstable_mockModule('../../../../lib/command/select.js', () => ({
 }))
 
 
-const { createChooseFn } = await import('../../../../lib/command/util/util-util.js')
+const {
+	chooseOptionsDefaults,
+	chooseOptionsWithDefaults,
+	createChooseFn,
+} = await import('../../../../lib/command/util/util-util.js')
+
+describe('chooseOptionsWithDefaults', () => {
+	it('uses defaults with undefined input', () => {
+		expect(chooseOptionsWithDefaults(undefined)).toStrictEqual(chooseOptionsDefaults())
+	})
+
+	it('uses defaults with empty input', () => {
+		expect(chooseOptionsWithDefaults({})).toStrictEqual(chooseOptionsDefaults())
+	})
+
+	it('input overrides default', () => {
+		const optionsDifferentThanDefault = {
+			allowIndex: true,
+			verbose: true,
+			useConfigDefault: true,
+			autoChoose: true,
+		}
+		expect(chooseOptionsWithDefaults(optionsDifferentThanDefault))
+			.toEqual(optionsDifferentThanDefault)
+	})
+
+	it('passes on other values unchanged', () => {
+		expect(chooseOptionsWithDefaults({ someOtherKey: 'some other value' } as Partial<ChooseOptions<{ someOtherKey: string }>>))
+			.toEqual(expect.objectContaining({ someOtherKey: 'some other value' }))
+	})
+})
 
 describe('createChooseFn', () => {
 	const item1: SimpleType = { str: 'string-id-a', num: 5 }
@@ -49,7 +72,6 @@ describe('createChooseFn', () => {
 
 	stringTranslateToIdMock.mockResolvedValue('translated-simple-type-id')
 	selectFromListMock.mockResolvedValue('selected-simple-type-id')
-	chooseOptionsWithDefaultsMock.mockReturnValue(chooseOptionsDefaults())
 
 	const command = {
 		client: { notAReal: 'SmartThingsClient' },
@@ -66,8 +88,12 @@ describe('createChooseFn', () => {
 			expect(await chooseSimpleType(command, undefined, opts)).toBe('selected-simple-type-id')
 
 			expect(listItemsMock).toHaveBeenCalledTimes(0)
-			expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledTimes(1)
-			expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledWith(opts)
+			expect(stringTranslateToIdMock).toHaveBeenCalledTimes(0)
+			expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
+				command,
+				config,
+				expect.objectContaining({ autoChoose: false }),
+			)
 		})
 
 		it('resolves id from index when allowed', async () => {
@@ -75,19 +101,16 @@ describe('createChooseFn', () => {
 				...chooseOptionsDefaults(),
 				allowIndex: true,
 			}
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce(opts)
 
 			expect(await chooseSimpleType(command, 'simple-type-from-arg', opts)).toBe('selected-simple-type-id')
 
-			expect(stringTranslateToIdMock).toHaveBeenCalledTimes(1)
-			expect(stringTranslateToIdMock).toHaveBeenCalledWith(
+			expect(stringTranslateToIdMock).toHaveBeenCalledExactlyOnceWith(
 				expect.objectContaining(config),
 				'simple-type-from-arg',
 				expect.any(Function),
 			)
 
-			expect(selectFromListMock).toHaveBeenCalledTimes(1)
-			expect(selectFromListMock).toHaveBeenCalledWith(
+			expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
 				command,
 				config,
 				expect.objectContaining({ preselectedId: 'translated-simple-type-id' }),
@@ -114,7 +137,6 @@ describe('createChooseFn', () => {
 				...chooseOptionsDefaults(),
 				allowIndex: true,
 			}
-			chooseOptionsWithDefaultsMock.mockReturnValueOnce(opts)
 
 			expect(await chooseSimpleType(command, 'simple-type-from-arg', opts)).toBe('selected-simple-type-id')
 
@@ -135,8 +157,7 @@ describe('createChooseFn', () => {
 
 			expect(await listItems()).toBe(itemList)
 
-			expect(itemListMock).toHaveBeenCalledTimes(1)
-			expect(itemListMock).toHaveBeenCalledWith(command.client)
+			expect(itemListMock).toHaveBeenCalledExactlyOnceWith(command.client)
 		})
 	})
 })

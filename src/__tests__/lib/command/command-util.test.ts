@@ -2,7 +2,6 @@ import { jest } from '@jest/globals'
 
 import inquirer from 'inquirer'
 
-import { ChooseOptions } from '../../../lib/command/command-util.js'
 import { sort } from '../../../lib/command/output.js'
 import { ListDataFunction, Sorting } from '../../../lib/command/basic-io.js'
 import { SimpleType } from '../../test-lib/simple-type.js'
@@ -22,8 +21,6 @@ jest.unstable_mockModule('../../../lib/command/output.js', () => ({
 
 
 const {
-	chooseOptionsDefaults,
-	chooseOptionsWithDefaults,
 	convertToId,
 	isIndexArgument,
 	itemName,
@@ -103,8 +100,7 @@ describe('stringTranslateToId', () => {
 		expect(computedId).toBe('string-id-a')
 
 		expect(listFunction).toHaveBeenCalledTimes(1)
-		expect(sortMock).toHaveBeenCalledTimes(1)
-		expect(sortMock).toHaveBeenCalledWith(list, 'num')
+		expect(sortMock).toHaveBeenCalledExactlyOnceWith(list, 'num')
 	})
 
 	it('throws an error when item not found', async () => {
@@ -115,8 +111,7 @@ describe('stringTranslateToId', () => {
 			.rejects.toThrow('invalid index 4 (enter an id or index between 1 and 3 inclusive)')
 
 		expect(listFunction).toHaveBeenCalledTimes(1)
-		expect(sortMock).toHaveBeenCalledTimes(1)
-		expect(sortMock).toHaveBeenCalledWith(list, 'num')
+		expect(sortMock).toHaveBeenCalledExactlyOnceWith(list, 'num')
 	})
 
 	it('throws an error for missing primary key', async () => {
@@ -127,8 +122,7 @@ describe('stringTranslateToId', () => {
 			.rejects.toThrow('did not find key str in data')
 
 		expect(listFunction).toHaveBeenCalledTimes(1)
-		expect(sortMock).toHaveBeenCalledTimes(1)
-		expect(sortMock).toHaveBeenCalledWith(list, 'num')
+		expect(sortMock).toHaveBeenCalledExactlyOnceWith(list, 'num')
 	})
 
 	it('throws an error for invalid type for primary key', async () => {
@@ -139,8 +133,7 @@ describe('stringTranslateToId', () => {
 			.rejects.toThrow('invalid type number for primary key str in {"str":3,"num":5}')
 
 		expect(listFunction).toHaveBeenCalledTimes(1)
-		expect(sortMock).toHaveBeenCalledTimes(1)
-		expect(sortMock).toHaveBeenCalledWith(list, 'num')
+		expect(sortMock).toHaveBeenCalledExactlyOnceWith(list, 'num')
 	})
 })
 
@@ -175,8 +168,7 @@ describe('stringGetIdFromUser', () => {
 
 		expect(chosenId).toBe('string-id-a')
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
 			type: 'input', name: 'itemIdOrIndex',
 			message: 'Enter id or index', validate: expect.anything(),
 		})
@@ -192,8 +184,7 @@ describe('stringGetIdFromUser', () => {
 
 		expect(chosenId).toBe('string-id-a')
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
 			type: 'input', name: 'itemIdOrIndex',
 			message: 'Enter id or index', validate: expect.anything(),
 		})
@@ -215,39 +206,12 @@ describe('stringGetIdFromUser', () => {
 
 		expect(chosenId).toBe('string-id-a')
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
 			type: 'input', name: 'itemIdOrIndex',
 			message: 'give me an id', validate: expect.anything(),
 		})
 		const validateFunction = (promptMock.mock.calls[0][0] as { validate: (input: string) => true | string }).validate
 
 		expect(validateFunction('string-id-a')).toBe(true)
-	})
-})
-
-describe('chooseOptionsWithDefaults', () => {
-	it('uses defaults with undefined input', () => {
-		expect(chooseOptionsWithDefaults(undefined)).toStrictEqual(chooseOptionsDefaults())
-	})
-
-	it('uses defaults with empty input', () => {
-		expect(chooseOptionsWithDefaults({})).toStrictEqual(chooseOptionsDefaults())
-	})
-
-	it('input overrides default', () => {
-		const optionsDifferentThanDefault = {
-			allowIndex: true,
-			verbose: true,
-			useConfigDefault: true,
-			autoChoose: true,
-		}
-		expect(chooseOptionsWithDefaults(optionsDifferentThanDefault))
-			.toEqual(optionsDifferentThanDefault)
-	})
-
-	it('passes on other values unchanged', () => {
-		expect(chooseOptionsWithDefaults({ someOtherKey: 'some other value' } as Partial<ChooseOptions<{ someOtherKey: string }>>))
-			.toEqual(expect.objectContaining({ someOtherKey: 'some other value' }))
 	})
 })

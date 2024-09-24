@@ -10,7 +10,7 @@ import {
 import { arrayDef, checkboxDef, stringDef } from '../../item-input/index.js'
 import { TableFieldDefinition, TableGenerator } from '../../table-generator.js'
 import { localhostOrHTTPSValidate } from '../../validate-util.js'
-import { createChooseFn } from './util-util.js'
+import { ChooseFunction, createChooseFn } from './util-util.js'
 
 
 export const isWebhookSmartApp = (app: AppResponse): boolean => !!app.webhookSmartApp
@@ -45,7 +45,7 @@ export const tableFieldDefinitions: TableFieldDefinition<AppResponse>[] = [
 
 export const oauthTableFieldDefinitions: TableFieldDefinition<AppOAuthRequest>[] = ['clientName', 'scope', 'redirectUris']
 
-export const chooseApp = createChooseFn(
+export const chooseAppFn = (): ChooseFunction<PagedApp> => createChooseFn(
 	{
 		itemName: 'app',
 		primaryKeyName: 'appId',
@@ -53,6 +53,8 @@ export const chooseApp = createChooseFn(
 	},
 	(client: SmartThingsClient) => client.apps.list(),
 )
+
+export const chooseApp = chooseAppFn()
 
 export const buildTableOutput = (tableGenerator: TableGenerator, appSettings: AppSettingsResponse): string => {
 	if (!appSettings.settings || Object.keys(appSettings.settings).length === 0) {
