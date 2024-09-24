@@ -1,7 +1,7 @@
-import { Location, SmartThingsClient } from '@smartthings/core-sdk'
+import { Location, LocationItem, SmartThingsClient } from '@smartthings/core-sdk'
 
 import { TableFieldDefinition } from '../../table-generator.js'
-import { createChooseFn } from './util-util.js'
+import { ChooseFunction, createChooseFn } from './util-util.js'
 
 
 export const tableFieldDefinitions: TableFieldDefinition<Location>[] = [
@@ -9,7 +9,7 @@ export const tableFieldDefinitions: TableFieldDefinition<Location>[] = [
 	'latitude', 'longitude', 'regionRadius', 'temperatureScale', 'locale',
 ]
 
-export const chooseLocation = createChooseFn(
+export const chooseLocationFn = (): ChooseFunction<LocationItem> => createChooseFn(
 	{
 		itemName: 'location',
 		primaryKeyName: 'locationId',
@@ -17,3 +17,5 @@ export const chooseLocation = createChooseFn(
 	},
 	(client: SmartThingsClient) => client.locations.list(),
 )
+
+export const chooseLocation = chooseLocationFn()

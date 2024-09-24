@@ -1,52 +1,50 @@
 import { jest } from '@jest/globals'
 
-import { selectFromList, SelectFromListFlags } from '../../../../lib/command/select.js'
-import { APICommand } from '../../../../lib/command/api-command.js'
-import { LocationItem, LocationsEndpoint } from '@smartthings/core-sdk'
+import { LocationItem, LocationsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
+import { stringTranslateToId } from '../../../../lib/command/command-util.js'
 import {
-	chooseOptionsDefaults,
-	chooseOptionsWithDefaults,
-	stringTranslateToId,
-} from '../../../../lib/command/command-util.js'
+	createChooseFn,
+	type ChooseFunction,
+} from '../../../../lib/command/util/util-util.js'
 
 
-const chooseOptionsWithDefaultsMock = jest.fn<typeof chooseOptionsWithDefaults>()
 const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
 jest.unstable_mockModule('../../../../lib/command/command-util.js', () => ({
-	chooseOptionsDefaults,
-	chooseOptionsWithDefaults: chooseOptionsWithDefaultsMock,
 	stringTranslateToId: stringTranslateToIdMock,
 }))
 
-const selectFromListMock = jest.fn<typeof selectFromList>()
-jest.unstable_mockModule('../../../../lib/command/select.js', () => ({
-	selectFromList: selectFromListMock,
+const createChooseFnMock = jest.fn<typeof createChooseFn<LocationItem>>()
+jest.unstable_mockModule('../../../../lib/command/util/util-util.js', () => ({
+	createChooseFn: createChooseFnMock,
 }))
 
 
-const { chooseLocation } = await import('../../../../lib/command/util/locations-util.js')
+const { chooseLocationFn } = await import('../../../../lib/command/util/locations-util.js')
 
-test('chooseLocation uses correct endpoint to list locations', async () => {
-	selectFromListMock.mockResolvedValue('selected-location-id')
-	chooseOptionsWithDefaultsMock.mockReturnValue(chooseOptionsDefaults())
+test('chooseLocationFn uses correct endpoint to list locations', async () => {
+	const chooseLocationMock = jest.fn<ChooseFunction<LocationItem>>()
+	createChooseFnMock.mockReturnValueOnce(chooseLocationMock)
 
-	const apiLocationsListMock = jest.fn<typeof LocationsEndpoint.prototype.list>()
-	const command = {
-		client: {
-			locations: {
-				list: apiLocationsListMock,
-			},
-		},
-	} as unknown as APICommand<SelectFromListFlags>
+	const chooseLocation = chooseLocationFn()
 
-	expect(await chooseLocation(command)).toBe('selected-location-id')
+	expect(chooseLocation).toBe(chooseLocationMock)
 
-	const listItems = selectFromListMock.mock.calls[0][2].listItems
+	expect(createChooseFnMock).toHaveBeenCalledExactlyOnceWith(
+		expect.objectContaining({ itemName: 'location' }),
+		expect.any(Function),
+	)
+
 	const locationList = [{ locationId: 'listed-location-id' } as LocationItem]
-	apiLocationsListMock.mockResolvedValueOnce(locationList)
+	const apiLocationsListMock = jest.fn<typeof LocationsEndpoint.prototype.list>()
+		.mockResolvedValueOnce(locationList)
+	const listItems = createChooseFnMock.mock.calls[0][1]
+	const client = {
+		locations: {
+			list: apiLocationsListMock,
+		},
+	} as unknown as SmartThingsClient
 
-	expect(await listItems()).toBe(locationList)
+	expect(await listItems(client)).toBe(locationList)
 
-	expect(apiLocationsListMock).toHaveBeenCalledTimes(1)
-	expect(apiLocationsListMock).toHaveBeenCalledWith()
+	expect(apiLocationsListMock).toHaveBeenCalledExactlyOnceWith()
 })

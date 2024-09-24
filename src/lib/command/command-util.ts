@@ -97,27 +97,3 @@ export async function stringGetIdFromUser<L extends object>(fieldInfo: Sorting<L
 	}
 	return inputId
 }
-
-/**
- * Note that not all functions that use this interface support all options. Check the
- * `chooseThing` (e.g. `chooseDevice`) method itself.
- */
-export type ChooseOptions<T extends object> = {
-	allowIndex: boolean
-	verbose: boolean
-	useConfigDefault: boolean
-	listItems?: ListDataFunction<T>
-	autoChoose?: boolean
-}
-
-export const chooseOptionsDefaults = <T extends object>(): ChooseOptions<T> => ({
-	allowIndex: false,
-	verbose: false,
-	useConfigDefault: false,
-	autoChoose: false,
-})
-
-export const chooseOptionsWithDefaults = <T extends object>(options: Partial<ChooseOptions<T>> | undefined): ChooseOptions<T> => ({
-	...chooseOptionsDefaults(),
-	...options,
-})
