@@ -1,6 +1,14 @@
-import inquirer, { ChoiceCollection } from 'inquirer'
+import inquirer, { type ChoiceCollection } from 'inquirer'
 
-import { CancelAction, cancelOption, helpAction, helpOption, InputDefinition, inquirerPageSize, maxItemValueLength } from './defs.js'
+import {
+	type CancelAction,
+	cancelOption,
+	helpAction,
+	helpOption,
+	type InputDefinition,
+	inquirerPageSize,
+	maxItemValueLength,
+} from './defs.js'
 import { clipToMaximum, stringFromUnknown } from '../util.js'
 
 
