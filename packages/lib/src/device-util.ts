@@ -1,33 +1,9 @@
-import { Component, Device, DeviceListOptions } from '@smartthings/core-sdk'
+import { Component } from '@smartthings/core-sdk'
 
-import { APICommand } from './api-command.js'
-import { ChooseOptions, chooseOptionsDefaults, stringTranslateToId } from './command-util.js'
+import { stringTranslateToId } from './command-util.js'
 import { selectFromList, SelectFromListConfig } from './select.js'
 import { SmartThingsCommandInterface } from './smartthings-command.js'
 
-
-export type DevicePredicate = (value: Device, index: number, array: Device[]) => boolean
-export type ChooseDeviceOptions = ChooseOptions<Device> & {
-	deviceListOptions?: DeviceListOptions
-	deviceListFilter?: DevicePredicate
-}
-export const chooseDevice = async (command: APICommand<typeof APICommand.flags>, deviceFromArg?: string,
-		options?: Partial<ChooseDeviceOptions>): Promise<string> => {
-	const opts = { ...chooseOptionsDefaults(), ...options }
-	const config: SelectFromListConfig<Device> = {
-		itemName: 'device',
-		primaryKeyName: 'deviceId',
-		sortKeyName: 'label',
-		listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
-	}
-	const deviceListFilter = opts.deviceListFilter ?? (() => true)
-	const listItems = async (): Promise<Device[]> =>
-		(await command.client.devices.list(opts.deviceListOptions)).filter(deviceListFilter)
-	const preselectedId = opts.allowIndex
-		? await stringTranslateToId(config, deviceFromArg, listItems)
-		: deviceFromArg
-	return selectFromList(command, config, { preselectedId, listItems })
-}
 
 export const chooseComponent = async (command: SmartThingsCommandInterface, componentFromArg?: string, components?: Component[]): Promise<string> => {
 	if (!components || components.length === 0) {

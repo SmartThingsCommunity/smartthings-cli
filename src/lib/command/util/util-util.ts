@@ -1,10 +1,12 @@
-import { SmartThingsClient } from '@smartthings/core-sdk'
+import { type SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand } from '../api-command.js'
-import { ListDataFunction } from '../basic-io.js'
+import { type APICommand } from '../api-command.js'
+import { type ListDataFunction } from '../basic-io.js'
 import { stringTranslateToId } from '../command-util.js'
-import { SelectFromListConfig, SelectFromListFlags, selectFromList } from '../select.js'
+import { type SelectFromListConfig, type SelectFromListFlags, selectFromList } from '../select.js'
 
+
+export type ListItemPredicate<T extends object> = (value: T, index: number, array: T[]) => boolean
 
 /**
  * Note that not all functions that use this interface support all options. Check the
@@ -16,6 +18,7 @@ export type ChooseOptions<T extends object> = {
 	useConfigDefault: boolean
 	listItems?: ListDataFunction<T>
 	autoChoose?: boolean
+	listFilter?: ListItemPredicate<T>
 }
 
 export const chooseOptionsDefaults = <T extends object>(): ChooseOptions<T> => ({
@@ -45,7 +48,11 @@ export const createChooseFn = <T extends object>(
 			options?: Partial<ChooseOptions<T>>): Promise<string> => {
 		const opts = chooseOptionsWithDefaults(options)
 
-		const listItemsWrapper = (): Promise<T[]> => listItems(command.client)
+		// Listing items usually makes an API call which we only want to happen once so we do it
+		// now and just use stub functions that return these items later as needed.
+		const items = await listItems(command.client)
+		const filteredItems = opts.listFilter ? items.filter(opts.listFilter) : items
+		const listItemsWrapper = async (): Promise<T[]> => filteredItems
 
 		const preselectedId = opts.allowIndex
 			? await stringTranslateToId(config, itemIdOrNameFromArg, listItemsWrapper)
