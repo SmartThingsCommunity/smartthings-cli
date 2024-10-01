@@ -14,8 +14,14 @@ import type { CommandArgs } from '../../../commands/apps.js'
 import type { BuildOutputFormatterFlags } from '../.././../lib/command/output-builder.js'
 import type { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
 import type { ChooseFunction } from '../../../lib/command/util/util-util.js'
-import type { Table, TableGenerator } from '../../../lib/table-generator.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
+import {
+	mockedTableOutput,
+	newOutputTableMock,
+	tableGeneratorMock,
+	tablePushMock,
+	tableToStringMock,
+} from '../../test-lib/table-mock.js'
 
 
 const apiCommandMock = jest.fn<typeof apiCommand>()
@@ -63,15 +69,6 @@ test('builder', () => {
 	expect(exampleMock).toHaveBeenCalledOnce()
 })
 
-const tablePushMock = jest.fn<Table['push']>()
-const tableToStringMock = jest.fn<Table['toString']>().mockReturnValue('table output')
-const tableMock: Table = {
-	push: tablePushMock,
-	toString: tableToStringMock,
-}
-const newOutputTableMock = jest.fn<TableGenerator['newOutputTable']>().mockReturnValue(tableMock)
-const tableGeneratorMock = { newOutputTable: newOutputTableMock } as unknown as TableGenerator
-
 const preferences: DevicePreferenceResponse = {
 	values: {
 		key0: {
@@ -90,10 +87,6 @@ const preferences: DevicePreferenceResponse = {
 }
 
 describe('buildTableOutput', () => {
-	it('works', () => {
-		expect(true).toBeTruthy()
-	})
-
 	it('skips table entirely when there is no data', () => {
 		expect(buildTableOutput(tableGeneratorMock, {} as DevicePreferenceResponse)).toBe('')
 
@@ -103,7 +96,7 @@ describe('buildTableOutput', () => {
 	})
 
 	it('sorts by key', () => {
-		expect(buildTableOutput(tableGeneratorMock, preferences)).toBe('table output')
+		expect(buildTableOutput(tableGeneratorMock, preferences)).toBe(mockedTableOutput)
 
 		expect(newOutputTableMock).toHaveBeenCalledOnce()
 		expect(tablePushMock).toHaveBeenCalledTimes(3)
@@ -150,5 +143,5 @@ test('handler', async () => {
 
 	const config = formatAndWriteItemMock.mock.calls[0][1] as CustomCommonOutputProducer<DevicePreferenceResponse>
 
-	expect(config.buildTableOutput(preferences)).toBe('table output')
+	expect(config.buildTableOutput(preferences)).toBe(mockedTableOutput)
 })

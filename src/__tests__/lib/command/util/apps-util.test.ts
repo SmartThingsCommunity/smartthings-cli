@@ -4,7 +4,6 @@ import { AppResponse, AppsEndpoint, AppType, PagedApp, SmartThingsClient } from 
 
 import {
 	PropertyTableFieldDefinition,
-	Table,
 	TableGenerator,
 	ValueTableFieldDefinition,
 } from '../../../../lib/table-generator.js'
@@ -14,6 +13,12 @@ import {
 	type ChooseFunction,
 	chooseOptionsWithDefaults,
 } from '../../../../lib/command/util/util-util.js'
+import {
+	mockedTableOutput,
+	tableMock,
+	tablePushMock,
+	tableToStringMock,
+} from '../../../test-lib/table-mock.js'
 
 
 const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
@@ -180,17 +185,15 @@ describe('buildTableOutput', () => {
 	})
 
 	it('creates new table with correct options and adds settings', () => {
-		const pushMock = jest.fn()
-		const toStringMock = jest.fn().mockReturnValue('table output')
-		const newTable = { push: pushMock, toString: toStringMock } as Table
-		newOutputTableMock.mockReturnValueOnce(newTable)
+		newOutputTableMock.mockReturnValueOnce(tableMock)
 
-		expect(buildTableOutput(mockTableGenerator, { settings: { setting: 'setting value' } })).toEqual('table output')
+		expect(buildTableOutput(mockTableGenerator, { settings: { setting: 'setting value' } }))
+			.toBe(mockedTableOutput)
 		expect(newOutputTableMock).toHaveBeenCalledWith(
 			expect.objectContaining({ head: ['Key', 'Value'] }),
 		)
-		expect(pushMock).toHaveBeenCalledExactlyOnceWith(['setting', 'setting value'])
-		expect(toStringMock).toHaveBeenCalledExactlyOnceWith()
+		expect(tablePushMock).toHaveBeenCalledExactlyOnceWith(['setting', 'setting value'])
+		expect(tableToStringMock).toHaveBeenCalledExactlyOnceWith()
 	})
 })
 

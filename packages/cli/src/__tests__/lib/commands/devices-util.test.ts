@@ -6,7 +6,6 @@ import {
 	buildEmbeddedStatusTableOutput,
 	buildStatusTableOutput,
 	buildTableOutput,
-	prettyPrintAttribute,
 } from '../../../lib/commands/devices-util.js'
 
 
@@ -25,36 +24,6 @@ const tableGeneratorMock: TableGenerator = {
 	buildTableFromItem: buildTableFromItemMock,
 	buildTableFromList: buildTableFromListMock,
 }
-
-describe('prettyPrintAttribute', () => {
-	it ('handles integer value', () => {
-		expect(prettyPrintAttribute(100)).toEqual('100')
-	})
-
-	it ('handles decimal value', () => {
-		expect(prettyPrintAttribute(21.5)).toEqual('21.5')
-	})
-
-	it ('handles string value', () => {
-		expect(prettyPrintAttribute('active')).toEqual('"active"')
-	})
-
-	it ('handles object value', () => {
-		expect(prettyPrintAttribute({ x: 1, y: 2 })).toEqual('{"x":1,"y":2}')
-	})
-
-	it ('handles large object value', () => {
-		const value = {
-			name: 'Entity name',
-			id: 'entity-id',
-			description: 'This is a test entity. It serves no other purpose other than to be used in this test.',
-			version: 1,
-			precision: 120.375,
-		}
-		const expectedResult = JSON.stringify(value, null, 2)
-		expect(prettyPrintAttribute(value)).toEqual(expectedResult)
-	})
-})
 
 describe('buildStatusTableOutput', () => {
 

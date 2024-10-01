@@ -14,8 +14,8 @@ function buildTableOutput(tableGenerator: TableGenerator, component: ComponentSt
 			table.push([
 				capabilityName,
 				attributeName,
-				attribute.value !== null ?
-					`${prettyPrintAttribute(attribute.value)}${attribute.unit ? ' ' + attribute.unit : ''}` : ''])
+				prettyPrintAttribute(attribute),
+			])
 		}
 	}
 	return table.toString()

@@ -127,30 +127,6 @@ export async function chooseLocallyExecutingDevicePrototype(command: APICommand<
 	})
 }
 
-export const chooseComponent = async (command: APICommand<typeof APICommand.flags>, device: Device): Promise<Component> => {
-	let component
-	if (device.components) {
-
-		const config: SelectFromListConfig<Component> = {
-			itemName: 'component',
-			primaryKeyName: 'id',
-			sortKeyName: 'id',
-			listTableFieldDefinitions: ['id'],
-		}
-
-		const listItems = async (): Promise<Component[]> => Promise.resolve(device.components || [])
-		const preselectedId = device.components.length === 1 ? device.components[0].id : undefined
-		const componentId = await selectFromList(command, config, { preselectedId, listItems })
-		component = device.components.find(comp => comp.id == componentId)
-	}
-
-	if (!component) {
-		throw new Error('Component not found')
-	}
-
-	return component
-}
-
 export const chooseCapability = async (command: APICommand<typeof APICommand.flags>, component: Component): Promise<CapabilityReference> => {
 	const config: SelectFromListConfig<CapabilityReference> = {
 		itemName: 'capability',

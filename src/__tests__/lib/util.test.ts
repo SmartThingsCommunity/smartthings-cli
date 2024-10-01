@@ -1,4 +1,6 @@
-import { clipToMaximum, delay, sanitize, stringFromUnknown } from '../../lib/util.js'
+import { jest } from '@jest/globals'
+
+import { clipToMaximum, delay, fatalError, sanitize, stringFromUnknown } from '../../lib/util.js'
 
 
 describe('stringFromUnknown', () => {
@@ -47,4 +49,24 @@ test('delay', async () => {
 	const beforeDate = new Date().getTime()
 	await delay(3)
 	expect(new Date().getTime()).toBeGreaterThanOrEqual(beforeDate + 2)
+})
+
+describe('fatalError', () => {
+	const exitSpy = jest.spyOn(process, 'exit')
+		// fake exiting with a special thrown error
+		.mockImplementation(() => { throw Error('should exit') })
+	const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { /*no-op*/ })
+
+	it('prints message when given', () => {
+		expect(() => fatalError('message for user')).toThrow('should exit')
+
+		expect(consoleErrorSpy).toHaveBeenCalledWith('message for user')
+		expect(exitSpy).toHaveBeenCalledExactlyOnceWith(1)
+	})
+
+	it('uses specified code when given', () => {
+		expect(() => fatalError(undefined, 12)).toThrow('should exit')
+
+		expect(exitSpy).toHaveBeenCalledExactlyOnceWith(12)
+	})
 })
