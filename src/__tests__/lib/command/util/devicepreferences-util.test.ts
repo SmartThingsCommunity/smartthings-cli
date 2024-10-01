@@ -8,7 +8,7 @@ import { ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
 
 
 const selectFromListMock = jest.fn<typeof selectFromList>()
-jest.unstable_mockModule('../../../../lib/command/select', () => ({
+jest.unstable_mockModule('../../../../lib/command/select.js', () => ({
 	selectFromList: selectFromListMock,
 }))
 

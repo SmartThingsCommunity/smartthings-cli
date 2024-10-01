@@ -13,7 +13,7 @@ export const stringFromUnknown = (input: unknown): string => {
 		return input.toString()
 	}
 	if (typeof input === 'object') {
-		// For object, only use the toString if it's not the default
+		// For object, only use the toString if it's not the default from `Object`.
 		if (input.toString !== Object.prototype.toString) {
 			return input.toString()
 		}
@@ -36,3 +36,11 @@ export const clipToMaximum = (input: string, maxLength: number): string =>
 export const sanitize = (input?: string): string => input?.replace(/[\W]/g, '') ?? ''
 
 export const delay = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
+
+export const fatalError = (message?: string, code = 1): never => {
+	if (message) {
+		console.error(message)
+	}
+	// eslint-disable-next-line no-process-exit
+	process.exit(code)
+}

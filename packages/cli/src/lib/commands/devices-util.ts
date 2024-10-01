@@ -1,17 +1,9 @@
-import { Device, DeviceHealth, DeviceStatus } from '@smartthings/core-sdk'
+import { AttributeState, Device, DeviceHealth, DeviceStatus } from '@smartthings/core-sdk'
 
 import { TableGenerator, WithNamedRoom } from '@smartthings/cli-lib'
 
 
 export type DeviceWithLocation = Device & { location?: string }
-
-export const prettyPrintAttribute = (value: unknown): string => {
-	let result = JSON.stringify(value)
-	if (result.length > 50) {
-		result = JSON.stringify(value, null, 2)
-	}
-	return result
-}
 
 export const buildStatusTableOutput = (tableGenerator: TableGenerator, data: DeviceStatus): string => {
 	let output = ''
@@ -30,8 +22,8 @@ export const buildStatusTableOutput = (tableGenerator: TableGenerator, data: Dev
 					table.push([
 						capabilityName,
 						attributeName,
-						attribute.value !== null ?
-							`${prettyPrintAttribute(attribute.value)}${attribute.unit ? ' ' + attribute.unit : ''}` : ''])
+						prettyPrintAttribute(attribute),
+					])
 				}
 			}
 			output += table.toString()
@@ -65,8 +57,8 @@ export const buildEmbeddedStatusTableOutput = (tableGenerator: TableGenerator, d
 						table.push([
 							capability.id,
 							attributeName,
-							attribute.value !== null ?
-								`${prettyPrintAttribute(attribute.value)}${attribute.unit ? ' ' + attribute.unit : ''}` : ''])
+							prettyPrintAttribute(attribute),
+						])
 					}
 				}
 			}
@@ -233,4 +225,7 @@ export const buildTableOutput = (tableGenerator: TableGenerator, device: Device 
 	return `Main Info\n${mainInfo}` +
 		(statusInfo ? `\n\nDevice Status\n${statusInfo}` : '') +
 		(infoFrom ? `\n\nDevice Integration Info (from ${infoFrom})\n${deviceIntegrationInfo}` : '')
+}
+function prettyPrintAttribute(attribute: AttributeState): any {
+	throw new Error('Function not implemented.')
 }
