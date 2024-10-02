@@ -3,6 +3,7 @@ import { CommandModule } from 'yargs'
 import appsCommand from './apps.js'
 import configCommand from './config.js'
 import devicepreferencesCommand from './devicepreferences.js'
+import deviceprofilesCommand from './deviceprofiles.js'
 import devicesCapabilityStatusCommand from './devices/capability-status.js'
 import devicesPreferencesCommand from './devices/preferences.js'
 import locationsCommand from './locations.js'
@@ -16,6 +17,7 @@ export const commands: CommandModule<object, any>[] = [
 	appsCommand,
 	configCommand,
 	devicepreferencesCommand,
+	deviceprofilesCommand,
 	devicesCapabilityStatusCommand,
 	devicesPreferencesCommand,
 	locationsCommand,

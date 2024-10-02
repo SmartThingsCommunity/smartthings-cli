@@ -226,6 +226,3 @@ export const buildTableOutput = (tableGenerator: TableGenerator, device: Device 
 		(statusInfo ? `\n\nDevice Status\n${statusInfo}` : '') +
 		(infoFrom ? `\n\nDevice Integration Info (from ${infoFrom})\n${deviceIntegrationInfo}` : '')
 }
-function prettyPrintAttribute(attribute: AttributeState): any {
-	throw new Error('Function not implemented.')
-}
