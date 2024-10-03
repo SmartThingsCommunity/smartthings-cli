@@ -11,7 +11,7 @@ export const buildInstance = (): Argv => {
 		.command(commands)
 		.strict()
 		.demandCommand()
-		.wrap(Math.min(120, instance.terminalWidth()))
+		.wrap(Math.min(160, instance.terminalWidth()))
 		.recommendCommands()
 		/* eslint-disable @typescript-eslint/naming-convention */
 		.updateStrings({
