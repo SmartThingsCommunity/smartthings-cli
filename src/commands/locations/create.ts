@@ -9,7 +9,7 @@ import { InputAndOutputItemFlags, inputAndOutputItem, inputAndOutputItemBuilder 
 
 export type CommandArgs = APICommandFlags & InputAndOutputItemFlags
 
-export const command = 'locations:create'
+const command = 'locations:create'
 
 const describe = 'create a Location for a user'
 

@@ -44,3 +44,15 @@ export const fatalError = (message?: string, code = 1): never => {
 	// eslint-disable-next-line no-process-exit
 	process.exit(code)
 }
+
+/**
+ * Cancel running command with optional message. This would generally be chosen when the user
+ * decides to cancel.
+ */
+export const cancelCommand = (message?: string): never => {
+	// Even non-error messages go to stderr so we don't pollute JSON or YAML going to stdout.
+	console.error(message ?? 'Action Canceled')
+
+	// eslint-disable-next-line no-process-exit
+	process.exit()
+}

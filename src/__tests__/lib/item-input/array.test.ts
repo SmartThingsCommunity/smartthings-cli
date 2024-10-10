@@ -66,7 +66,8 @@ describe('arrayDef', () => {
 			itemBuildFromUserInputMock.mockResolvedValueOnce('entered value')
 			itemSummarizeForEditMock.mockReturnValueOnce(uneditable)
 
-			await expect(def.buildFromUserInput()).rejects.toThrow('The itemDef used for an arrayDef must be editable.')
+			await expect(def.buildFromUserInput()).rejects
+				.toThrow('The itemDef used for an arrayDef must be editable.')
 
 			expect(itemBuildFromUserInputMock).toHaveBeenCalledTimes(1)
 			expect(itemSummarizeForEditMock).toHaveBeenCalledTimes(1)
@@ -97,8 +98,7 @@ describe('arrayDef', () => {
 				default: finishAction,
 			}))
 
-			expect(itemBuildFromUserInputMock).toHaveBeenCalledTimes(1)
-			expect(itemBuildFromUserInputMock).toHaveBeenCalledWith([[]])
+			expect(itemBuildFromUserInputMock).toHaveBeenCalledExactlyOnceWith([[]])
 		})
 
 		it('does not allow duplicates by default', async () => {
@@ -204,8 +204,7 @@ describe('arrayDef', () => {
 
 			expect(await def.buildFromUserInput()).toStrictEqual([])
 
-			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				message: 'Add or edit Array Def.',
 				default: finishAction,
 				choices: [
@@ -215,7 +214,7 @@ describe('arrayDef', () => {
 				],
 			}))
 
-			expect(itemBuildFromUserInputMock).toHaveBeenCalledTimes(0)
+			expect(itemBuildFromUserInputMock).not.toHaveBeenCalled()
 		})
 
 		it('requires specified minium', async () => {
@@ -329,17 +328,18 @@ describe('arrayDef', () => {
 			expect(await def.buildFromUserInput()).toBe(cancelAction)
 
 			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(itemBuildFromUserInputMock).toHaveBeenCalledTimes(0)
+			expect(itemBuildFromUserInputMock).not.toHaveBeenCalled()
 		})
 
 		it('throws error on invalid action', async () => {
 			// This is a "should-never-happen" error that we can artificially create with mocking.
 			promptMock.mockResolvedValueOnce({ action: 'bad action' })
 
-			await expect(def.buildFromUserInput()).rejects.toThrow('unexpected state in arrayDef; action = "bad action"')
+			await expect(def.buildFromUserInput()).rejects
+				.toThrow('unexpected state in arrayDef; action = "bad action"')
 
 			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(itemBuildFromUserInputMock).toHaveBeenCalledTimes(0)
+			expect(itemBuildFromUserInputMock).not.toHaveBeenCalled()
 		})
 
 		it('includes help option when helpText is supplied', async () => {
@@ -361,7 +361,6 @@ describe('arrayDef', () => {
 				],
 			}))
 
-			expect(consoleLogSpy).toHaveBeenCalledTimes(1)
 			expect(consoleLogSpy).toHaveBeenCalledWith('\nhelp text\n')
 		})
 
@@ -380,7 +379,6 @@ describe('arrayDef', () => {
 
 			expect(promptMock).toHaveBeenCalledTimes(2)
 
-			expect(consoleLogSpy).toHaveBeenCalledTimes(1)
 			expect(consoleLogSpy).toHaveBeenCalledWith('\nundefined\n')
 		})
 	})
@@ -389,8 +387,7 @@ describe('arrayDef', () => {
 		it('returns empty clipped string with no items', async () => {
 			expect(def.summarizeForEdit([])).toBe('clipped')
 
-			expect(clipToMaximumMock).toHaveBeenCalledTimes(1)
-			expect(clipToMaximumMock).toHaveBeenCalledWith('', maxItemValueLength)
+			expect(clipToMaximumMock).toHaveBeenCalledExactlyOnceWith('', maxItemValueLength)
 		})
 
 		it('default summarizeForEdit uses item summarizeForEdit', async () => {
@@ -402,8 +399,8 @@ describe('arrayDef', () => {
 			expect(itemSummarizeForEditMock).toHaveBeenCalledTimes(2)
 			expect(itemSummarizeForEditMock).toHaveBeenCalledWith('item1')
 			expect(itemSummarizeForEditMock).toHaveBeenCalledWith('item2')
-			expect(clipToMaximumMock).toHaveBeenCalledTimes(1)
-			expect(clipToMaximumMock).toHaveBeenCalledWith('Item 1, Item 2', maxItemValueLength)
+			expect(clipToMaximumMock)
+				.toHaveBeenCalledExactlyOnceWith('Item 1, Item 2', maxItemValueLength)
 		})
 
 		it('uses given summarizeForEdit', async () => {
@@ -433,7 +430,7 @@ describe('arrayDef', () => {
 				],
 				default: editAction,
 			}))
-			expect(itemUpdateFromUserInputMock).toHaveBeenCalledTimes(0)
+			expect(itemUpdateFromUserInputMock).not.toHaveBeenCalled()
 		})
 
 		it('allows editing of an item', async () => {
@@ -442,7 +439,8 @@ describe('arrayDef', () => {
 			itemUpdateFromUserInputMock.mockResolvedValueOnce('updated item2')
 			promptMock.mockResolvedValueOnce({ action: finishAction }) // from editList
 
-			expect(await def.updateFromUserInput(['item1', 'item2', 'item3'])).toStrictEqual(['item1', 'updated item2', 'item3'])
+			expect(await def.updateFromUserInput(['item1', 'item2', 'item3']))
+				.toStrictEqual(['item1', 'updated item2', 'item3'])
 
 			expect(promptMock).toHaveBeenCalledTimes(3)
 			expect(itemUpdateFromUserInputMock).toHaveBeenCalledTimes(1)
@@ -454,13 +452,12 @@ describe('arrayDef', () => {
 			itemUpdateFromUserInputMock.mockResolvedValueOnce('item3') // `item3` is already used!
 			promptMock.mockResolvedValueOnce({ action: finishAction }) // from editList
 
-			expect(await def.updateFromUserInput(['item1', 'item2', 'item3'])).toStrictEqual(['item1', 'item2', 'item3'])
+			expect(await def.updateFromUserInput(['item1', 'item2', 'item3']))
+				.toStrictEqual(['item1', 'item2', 'item3'])
 
 			expect(promptMock).toHaveBeenCalledTimes(3)
-			expect(consoleLogSpy).toHaveBeenCalledTimes(1)
 			expect(consoleLogSpy).toHaveBeenCalledWith('Duplicate values are not allowed.')
-			expect(itemUpdateFromUserInputMock).toHaveBeenCalledTimes(1)
-			expect(itemUpdateFromUserInputMock).toHaveBeenCalledWith('item2', [])
+			expect(itemUpdateFromUserInputMock).toHaveBeenCalledExactlyOnceWith('item2', [])
 		})
 
 		it('always allow reentering current value even when duplicates are not allowed', async () => {
@@ -469,12 +466,12 @@ describe('arrayDef', () => {
 			itemUpdateFromUserInputMock.mockResolvedValueOnce('item2') // not changing the value
 			promptMock.mockResolvedValueOnce({ action: finishAction }) // from editList
 
-			expect(await def.updateFromUserInput(['item1', 'item2', 'item3'])).toStrictEqual(['item1', 'item2', 'item3'])
+			expect(await def.updateFromUserInput(['item1', 'item2', 'item3']))
+				.toStrictEqual(['item1', 'item2', 'item3'])
 
 			expect(promptMock).toHaveBeenCalledTimes(3)
-			expect(consoleLogSpy).toHaveBeenCalledTimes(0)
-			expect(itemUpdateFromUserInputMock).toHaveBeenCalledTimes(1)
-			expect(itemUpdateFromUserInputMock).toHaveBeenCalledWith('item2', [])
+			expect(consoleLogSpy).not.toHaveBeenCalled()
+			expect(itemUpdateFromUserInputMock).toHaveBeenCalledExactlyOnceWith('item2', [])
 		})
 
 		it('allows duplicates if specified', async () => {
@@ -485,12 +482,12 @@ describe('arrayDef', () => {
 			itemUpdateFromUserInputMock.mockResolvedValueOnce('item3') // `item3` is already used!
 			promptMock.mockResolvedValueOnce({ action: finishAction }) // from editList
 
-			expect(await def.updateFromUserInput(['item1', 'item2', 'item3'])).toStrictEqual(['item1', 'item3', 'item3'])
+			expect(await def.updateFromUserInput(['item1', 'item2', 'item3']))
+				.toStrictEqual(['item1', 'item3', 'item3'])
 
 			expect(promptMock).toHaveBeenCalledTimes(3)
-			expect(consoleLogSpy).toHaveBeenCalledTimes(0)
-			expect(itemUpdateFromUserInputMock).toHaveBeenCalledTimes(1)
-			expect(itemUpdateFromUserInputMock).toHaveBeenCalledWith('item2', [])
+			expect(consoleLogSpy).not.toHaveBeenCalled()
+			expect(itemUpdateFromUserInputMock).toHaveBeenCalledExactlyOnceWith('item2', [])
 		})
 
 		it('supports item removal', async () => {
@@ -498,10 +495,11 @@ describe('arrayDef', () => {
 			promptMock.mockResolvedValueOnce({ action: deleteAction }) // from editItem
 			promptMock.mockResolvedValueOnce({ action: finishAction }) // from editList
 
-			expect(await def.updateFromUserInput(['item1', 'item2', 'item3'])).toStrictEqual(['item1', 'item3'])
+			expect(await def.updateFromUserInput(['item1', 'item2', 'item3']))
+				.toStrictEqual(['item1', 'item3'])
 
 			expect(promptMock).toHaveBeenCalledTimes(3)
-			expect(itemUpdateFromUserInputMock).toHaveBeenCalledTimes(0)
+			expect(itemUpdateFromUserInputMock).not.toHaveBeenCalled()
 		})
 
 		it('returns cancelAction when canceled', async () => {
@@ -510,7 +508,7 @@ describe('arrayDef', () => {
 			expect(await def.updateFromUserInput(['item1', 'item2'])).toBe(cancelAction)
 
 			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(itemUpdateFromUserInputMock).toHaveBeenCalledTimes(0)
+			expect(itemUpdateFromUserInputMock).not.toHaveBeenCalled()
 		})
 	})
 })
@@ -537,13 +535,14 @@ describe('checkboxDef', () => {
 
 			expect(await simpleDef.buildFromUserInput()).toBe(simpleResults)
 
-			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				type: 'checkbox',
 				name: 'values',
 				message: 'Select Checkbox Def.',
 				choices: ['Item 1', 'Item 2', 'Item 3'],
 				default: finishAction,
+			}))
+			expect(promptMock).toHaveBeenCalledWith(expect.not.objectContaining({
 				validate: undefined,
 			}))
 		})
@@ -553,22 +552,24 @@ describe('checkboxDef', () => {
 
 			expect(await complexDef.buildFromUserInput()).toBe(complexResults)
 
-			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				choices: complexChoices,
 				default: finishAction,
 			}))
 		})
 
 		it('uses default values for simple string input', async () => {
-			const def = checkboxDef<string>('Checkbox Def', ['Item 1', 'Item 2', 'Item 3'], { default: ['Item 2', 'Item 3'] })
+			const def = checkboxDef<string>(
+				'Checkbox Def',
+				['Item 1', 'Item 2', 'Item 3'],
+				{ default: ['Item 2', 'Item 3'] },
+			)
 
 			promptMock.mockResolvedValueOnce({ values: simpleResults })
 
 			expect(await def.buildFromUserInput()).toBe(simpleResults)
 
-			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				choices: [
 					'Item 1',
 					{ name: 'Item 2', value: 'Item 2', checked: true },
@@ -579,14 +580,17 @@ describe('checkboxDef', () => {
 		})
 
 		it('uses default values for complex input', async () => {
-			const def = checkboxDef('Complex Checkbox Def', complexChoices, { default: [complexValues[0]] })
+			const def = checkboxDef(
+				'Complex Checkbox Def',
+				complexChoices,
+				{ default: [complexValues[0]] },
+			)
 
 			promptMock.mockResolvedValueOnce({ values: complexResults })
 
 			expect(await def.buildFromUserInput()).toBe(complexResults)
 
-			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				choices: [
 					{ ...complexChoices[0], checked: true },
 					complexChoices[1],
@@ -598,34 +602,37 @@ describe('checkboxDef', () => {
 
 		it('uses supplied validate method', async () => {
 			const validate = jest.fn<Required<CheckboxDefOptions<string>>['validate']>()
-			const def = checkboxDef<string>('Checkbox Def', ['Item 1', 'Item 2', 'Item 3'], { validate })
+			const def = checkboxDef('Checkbox Def', ['Item 1', 'Item 2', 'Item 3'], { validate })
 			promptMock.mockResolvedValueOnce({ values: simpleResults })
 
 			expect(await def.buildFromUserInput()).toBe(simpleResults)
 
-			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				validate,
 			}))
 		})
 
 		it('includes help option when helpText is supplied', async () => {
-			const def = checkboxDef<string>('Checkbox Def', ['Item 1', 'Item 2'], { helpText: 'help text' })
+			const def = checkboxDef<string>(
+				'Checkbox Def',
+				['Item 1', 'Item 2'],
+				{ helpText: 'help text' },
+			)
 			promptMock.mockResolvedValueOnce({ values: ['Item 1'] })
 
 			expect(await def.buildFromUserInput()).toStrictEqual(['Item 1'])
 
-			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				type: 'checkbox',
 				name: 'values',
 				message: 'Select Checkbox Def.',
 				choices: ['Item 1', 'Item 2'],
 				default: finishAction,
+			}))
+			expect(promptMock).toHaveBeenCalledWith(expect.not.objectContaining({
 				validate: undefined,
 			}))
 
-			expect(consoleLogSpy).toHaveBeenCalledTimes(1)
 			expect(consoleLogSpy).toHaveBeenCalledWith('\nhelp text\n')
 		})
 	})
@@ -634,8 +641,7 @@ describe('checkboxDef', () => {
 		it('returns empty clipped string with no items', async () => {
 			expect(simpleDef.summarizeForEdit([])).toBe('clipped')
 
-			expect(clipToMaximumMock).toHaveBeenCalledTimes(1)
-			expect(clipToMaximumMock).toHaveBeenCalledWith('', maxItemValueLength)
+			expect(clipToMaximumMock).toHaveBeenCalledExactlyOnceWith('', maxItemValueLength)
 		})
 
 		it('default summarizeForEdit uses item stringFromUnknown', async () => {
@@ -647,13 +653,18 @@ describe('checkboxDef', () => {
 			expect(stringFromUnknownMock).toHaveBeenCalledTimes(2)
 			expect(stringFromUnknownMock).toHaveBeenCalledWith('item1')
 			expect(stringFromUnknownMock).toHaveBeenCalledWith('item2')
-			expect(clipToMaximumMock).toHaveBeenCalledTimes(1)
-			expect(clipToMaximumMock).toHaveBeenCalledWith('Item 1, Item 2', maxItemValueLength)
+			expect(clipToMaximumMock)
+				.toHaveBeenCalledExactlyOnceWith('Item 1, Item 2', maxItemValueLength)
 		})
 
 		it('uses given summarizeForEdit', async () => {
-			const summarizeForEdit = jest.fn<Required<CheckboxDefOptions<string>>['summarizeForEdit']>()
-			const def = checkboxDef<string>('Checkbox Def', ['Item 1', 'Item 2', 'Item 3'], { summarizeForEdit })
+			const summarizeForEdit =
+				jest.fn<Required<CheckboxDefOptions<string>>['summarizeForEdit']>()
+			const def = checkboxDef(
+				'Checkbox Def',
+				['Item 1', 'Item 2', 'Item 3'],
+				{ summarizeForEdit },
+			)
 
 			expect(def.summarizeForEdit).toBe(summarizeForEdit)
 		})
@@ -669,8 +680,7 @@ describe('checkboxDef', () => {
 
 			expect(await def.updateFromUserInput([complexValues[1]])).toBe(complexResults)
 
-			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				choices: [
 					complexChoices[0],
 					{ ...complexChoices[1], checked: true },

@@ -1,4 +1,4 @@
-import inquirer from 'inquirer'
+import inquirer, { InputQuestion } from 'inquirer'
 
 
 export type ValidateFunction = (input: string) => true | string | Promise<true | string>
@@ -33,13 +33,19 @@ const promptForString = async (message: string, options: AskForStringOptions): P
 		return options.validate
 	}
 
-	const prompt = async (): Promise<string | undefined> => (await inquirer.prompt({
+	const question: InputQuestion = {
 		type: 'input',
 		name: 'value',
 		message: options.helpText ? `${message} (? for help)` : message,
-		validate: buildValidateFunction(),
 		default: typeof options.default === 'function' ? options.default() : options.default,
-	})).value as string | undefined
+	}
+	const validate = buildValidateFunction()
+	// inquirer fails if validate is included but undefined
+	if (validate) {
+		question.validate = validate
+	}
+	const prompt = async (): Promise<string | undefined> =>
+		(await inquirer.prompt(question)).value as string | undefined
 
 	let entered = await prompt()
 	while (options.helpText && entered === '?') {
@@ -59,6 +65,9 @@ export const askForOptionalString = async (message: string, options?: AskForStri
 		...options,
 		validate: options?.validate ? allowEmptyFn(options.validate) : undefined,
 	}
+	if (options && !options.validate) {
+		delete options.validate
+	}
 	return await promptForString(message, updatedOptions) || undefined
 }
 
@@ -69,7 +78,8 @@ export const askForOptionalString = async (message: string, options?: AskForStri
 export const askForString = async (message: string, options?: AskForStringOptions): Promise<string> =>  {
 	const updatedOptions = {
 		...options,
-		validate: (input: string) => input ? (options?.validate ? options.validate(input) : true) : 'value is required',
+		validate: (input: string) =>
+			input ? (options?.validate ? options.validate(input) : true) : 'value is required',
 	}
 	return await promptForString(message, updatedOptions) as string
 }
@@ -97,14 +107,19 @@ const promptForInteger = async (message: string, options: AskForIntegerOptions):
 		return options.validate
 	}
 
-	const prompt = async (): Promise<string | undefined> => (await inquirer.prompt({
+	const question: InputQuestion = {
 		type: 'input',
 		name: 'value',
 		message: options.helpText ? `${message} (? for help)` : message,
 		transformer: numberTransformer,
-		validate: buildValidateFunctionFn(),
 		default: typeof options.default === 'function' ? options.default() : options.default,
-	})).value as string | undefined
+	}
+	const validate = buildValidateFunctionFn()
+	if (validate) {
+		question.validate = validate
+	}
+	const prompt = async (): Promise<string | undefined> =>
+		(await inquirer.prompt(question)).value as string | undefined
 
 	let entered = await prompt()
 	while (options.helpText && entered === '?') {

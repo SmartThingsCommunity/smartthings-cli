@@ -1,6 +1,13 @@
 import { jest } from '@jest/globals'
 
-import { clipToMaximum, delay, fatalError, sanitize, stringFromUnknown } from '../../lib/util.js'
+import {
+	cancelCommand,
+	clipToMaximum,
+	delay,
+	fatalError,
+	sanitize,
+	stringFromUnknown,
+} from '../../lib/util.js'
 
 
 describe('stringFromUnknown', () => {
@@ -68,5 +75,26 @@ describe('fatalError', () => {
 		expect(() => fatalError(undefined, 12)).toThrow('should exit')
 
 		expect(exitSpy).toHaveBeenCalledExactlyOnceWith(12)
+	})
+})
+
+describe('cancelCommand', () => {
+	const exitSpy = jest.spyOn(process, 'exit')
+		// fake exiting with a special thrown error
+		.mockImplementation(() => { throw Error('should exit') })
+	const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { /*no-op*/ })
+
+	it('prints message when given', () => {
+		expect(() => cancelCommand('message for user')).toThrow('should exit')
+
+		expect(consoleErrorSpy).toHaveBeenCalledWith('message for user')
+		expect(exitSpy).toHaveBeenCalledExactlyOnceWith()
+	})
+
+	it('defaults to "Action Canceled', () => {
+		expect(() => cancelCommand()).toThrow('should exit')
+
+		expect(consoleErrorSpy).toHaveBeenCalledWith('Action Canceled')
+		expect(exitSpy).toHaveBeenCalledExactlyOnceWith()
 	})
 })
