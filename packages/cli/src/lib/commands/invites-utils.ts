@@ -20,7 +20,7 @@ export const chooseSchemaInvitation = async (command: APICommand<typeof APIComma
 		sortKeyName: 'description',
 	}
 	const listItems = async (): Promise<SchemaAppInvitation[]> => {
-		const schemaAppId = await chooseSchemaApp(command, schemaAppFromArgs)
+		const schemaAppId = await chooseSchemaApp(command, schemaAppFromArgs, { autoChoose: true })
 		return command.client.invitesSchema.list(schemaAppId)
 	}
 	const preselectedId = opts.allowIndex

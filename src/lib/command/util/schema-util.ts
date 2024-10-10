@@ -1,60 +1,31 @@
-import { OrganizationResponse, SchemaApp, SchemaAppRequest, SmartThingsURLProvider, ViperAppLinks } from '@smartthings/core-sdk'
+import {
+	type SmartThingsClient,
+	type SchemaApp,
+	type SchemaAppRequest,
+	type SmartThingsURLProvider,
+	type ViperAppLinks,
+} from '@smartthings/core-sdk'
 
 import {
-	APICommand,
 	booleanDef,
-	ChooseOptions,
-	chooseOptionsWithDefaults,
-	clipToMaximum,
 	createFromUserInput,
-	emailValidate,
-	httpsURLValidate,
-	InputDefinition,
+	type InputDefinition,
 	listSelectionDef,
 	maxItemValueLength,
 	objectDef,
 	optionalDef,
 	optionalStringDef,
-	selectDef,
-	selectFromList,
-	SelectFromListConfig,
 	staticDef,
 	stringDef,
-	stringTranslateToId,
-	undefinedDef,
 	updateFromUserInput,
-} from '@smartthings/cli-lib'
-import { awsHelpText } from '../aws-utils'
+} from '../../item-input/index.js'
+import { clipToMaximum } from '../../util.js'
+import { emailValidate, httpsURLValidate } from '../../validate-util.js'
+import { type APICommand } from '../api-command.js'
+import { organizationDef } from './organizations-util.js'
+import { arnDef, webHookUrlDef } from './schema-util-input-primitives.js'
+import { type ChooseFunction, createChooseFn } from './util-util.js'
 
-
-export const SCHEMA_AWS_PRINCIPAL = '148790070172'
-
-export const arnDef = (name: string, inChina: boolean, initialValue?: SchemaAppRequest, options?: { forChina?: boolean }): InputDefinition<string | undefined> => {
-	if (inChina && !options?.forChina || !inChina && options?.forChina) {
-		return undefinedDef
-	}
-
-	const helpText = awsHelpText
-	const initiallyActive = initialValue?.hostingType === 'lambda'
-
-	// In China there is only one ARN field so we can make it required. Globally there are three
-	// and at least one of the three is required, but individually all are optional.
-	// (See `validateFinal` function below for the validation requiring at least one.)
-	return optionalDef(inChina ? stringDef(name, { helpText }) : optionalStringDef(name, { helpText }),
-		(context?: unknown[]) => (context?.[0] as Pick<SchemaAppRequest, 'hostingType'>)?.hostingType === 'lambda',
-		{ initiallyActive })
-}
-
-export const webHookUrlDef = (inChina: boolean, initialValue?: SchemaAppRequest): InputDefinition<string | undefined> => {
-	if (inChina) {
-		return undefinedDef
-	}
-
-	const initiallyActive = initialValue?.hostingType === 'webhook'
-	return optionalDef(stringDef('Webhook URL'),
-		(context?: unknown[]) => (context?.[0] as Pick<SchemaAppRequest, 'hostingType'>)?.hostingType === 'webhook',
-		{ initiallyActive })
-}
 
 export type SchemaAppWithOrganization = SchemaAppRequest & {
 	organizationId?: string
@@ -79,30 +50,11 @@ export const validateFinal = (schemaAppRequest: InputData): true | string => {
 export const appLinksDefSummarize = (value?: ViperAppLinks): string =>
 	clipToMaximum(`android: ${value?.android}, ios: ${value?.ios}`, maxItemValueLength)
 
-export const organizationDef = (organizations: OrganizationResponse[]): InputDefinition<string | undefined> => {
-	if (organizations.length < 1) {
-		return undefinedDef
-	}
-	if (organizations.length === 1) {
-		return staticDef(organizations[0].organizationId)
-	}
-
-	const choices = organizations
-		.map(organization => ({
-			name: organization.name,
-			value: organization.organizationId,
-		}))
-
-	const helpText = 'The organization with which the Schema connector should be associated.'
-
-	return selectDef('Organization', choices, { helpText })
-}
-
 export const buildInputDefinition = async (
-		command: APICommand<typeof APICommand.flags>,
+		command: APICommand,
 		initialValue?: SchemaApp,
 ): Promise<InputDefinition<InputData>> => {
-	// TODO: should do more type checking on this, perhaps using zod or
+	// TODO: should do more type checking on this, perhaps using zod or similar
 	const baseURL = (command.profile.clientIdProvider as SmartThingsURLProvider | undefined)?.baseURL
 	const inChina = typeof baseURL === 'string' && baseURL.endsWith('cn')
 
@@ -117,11 +69,15 @@ export const buildInputDefinition = async (
 	}, { summarizeForEdit: appLinksDefSummarize })
 
 	return objectDef<InputData>('Schema App', {
-		organizationId: organizationDef(await command.client.organizations.list()),
+		organizationId: organizationDef(
+			'Schema connector',
+			await command.client.organizations.list(),
+		),
 		partnerName: stringDef('Partner Name'),
 		userEmail: stringDef('User email', { validate: emailValidate }),
 		appName: optionalStringDef('App Name', {
-			default: (context?: unknown[]) => (context?.[0] as Pick<SchemaAppRequest, 'partnerName'>)?.partnerName ?? '',
+			default: (context?: unknown[]) =>
+				(context?.[0] as Pick<SchemaAppRequest, 'partnerName'>)?.partnerName ?? '',
 		}),
 		oAuthAuthorizationUrl: stringDef('OAuth Authorization URL', { validate: httpsURLValidate }),
 		oAuthTokenUrl: stringDef('Partner OAuth Refresh Token URL', { validate: httpsURLValidate }),
@@ -140,7 +96,8 @@ export const buildInputDefinition = async (
 		webhookUrl: webHookUrlDef(inChina, initialValue),
 		includeAppLinks: booleanDef('Enable app-to-app linking?', { default: false }),
 		viperAppLinks: optionalDef(appLinksDef,
-			(context?: unknown[]) => (context?.[0] as Pick<InputData, 'includeAppLinks'>)?.includeAppLinks,
+			(context?: unknown[]) =>
+				(context?.[0] as Pick<InputData, 'includeAppLinks'>)?.includeAppLinks,
 			{ initiallyActive: !!initialValue?.viperAppLinks }),
 	}, { validateFinal })
 }
@@ -154,7 +111,7 @@ const stripTempInputFields = (inputData: InputData): SchemaAppWithOrganization =
 }
 
 export const getSchemaAppUpdateFromUser = async (
-		command: APICommand<typeof APICommand.flags>,
+		command: APICommand,
 		original: SchemaApp, dryRun: boolean,
 ): Promise<SchemaAppWithOrganization> => {
 	const inputDef = await buildInputDefinition(command, original)
@@ -166,7 +123,7 @@ export const getSchemaAppUpdateFromUser = async (
 }
 
 export const getSchemaAppCreateFromUser = async (
-		command: APICommand<typeof APICommand.flags>,
+		command: APICommand,
 		dryRun: boolean,
 ): Promise<SchemaAppWithOrganization> => {
 	const inputDef = await buildInputDefinition(command)
@@ -176,16 +133,13 @@ export const getSchemaAppCreateFromUser = async (
 	return stripTempInputFields(inputData)
 }
 
-export const chooseSchemaApp = async (command: APICommand<typeof APICommand.flags>, schemaAppFromArg?: string, options?: Partial<ChooseOptions<SchemaApp>>): Promise<string> => {
-	const opts = chooseOptionsWithDefaults(options)
-	const config: SelectFromListConfig<SchemaApp> = {
+export const chooseSchemaAppFn = (): ChooseFunction<SchemaApp> => createChooseFn(
+	{
 		itemName: 'schema app',
 		primaryKeyName: 'endpointAppId',
 		sortKeyName: 'appName',
-	}
-	const listItems = (): Promise<SchemaApp[]> => command.client.schema.list()
-	const preselectedId = opts.allowIndex
-		? await stringTranslateToId(config, schemaAppFromArg, listItems)
-		: schemaAppFromArg
-	return selectFromList(command, config, { preselectedId, listItems, autoChoose: true })
-}
+	},
+	(client: SmartThingsClient): Promise<SchemaApp[]> => client.schema.list(),
+)
+
+export const chooseSchemaApp = chooseSchemaAppFn()
