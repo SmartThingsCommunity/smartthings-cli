@@ -45,11 +45,11 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 		)
 		.example([
 			['$0 deviceprofiles', 'list all device profiles'],
-			['$0 deviceprofiles 8bd382bb-07e8-48d3-8b11-5f0b508b1729', 'display details for a device profile by id'],
 			[
 				'$0 deviceprofiles 2',
-				'display details for the first device profile in the list retrieved by running "$0 device profiles"',
+				'display details for the second device profile in the list retrieved by running "smartthings deviceprofiles"',
 			],
+			['$0 deviceprofiles 8bd382bb-07e8-48d3-8b11-5f0b508b1729', 'display details for a device profile by id'],
 		])
 		.epilog(apiDocsURL('listDeviceProfiles', 'getDeviceProfile'))
 

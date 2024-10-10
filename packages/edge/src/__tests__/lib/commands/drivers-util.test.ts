@@ -2,9 +2,6 @@ import {
 	Device,
 	DeviceIntegrationType,
 	DriverChannelDetails,
-	EdgeDeviceIntegrationProfileKey,
-	EdgeDriver,
-	EdgeDriverPermissions,
 	EdgeDriverSummary,
 	InstalledDriver,
 	Location,
@@ -24,7 +21,6 @@ import {
 } from '@smartthings/cli-lib'
 
 import {
-	buildTableOutput,
 	chooseDriver,
 	chooseDriverFromChannel,
 	chooseHub,
@@ -32,9 +28,7 @@ import {
 	getDriverDevices,
 	listAllAvailableDrivers,
 	listAssignedDriversWithNames,
-	listDrivers,
 	listMatchingDrivers,
-	permissionsValue,
 	withoutCurrentDriver,
 } from '../../../lib/commands/drivers-util.js'
 import * as driversUtil from '../../../lib/commands/drivers-util.js'
@@ -51,77 +45,8 @@ jest.mock('@smartthings/cli-lib', () => ({
 const selectFromListMock = jest.mocked(selectFromList)
 const stringTranslateToIdMock = jest.mocked(stringTranslateToId)
 
-describe('permissionsValue', () => {
-	it('returns none with no permissions at all', () => {
-		expect(permissionsValue({} as EdgeDriver)).toBe('none')
-	})
-
-	it('returns none with empty permissions array', () => {
-		expect(permissionsValue({ permissions: [] as EdgeDriverPermissions[] } as EdgeDriver)).toBe('none')
-	})
-
-	it('combines permissions names', () => {
-		expect(permissionsValue({ permissions: [
-			{ name: 'r:locations' },
-			{ name: 'r:devices' },
-		] } as EdgeDriver)).toBe('r:locations\nr:devices')
-	})
-})
-
-describe('buildTableOutput', () => {
-	const buildTableFromItem = jest.fn().mockReturnValue('basic info')
-	const buildTableFromList = jest.fn()
-	const tableGenerator = {
-		buildTableFromItem,
-		buildTableFromList,
-	} as unknown as TableGenerator
-	const minimalDriver: EdgeDriver = {
-		driverId: 'driver-id',
-		name: 'Driver Name',
-		version: 'driver-version',
-		packageKey: 'package key',
-		deviceIntegrationProfiles: [{ id: 'profile-id' } as EdgeDeviceIntegrationProfileKey],
-	}
-
-	it('works with minimal fields', () => {
-		buildTableFromList.mockReturnValueOnce('profiles table')
-
-		expect(buildTableOutput(tableGenerator, minimalDriver))
-			.toBe('Basic Information\nbasic info\n\n' +
-				'Device Integration Profiles\nprofiles table\n\n' +
-				'No fingerprints specified.')
-
-		expect(buildTableFromItem).toHaveBeenCalledTimes(1)
-		expect(buildTableFromItem).toHaveBeenCalledWith(minimalDriver,
-			expect.arrayContaining(['driverId', 'name', 'version', 'packageKey']))
-		expect(buildTableFromList).toHaveBeenCalledTimes(1)
-		expect(buildTableFromList).toHaveBeenCalledWith(minimalDriver.deviceIntegrationProfiles,
-			['id', 'majorVersion'])
-	})
-
-	it('includes fingerprints when specified', () => {
-		const driver = { ...minimalDriver, fingerprints: [{ id: 'fingerprint-id' }] } as EdgeDriver
-		buildTableFromList.mockReturnValueOnce('profiles table')
-		buildTableFromList.mockReturnValueOnce('fingerprints table')
-
-		expect(buildTableOutput(tableGenerator, driver))
-			.toBe('Basic Information\nbasic info\n\n' +
-				'Device Integration Profiles\nprofiles table\n\n' +
-				'Fingerprints\nfingerprints table')
-
-		expect(buildTableFromItem).toHaveBeenCalledTimes(1)
-		expect(buildTableFromItem).toHaveBeenCalledWith(driver,
-			expect.arrayContaining(['driverId', 'name', 'version', 'packageKey']))
-		expect(buildTableFromList).toHaveBeenCalledTimes(2)
-		expect(buildTableFromList).toHaveBeenCalledWith(driver.deviceIntegrationProfiles,
-			['id', 'majorVersion'])
-		expect(buildTableFromList).toHaveBeenCalledWith(driver.fingerprints,
-			['id', 'type', 'deviceLabel'])
-	})
-})
-
 const client = {
-	drivers: { list: jest.fn(), listDefault: jest.fn() },
+	drivers: { listDefault: jest.fn() },
 	devices: { get: jest.fn(), list: jest.fn() },
 	hubdevices: { listInstalled: jest.fn() },
 } as unknown as SmartThingsClient
@@ -130,40 +55,6 @@ const apiDriversListDefaultMock = jest.mocked(client.drivers.listDefault)
 const apiDevicesGetMock = jest.mocked(client.devices.get)
 const apiDevicesListMock = jest.mocked(client.devices.list)
 const apiHubdevicesListInstalledMock = jest.mocked(client.hubdevices.listInstalled)
-
-const driverList = [{ name: 'Driver' }] as EdgeDriverSummary[]
-
-describe('listDrivers', () => {
-	const forAllOrganizationsMock = jest.mocked(forAllOrganizations)
-
-	it('normally uses drivers.list', async () => {
-		apiDriversListMock.mockResolvedValueOnce(driverList)
-
-		expect(await listDrivers(client)).toBe(driverList)
-
-		expect(apiDriversListMock).toHaveBeenCalledTimes(1)
-		expect(apiDriversListMock).toHaveBeenCalledWith()
-		expect(forAllOrganizationsMock).toHaveBeenCalledTimes(0)
-	})
-
-	it('lists drivers for all organizations when requested', async () => {
-		const withOrg = [{ name: 'driver', organization: 'organization-name' }] as (EdgeDriverSummary & WithOrganization)[]
-		forAllOrganizationsMock.mockResolvedValueOnce(withOrg)
-
-		expect(await listDrivers(client, true)).toBe(withOrg)
-
-		expect(apiDriversListMock).toHaveBeenCalledTimes(0)
-		expect(forAllOrganizationsMock).toHaveBeenCalledTimes(1)
-		expect(forAllOrganizationsMock).toHaveBeenCalledWith(client, expect.any(Function))
-
-		const listDriversFunction = forAllOrganizationsMock.mock.calls[0][1]
-		apiDriversListMock.mockResolvedValueOnce(driverList)
-
-		expect(await listDriversFunction(client, { organizationId: 'unused' } as OrganizationResponse)).toBe(driverList)
-		expect(apiDriversListMock).toHaveBeenCalledTimes(1)
-		expect(apiDriversListMock).toHaveBeenCalledWith()
-	})
-})
 
 test.each`
 	deviceType  | expectedCount
