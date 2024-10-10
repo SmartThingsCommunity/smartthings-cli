@@ -54,7 +54,7 @@ export default class InvitesSchemaCreateCommand extends APICommand<typeof Invite
 		const schemaAppsById = new Map<string, SchemaApp>()
 
 		const updateFromUserInput = async (): Promise<string | CancelAction> => {
-			const schemaAppId = await chooseSchemaApp(this, this.flags['schema-app'])
+			const schemaAppId = await chooseSchemaApp(this, this.flags['schema-app'], { autoChoose: true })
 			if (!schemaAppsById.has(schemaAppId)) {
 				const schemaApp = await this.client.schema.get(schemaAppId)
 				schemaAppsById.set(schemaAppId, schemaApp)
