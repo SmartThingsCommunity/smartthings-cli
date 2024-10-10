@@ -1,14 +1,18 @@
 import { LambdaClient, AddPermissionCommand, AddPermissionRequest } from '@aws-sdk/client-lambda'
 
 
-export async function addPermission(arn: string, principal = '906037444270', statementId = 'smartthings'): Promise<string> {
-	const segs = arn.split(':')
-	if (segs.length < 7) {
+export const addPermission = async (
+		arn: string,
+		principal = '906037444270',
+		statementId = 'smartthings',
+): Promise<string> => {
+	const segments = arn.split(':')
+	if (segments.length < 7) {
 		return 'Invalid Lambda ARN'
 	}
 
 	try {
-		const region = segs[3]
+		const region = segments[3]
 		const client = new LambdaClient({ region })
 
 		const params: AddPermissionRequest = {
@@ -31,9 +35,12 @@ export async function addPermission(arn: string, principal = '906037444270', sta
 	}
 }
 
-export function addSchemaPermission(arn: string, principal = '148790070172', statementId = 'smartthings'): Promise<string> {
-	return addPermission(arn, principal, statementId)
-}
+export const schemaAWSPrincipal = '148790070172'
+export const addSchemaPermission = (
+		arn: string,
+		principal = schemaAWSPrincipal,
+		statementId = 'smartthings',
+): Promise<string> => addPermission(arn, principal, statementId)
 
 /**
  * Help text for use in `InputDefinition` instances.

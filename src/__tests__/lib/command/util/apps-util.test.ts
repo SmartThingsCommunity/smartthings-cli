@@ -11,7 +11,6 @@ import { stringTranslateToId } from '../../../../lib/command/command-util.js'
 import {
 	createChooseFn,
 	type ChooseFunction,
-	chooseOptionsWithDefaults,
 } from '../../../../lib/command/util/util-util.js'
 import {
 	mockedTableOutput,
@@ -27,9 +26,7 @@ jest.unstable_mockModule('../../../../lib/command/command-util.js', () => ({
 }))
 
 const createChooseFnMock = jest.fn<typeof createChooseFn<PagedApp>>()
-const chooseOptionsWithDefaultsMock = jest.fn<typeof chooseOptionsWithDefaults>()
 jest.unstable_mockModule('../../../../lib/command/util/util-util.js', () => ({
-	chooseOptionsWithDefaults: chooseOptionsWithDefaultsMock,
 	createChooseFn: createChooseFnMock,
 }))
 
