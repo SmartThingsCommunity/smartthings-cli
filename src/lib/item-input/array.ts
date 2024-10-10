@@ -1,4 +1,4 @@
-import inquirer, { ChoiceCollection, DistinctChoice } from 'inquirer'
+import inquirer, { CheckboxQuestion, ChoiceCollection, DistinctChoice } from 'inquirer'
 
 import { clipToMaximum, stringFromUnknown } from '../util.js'
 
@@ -221,15 +221,18 @@ export function checkboxDef<T>(name: string, items: CheckboxDefItem<T>[], option
 			}
 			return item
 		})
-		const updatedValues = (await inquirer.prompt({
+		const question: CheckboxQuestion = {
 			type: 'checkbox',
 			name: 'values',
 			message: `Select ${name}.`,
 			choices,
 			default: finishAction,
 			pageSize: inquirerPageSize,
-			validate: options?.validate,
-		})).values
+		}
+		if (options?.validate) {
+			question.validate = options.validate
+		}
+		const updatedValues = (await inquirer.prompt(question)).values
 
 		return updatedValues as T[]
 	}

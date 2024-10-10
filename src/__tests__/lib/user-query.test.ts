@@ -16,6 +16,7 @@ jest.unstable_mockModule('inquirer', () => ({
 
 const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /*no-op*/ })
 
+
 const {
 	askForBoolean,
 	askForInteger,
@@ -47,8 +48,7 @@ describe('askForOptionalString', () => {
 
 		expect(await askForOptionalString('prompt message')).toBe('entered value')
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
 			type: 'input',
 			name: 'value',
 			message: 'prompt message',
@@ -68,49 +68,71 @@ describe('askForOptionalString', () => {
 
 		const validateMock = jest.fn<ValidateFunction>().mockReturnValueOnce(true)
 
-		expect(await askForOptionalString('prompt message', { validate: validateMock })).toBe(undefined)
+		expect(await askForOptionalString('prompt message', { validate: validateMock }))
+			.toBe(undefined)
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			validate: expect.any(Function),
 		}))
 
-		const generatedValidate = (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
+		const generatedValidate = (promptMock.mock.calls[0][0] as { validate: ValidateFunction })
+			.validate
 		expect(generatedValidate('input string')).toBe(true)
-		expect(validateMock).toHaveBeenCalledTimes(1)
-		expect(validateMock).toHaveBeenCalledWith('input string')
+		expect(validateMock).toHaveBeenCalledExactlyOnceWith('input string')
+	})
+
+	it('does not include validate when there is none', async () => {
+		promptMock.mockResolvedValue({ value: '' })
+
+		expect(await askForOptionalString('prompt message', { validate: undefined }))
+			.toBe(undefined)
+
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.not.objectContaining({
+			validate: undefined,
+		}))
+	})
+
+	it('does not include validate when there is none', async () => {
+		promptMock.mockResolvedValue({ value: '' })
+
+		expect(await askForOptionalString('prompt message', { validate: undefined })).toBe(undefined)
+
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.not.objectContaining({
+			validate: undefined,
+		}))
 	})
 
 	it('passes default to inquirer', async () => {
 		promptMock.mockResolvedValue({ value: '' })
 
-		expect(await askForOptionalString('prompt message', { default: 'default value' })).toBe(undefined)
+		expect(await askForOptionalString('prompt message', { default: 'default value' }))
+			.toBe(undefined)
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			default: 'default value',
 		}))
 	})
 
 	it('calls default function to get default', async () => {
-		const defaultMock = jest.fn<DefaultValueFunction<string>>().mockReturnValueOnce('calculated default')
+		const defaultMock = jest.fn<DefaultValueFunction<string>>()
+			.mockReturnValueOnce('calculated default')
 		promptMock.mockResolvedValue({ value: 'entered value' })
 
-		expect(await askForOptionalString('prompt message', { default: defaultMock })).toBe('entered value')
+		expect(await askForOptionalString('prompt message', { default: defaultMock }))
+			.toBe('entered value')
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			default: 'calculated default',
 		}))
-		expect(defaultMock).toHaveBeenCalledTimes(1)
-		expect(defaultMock).toHaveBeenCalledWith()
+		expect(defaultMock).toHaveBeenCalledExactlyOnceWith()
 	})
 
 	it('displays help text when "?" entered', async () => {
 		promptMock.mockResolvedValueOnce({ value: '?' })
 		promptMock.mockResolvedValueOnce({ value: 'entered value' })
 
-		expect(await askForOptionalString('prompt message', { helpText: 'help text' })).toBe('entered value')
+		expect(await askForOptionalString('prompt message', { helpText: 'help text' }))
+			.toBe('entered value')
 
 		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
 			message: 'prompt message (? for help)',
@@ -123,8 +145,10 @@ describe('askForOptionalString', () => {
 		promptMock.mockResolvedValueOnce({ value: '?' })
 		promptMock.mockResolvedValueOnce({ value: 'entered value' })
 
-		expect(await askForOptionalString('prompt message', { helpText: 'help text', validate: validateMock }))
-			.toBe('entered value')
+		expect(await askForOptionalString(
+			'prompt message',
+			{ helpText: 'help text', validate: validateMock },
+		)).toBe('entered value')
 
 		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
 			message: 'prompt message (? for help)',
@@ -132,14 +156,14 @@ describe('askForOptionalString', () => {
 		}))
 		expect(consoleLogSpy).toHaveBeenLastCalledWith('help text')
 
-		const generatedValidate = (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
+		const generatedValidate = (promptMock.mock.calls[0][0] as { validate: ValidateFunction })
+			.validate
 		expect(generatedValidate('?')).toBeTrue()
 		expect(validateMock).toHaveBeenCalledTimes(0)
 
 		validateMock.mockReturnValueOnce('please enter better input')
 		expect(generatedValidate('bad input')).toBe('please enter better input')
-		expect(validateMock).toHaveBeenCalledTimes(1)
-		expect(validateMock).toHaveBeenCalledWith('bad input')
+		expect(validateMock).toHaveBeenCalledExactlyOnceWith('bad input')
 	})
 })
 
@@ -149,12 +173,12 @@ describe('askForString', () => {
 
 		expect(await askForString('prompt message')).toBe('entered value')
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			validate: expect.any(Function),
 		}))
 
-		const validateFunction = (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
+		const validateFunction = (promptMock.mock.calls[0][0] as { validate: ValidateFunction })
+			.validate
 
 		expect(validateFunction('')).toBe('value is required')
 		expect(validateFunction('a')).toBe(true)
@@ -165,17 +189,18 @@ describe('askForString', () => {
 
 		const validateMock = jest.fn<ValidateFunction>()
 
-		expect(await askForString('prompt message', { validate: validateMock })).toBe('entered value')
+		expect(await askForString('prompt message', { validate: validateMock }))
+			.toBe('entered value')
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
 			type: 'input',
 			name: 'value',
 			message: 'prompt message',
 			validate: expect.any(Function),
 		})
 
-		const validateFunction = (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
+		const validateFunction = (promptMock.mock.calls[0][0] as { validate: ValidateFunction })
+			.validate
 
 		validateMock.mockReturnValue(true)
 
@@ -183,8 +208,7 @@ describe('askForString', () => {
 		expect(validateMock).toHaveBeenCalledTimes(0)
 
 		expect(validateFunction('a')).toBe(true)
-		expect(validateMock).toHaveBeenCalledTimes(1)
-		expect(validateMock).toHaveBeenCalledWith('a')
+		expect(validateMock).toHaveBeenCalledExactlyOnceWith('a')
 	})
 })
 
@@ -194,8 +218,7 @@ describe('askForOptionalInteger', () => {
 
 		expect(await askForOptionalInteger('prompt message')).toBe(5)
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
 			type: 'input',
 			name: 'value',
 			message: 'prompt message',
@@ -216,17 +239,38 @@ describe('askForOptionalInteger', () => {
 
 		const validateMock = jest.fn<ValidateFunction>().mockReturnValueOnce(true)
 
-		expect(await askForOptionalInteger('prompt message', { validate: validateMock })).toBe(undefined)
+		expect(await askForOptionalInteger('prompt message', { validate: validateMock }))
+			.toBe(undefined)
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			validate: expect.any(Function),
 		}))
 
-		const generatedValidate = (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
+		const generatedValidate = (promptMock.mock.calls[0][0] as { validate: ValidateFunction })
+			.validate
 		expect(generatedValidate('input string')).toBe(true)
-		expect(validateMock).toHaveBeenCalledTimes(1)
-		expect(validateMock).toHaveBeenCalledWith('input string')
+		expect(validateMock).toHaveBeenCalledExactlyOnceWith('input string')
+	})
+
+	it('does not include validate when there is none', async () => {
+		promptMock.mockResolvedValue({ value: '' })
+
+		expect(await askForOptionalInteger('prompt message', { validate: undefined }))
+			.toBe(undefined)
+
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.not.objectContaining({
+			validate: undefined,
+		}))
+	})
+
+	it('does not include validate when there is none', async () => {
+		promptMock.mockResolvedValue({ value: '' })
+
+		expect(await askForOptionalInteger('prompt message', { validate: undefined })).toBe(undefined)
+
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.not.objectContaining({
+			validate: undefined,
+		}))
 	})
 
 	it('passes default to inquirer', async () => {
@@ -234,8 +278,7 @@ describe('askForOptionalInteger', () => {
 
 		expect(await askForOptionalInteger('prompt message', { default: 5 })).toBe(5)
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			default: 5,
 		}))
 	})
@@ -246,12 +289,10 @@ describe('askForOptionalInteger', () => {
 
 		expect(await askForOptionalInteger('prompt message', { default: defaultMock })).toBe(72)
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			default: 27,
 		}))
-		expect(defaultMock).toHaveBeenCalledTimes(1)
-		expect(defaultMock).toHaveBeenCalledWith()
+		expect(defaultMock).toHaveBeenCalledExactlyOnceWith()
 	})
 
 	it('displays help text when "?" entered', async () => {
@@ -271,8 +312,10 @@ describe('askForOptionalInteger', () => {
 		promptMock.mockResolvedValueOnce({ value: '?' })
 		promptMock.mockResolvedValueOnce({ value: 32 })
 
-		expect(await askForOptionalInteger('prompt message', { helpText: 'help text', validate: validateMock }))
-			.toBe(32)
+		expect(await askForOptionalInteger(
+			'prompt message',
+			{ helpText: 'help text', validate: validateMock },
+		)).toBe(32)
 
 		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
 			message: 'prompt message (? for help)',
@@ -280,14 +323,14 @@ describe('askForOptionalInteger', () => {
 		}))
 		expect(consoleLogSpy).toHaveBeenLastCalledWith('help text')
 
-		const generatedValidate = (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
+		const generatedValidate = (promptMock.mock.calls[0][0] as { validate: ValidateFunction })
+			.validate
 		expect(generatedValidate('?')).toBeTrue()
 		expect(validateMock).toHaveBeenCalledTimes(0)
 
 		validateMock.mockReturnValueOnce('please enter better input')
 		expect(generatedValidate('bad input')).toBe('please enter better input')
-		expect(validateMock).toHaveBeenCalledTimes(1)
-		expect(validateMock).toHaveBeenCalledWith('bad input')
+		expect(validateMock).toHaveBeenCalledExactlyOnceWith('bad input')
 	})
 })
 
@@ -297,12 +340,12 @@ describe('askForInteger', () => {
 
 		expect(await askForInteger('prompt message')).toBe(43)
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			validate: expect.any(Function),
 		}))
 
-		const validateFunction = (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
+		const validateFunction = (promptMock.mock.calls[0][0] as { validate: ValidateFunction })
+			.validate
 
 		expect(validateFunction('')).toBe('value is required')
 		expect(validateFunction('a')).toBe(true)
@@ -315,12 +358,12 @@ describe('askForInteger', () => {
 
 		expect(await askForInteger('prompt message', { validate: validateMock })).toBe(7)
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			validate: expect.any(Function),
 		}))
 
-		const validateFunction = (promptMock.mock.calls[0][0] as { validate: ValidateFunction }).validate
+		const validateFunction = (promptMock.mock.calls[0][0] as { validate: ValidateFunction })
+			.validate
 
 		validateMock.mockReturnValue(true)
 
@@ -328,8 +371,7 @@ describe('askForInteger', () => {
 		expect(validateMock).toHaveBeenCalledTimes(0)
 
 		expect(validateFunction('a')).toBe(true)
-		expect(validateMock).toHaveBeenCalledTimes(1)
-		expect(validateMock).toHaveBeenCalledWith('a')
+		expect(validateMock).toHaveBeenCalledExactlyOnceWith('a')
 	})
 })
 
@@ -346,8 +388,7 @@ describe('askForNumber', () => {
 		const result = await askForNumber('prompt message')
 
 		expect(result).toBe(expected)
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
 			type: 'input',
 			name: 'value',
 			message: 'prompt message',
@@ -362,8 +403,7 @@ describe('askForNumber', () => {
 		const result = await askForNumber('prompt message', min, max)
 
 		expect(result).toBe(undefined)
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
 			type: 'input',
 			name: 'value',
 			message: 'prompt message',
@@ -379,20 +419,26 @@ describe('askForNumber', () => {
 		expect(validateFunction('')).toBe(true)
 	})
 
-	it.each(['-5.5', '0', '0.3', '3.0', '7', '21553992'])('validates numbers as acceptable', async value => {
-		const validateFunction = await getValidateFunction()
-		expect(validateFunction(value)).toBe(true)
-	})
+	it.each(['-5.5', '0', '0.3', '3.0', '7', '21553992'])(
+		'validates numbers as acceptable',
+		async value => {
+			const validateFunction = await getValidateFunction()
+			expect(validateFunction(value)).toBe(true)
+		},
+	)
 
 	it.each(['abc', 'PI', 'twelve', '1/3'])('invalidates non-number values', async value => {
 		const validateFunction = await getValidateFunction()
 		expect(validateFunction(value)).toBe(`${value} is not a valid number`)
 	})
 
-	it.each(['-10.5', '0', '7.3', '2155.3992'])('validates >= min values as acceptable', async value => {
-		const validateFunction = await getValidateFunction(-10.5)
-		expect(validateFunction(value)).toBe(true)
-	})
+	it.each(['-10.5', '0', '7.3', '2155.3992'])(
+		'validates >= min values as acceptable',
+		async value => {
+			const validateFunction = await getValidateFunction(-10.5)
+			expect(validateFunction(value)).toBe(true)
+		},
+	)
 
 	it.each(['0', '1', '3.1416', '10.009'])('invalidates < min values', async value => {
 		const validateFunction = await getValidateFunction(10.01)
@@ -426,8 +472,7 @@ describe('askForBoolean', () => {
 
 		expect(await askForBoolean('Are you absolutely certain?')).toBe(false)
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
 			type: 'confirm',
 			name: 'answer',
 			message: 'Are you absolutely certain?',
@@ -440,8 +485,7 @@ describe('askForBoolean', () => {
 
 		expect(await askForBoolean('Are you absolutely certain?', { default: false })).toBe(true)
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith({
+		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
 			type: 'confirm',
 			name: 'answer',
 			message: 'Are you absolutely certain?',

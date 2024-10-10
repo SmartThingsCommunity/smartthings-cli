@@ -1,8 +1,8 @@
 import inquirer, { ChoiceCollection } from 'inquirer'
 
-import { jsonFormatter, OutputFormatter, yamlFormatter } from '../output.js'
-import { red } from '../colors'
-import { SmartThingsCommandInterface } from '../smartthings-command.js'
+import { jsonFormatter, OutputFormatter, yamlFormatter } from '../command/output.js'
+import { red } from '../colors.js'
+import { type SmartThingsCommand } from '../command/smartthings-command.js'
 import {
 	cancelAction,
 	editAction,
@@ -12,6 +12,9 @@ import {
 	previewJSONAction,
 	previewYAMLAction,
 } from './defs.js'
+import { cancelCommand } from '../util.js'
+import { BuildOutputFormatterFlags } from '../command/output-builder.js'
+import { askForBoolean } from '../user-query.js'
 
 
 export type UpdateFromUserInputOptions = {
@@ -27,20 +30,25 @@ export type UpdateFromUserInputOptions = {
 	finishVerb?: 'create' | 'update'
 }
 
-export const updateFromUserInput = async <T extends object>(command: SmartThingsCommandInterface, inputDefinition: InputDefinition<T>, previousValue: T, options: UpdateFromUserInputOptions): Promise<T> => {
+export const updateFromUserInput = async <T extends object>(
+	command: SmartThingsCommand<BuildOutputFormatterFlags>,
+	inputDefinition: InputDefinition<T>,
+	previousValue: T,
+	options: UpdateFromUserInputOptions,
+): Promise<T> => {
 	let retVal = previousValue
 
 	const preview = async (formatter: (indent: number) => OutputFormatter<T>): Promise<void> => {
 		// TODO: this should probably be moved to someplace more common
-		const indent = command.flags.indent ?? command.cliConfig.profile.indent ?? (formatter === yamlFormatter ? 2 : 4)
+		const indent = command.flags.indent
+			?? (command.cliConfig.profile.indent as number | undefined)
+			?? (formatter === yamlFormatter ? 2 : 4)
 		const output = formatter(indent)(retVal)
-		// TODO: use `askForBoolean`
-		const editAgain = (await inquirer.prompt({
-			type: 'confirm',
-			name: 'editAgain',
-			message: output + '\n\nWould you like to edit further?',
-			default: false,
-		})).editAgain as boolean
+
+		const editAgain = await askForBoolean(
+			output + '\n\nWould you like to edit further?',
+			{ default: false },
+		)
 		if (editAgain) {
 			const answer = await inputDefinition.updateFromUserInput(retVal)
 			if (answer !== cancelAction) {
@@ -51,26 +59,30 @@ export const updateFromUserInput = async <T extends object>(command: SmartThings
 
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
-		const validationResult = inputDefinition.validateFinal ? inputDefinition.validateFinal(retVal) : true
+		const validationResult = inputDefinition.validateFinal
+			? inputDefinition.validateFinal(retVal)
+			: true
 		if (validationResult !== true) {
 			console.log(red(validationResult))
 			const answer = await inputDefinition.updateFromUserInput(retVal)
 			if (answer === cancelAction) {
-				command.cancel()
+				return cancelCommand()
 			}
 			retVal = answer
 			continue
 		}
+		const finishVerb = options.dryRun ? 'output' : (options.finishVerb ?? 'update')
+		const finishNoun = options.finishVerb === 'create' ? 'creation' : 'update'
 		const choices: ChoiceCollection = [
 			editOption(inputDefinition.name),
 			{ name: 'Preview JSON.', value: previewJSONAction },
 			{ name: 'Preview YAML.', value: previewYAMLAction },
 			{
-				name: `Finish and ${options.dryRun ? 'output' : (options.finishVerb ?? 'update')} ${inputDefinition.name}.`,
+				name: `Finish and ${finishVerb} ${inputDefinition.name}.`,
 				value: finishAction,
 			},
 			{
-				name: `Cancel ${options.finishVerb === 'create' ? 'creation' : 'update'} of ${inputDefinition.name}.`,
+				name: `Cancel ${finishNoun} of ${inputDefinition.name}.`,
 				value: cancelAction,
 			},
 		]
@@ -95,7 +107,7 @@ export const updateFromUserInput = async <T extends object>(command: SmartThings
 		} else if (action === finishAction) {
 			return retVal
 		} else if (action === cancelAction) {
-			command.cancel()
+			cancelCommand()
 		}
 	}
 }
@@ -110,10 +122,19 @@ export type CreateFromUserInputOptions = UpdateFromUserInputOptions
  * Convenience method that makes it easy to use an input definition to create an object in a
  * command's `getInputFromUser` method.
  */
-export const createFromUserInput = async <T extends object>(command: SmartThingsCommandInterface, inputDefinition: InputDefinition<T>, options: CreateFromUserInputOptions): Promise<T> => {
+export const createFromUserInput = async <T extends object>(
+	command: SmartThingsCommand,
+	inputDefinition: InputDefinition<T>,
+	options: CreateFromUserInputOptions,
+): Promise<T> => {
 	const wizardResult = await inputDefinition.buildFromUserInput()
 	if (wizardResult === cancelAction) {
-		command.cancel()
+		return cancelCommand()
 	}
-	return updateFromUserInput(command, inputDefinition, wizardResult, { finishVerb: 'create', ...options })
+	return updateFromUserInput(
+		command,
+		inputDefinition,
+		wizardResult,
+		{ finishVerb: 'create', ...options },
+	)
 }
