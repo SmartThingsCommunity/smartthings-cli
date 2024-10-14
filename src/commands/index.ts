@@ -11,6 +11,7 @@ import locationsCommand from './locations.js'
 import locationsCreateCommand from './locations/create.js'
 import locationsDeleteCommand from './locations/delete.js'
 import locationsUpdateCommand from './locations/update.js'
+import schemaCreateCommand from './schema/create.js'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const commands: CommandModule<object, any>[] = [
@@ -25,4 +26,5 @@ export const commands: CommandModule<object, any>[] = [
 	locationsCreateCommand,
 	locationsDeleteCommand,
 	locationsUpdateCommand,
+	schemaCreateCommand,
 ]
