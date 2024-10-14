@@ -104,7 +104,11 @@ export type ValueTableFieldDefinition<T extends object> = TableFieldDefinitionBa
  * Leaving out both label and value is the equivalent of using a simple string
  * for the definition.
  */
-export type TableFieldDefinition<T extends object> = SimpleTableFieldDefinition<T> | PropertyTableFieldDefinition<T> | PathTableFieldDefinition<T> | ValueTableFieldDefinition<T>
+export type TableFieldDefinition<T extends object> =
+	| SimpleTableFieldDefinition<T>
+	| PropertyTableFieldDefinition<T>
+	| PathTableFieldDefinition<T>
+	| ValueTableFieldDefinition<T>
 
 export type TableGenerator = {
 	newOutputTable(options?: Partial<TableOptions>): Table
