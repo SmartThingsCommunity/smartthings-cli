@@ -1,20 +1,23 @@
 import { jest } from '@jest/globals'
 
-import { DevicePreference, DevicePreferencesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
+import type {
+	DevicePreference,
+	DevicePreferencesEndpoint,
+	SmartThingsClient,
+} from '@smartthings/core-sdk'
 
-import { APICommand } from '../../../../lib/command/api-command.js'
-import { SelectFromListFlags, selectFromList } from '../../../../lib/command/select.js'
-import { ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
+import type { ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
+import type { ChooseFunction, createChooseFn } from '../../../../lib/command/util/util-util.js'
 
 
-const selectFromListMock = jest.fn<typeof selectFromList>()
-jest.unstable_mockModule('../../../../lib/command/select.js', () => ({
-	selectFromList: selectFromListMock,
+const createChooseFnMock = jest.fn<typeof createChooseFn<DevicePreference>>()
+jest.unstable_mockModule('../../../../lib/command/util/util-util.js', () => ({
+	createChooseFn: createChooseFnMock,
 }))
 
 
 const {
-	chooseDevicePreference,
+	chooseDevicePreferenceFn,
 	tableFieldDefinitions,
 } = await import('../../../../lib/command/util/devicepreferences-util.js')
 
@@ -39,29 +42,29 @@ describe('tableFieldDefinitions options definition', () => {
 })
 
 test('chooseDevicePreference', async () => {
-	selectFromListMock.mockResolvedValueOnce('chosen-id')
-	const listMock = jest.fn<typeof DevicePreferencesEndpoint.prototype.list>()
-	const client = { devicePreferences: { list: listMock } } as unknown as SmartThingsClient
-	const command = { client } as APICommand<SelectFromListFlags>
+	const chooseAppMock = jest.fn<ChooseFunction<DevicePreference>>()
+	createChooseFnMock.mockReturnValueOnce(chooseAppMock)
 
-	expect(await chooseDevicePreference(command, 'preselected-id')).toBe('chosen-id')
+	const chooseApp = chooseDevicePreferenceFn()
 
-	expect(selectFromListMock).toHaveBeenCalledTimes(1)
-	expect(selectFromListMock).toHaveBeenCalledWith(
-		command,
+	expect(chooseApp).toBe(chooseAppMock)
+
+	expect(createChooseFnMock).toHaveBeenCalledExactlyOnceWith(
 		expect.objectContaining({ itemName: 'device preference' }),
-		{
-			preselectedId: 'preselected-id',
-			listItems: expect.any(Function),
-		},
+		expect.any(Function),
 	)
 
-	const listItems = selectFromListMock.mock.calls[0][2].listItems
 	const devicePreferenceList = [{ preferenceId: 'device-preference-id' } as DevicePreference]
-	listMock.mockResolvedValueOnce(devicePreferenceList)
+	const apiDevicePreferencesListMock = jest.fn<typeof DevicePreferencesEndpoint.prototype.list>()
+		.mockResolvedValueOnce(devicePreferenceList)
+	const listItems = createChooseFnMock.mock.calls[0][1]
+	const client = {
+		devicePreferences: {
+			list: apiDevicePreferencesListMock,
+		},
+	} as unknown as SmartThingsClient
 
-	expect(await listItems()).toBe(devicePreferenceList)
+	expect(await listItems(client)).toBe(devicePreferenceList)
 
-	expect(listMock).toHaveBeenCalledTimes(1)
-	expect(listMock).toHaveBeenCalledWith()
+	expect(apiDevicePreferencesListMock).toHaveBeenCalledExactlyOnceWith()
 })
