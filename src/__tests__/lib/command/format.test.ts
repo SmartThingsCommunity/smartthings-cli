@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals'
 
 import { TableGenerator } from '../../../lib/table-generator.js'
-import { Naming } from '../../../lib/command/basic-io.js'
+import { Naming } from '../../../lib/command/io-defs.js'
 import {
 	CommonListOutputProducer,
 	CustomCommonListOutputProducer,

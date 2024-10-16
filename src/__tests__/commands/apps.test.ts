@@ -7,7 +7,7 @@ import { AppClassification, AppResponse, AppType, AppsEndpoint, PagedApp, SmartT
 import { APICommand, APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../../lib/command/api-command.js'
 import { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
 import { CommandArgs } from '../../commands/apps.js'
-import { ListDataFunction } from '../../lib/command/basic-io.js'
+import { ListDataFunction } from '../../lib/command/io-defs.js'
 import { BuildOutputFormatterFlags } from '../../lib/command/output-builder.js'
 import { SmartThingsCommandFlags } from '../../lib/command/smartthings-command.js'
 import { shortARNorURL, verboseApps } from '../../lib/command/util/apps-util.js'

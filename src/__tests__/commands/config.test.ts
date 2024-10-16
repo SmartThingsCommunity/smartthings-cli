@@ -4,10 +4,11 @@ import { ArgumentsCamelCase, Argv } from 'yargs'
 
 import { Profile, ProfilesByName } from '../../lib/cli-config.js'
 import { CommandArgs } from '../../commands/config.js'
-import { outputItem, outputList, outputListBuilder } from '../../lib/command/basic-io.js'
 import { stringTranslateToId } from '../../lib/command/command-util.js'
 import { TableCommonListOutputProducer, TableCommonOutputProducer } from '../../lib/command/format.js'
 import { outputItemOrListBuilder } from '../../lib/command/listing-io.js'
+import { outputItem } from '../../lib/command/output-item.js'
+import { outputList, outputListBuilder } from '../../lib/command/output-list.js'
 import {
 	OutputFormatter,
 	calculateOutputFormat,
@@ -24,14 +25,6 @@ import { ValueTableFieldDefinition } from '../../lib/table-generator.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
 
-const outputItemMock = jest.fn<typeof outputItem>()
-const outputListMock = jest.fn<typeof outputList>()
-jest.unstable_mockModule('../../lib/command/basic-io.js', () => ({
-	outputListBuilder,
-	outputItem: outputItemMock,
-	outputList: outputListMock,
-}))
-
 const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
 jest.unstable_mockModule('../../lib/command/command-util.js', () => ({
 	stringTranslateToId: stringTranslateToIdMock,
@@ -40,6 +33,17 @@ jest.unstable_mockModule('../../lib/command/command-util.js', () => ({
 const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
 jest.unstable_mockModule('../../lib/command/listing-io.js', () => ({
 	outputItemOrListBuilder: outputItemOrListBuilderMock,
+}))
+
+const outputItemMock = jest.fn<typeof outputItem>()
+jest.unstable_mockModule('../../lib/command/output-item.js', () => ({
+	outputItem: outputItemMock,
+}))
+
+const outputListMock = jest.fn<typeof outputList>()
+jest.unstable_mockModule('../../lib/command/output-list.js', () => ({
+	outputListBuilder,
+	outputList: outputListMock,
 }))
 
 const calculateOutputFormatMock = jest.fn<typeof calculateOutputFormat>()

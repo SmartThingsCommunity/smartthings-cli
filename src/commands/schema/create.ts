@@ -14,7 +14,7 @@ import {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
 	type InputAndOutputItemFlags,
-} from '../../lib/command/basic-io.js'
+} from '../../lib/command/input-and-output-item.js'
 import { lambdaAuthBuilder, type LambdaAuthFlags } from '../../lib/command/common-flags.js'
 import { userInputProcessor } from '../../lib/command/input-processor.js'
 import {

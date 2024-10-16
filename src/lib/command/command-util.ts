@@ -1,6 +1,6 @@
 import inquirer from 'inquirer'
 
-import { ListDataFunction, Naming, Sorting } from './basic-io.js'
+import { ListDataFunction, Naming, Sorting } from './io-defs.js'
 import { sort } from './output.js'
 
 

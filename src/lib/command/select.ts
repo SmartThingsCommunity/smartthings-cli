@@ -1,17 +1,16 @@
 import inquirer from 'inquirer'
 
 import {
-	IdRetrievalFunction,
-	ListDataFunction,
-	LookupDataFunction,
-	Naming,
-	outputList,
-	OutputListConfig,
-	Sorting,
-} from './basic-io.js'
+	type IdRetrievalFunction,
+	type ListDataFunction,
+	type LookupDataFunction,
+	type Naming,
+	type Sorting,
+} from './io-defs.js'
+import { outputList, type OutputListConfig } from './output-list.js'
 import { resetManagedConfigKey, setConfigKey } from '../cli-config.js'
 import { stringGetIdFromUser } from './command-util.js'
-import { SmartThingsCommand } from './smartthings-command.js'
+import { type SmartThingsCommand } from './smartthings-command.js'
 import { buildOutputFormatterBuilder, BuildOutputFormatterFlags } from './output-builder.js'
 
 

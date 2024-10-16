@@ -3,7 +3,7 @@ import { jest } from '@jest/globals'
 import inquirer from 'inquirer'
 
 import { sort } from '../../../lib/command/output.js'
-import { ListDataFunction, Sorting } from '../../../lib/command/basic-io.js'
+import { ListDataFunction, Sorting } from '../../../lib/command/io-defs.js'
 import { SimpleType } from '../../test-lib/simple-type.js'
 
 

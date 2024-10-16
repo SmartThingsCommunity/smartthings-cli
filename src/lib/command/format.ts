@@ -1,4 +1,4 @@
-import { Naming, Sorting } from './basic-io.js'
+import { Naming, Sorting } from './io-defs.js'
 import { IOFormat } from '../io-util.js'
 import { itemTableFormatter, listTableFormatter, writeOutput, OutputFormatter } from './output.js'
 import { buildOutputFormatter, buildOutputFormatterBuilder, BuildOutputFormatterFlags } from './output-builder.js'

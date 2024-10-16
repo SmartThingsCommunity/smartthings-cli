@@ -1,6 +1,6 @@
-import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs'
+import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { PreferenceLocalization } from '@smartthings/core-sdk'
+import { type PreferenceLocalization } from '@smartthings/core-sdk'
 
 import {
 	apiOrganizationCommand,
@@ -10,8 +10,8 @@ import {
 import {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
-	InputAndOutputItemFlags,
-} from '../../../lib/command/basic-io.js'
+	type InputAndOutputItemFlags,
+} from '../../../lib/command/input-and-output-item.js'
 import { chooseDevicePreference } from '../../../lib/command/util/devicepreferences-util.js'
 import {
 	tableFieldDefinitions,
