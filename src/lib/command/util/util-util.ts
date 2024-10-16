@@ -1,7 +1,7 @@
 import { type SmartThingsClient } from '@smartthings/core-sdk'
 
 import { type APICommand } from '../api-command.js'
-import { type ListDataFunction } from '../basic-io.js'
+import { type ListDataFunction } from '../io-defs.js'
 import { stringTranslateToId } from '../command-util.js'
 import { type SelectFromListConfig, type SelectFromListFlags, selectFromList } from '../select.js'
 

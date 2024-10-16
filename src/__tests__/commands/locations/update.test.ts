@@ -6,7 +6,7 @@ import { Location, LocationUpdate, LocationsEndpoint, SmartThingsClient } from '
 
 import { chooseLocation, tableFieldDefinitions } from '../../../lib/command/util/locations-util.js'
 import { APICommand, APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../../../lib/command/api-command.js'
-import { inputAndOutputItem, inputAndOutputItemBuilder } from '../../../lib/command/basic-io.js'
+import { inputAndOutputItem, inputAndOutputItemBuilder } from '../../../lib/command/input-and-output-item.js'
 import { CommandArgs } from '../../../commands/locations/update.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
@@ -28,7 +28,7 @@ jest.unstable_mockModule('../../../lib/command/api-command.js', () => ({
 
 const inputAndOutputItemMock = jest.fn<typeof inputAndOutputItem>()
 const inputAndOutputItemBuilderMock = jest.fn<typeof inputAndOutputItemBuilder>()
-jest.unstable_mockModule('../../../lib/command/basic-io.js', () => ({
+jest.unstable_mockModule('../../../lib/command/input-and-output-item.js', () => ({
 	inputAndOutputItem: inputAndOutputItemMock,
 	inputAndOutputItemBuilder: inputAndOutputItemBuilderMock,
 }))

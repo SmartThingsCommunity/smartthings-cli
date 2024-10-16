@@ -17,7 +17,7 @@ import type {
 import type {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
-} from '../../../lib/command/basic-io.js'
+} from '../../../lib/command/input-and-output-item.js'
 import type { lambdaAuthBuilder } from '../../../lib/command/common-flags.js'
 import type { InputProcessor, userInputProcessor } from '../../../lib/command/input-processor.js'
 import type {
@@ -53,7 +53,7 @@ jest.unstable_mockModule('../../../lib/command/api-organization-command.js', () 
 
 const inputAndOutputItemMock = jest.fn<typeof inputAndOutputItem>()
 const inputAndOutputItemBuilderMock = jest.fn<typeof inputAndOutputItemBuilder>()
-jest.unstable_mockModule('../../../lib/command/basic-io.js', () => ({
+jest.unstable_mockModule('../../../lib/command/input-and-output-item.js', () => ({
 	inputAndOutputItem: inputAndOutputItemMock,
 	inputAndOutputItemBuilder: inputAndOutputItemBuilderMock,
 }))

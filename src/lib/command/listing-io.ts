@@ -1,21 +1,23 @@
 import {
-	IdTranslationFunction,
-	ListDataFunction,
-	LookupDataFunction,
-	outputItem,
-	OutputItemConfig,
+	type IdTranslationFunction,
+	type ListDataFunction,
+	type LookupDataFunction,
+} from './io-defs.js'
+import { outputItem, type OutputItemConfig } from './output-item.js'
+import {
 	outputList,
 	outputListBuilder,
-	OutputListConfig,
-	OutputListFlags,
-} from './basic-io.js'
+	type OutputListConfig,
+	type OutputListFlags,
+} from './output-list.js'
 import { stringTranslateToId } from './command-util.js'
-import { SmartThingsCommand } from './smartthings-command.js'
+import { type SmartThingsCommand } from './smartthings-command.js'
 
 
 export type OutputItemOrListFlags = OutputListFlags
 export const outputItemOrListBuilder = outputListBuilder
-export type OutputItemOrListConfig<O extends object, L extends object = O> = OutputItemConfig<O> & OutputListConfig<L>
+export type OutputItemOrListConfig<O extends object, L extends object = O> =
+	OutputItemConfig<O> & OutputListConfig<L>
 
 // TODO: can probably combine these and use default type of string for ID if we put it last,
 // similar to what was done for selectFromList
@@ -37,6 +39,13 @@ export async function outputItemOrList<O extends object, L extends object = O>(
 		config: OutputItemOrListConfig<O, L>,
 		idOrIndex: string | undefined, listFunction: ListDataFunction<L>,
 		getFunction: LookupDataFunction<string, O>, includeIndex = true): Promise<void> {
-	return outputItemOrListGeneric<string, O, L>(command, config, idOrIndex, listFunction, getFunction,
-		(idOrIndex, listFunction) => stringTranslateToId(config, idOrIndex, listFunction), includeIndex)
+	return outputItemOrListGeneric<string, O, L>(
+		command,
+		config,
+		idOrIndex,
+		listFunction,
+		getFunction,
+		(idOrIndex, listFunction) => stringTranslateToId(config, idOrIndex, listFunction),
+		includeIndex,
+	)
 }

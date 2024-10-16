@@ -1,10 +1,19 @@
-import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs'
+import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { Location, LocationUpdate } from '@smartthings/core-sdk'
+import { type Location, type LocationUpdate } from '@smartthings/core-sdk'
 
 import { chooseLocation, tableFieldDefinitions } from '../../lib/command/util/locations-util.js'
-import { APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../../lib/command/api-command.js'
-import { InputAndOutputItemFlags, inputAndOutputItem, inputAndOutputItemBuilder } from '../../lib/command/basic-io.js'
+import {
+	type APICommandFlags,
+	apiCommand,
+	apiCommandBuilder,
+	apiDocsURL,
+} from '../../lib/command/api-command.js'
+import {
+	type InputAndOutputItemFlags,
+	inputAndOutputItem,
+	inputAndOutputItemBuilder,
+} from '../../lib/command/input-and-output-item.js'
 
 
 export type CommandArgs = APICommandFlags & InputAndOutputItemFlags & {

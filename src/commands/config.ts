@@ -1,14 +1,19 @@
 import yaml from 'js-yaml'
-import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs'
+import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { Profile } from '../lib/cli-config.js'
-import { TableFieldDefinition } from '../lib/table-generator.js'
-import { OutputListConfig, outputItem, outputList } from '../lib/command/basic-io.js'
+import { type Profile } from '../lib/cli-config.js'
+import { type TableFieldDefinition } from '../lib/table-generator.js'
 import { stringTranslateToId } from '../lib/command/command-util.js'
-import { OutputItemOrListFlags, outputItemOrListBuilder } from '../lib/command/listing-io.js'
+import { type OutputItemOrListFlags, outputItemOrListBuilder } from '../lib/command/listing-io.js'
 import { calculateOutputFormat, writeOutput } from '../lib/command/output.js'
+import { outputItem } from '../lib/command/output-item.js'
+import { type OutputListConfig, outputList } from '../lib/command/output-list.js'
 import { buildOutputFormatter } from '../lib/command/output-builder.js'
-import { SmartThingsCommandFlags, smartThingsCommand, smartThingsCommandBuilder } from '../lib/command/smartthings-command.js'
+import {
+	type SmartThingsCommandFlags,
+	smartThingsCommand,
+	smartThingsCommandBuilder,
+} from '../lib/command/smartthings-command.js'
 
 
 export type ProfileWithName = {

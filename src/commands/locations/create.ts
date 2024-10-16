@@ -3,8 +3,17 @@ import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs'
 import { LocationCreate } from '@smartthings/core-sdk'
 
 import { tableFieldDefinitions } from '../../lib/command/util/locations-util.js'
-import { APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../../lib/command/api-command.js'
-import { InputAndOutputItemFlags, inputAndOutputItem, inputAndOutputItemBuilder } from '../../lib/command/basic-io.js'
+import {
+	type APICommandFlags,
+	apiCommand,
+	apiCommandBuilder,
+	apiDocsURL,
+} from '../../lib/command/api-command.js'
+import {
+	type InputAndOutputItemFlags,
+	inputAndOutputItem,
+	inputAndOutputItemBuilder,
+} from '../../lib/command/input-and-output-item.js'
 
 
 export type CommandArgs = APICommandFlags & InputAndOutputItemFlags
@@ -16,7 +25,10 @@ const describe = 'create a Location for a user'
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	inputAndOutputItemBuilder(apiCommandBuilder(yargs))
 		.example([
-			['$0 locations:create -i my-location.yaml', 'create a location defined in "my-location.yaml"'],
+			[
+				'$0 locations:create -i my-location.yaml',
+				'create a location defined in "my-location.yaml"',
+			],
 		])
 		.epilog(apiDocsURL('createLocation'))
 

@@ -7,7 +7,7 @@ import type {
 } from '../../../../lib/command/select.js'
 import type { APICommand } from '../../../../lib/command/api-command.js'
 import type { SmartThingsClient } from '@smartthings/core-sdk'
-import type { ListDataFunction } from '../../../../lib/command/basic-io.js'
+import type { ListDataFunction } from '../../../../lib/command/io-defs.js'
 import type { stringTranslateToId } from '../../../../lib/command/command-util.js'
 import type { ListItemPredicate, ChooseOptions } from '../../../../lib/command/util/util-util.js'
 import type { SimpleType } from '../../../test-lib/simple-type.js'
