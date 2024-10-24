@@ -1,4 +1,10 @@
-import { OrganizationResponse, SchemaApp, SchemaAppRequest, SmartThingsURLProvider, ViperAppLinks } from '@smartthings/core-sdk'
+import {
+	OrganizationResponse,
+	SchemaApp,
+	SchemaAppRequest,
+	SmartThingsURLProvider,
+	ViperAppLinks,
+} from '@smartthings/core-sdk'
 
 import {
 	APICommand,
@@ -19,12 +25,16 @@ import {
 	selectFromList,
 	SelectFromListConfig,
 	staticDef,
+	stdinIsTTY,
+	stdoutIsTTY,
 	stringDef,
 	stringTranslateToId,
 	undefinedDef,
 	updateFromUserInput,
 } from '@smartthings/cli-lib'
 import { awsHelpText } from '../aws-utils'
+import { chooseOrganization } from './organization-util'
+import { CLIError } from '@oclif/core/lib/errors'
 
 
 export const SCHEMA_AWS_PRINCIPAL = '148790070172'
@@ -188,4 +198,47 @@ export const chooseSchemaApp = async (command: APICommand<typeof APICommand.flag
 		? await stringTranslateToId(config, schemaAppFromArg, listItems)
 		: schemaAppFromArg
 	return selectFromList(command, config, { preselectedId, listItems, autoChoose: true })
+}
+
+// The endpoint to get a schema app automatically assigns the users org to an app if it
+// doesn't have one already. This causes a problem if the app is certified because the user
+// organization is almost certainly the wrong one and the user can't change it after it's been
+// set. So, here we check to see if the app has an organization before we query it and
+// prompt the user for the correct organization.
+export const getSchemaAppEnsuringOrganization = async (
+		command: APICommand<typeof APICommand.flags>,
+		schemaAppId: string,
+		flags: {
+			json: boolean
+			yaml: boolean
+			input?: string
+			output?: string
+		},
+): Promise<{ schemaApp: SchemaApp; organizationWasUpdated: boolean }> => {
+	const apps = await command.client.schema.list()
+	const appFromList = apps.find(app => app.endpointAppId === schemaAppId)
+	if (appFromList && !appFromList.organizationId) {
+		if (flags.json || flags.yaml || flags.output || flags.input || !stdinIsTTY()  || !stdoutIsTTY()) {
+			throw new CLIError(
+				'Schema app does not have an organization associated with it.\n' +
+					`Please run "smartthings schema ${schemaAppId}" and choose an organization when prompted.`,
+			)
+		}
+		// If we found an app but it didn't have an organization, ask the user to choose one.
+		// (If we didn't find an app at all, it's safe to use the single get because that means
+		// either it doesn't exist (bad app id) or it already has an organization.)
+		console.log(
+			`The schema "${appFromList.appName}" (${schemaAppId}) does not have an organization\n` +
+				'You must choose one now.',
+		)
+		const organizationId = await chooseOrganization(command)
+		const organization = await command.client.organizations.get(organizationId)
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		const orgClient = command.client.clone({ 'X-ST-Organization': organizationId })
+		const schemaApp = await orgClient.schema.get(schemaAppId)
+		console.log(`\nSchema app "${schemaApp.appName} (${schemaAppId}) is now associated with ` +
+			`organization ${organization.name} (${organizationId}).\n`)
+		return { schemaApp, organizationWasUpdated: true }
+	}
+	return { schemaApp: await command.client.schema.get(schemaAppId), organizationWasUpdated: false }
 }

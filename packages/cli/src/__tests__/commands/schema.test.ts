@@ -1,12 +1,14 @@
 import { SchemaApp, SchemaEndpoint } from '@smartthings/core-sdk'
 
-import { outputItemOrList, TableCommonListOutputProducer } from '@smartthings/cli-lib'
+import { APICommand, outputItemOrList, TableCommonListOutputProducer } from '@smartthings/cli-lib'
 
 import SchemaCommand from '../../commands/schema'
+import { getSchemaAppEnsuringOrganization } from '../../lib/commands/schema-util'
 
+
+jest.mock('../../lib/commands/schema-util')
 
 describe('SchemaCommand', () => {
-	const getSpy = jest.spyOn(SchemaEndpoint.prototype, 'get').mockImplementation()
 	const listSpy = jest.spyOn(SchemaEndpoint.prototype, 'list').mockImplementation()
 
 	const outputItemOrListMock = jest.mocked(outputItemOrList<SchemaApp>)
@@ -71,16 +73,22 @@ describe('SchemaCommand', () => {
 	})
 
 	it('calls correct get endpoint', async () => {
+		const getSchemaAppMock = jest.mocked(getSchemaAppEnsuringOrganization)
+
 		await expect(SchemaCommand.run([])).resolves.not.toThrow()
 
 		const getFunction = outputItemOrListMock.mock.calls[0][4]
 
 		const schemaApp = { endpointAppId: 'schemaAppId' } as SchemaApp
-		getSpy.mockResolvedValueOnce(schemaApp)
+		getSchemaAppMock.mockResolvedValueOnce({ schemaApp, organizationWasUpdated: false })
 
 		await expect(getFunction('schemaAppId')).resolves.toStrictEqual(schemaApp)
-		expect(getSpy).toHaveBeenCalledTimes(1)
-		expect(getSpy).toHaveBeenCalledWith('schemaAppId')
+		expect(getSchemaAppMock).toHaveBeenCalledTimes(1)
+		expect(getSchemaAppMock).toHaveBeenCalledWith(
+			expect.any(APICommand),
+			'schemaAppId',
+			{ profile: 'default' },
+		)
 	})
 
 	it('calls correct list endpoint', async () => {
