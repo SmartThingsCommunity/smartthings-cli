@@ -14,7 +14,7 @@ import {
 	userInputProcessor,
 } from '@smartthings/cli-lib'
 
-import { chooseSchemaApp } from '../../../lib/commands/schema-util'
+import { chooseSchemaApp, getSchemaAppEnsuringOrganization } from '../../../lib/commands/schema-util'
 import { getSingleInvite, InvitationWithAppDetails, tableFieldDefinitions } from '../../../lib/commands/invites-utils'
 
 
@@ -56,7 +56,7 @@ export default class InvitesSchemaCreateCommand extends APICommand<typeof Invite
 		const updateFromUserInput = async (): Promise<string | CancelAction> => {
 			const schemaAppId = await chooseSchemaApp(this, this.flags['schema-app'], { autoChoose: true })
 			if (!schemaAppsById.has(schemaAppId)) {
-				const schemaApp = await this.client.schema.get(schemaAppId)
+				const { schemaApp } = await getSchemaAppEnsuringOrganization(this, schemaAppId, this.flags)
 				schemaAppsById.set(schemaAppId, schemaApp)
 			}
 			return schemaAppId
@@ -87,9 +87,9 @@ export default class InvitesSchemaCreateCommand extends APICommand<typeof Invite
 
 	async run(): Promise<void> {
 		const createInvitation = async (_: unknown, input: SchemaAppInvitationCreate): Promise<InvitationWithAppDetails> => {
-			// We don't need the full schema app but we need to call this to force some
-			// bookkeeping in the back end for older apps.
-			await this.client.schema.get(input.schemaAppId)
+			// We don't need the full schema app but using `getSchemaAppEnsuringOrganization`
+			// ensures there is a valid organization associated with the schema app.
+			await getSchemaAppEnsuringOrganization(this, input.schemaAppId, this.flags)
 			const idWrapper = await this.client.invitesSchema.create(input)
 			return getSingleInvite(this.client, input.schemaAppId, idWrapper.invitationId)
 		}

@@ -11,9 +11,9 @@ import type {
 } from '@smartthings/core-sdk'
 
 import type { Profile } from '../../../../lib/cli-config.js'
-import type { clipToMaximum } from '../../../../lib/util.js'
+import type { clipToMaximum, fatalError } from '../../../../lib/util.js'
 import type { APICommand } from '../../../../lib/command/api-command.js'
-import type { organizationDef } from '../../../../lib/command/util/organizations-util.js'
+import type { chooseOrganization, organizationDef } from '../../../../lib/command/util/organizations-util.js'
 import type { InputData } from '../../../../lib/command/util/schema-util.js'
 import type {
 	booleanDef,
@@ -39,12 +39,16 @@ import {
 
 
 const clipToMaximumMock = jest.fn<typeof clipToMaximum>().mockReturnValue('clipped result')
+const fatalErrorMock = jest.fn<typeof fatalError>()
 jest.unstable_mockModule('../../../../lib/util.js', () => ({
 	clipToMaximum: clipToMaximumMock,
+	fatalError: fatalErrorMock,
 }))
 
+const chooseOrganizationMock = jest.fn<typeof chooseOrganization>()
 const organizationDefMock = jest.fn<typeof organizationDef>()
 jest.unstable_mockModule('../../../../lib/command/util/organizations-util.js', () => ({
+	chooseOrganization: chooseOrganizationMock,
 	organizationDef: organizationDefMock,
 }))
 

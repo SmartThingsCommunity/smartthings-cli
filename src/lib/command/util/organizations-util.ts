@@ -1,6 +1,4 @@
-import {
-	type OrganizationResponse,
-} from '@smartthings/core-sdk'
+import { type OrganizationResponse, type SmartThingsClient } from '@smartthings/core-sdk'
 
 import {
 	type InputDefinition,
@@ -8,6 +6,7 @@ import {
 	staticDef,
 	undefinedDef,
 } from '../../item-input/index.js'
+import { type ChooseFunction, createChooseFn } from './util-util.js'
 
 
 export const organizationDef = (
@@ -31,3 +30,13 @@ export const organizationDef = (
 
 	return selectDef('Organization', choices, { helpText })
 }
+
+export const chooseOrganizationFn = (): ChooseFunction<OrganizationResponse> => createChooseFn(
+	{
+		itemName: 'organization',
+		primaryKeyName: 'organizationId',
+		sortKeyName: 'name',
+	},
+	(client: SmartThingsClient) => client.organizations.list(),
+)
+export const chooseOrganization = chooseOrganizationFn()

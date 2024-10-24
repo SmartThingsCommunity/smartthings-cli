@@ -12,7 +12,11 @@ import {
 } from '@smartthings/cli-lib'
 
 import { addSchemaPermission } from '../../lib/aws-utils.js'
-import { getSchemaAppUpdateFromUser, SchemaAppWithOrganization } from '../../lib/commands/schema-util.js'
+import {
+	getSchemaAppEnsuringOrganization,
+	getSchemaAppUpdateFromUser,
+	SchemaAppWithOrganization,
+} from '../../lib/commands/schema-util.js'
 
 
 export default class SchemaUpdateCommand extends APIOrganizationCommand<typeof SchemaUpdateCommand.flags> {
@@ -49,11 +53,18 @@ export default class SchemaUpdateCommand extends APIOrganizationCommand<typeof S
 			listItems: () => this.client.schema.list(),
 		})
 
+		const { schemaApp: original, organizationWasUpdated } =
+			await getSchemaAppEnsuringOrganization(this, id, this.flags)
+		if (original.certificationStatus === 'wwst' || original.certificationStatus === 'cst') {
+			const cancelMsgBase =
+				'Schema apps that have already been certified cannot be updated via the CLI'
+			const cancelMsg = organizationWasUpdated
+				? cancelMsgBase + ' so further updates are not possible.'
+				: cancelMsgBase + '.'
+			this.cancel(cancelMsg)
+		}
+
 		const getInputFromUser = async (): Promise<SchemaAppRequest> => {
-			const original = await this.client.schema.get(id)
-			if (original.certificationStatus === 'wwst' || original.certificationStatus === 'cst') {
-				this.cancel('Schema apps that have already been certified cannot be updated via the CLI.')
-			}
 			return getSchemaAppUpdateFromUser(this, original, this.flags['dry-run'])
 		}
 
