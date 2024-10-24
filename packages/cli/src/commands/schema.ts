@@ -8,6 +8,7 @@ import {
 	outputItemOrList,
 	OutputItemOrListConfig,
 } from '@smartthings/cli-lib'
+import { getSchemaAppEnsuringOrganization } from '../lib/commands/schema-util'
 
 
 export default class SchemaCommand extends APIOrganizationCommand<typeof SchemaCommand.flags> {
@@ -56,7 +57,7 @@ export default class SchemaCommand extends APIOrganizationCommand<typeof SchemaC
 
 		await outputItemOrList(this, config, this.args.id,
 			() => this.client.schema.list({ includeAllOrganizations: this.flags['all-organizations'] }),
-			id => this.client.schema.get(id),
+			async id => (await getSchemaAppEnsuringOrganization(this, id, this.flags)).schemaApp,
 		)
 	}
 }

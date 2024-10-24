@@ -51,8 +51,11 @@ export default class InvitesSchemaCommand extends APICommand<typeof InvitesSchem
 		type InvitationProviderFunction = () => Promise<InvitationWithAppDetails[]>
 		const listFn = (client: SmartThingsClient, appId?: string): InvitationProviderFunction =>
 			async (): Promise<InvitationWithAppDetails[]> => {
+				// We have to be careful to not use the method to get a single app. For more
+				// details see `getSchemaAppEnsuringOrganization` in schema-utils.
 				const apps = appId
-					? [await client.schema.get(appId)]
+					? (await client.schema.list({ includeAllOrganizations: true }))
+						.filter(app => app.endpointAppId === appId)
 					: await client.schema.list()
 				return (await Promise.all(apps.map(async app => {
 					return app.endpointAppId
