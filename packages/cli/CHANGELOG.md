@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.10.1
+
+### Patch Changes
+
+- [#637](https://github.com/SmartThingsCommunity/smartthings-cli/pull/637) [`8d62e62`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/8d62e62573b857b4582c2b1c9e1f769bf00dd00e) Thanks [@rossiam](https://github.com/rossiam)! - Force user to choose organization for schema app before doing anything that will automatically assign one.
+
 ## 1.10.0
 
 ### Minor Changes
