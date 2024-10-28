@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.10.2
+
+### Patch Changes
+
+- [#639](https://github.com/SmartThingsCommunity/smartthings-cli/pull/639) [`e6a2394`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/e6a2394cd45dbd860fef1844c32c890de4310406) Thanks [@rossiam](https://github.com/rossiam)! - Schema apps that are in review cannot be updated.
+
 ## 1.10.1
 
 ### Patch Changes
