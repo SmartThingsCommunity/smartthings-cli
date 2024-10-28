@@ -55,7 +55,9 @@ export default class SchemaUpdateCommand extends APIOrganizationCommand<typeof S
 
 		const { schemaApp: original, organizationWasUpdated } =
 			await getSchemaAppEnsuringOrganization(this, id, this.flags)
-		if (original.certificationStatus === 'wwst' || original.certificationStatus === 'cst') {
+		if (original.certificationStatus === 'wwst' ||
+				original.certificationStatus === 'cst' ||
+				original.certificationStatus === 'review') {
 			const cancelMsgBase =
 				'Schema apps that have already been certified cannot be updated via the CLI'
 			const cancelMsg = organizationWasUpdated
