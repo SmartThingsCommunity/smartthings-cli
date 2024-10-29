@@ -10,12 +10,7 @@ import type {
 } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/devices/capability-status.js'
-import type {
-	APICommand,
-	apiCommand,
-	apiCommandBuilder,
-	apiDocsURL,
-} from '../../../lib/command/api-command.js'
+import type { APICommand } from '../../../lib/command/api-command.js'
 import type { stringTranslateToId } from '../../../lib/command/command-util.js'
 import type {
 	CustomCommonOutputProducer,
@@ -40,16 +35,10 @@ import {
 	tableToStringMock,
 } from '../../test-lib/table-mock.js'
 import type { fatalError } from '../../../lib/util.js'
+import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 
 
-const apiCommandMock = jest.fn<typeof apiCommand>()
-const apiCommandBuilderMock = jest.fn<typeof apiCommandBuilder>()
-const apiDocsURLMock = jest.fn<typeof apiDocsURL>()
-jest.unstable_mockModule('../../../lib/command/api-command.js', () => ({
-	apiCommand: apiCommandMock,
-	apiCommandBuilder: apiCommandBuilderMock,
-	apiDocsURL: apiDocsURLMock,
-}))
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
 const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
 jest.unstable_mockModule('../../../lib/command/command-util.js', () => ({

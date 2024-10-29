@@ -1,9 +1,10 @@
 import { jest } from '@jest/globals'
 
 import { CLIConfig } from '../../../lib/cli-config.js'
-import { APICommand, apiCommand, apiCommandBuilder } from '../../../lib/command/api-command.js'
+import { APICommand } from '../../../lib/command/api-command.js'
 import { APIOrganizationCommandFlags } from '../../../lib/command/api-organization-command.js'
 import { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
+import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
 
@@ -15,13 +16,9 @@ const apiCommandResultMock = {
 	},
 	profileName: 'profile-from-parent',
 } as unknown as APICommand
-const apiCommandBuilderMock = jest.fn<typeof apiCommandBuilder>()
-const apiCommandMock = jest.fn<typeof apiCommand>()
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 apiCommandMock.mockResolvedValue(apiCommandResultMock)
-jest.unstable_mockModule('../../../lib/command/api-command.js', () => ({
-	apiCommandBuilder: apiCommandBuilderMock,
-	apiCommand: apiCommandMock,
-}))
 
 const {
 	apiOrganizationCommand,

@@ -4,7 +4,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 
 import type { Device, DevicePreferenceResponse, DevicesEndpoint } from '@smartthings/core-sdk'
 
-import type { APICommand, apiCommand, apiCommandBuilder } from '../../../lib/command/api-command.js'
+import type { APICommand } from '../../../lib/command/api-command.js'
 import type {
 	CustomCommonOutputProducer,
 	formatAndWriteItem,
@@ -14,6 +14,7 @@ import type { CommandArgs } from '../../../commands/apps.js'
 import type { BuildOutputFormatterFlags } from '../.././../lib/command/output-builder.js'
 import type { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
 import type { ChooseFunction } from '../../../lib/command/util/util-util.js'
+import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 import {
 	mockedTableOutput,
@@ -24,12 +25,7 @@ import {
 } from '../../test-lib/table-mock.js'
 
 
-const apiCommandMock = jest.fn<typeof apiCommand>()
-const apiCommandBuilderMock = jest.fn<typeof apiCommandBuilder>()
-jest.unstable_mockModule('../../../lib/command/api-command.js', () => ({
-	apiCommand: apiCommandMock,
-	apiCommandBuilder: apiCommandBuilderMock,
-}))
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
 const chooseDeviceMock = jest.fn<ChooseFunction<Device>>()
 jest.unstable_mockModule('../../../lib/command/util/devices-util.js', () => ({

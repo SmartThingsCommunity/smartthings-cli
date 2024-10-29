@@ -1,24 +1,17 @@
 import { jest } from '@jest/globals'
 
-import { ArgumentsCamelCase, Argv } from 'yargs'
+import type { ArgumentsCamelCase, Argv } from 'yargs'
 
-import { Location, LocationsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
+import type { Location, LocationsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { APICommand, APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../../lib/command/api-command.js'
-import { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
-import { CommandArgs } from '../../commands/locations.js'
+import type { APICommand, APICommandFlags } from '../../lib/command/api-command.js'
+import type { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
+import type { CommandArgs } from '../../commands/locations.js'
+import { apiCommandMocks } from '../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
 
-
-const apiCommandMock = jest.fn<typeof apiCommand>()
-const apiCommandBuilderMock = jest.fn<typeof apiCommandBuilder>()
-const apiDocsURLMock = jest.fn<typeof apiDocsURL>()
-jest.unstable_mockModule('../../lib/command/api-command.js', () => ({
-	apiCommand: apiCommandMock,
-	apiCommandBuilder: apiCommandBuilderMock,
-	apiDocsURL: apiDocsURLMock,
-}))
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../..')
 
 const outputItemOrListMock = jest.fn<typeof outputItemOrList>()
 const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
@@ -26,7 +19,6 @@ jest.unstable_mockModule('../../lib/command/listing-io.js', () => ({
 	outputItemOrList: outputItemOrListMock,
 	outputItemOrListBuilder: outputItemOrListBuilderMock,
 }))
-
 
 
 const { default: cmd } = await import('../../commands/locations.js')
