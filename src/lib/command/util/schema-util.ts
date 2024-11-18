@@ -21,7 +21,7 @@ import {
 } from '../../item-input/index.js'
 import { clipToMaximum, fatalError } from '../../util.js'
 import { emailValidate, httpsURLValidate } from '../../validate-util.js'
-import { APICommandFlags, type APICommand } from '../api-command.js'
+import { type APICommand } from '../api-command.js'
 import { chooseOrganization, organizationDef } from './organizations-util.js'
 import { arnDef, webHookUrlDef } from './schema-util-input-primitives.js'
 import { type ChooseFunction, createChooseFn } from './util-util.js'
@@ -151,7 +151,7 @@ export const chooseSchemaApp = chooseSchemaAppFn()
 // set. So, here we check to see if the app has an organization before we query it and
 // prompt the user for the correct organization.
 export const getSchemaAppEnsuringOrganization = async (
-		command: APICommand<APICommandFlags>,
+		command: APICommand,
 		schemaAppId: string,
 		flags: {
 			json: boolean
