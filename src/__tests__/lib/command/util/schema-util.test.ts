@@ -11,6 +11,7 @@ import type {
 } from '@smartthings/core-sdk'
 
 import type { Profile } from '../../../../lib/cli-config.js'
+import type { stdinIsTTY, stdoutIsTTY } from '../../../../lib/io-util.js'
 import type { clipToMaximum, fatalError } from '../../../../lib/util.js'
 import type { APICommand } from '../../../../lib/command/api-command.js'
 import type { chooseOrganization, organizationDef } from '../../../../lib/command/util/organizations-util.js'
@@ -28,18 +29,27 @@ import type {
 	stringDef,
 	updateFromUserInput,
 } from '../../../../lib/item-input/index.js'
-import {
+import type {
 	arnDef,
 	webHookUrlDef,
 } from '../../../../lib/command/util/schema-util-input-primitives.js'
-import {
+import type {
 	createChooseFn,
-	type ChooseFunction,
+	ChooseFunction,
 } from '../../../../lib/command/util/util-util.js'
 
 
+const stdinIsTTYMock = jest.fn<typeof stdinIsTTY>().mockReturnValue(true)
+const stdoutIsTTYMock = jest.fn<typeof stdoutIsTTY>().mockReturnValue(true)
+jest.unstable_mockModule('../../../../lib/io-util.js', () => ({
+	stdinIsTTY: stdinIsTTYMock,
+	stdoutIsTTY: stdoutIsTTYMock,
+}))
+
 const clipToMaximumMock = jest.fn<typeof clipToMaximum>().mockReturnValue('clipped result')
 const fatalErrorMock = jest.fn<typeof fatalError>()
+	// simulate never returning with an error
+	.mockImplementation(() => { throw Error('fatal error' ) })
 jest.unstable_mockModule('../../../../lib/util.js', () => ({
 	clipToMaximum: clipToMaximumMock,
 	fatalError: fatalErrorMock,
@@ -86,32 +96,59 @@ jest.unstable_mockModule('../../../../lib/command/util/util-util.js', () => ({
 	createChooseFn: createChooseFnMock,
 }))
 
+const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /*no-op*/ })
+
 
 const {
 	appLinksDefSummarize,
 	buildInputDefinition,
 	chooseSchemaAppFn,
 	getSchemaAppCreateFromUser,
+	getSchemaAppEnsuringOrganization,
 	getSchemaAppUpdateFromUser,
 	validateFinal,
 } = await import('../../../../lib/command/util/schema-util.js')
 
 
-const organizations = [
-	{ name: 'Organization 1', organizationId: 'organization-id-1' },
-	{ name: 'Organization 2', organizationId: 'organization-id-2' },
-] as OrganizationResponse[]
+const schemaAppWithOrganization = {
+	endpointAppId: 'has-organization',
+	organizationId: 'my-organization',
+	appName: 'Has Organization',
+} as SchemaApp
+const schemaAppWithoutOrganization = {
+	endpointAppId: 'sans-organization',
+	appName: 'Sans Organization',
+} as SchemaApp
+const schemaAppNotInList = {
+	endpointAppId: 'not-in-list',
+	organizationId: 'their-organization',
+	appName: 'Not Included in List',
+} as SchemaApp
+const schemaList = [schemaAppWithOrganization, schemaAppWithoutOrganization]
+const apiOrganizationsGetMock = jest.fn<typeof OrganizationsEndpoint.prototype.get>()
+const organization1 = { name: 'Organization 1', organizationId: 'organization-id-1' } as OrganizationResponse
+const organization2 = { name: 'Organization 2', organizationId: 'organization-id-2' } as OrganizationResponse
+const organizations = [organization1, organization2]
 const apiOrganizationListMock = jest.fn<typeof OrganizationsEndpoint.prototype.list>()
 	.mockResolvedValue(organizations)
+const apiSchemaListMock = jest.fn<typeof SchemaEndpoint.prototype.list>()
+	.mockResolvedValue(schemaList)
+const apiSchemaGetMock = jest.fn<typeof SchemaEndpoint.prototype.get>()
+const cloneMock = jest.fn<SmartThingsClient['clone']>()
 const clientMock = {
-	organizations:  {
+	organizations: {
+		get: apiOrganizationsGetMock,
 		list: apiOrganizationListMock,
 	},
+	schema: {
+		list: apiSchemaListMock,
+		get: apiSchemaGetMock,
+	},
+	clone: cloneMock,
 } as unknown as SmartThingsClient
-const commandMock = {
-	profile: {},
-	client: clientMock,
-} as APICommand
+const clonedClient = { ...clientMock } as SmartThingsClient
+cloneMock.mockReturnValue(clonedClient)
+const commandMock = { profile: {}, client: clientMock } as APICommand
 
 const appLinksDefMock = { name: 'Generated App Links Def' } as InputDefinition<ViperAppLinks>
 const generatedDef = { name: 'Final Generated Def' } as InputDefinition<InputData>
@@ -357,4 +394,106 @@ test('chooseSchemaAppFn uses correct endpoint to list schema apps', async () => 
 	expect(await listItems(client)).toBe(schemaList)
 
 	expect(apiSchemaListMock).toHaveBeenCalledExactlyOnceWith()
+})
+
+describe('getSchemaAppEnsuringOrganization', () => {
+	const defaultFlags = { json: false, yaml: false }
+
+	it('uses get when the app already has an organization', async () => {
+		apiSchemaGetMock.mockResolvedValueOnce(schemaAppWithOrganization)
+
+		const { schemaApp, organizationWasUpdated } =
+			await getSchemaAppEnsuringOrganization(commandMock, 'has-organization', defaultFlags)
+
+		expect(schemaApp).toBe(schemaAppWithOrganization)
+		expect(organizationWasUpdated).toBe(false)
+
+		expect(apiSchemaListMock).toHaveBeenCalledExactlyOnceWith()
+		expect(apiSchemaGetMock).toHaveBeenCalledExactlyOnceWith('has-organization')
+
+		expect(fatalErrorMock).not.toHaveBeenCalled()
+		expect(chooseOrganizationMock).not.toHaveBeenCalled()
+		expect(apiOrganizationsGetMock).not.toHaveBeenCalled()
+		expect(cloneMock).not.toHaveBeenCalled()
+	})
+
+	it('uses get when no app found in list', async () => {
+		apiSchemaGetMock.mockResolvedValueOnce(schemaAppNotInList)
+
+		const { schemaApp, organizationWasUpdated } =
+			await getSchemaAppEnsuringOrganization(commandMock, 'not-in-list', defaultFlags)
+
+		expect(schemaApp).toBe(schemaAppNotInList)
+		expect(organizationWasUpdated).toBe(false)
+
+		expect(apiSchemaListMock).toHaveBeenCalledExactlyOnceWith()
+		expect(apiSchemaGetMock).toHaveBeenCalledExactlyOnceWith('not-in-list')
+
+		expect(fatalErrorMock).not.toHaveBeenCalled()
+		expect(chooseOrganizationMock).not.toHaveBeenCalled()
+		expect(apiOrganizationsGetMock).not.toHaveBeenCalled()
+		expect(cloneMock).not.toHaveBeenCalled()
+	})
+
+	it('sets an organization when app found without an organization', async () => {
+		chooseOrganizationMock.mockResolvedValueOnce('organization-id-1')
+		apiOrganizationsGetMock.mockResolvedValueOnce(organization1)
+		apiSchemaGetMock.mockResolvedValueOnce(schemaAppWithoutOrganization)
+
+		const { schemaApp, organizationWasUpdated } =
+			await getSchemaAppEnsuringOrganization(commandMock, 'sans-organization', defaultFlags)
+
+		expect(schemaApp).toBe(schemaAppWithoutOrganization)
+		expect(organizationWasUpdated).toBe(true)
+
+		expect(apiSchemaListMock).toHaveBeenCalledExactlyOnceWith()
+		expect(consoleLogSpy).toHaveBeenCalledWith(
+			'The schema "Sans Organization" (sans-organization) does not have an organization\n' +
+				'You must choose one now.',
+		)
+		expect(chooseOrganizationMock).toHaveBeenCalledExactlyOnceWith(commandMock)
+		expect(apiOrganizationsGetMock).toHaveBeenCalledExactlyOnceWith('organization-id-1')
+		expect(cloneMock).toHaveBeenCalledExactlyOnceWith(
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			{ 'X-ST-Organization': 'organization-id-1' },
+		)
+		expect(apiSchemaGetMock).toHaveBeenCalledExactlyOnceWith('sans-organization')
+
+		expect(fatalErrorMock).not.toHaveBeenCalled()
+	})
+
+	it.each([
+		{ flags: { ...defaultFlags, json: true }, stdinIsTTYReturn: true, stdoutIsTTYReturn: true },
+		{ flags: { ...defaultFlags, yaml: true }, stdinIsTTYReturn: true, stdoutIsTTYReturn: true  },
+		{ flags: { ...defaultFlags, input: 'input-file.json' }, stdinIsTTYReturn: true, stdoutIsTTYReturn: true  },
+		{ flags: { ...defaultFlags, output: 'output-file.yaml' }, stdinIsTTYReturn: true, stdoutIsTTYReturn: true  },
+		{ flags: defaultFlags, stdinIsTTYReturn: false, stdoutIsTTYReturn: true  },
+		{ flags: defaultFlags, stdinIsTTYReturn: true, stdoutIsTTYReturn: false  },
+	])(
+		'errors with $flags flags, stdin is TTY $stdinIsTTYReturn, stdout is TTY $stdoutIsTTYReturn',
+		async ({ flags, stdinIsTTYReturn, stdoutIsTTYReturn }) => {
+			apiSchemaGetMock.mockResolvedValueOnce(schemaAppWithoutOrganization)
+			if (!stdinIsTTYReturn) {
+				stdinIsTTYMock.mockReturnValueOnce(stdinIsTTYReturn)
+			}
+			if (!stdoutIsTTYReturn) {
+				stdoutIsTTYMock.mockReturnValueOnce(stdoutIsTTYReturn)
+			}
+
+			await expect(getSchemaAppEnsuringOrganization(commandMock, 'sans-organization', flags))
+				.rejects.toThrow('fatal error')
+
+			expect(apiSchemaListMock).toHaveBeenCalledExactlyOnceWith()
+			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
+				'Schema app does not have an organization associated with it.\n' +
+					'Please run "smartthings schema sans-organization" and choose an organization ' +
+					'when prompted.',
+			)
+
+			expect(chooseOrganizationMock).not.toHaveBeenCalled()
+			expect(apiOrganizationsGetMock).not.toHaveBeenCalled()
+			expect(cloneMock).not.toHaveBeenCalled()
+			expect(apiSchemaGetMock).not.toHaveBeenCalled()
+		},
+	)
 })
