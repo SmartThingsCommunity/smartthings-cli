@@ -1,5 +1,6 @@
 import { type OrganizationResponse, type SmartThingsClient } from '@smartthings/core-sdk'
 
+import { TableFieldDefinition } from '../../table-generator.js'
 import {
 	type InputDefinition,
 	selectDef,
@@ -40,3 +41,19 @@ export const chooseOrganizationFn = (): ChooseFunction<OrganizationResponse> => 
 	(client: SmartThingsClient) => client.organizations.list(),
 )
 export const chooseOrganization = chooseOrganizationFn()
+
+export const tableFieldDefinitions: TableFieldDefinition<OrganizationResponse>[] = [
+	'name', 'label', 'organizationId', 'developerGroupId', 'adminGroupId', 'warehouseGroupId',
+	{
+		prop: 'isDefaultUserOrg',
+		value: (i: OrganizationResponse): string | undefined => i.isDefaultUserOrg?.toString(),
+	},
+	{
+		prop: 'manufacturerName',
+		skipEmpty: true,
+	},
+	{
+		prop: 'mnid',
+		skipEmpty: true,
+	},
+]

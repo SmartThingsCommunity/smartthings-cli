@@ -2,15 +2,29 @@ import { jest } from '@jest/globals'
 
 import type {
 	OrganizationResponse,
+	OrganizationsEndpoint,
+	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import {
+import type {
+	ValueTableFieldDefinition,
+} from '../../../../lib/table-generator.js'
+import type {
+	createChooseFn,
+	ChooseFunction,
+} from '../../../../lib/command/util/util-util.js'
+import type {
 	InputDefinition,
 	selectDef,
 	staticDef,
 	undefinedDef,
 } from '../../../../lib/item-input/index.js'
 
+
+const createChooseFnMock = jest.fn<typeof createChooseFn<OrganizationResponse>>()
+jest.unstable_mockModule('../../../../lib/command/util/util-util.js', () => ({
+	createChooseFn: createChooseFnMock,
+}))
 
 const selectDefMock = jest.fn<typeof selectDef>()
 const staticDefMock = jest.fn<typeof staticDef>()
@@ -22,7 +36,11 @@ jest.unstable_mockModule('../../../../lib/item-input/index.js', () => ({
 }))
 
 
-const { organizationDef } = await import('../../../../lib/command/util/organizations-util.js')
+const {
+	chooseOrganizationFn,
+	organizationDef,
+	tableFieldDefinitions,
+} = await import('../../../../lib/command/util/organizations-util.js')
 
 
 describe('organizationDef', () => {
@@ -60,4 +78,42 @@ describe('organizationDef', () => {
 			{ helpText },
 		)
 	})
+})
+
+test('chooseOrganizationFn uses correct endpoint to list organizations', async () => {
+	const chooseOrganizationMock = jest.fn<ChooseFunction<OrganizationResponse>>()
+	createChooseFnMock.mockReturnValueOnce(chooseOrganizationMock)
+
+	const chooseOrganization = chooseOrganizationFn()
+
+	expect(chooseOrganization).toBe(chooseOrganizationMock)
+
+	expect(createChooseFnMock).toHaveBeenCalledExactlyOnceWith(
+		expect.objectContaining({ itemName: 'organization' }),
+		expect.any(Function),
+	)
+
+	const organizationList = [{ organizationId: 'listed-organization-id' } as OrganizationResponse]
+	const apiOrganizationsListMock = jest.fn<typeof OrganizationsEndpoint.prototype.list>()
+		.mockResolvedValueOnce(organizationList)
+	const listItems = createChooseFnMock.mock.calls[0][1]
+	const client = {
+		organizations: {
+			list: apiOrganizationsListMock,
+		},
+	} as unknown as SmartThingsClient
+
+	expect(await listItems(client)).toBe(organizationList)
+
+	expect(apiOrganizationsListMock).toHaveBeenCalledExactlyOnceWith()
+})
+
+test.each([
+	{ input: { isDefaultUserOrg: false }, expected: 'false' },
+	{ input: { isDefaultUserOrg: true }, expected: 'true' },
+	{ input: {}, expected: undefined },
+])('tableFieldDefinitions isDefaultUserOrg.value returns $expected for $input', ({ input, expected }) => {
+	const value = (tableFieldDefinitions[6] as ValueTableFieldDefinition<OrganizationResponse>).value as
+		(input: OrganizationResponse) => string
+	expect(value(input as OrganizationResponse)).toBe(expected)
 })
