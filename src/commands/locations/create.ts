@@ -20,7 +20,7 @@ export type CommandArgs = APICommandFlags & InputAndOutputItemFlags
 
 const command = 'locations:create'
 
-const describe = 'create a Location for a user'
+const describe = 'create a location for a user'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	inputAndOutputItemBuilder(apiCommandBuilder(yargs))

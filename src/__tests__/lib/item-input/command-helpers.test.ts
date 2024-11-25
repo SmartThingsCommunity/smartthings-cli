@@ -5,7 +5,7 @@ import inquirer from 'inquirer'
 import type { Profile } from '../../../lib/cli-config.js'
 import type { red } from '../../../lib/colors.js'
 import type { cancelCommand } from '../../../lib/util.js'
-import { askForBoolean } from '../../../lib/user-query.js'
+import type { askForBoolean } from '../../../lib/user-query.js'
 import {
 	cancelAction,
 	editAction,
@@ -20,6 +20,7 @@ import type {
 	SmartThingsCommand,
 	SmartThingsCommandFlags,
 } from '../../../lib/command/smartthings-command.js'
+import { buildInputDefMock } from '../../test-lib/input-type-mock.js'
 import type { SimpleType } from '../../test-lib/simple-type.js'
 
 
@@ -70,15 +71,12 @@ const buildCommandMock = (
 } as unknown as SmartThingsCommand)
 const commandMock = buildCommandMock()
 
-const buildFromUserInputMock = jest.fn<InputDefinition<SimpleType>['buildFromUserInput']>()
-const summarizeForEditMock = jest.fn<InputDefinition<SimpleType>['summarizeForEdit']>()
-const updateFromUserInputMock = jest.fn<InputDefinition<SimpleType>['updateFromUserInput']>()
-const inputDefMock = {
-	name: 'Item-to-Input',
+const inputDefMock = buildInputDefMock<SimpleType>('Item-to-Input')
+const {
 	buildFromUserInput: buildFromUserInputMock,
 	summarizeForEdit: summarizeForEditMock,
 	updateFromUserInput: updateFromUserInputMock,
-}
+} = inputDefMock.mocks
 
 const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => true)
 

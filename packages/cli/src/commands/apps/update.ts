@@ -16,7 +16,7 @@ import {
 	arrayDef,
 	InputDefsByProperty,
 } from '@smartthings/cli-lib'
-import { addPermission, awsHelpText } from '../../lib/aws-utils'
+import { authorizeApp, awsHelpText } from '../../lib/aws-utils'
 import { chooseApp, smartAppHelpText, tableFieldDefinitions } from '../../lib/commands/apps-util'
 
 
@@ -101,16 +101,7 @@ export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand
 
 		const executeUpdate: ActionFunction<void, AppUpdateRequest, AppResponse> = async (_, data) => {
 			if (this.flags.authorize) {
-				if (data.lambdaSmartApp) {
-					if (data.lambdaSmartApp.functions) {
-						const requests = data.lambdaSmartApp.functions.map((it) => {
-							return addPermission(it, this.flags.principal, this.flags.statement)
-						})
-						await Promise.all(requests)
-					}
-				} else {
-					throw new Error('Authorization is not applicable to WebHook SmartApps')
-				}
+				await authorizeApp(data, this.flags.principal, this.flags.statement)
 			}
 			return this.client.apps.update(appId, data)
 		}

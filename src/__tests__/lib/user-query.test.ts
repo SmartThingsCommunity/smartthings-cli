@@ -1,10 +1,9 @@
 import { jest } from '@jest/globals'
 
-import {
-	ValidateFunction,
-} from '../../lib/user-query.js'
 import inquirer from 'inquirer'
-import { DefaultValueFunction } from '../../lib/item-input/defs.js'
+
+import type { ValidateFunction } from '../../lib/user-query.js'
+import type { DefaultValueFunction } from '../../lib/item-input/defs.js'
 
 
 const promptMock = jest.fn<typeof inquirer.prompt>()

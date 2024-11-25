@@ -49,7 +49,7 @@ jest.unstable_mockModule('../../../../lib/io-util.js', () => ({
 const clipToMaximumMock = jest.fn<typeof clipToMaximum>().mockReturnValue('clipped result')
 const fatalErrorMock = jest.fn<typeof fatalError>()
 	// simulate never returning with an error
-	.mockImplementation(() => { throw Error('fatal error' ) })
+	.mockImplementation(() => { throw Error('fatal error') })
 jest.unstable_mockModule('../../../../lib/util.js', () => ({
 	clipToMaximum: clipToMaximumMock,
 	fatalError: fatalErrorMock,

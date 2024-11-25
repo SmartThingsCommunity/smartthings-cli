@@ -1,12 +1,21 @@
 import { jest } from '@jest/globals'
 
-import { AppResponse, AppsEndpoint, AppType, PagedApp, SmartThingsClient } from '@smartthings/core-sdk'
+import {
+	type AppResponse,
+	type AppsEndpoint,
+	AppType,
+	type AppUpdateRequest,
+	type PagedApp,
+	type SmartThingsClient,
+} from '@smartthings/core-sdk'
 
+import type { addPermission } from '../../../../lib/aws-util.js'
 import {
 	PropertyTableFieldDefinition,
 	TableGenerator,
 	ValueTableFieldDefinition,
 } from '../../../../lib/table-generator.js'
+import type { fatalError } from '../../../../lib/util.js'
 import { stringTranslateToId } from '../../../../lib/command/command-util.js'
 import {
 	createChooseFn,
@@ -20,6 +29,17 @@ import {
 } from '../../../test-lib/table-mock.js'
 
 
+const addPermissionMock = jest.fn<typeof addPermission>()
+jest.unstable_mockModule('../../../../lib/aws-util.js', () => ({
+	addPermission: addPermissionMock,
+}))
+
+const fatalErrorMock = jest.fn<typeof fatalError>()
+	.mockImplementation(() => { throw Error('fatal error') })
+jest.unstable_mockModule('../../../../lib/util.js', () => ({
+	fatalError: fatalErrorMock,
+}))
+
 const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
 jest.unstable_mockModule('../../../../lib/command/command-util.js', () => ({
 	stringTranslateToId: stringTranslateToIdMock,
@@ -32,6 +52,7 @@ jest.unstable_mockModule('../../../../lib/command/util/util-util.js', () => ({
 
 
 const {
+	authorizeApp,
 	buildTableOutput,
 	chooseAppFn,
 	hasSubscription,
@@ -267,5 +288,35 @@ describe('shortARNorURL', () => {
 		const targetUrl = '123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456'
 		const trimmed = '12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345...'
 		expect(shortARNorURL({ webhookSmartApp: { targetUrl } } as unknown as PagedApp)).toBe(trimmed)
+	})
+})
+
+describe('authorizeApp', () => {
+	it('errors for non-lambda apps', async () => {
+		await expect(authorizeApp({} as AppUpdateRequest, 'principal', 'statement'))
+			.rejects.toThrow('fatal error')
+
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
+			'Authorization is only applicable to Lambda SmartApps.',
+		)
+	})
+
+	it('does nothing given no functions', async () => {
+		await authorizeApp({ lambdaSmartApp: {} } as AppUpdateRequest, 'principal', 'statement')
+
+		expect(addPermissionMock).not.toHaveBeenCalled()
+		expect(fatalErrorMock).not.toHaveBeenCalled()
+	})
+
+	it('calls addPermission for all functions', async () => {
+		await authorizeApp({ lambdaSmartApp: {
+			functions: ['function-arn-1', 'function-arn-2'],
+		} } as AppUpdateRequest, 'principal', 'statement')
+
+		expect(addPermissionMock).toHaveBeenCalledTimes(2)
+		expect(addPermissionMock).toHaveBeenCalledWith('function-arn-1', 'principal', 'statement')
+		expect(addPermissionMock).toHaveBeenCalledWith('function-arn-2', 'principal', 'statement')
+
+		expect(fatalErrorMock).not.toHaveBeenCalled()
 	})
 })

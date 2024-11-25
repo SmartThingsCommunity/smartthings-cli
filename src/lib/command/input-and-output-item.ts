@@ -18,7 +18,9 @@ export type InputAndOutputItemFlags = InputProcessorFlags & BuildOutputFormatter
 	dryRun?: boolean
 }
 export type InputAndOutputItemConfig<O extends object> = FormatAndWriteItemConfig<O>
-export const inputAndOutputItemBuilder = <T extends SmartThingsCommandFlags>(yargs: Argv<T>): Argv<T & InputAndOutputItemFlags> =>
+export const inputAndOutputItemBuilder = <T extends SmartThingsCommandFlags>(
+	yargs: Argv<T>,
+): Argv<T & InputAndOutputItemFlags> =>
 	inputItemBuilder(buildOutputFormatterBuilder(yargs))
 		.option('dry-run', { alias: 'd', describe: "produce JSON but don't actually submit", type: 'boolean' })
 /**
@@ -32,8 +34,12 @@ export const inputAndOutputItemBuilder = <T extends SmartThingsCommandFlags>(yar
  * from command line flags or arguments. Input processors are called in the order they are specified
  * and the first one to return data is used.
  */
-export async function inputAndOutputItem<I extends object, O extends object = I>(command: SmartThingsCommand<InputAndOutputItemFlags>, config: InputAndOutputItemConfig<O>,
-		executeAction: ActionFunction<void, I, O>, ...alternateInputProcessors: InputProcessor<I>[]): Promise<void> {
+export const inputAndOutputItem = async <I extends object, O extends object = I>(
+	command: SmartThingsCommand<InputAndOutputItemFlags>,
+	config: InputAndOutputItemConfig<O>,
+	executeAction: ActionFunction<void, I, O>,
+	...alternateInputProcessors: InputProcessor<I>[]
+): Promise<void> => {
 	const [itemIn, defaultIOFormat] = await inputItem<I>(command.flags, ...alternateInputProcessors)
 	if (command.flags.dryRun) {
 		const outputFormatter = buildOutputFormatter(command.flags, command.cliConfig, defaultIOFormat)
