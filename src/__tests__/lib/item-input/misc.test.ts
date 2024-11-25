@@ -19,6 +19,7 @@ import {
 } from '../../../lib/user-query.js'
 import { stringFromUnknown } from '../../../lib/util.js'
 import { ListSelectionDefOptions, OptionalDefPredicateFn } from '../../../lib/item-input/misc.js'
+import { buildInputDefMock } from '../../test-lib/input-type-mock.js'
 
 
 const promptMock = jest.fn<typeof inquirer.prompt>()
@@ -536,16 +537,14 @@ describe('listSelectionDef', () => {
 })
 
 describe('optionalDef', () => {
-	const inputBuildFromUserInputMock = jest.fn<InputDefinition<string>['buildFromUserInput']>()
-	const inputSummarizeForEditMock = jest.fn<InputDefinition<string>['summarizeForEdit']>()
-		.mockImplementation(item => `summarized ${item}`)
-	const inputUpdateFromUserInputMock = jest.fn<InputDefinition<string>['updateFromUserInput']>()
-	const inputDefMock: InputDefinition<string> = {
-		name: 'Input Def',
+	const inputDefMock = buildInputDefMock<string>('Input Def')
+	const {
 		buildFromUserInput: inputBuildFromUserInputMock,
 		summarizeForEdit: inputSummarizeForEditMock,
 		updateFromUserInput: inputUpdateFromUserInputMock,
-	}
+	} = inputDefMock.mocks
+	inputSummarizeForEditMock.mockImplementation((item: string) => `summarized ${item}`)
+
 
 	it('takes name from inputDef', async () => {
 		const def = optionalDef(inputDefMock, () => true)

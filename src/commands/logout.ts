@@ -24,8 +24,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 		const errorMsg = command.profile.token
 			? `Profile ${command.profileName} is set up using a bearer token.`
 			: 'Cannot log out with a bearer token.'
-		fatalError(errorMsg)
-		return
+		return fatalError(errorMsg)
 	}
 
 	await command.authenticator.logout()

@@ -1,16 +1,17 @@
 import {
-	AppListOptions,
-	AppOAuthRequest,
-	AppResponse,
-	AppSettingsResponse,
-	PagedApp,
-	SmartThingsClient,
+	type AppListOptions,
+	type AppOAuthRequest,
+	type AppResponse,
+	type AppSettingsResponse,
+	type AppUpdateRequest,
+	type PagedApp,
+	type SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { arrayDef, checkboxDef, stringDef } from '../../item-input/index.js'
-import { TableFieldDefinition, TableGenerator } from '../../table-generator.js'
-import { localhostOrHTTPSValidate } from '../../validate-util.js'
-import { ChooseFunction, createChooseFn } from './util-util.js'
+import { addPermission } from '../../aws-util.js'
+import { type TableFieldDefinition, type TableGenerator } from '../../table-generator.js'
+import { fatalError } from '../../util.js'
+import { type ChooseFunction, createChooseFn } from './util-util.js'
 
 
 export const isWebhookSmartApp = (app: AppResponse): boolean => !!app.webhookSmartApp
@@ -43,7 +44,11 @@ export const tableFieldDefinitions: TableFieldDefinition<AppResponse>[] = [
 	{ path: 'apiOnly.subscription.targetStatus', include: hasSubscription },
 ]
 
-export const oauthTableFieldDefinitions: TableFieldDefinition<AppOAuthRequest>[] = ['clientName', 'scope', 'redirectUris']
+export const oauthTableFieldDefinitions: TableFieldDefinition<AppOAuthRequest>[] = [
+	'clientName',
+	'scope',
+	'redirectUris',
+]
 
 export const chooseAppFn = (): ChooseFunction<PagedApp> => createChooseFn(
 	{
@@ -68,7 +73,10 @@ export const buildTableOutput = (tableGenerator: TableGenerator, appSettings: Ap
 	return table.toString()
 }
 
-export const verboseApps = async (client: SmartThingsClient, listOptions: AppListOptions): Promise<AppResponse[]> => {
+export const verboseApps = async (
+		client: SmartThingsClient,
+		listOptions: AppListOptions,
+): Promise<AppResponse[]> => {
 	const apps = await client.apps.list(listOptions)
 	return Promise.all(apps.map(app => client.apps.get(app.appId)))
 }
@@ -83,36 +91,19 @@ export const shortARNorURL = (app: PagedApp & Partial<AppResponse>): string => {
 	return uri.length < 96 ? uri : uri.slice(0, 95) + '...'
 }
 
-const availableScopes = [
-	'r:devices:*',
-	'w:devices:*',
-	'x:devices:*',
-	'r:hubs:*',
-	'r:locations:*',
-	'w:locations:*',
-	'x:locations:*',
-	'r:scenes:*',
-	'x:scenes:*',
-	'r:rules:*',
-	'w:rules:*',
-	'r:installedapps',
-	'w:installedapps',
-]
+export const authorizeApp = async (
+		app: AppUpdateRequest,
+		principal: string | undefined,
+		statement: string | undefined,
+): Promise<void> => {
+	if (!app.lambdaSmartApp) {
+		return fatalError('Authorization is only applicable to Lambda SmartApps.')
+	}
 
-export const oauthAppScopeDef = checkboxDef<string>('Scopes', availableScopes, {
-	helpText: 'More information on OAuth 2 Scopes can be found at:\n' +
-	'  https://www.oauth.com/oauth2-servers/scope/\n\n' +
-	'To determine which scopes you need for the application, see documentation for the individual endpoints you will use in your app:\n' +
-	'  https://developer.smartthings.com/docs/api/public/',
-})
-
-const redirectUriHelpText = 'More information on redirect URIs can be found at:\n' +
-	'  https://www.oauth.com/oauth2-servers/redirect-uris/'
-export const redirectUrisDef = arrayDef(
-	'Redirect URIs',
-	stringDef('Redirect URI', { validate: localhostOrHTTPSValidate, helpText: redirectUriHelpText }),
-	{ minItems: 0, maxItems: 10, helpText: redirectUriHelpText },
-)
-
-export const smartAppHelpText = 'More information on writing SmartApps can be found at\n' +
-	'  https://developer.smartthings.com/docs/connected-services/smartapp-basics'
+	if (app.lambdaSmartApp.functions) {
+		const requests = app.lambdaSmartApp.functions.map((functionArn) => {
+			return addPermission(functionArn, principal, statement)
+		})
+		await Promise.all(requests)
+	}
+}

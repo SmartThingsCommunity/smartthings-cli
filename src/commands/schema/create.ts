@@ -37,13 +37,6 @@ const describe = 'create an ST Schema connector'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	inputAndOutputItemBuilder(lambdaAuthBuilder(apiOrganizationCommandBuilder(yargs)))
-		.example([
-			['$0 schema:create', 'create a schema app from prompted input'],
-			[
-				'$0 schema:create -i my-schema-app.yaml',
-				'create a schema app defined in "my-schema-app.yaml"',
-			],
-		])
 		.option(
 			'authorize',
 			{
@@ -52,6 +45,13 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				default: false,
 			},
 		)
+		.example([
+			['$0 schema:create', 'create a schema app from prompted input'],
+			[
+				'$0 schema:create -i my-schema-app.yaml',
+				'create a schema app defined in "my-schema-app.yaml"',
+			],
+		])
 		.epilog(apiDocsURL('postApps'))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {

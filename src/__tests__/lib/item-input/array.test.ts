@@ -11,12 +11,12 @@ import {
 	finishAction,
 	helpAction,
 	helpOption,
-	InputDefinition,
 	maxItemValueLength,
 	uneditable,
 } from '../../../lib/item-input/defs.js'
 import { clipToMaximum, stringFromUnknown } from '../../../lib/util.js'
 import { ArrayDefOptions, CheckboxDefOptions } from '../../../lib/item-input/array.js'
+import { buildInputDefMock } from '../../test-lib/input-type-mock.js'
 
 
 const promptMock = jest.fn<typeof inquirer.prompt>()
@@ -43,16 +43,13 @@ const { arrayDef, checkboxDef } = await import('../../../lib/item-input/array.js
 
 
 describe('arrayDef', () => {
-	const itemBuildFromUserInputMock = jest.fn<InputDefinition<string>['buildFromUserInput']>()
-	const itemSummarizeForEditMock = jest.fn<InputDefinition<string>['summarizeForEdit']>()
-		.mockImplementation(item => `summarized ${item}`)
-	const itemUpdateFromUserInputMock = jest.fn<InputDefinition<string>['updateFromUserInput']>()
-	const itemDefMock: InputDefinition<string> = {
-		name: 'Item Def',
+	const itemDefMock = buildInputDefMock<string>('Item Def')
+	const {
 		buildFromUserInput: itemBuildFromUserInputMock,
 		summarizeForEdit: itemSummarizeForEditMock,
 		updateFromUserInput: itemUpdateFromUserInputMock,
-	}
+	} = itemDefMock.mocks
+	itemSummarizeForEditMock.mockImplementation(item => `summarized ${item}`)
 
 	const def = arrayDef('Array Def', itemDefMock)
 

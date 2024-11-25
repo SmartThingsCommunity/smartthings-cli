@@ -4,6 +4,7 @@ import inquirer from 'inquirer'
 
 import { cancelAction, finishAction, helpAction, InputDefinition, inquirerPageSize } from '../../../lib/item-input/defs.js'
 import { ObjectDefOptions, ObjectItemTypeData } from '../../../lib/item-input/object.js'
+import { buildInputDefMock } from '../../test-lib/input-type-mock.js'
 
 
 const promptMock = jest.fn<typeof inquirer.prompt>()
@@ -27,35 +28,27 @@ type InputtedThing = {
 describe('objectDef', () => {
 	const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /*no-op*/ })
 
-	const input1BuildFromUserInputMock = jest.fn<InputDefinition<string>['buildFromUserInput']>()
-	const input1SummarizeForEditMock = jest.fn<InputDefinition<string>['summarizeForEdit']>()
-	const input1UpdateFromUserInputMock = jest.fn<InputDefinition<string>['updateFromUserInput']>()
-	const input1DefMock: InputDefinition<string> = {
-		name: 'Item Name 1',
+	const input1DefMock = buildInputDefMock<string>('Item Name 1')
+	const {
 		buildFromUserInput: input1BuildFromUserInputMock,
 		summarizeForEdit: input1SummarizeForEditMock,
 		updateFromUserInput: input1UpdateFromUserInputMock,
-	}
+	} = input1DefMock.mocks
 
-	const input2BuildFromUserInputMock = jest.fn<InputDefinition<string>['buildFromUserInput']>()
-	const input2SummarizeForEditMock = jest.fn<InputDefinition<string>['summarizeForEdit']>()
-	const input2UpdateFromUserInputMock = jest.fn<InputDefinition<string>['updateFromUserInput']>()
-	const input2DefMock: InputDefinition<string> = {
-		name: 'Item Name 2',
+	const input2DefMock = buildInputDefMock<string>('Item Name 2')
+	const {
 		buildFromUserInput: input2BuildFromUserInputMock,
 		summarizeForEdit: input2SummarizeForEditMock,
 		updateFromUserInput: input2UpdateFromUserInputMock,
-	}
+	} = input2DefMock.mocks
 
-	const input3BuildFromUserInputMock = jest.fn<InputDefinition<string>['buildFromUserInput']>()
-	const input3SummarizeForEditMock = jest.fn<InputDefinition<string>['summarizeForEdit']>()
-	const input3UpdateFromUserInputMock = jest.fn<InputDefinition<string>['updateFromUserInput']>()
-	const input3DefMock: InputDefinition<string> = {
-		name: 'Item Name 3',
+	const input3DefMock = buildInputDefMock<string>('Item Name 3')
+	const {
 		buildFromUserInput: input3BuildFromUserInputMock,
 		summarizeForEdit: input3SummarizeForEditMock,
 		updateFromUserInput: input3UpdateFromUserInputMock,
-	}
+	} = input3DefMock.mocks
+
 	const threeInputDef = objectDef('Object Def', {
 		input1: input1DefMock,
 		input2: input2DefMock,
@@ -68,15 +61,11 @@ describe('objectDef', () => {
 		updateIfNeeded: updateIfNeededMock,
 	}
 
-	const input4BuildFromUserInputMock = jest.fn<InputDefinition<string>['buildFromUserInput']>()
-	const input4SummarizeForEditMock = jest.fn<InputDefinition<string>['summarizeForEdit']>()
-	const input4UpdateFromUserInputMock = jest.fn<InputDefinition<string>['updateFromUserInput']>()
-	const input4DefMock: InputDefinition<string> = {
-		name: 'Item Name 4',
+	const input4DefMock = buildInputDefMock<string>('Item Name 4')
+	const {
 		buildFromUserInput: input4BuildFromUserInputMock,
 		summarizeForEdit: input4SummarizeForEditMock,
-		updateFromUserInput: input4UpdateFromUserInputMock,
-	}
+	} = input4DefMock.mocks
 
 	const simpleInputDefsByProperty = {
 		name: input1DefMock,
