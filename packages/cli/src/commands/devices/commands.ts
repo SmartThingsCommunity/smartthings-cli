@@ -4,7 +4,7 @@ import { Command, Component, CapabilityReference, Device } from '@smartthings/co
 
 import { APICommand, chooseDevice, commandLineInputProcessor, inputItem, inputProcessor, isIndexArgument } from '@smartthings/cli-lib'
 
-import { attributeType } from '../../lib/commands/capabilities-util.js'
+import { attributeTypeDisplayString } from '../../lib/commands/capabilities-util.js'
 
 
 const inputRegex = new RegExp(/^([a-zA-Z0-9]+:)?([a-zA-Z0-9]+:)?([a-zA-Z0-9]+(\(.*\))?)?$/)
@@ -176,7 +176,7 @@ $ smartthings devices:commands 00000000-0000-0000-0000-000000000000 'switchLevel
 			for (const commandName of commandNames) {
 				const command = capability.commands[commandName]
 				const args = command?.arguments?.map(it =>
-					it.optional ? `[${it.name}<${attributeType(it.schema)}>]` : `${it.name}<${attributeType(it.schema)}>`,
+					it.optional ? `[${it.name}<${attributeTypeDisplayString(it.schema)}>]` : `${it.name}<${attributeTypeDisplayString(it.schema)}>`,
 				).join(', ') || ''
 				table.push([index, `${commandName}(${args})`])
 				index++
