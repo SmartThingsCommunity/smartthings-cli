@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals'
 
 import {
+	asTextBulletedList,
 	cancelCommand,
 	clipToMaximum,
 	delay,
@@ -96,5 +97,19 @@ describe('cancelCommand', () => {
 
 		expect(consoleErrorSpy).toHaveBeenCalledWith('Action Canceled')
 		expect(exitSpy).toHaveBeenCalledExactlyOnceWith()
+	})
+})
+
+describe('asTextBulletedList', () => {
+	it('returns empty string for empty input', () => {
+		expect(asTextBulletedList([])).toBe('')
+	})
+
+	it('returns single item prefaced with "  - "', () => {
+		expect(asTextBulletedList(['small'])).toBe('\n  - small')
+	})
+
+	it('combines multiple items', () => {
+		expect(asTextBulletedList(['one', 'two', 'three'])).toBe('\n  - one\n  - two\n  - three')
 	})
 })

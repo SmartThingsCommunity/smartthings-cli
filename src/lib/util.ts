@@ -56,3 +56,6 @@ export const cancelCommand = (message?: string): never => {
 	// eslint-disable-next-line no-process-exit
 	process.exit()
 }
+
+export const asTextBulletedList = (enums: string[]): string =>
+	enums.length === 0 ? '' : ('\n  - ' + enums.join('\n  - '))
