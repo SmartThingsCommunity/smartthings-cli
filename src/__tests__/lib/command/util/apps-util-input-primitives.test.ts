@@ -20,27 +20,31 @@ jest.unstable_mockModule('../../../../lib/item-input/index.js', () => ({
 }))
 
 
-// This module has no functions. Test to make sure the variables call the correct functions.
-// To be honest, this is mostly just to get coverage.
-test('module', async () => {
-	const oauthAppScopeDefMock = buildInputDefMock<string[]>('Scopes Mock')
-	checkboxDefMock.mockReturnValueOnce(oauthAppScopeDefMock)
+const oauthAppScopeDefMock = buildInputDefMock<string[]>('Scopes Mock')
+checkboxDefMock.mockReturnValueOnce(oauthAppScopeDefMock)
 
-	const redirectUriDefMock = buildInputDefMock<string>('Redirect URI Mock')
-	stringDefMock.mockReturnValueOnce(redirectUriDefMock)
-	const redirectUrisDefMock = buildInputDefMock<string[]>('Redirect URIs Mock')
-	arrayDefMock.mockReturnValueOnce(redirectUrisDefMock)
+const redirectUriDefMock = buildInputDefMock<string>('Redirect URI Mock')
+stringDefMock.mockReturnValueOnce(redirectUriDefMock)
+const redirectUrisDefMock = buildInputDefMock<string[]>('Redirect URIs Mock')
+arrayDefMock.mockReturnValueOnce(redirectUrisDefMock)
 
-	const {
-		oauthAppScopeDef,
-		redirectUrisDef,
-	} = await import('../../../../lib/command/util/apps-util-input-primitives.js')
+const {
+	oauthAppScopeDef,
+	redirectUrisDef,
+} = await import('../../../../lib/command/util/apps-util-input-primitives.js')
 
-	expect(oauthAppScopeDef).toBe(oauthAppScopeDefMock)
-	expect(redirectUrisDef).toBe(redirectUrisDefMock)
-	expect(arrayDefMock).toHaveBeenCalledExactlyOnceWith(
-		'Redirect URIs',
-		redirectUriDefMock,
-		expect.objectContaining({ minItems: 0 }),
-	)
+
+expect(oauthAppScopeDef).toBe(oauthAppScopeDefMock)
+expect(redirectUrisDef).toBe(redirectUrisDefMock)
+expect(arrayDefMock).toHaveBeenCalledExactlyOnceWith(
+	'Redirect URIs',
+	redirectUriDefMock,
+	expect.objectContaining({ minItems: 0 }),
+)
+const validate = checkboxDefMock.mock.calls[0][2]?.validate
+
+test('oauthAppScopeDef requires at least one scope', () => {
+	expect(validate?.([])).toBe('At least one scope is required.')
+	expect(validate?.(['scope'])).toBe(true)
+	expect(validate?.(['scope1', 'scope2'])).toBe(true)
 })
