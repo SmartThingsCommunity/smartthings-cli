@@ -3,8 +3,8 @@ import { CommandModule } from 'yargs'
 import appsCommand from './apps.js'
 import appsCreateCommand from './apps/create.js'
 import appsAuthorizeCommand from './apps/authorize.js'
-import capabilitiesCommand from './capabilities.js'
 import appsOAuthGenerateCommand from './apps/oauth/generate.js'
+import capabilitiesCommand from './capabilities.js'
 import configCommand from './config.js'
 import devicepreferencesCommand from './devicepreferences.js'
 import devicepreferencesTranslationsCreateCommand from './devicepreferences/translations/create.js'
@@ -28,8 +28,8 @@ export const commands: CommandModule<object, any>[] = [
 	appsCommand,
 	appsCreateCommand,
 	appsAuthorizeCommand,
-	capabilitiesCommand,
 	appsOAuthGenerateCommand,
+	capabilitiesCommand,
 	configCommand,
 	devicepreferencesCommand,
 	devicepreferencesTranslationsCreateCommand,
