@@ -4,6 +4,7 @@ import appsCommand from './apps.js'
 import appsCreateCommand from './apps/create.js'
 import appsAuthorizeCommand from './apps/authorize.js'
 import appsOAuthGenerateCommand from './apps/oauth/generate.js'
+import appsOAuthUpdateCommand from './apps/oauth/update.js'
 import capabilitiesCommand from './capabilities.js'
 import configCommand from './config.js'
 import devicepreferencesCommand from './devicepreferences.js'
@@ -29,6 +30,7 @@ export const commands: CommandModule<object, any>[] = [
 	appsCreateCommand,
 	appsAuthorizeCommand,
 	appsOAuthGenerateCommand,
+	appsOAuthUpdateCommand,
 	capabilitiesCommand,
 	configCommand,
 	devicepreferencesCommand,
