@@ -20,7 +20,7 @@ export type CommandArgs = APICommandFlags & InputAndOutputItemFlags & {
 	id?: string
 }
 
-export const command = 'locations:update [id]'
+const command = 'locations:update [id]'
 
 const describe = 'update a location'
 
