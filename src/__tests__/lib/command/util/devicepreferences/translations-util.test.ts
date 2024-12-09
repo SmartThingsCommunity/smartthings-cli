@@ -23,7 +23,7 @@ const populatedOptions: ({
 	},
 ]
 
-const definition = (tableFieldDefinitions[3] as ValueTableFieldDefinition<PreferenceLocalization>)
+const definition = tableFieldDefinitions[3] as ValueTableFieldDefinition<PreferenceLocalization>
 
 describe('options include function', () => {
 	const include = definition.include
