@@ -1,13 +1,13 @@
 import { jest } from '@jest/globals'
 
-import { ArgumentsCamelCase, Argv } from 'yargs'
+import type { ArgumentsCamelCase, Argv } from 'yargs'
 
-import { Location, LocationUpdate, LocationsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
+import type { Location, LocationUpdate, LocationsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { chooseLocation, tableFieldDefinitions } from '../../../lib/command/util/locations-util.js'
-import { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
-import { inputAndOutputItem, inputAndOutputItemBuilder } from '../../../lib/command/input-and-output-item.js'
-import { CommandArgs } from '../../../commands/locations/update.js'
+import { type chooseLocation, tableFieldDefinitions } from '../../../lib/command/util/locations-util.js'
+import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
+import type { inputAndOutputItem, inputAndOutputItemBuilder } from '../../../lib/command/input-and-output-item.js'
+import type { CommandArgs } from '../../../commands/locations/update.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
