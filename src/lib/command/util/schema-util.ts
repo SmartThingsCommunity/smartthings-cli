@@ -154,8 +154,8 @@ export const getSchemaAppEnsuringOrganization = async (
 		command: APICommand,
 		schemaAppId: string,
 		flags: {
-			json: boolean
-			yaml: boolean
+			json?: boolean
+			yaml?: boolean
 			input?: string
 			output?: string
 		},

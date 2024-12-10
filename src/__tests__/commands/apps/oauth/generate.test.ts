@@ -27,6 +27,7 @@ import { buildInputDefMock } from '../../../test-lib/input-type-mock.js'
 const {
 	apiCommandMock,
 	apiCommandBuilderMock,
+	apiDocsURLMock,
 	itemInputHelpTextMock,
 } = apiCommandMocks('../../../..')
 
@@ -87,6 +88,7 @@ test('builder', () => {
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

@@ -1,10 +1,26 @@
-import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs'
+import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { AppType, AppClassification, AppListOptions, PagedApp, AppResponse } from '@smartthings/core-sdk'
+import {
+	AppType,
+	AppClassification,
+	type AppListOptions,
+	type PagedApp,
+	type AppResponse,
+} from '@smartthings/core-sdk'
 
-import { TableFieldDefinition } from '../lib/table-generator.js'
-import { APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../lib/command/api-command.js'
-import { OutputItemOrListConfig, OutputItemOrListFlags, outputItemOrList, outputItemOrListBuilder } from '../lib/command/listing-io.js'
+import { type TableFieldDefinition } from '../lib/table-generator.js'
+import {
+	type APICommandFlags,
+	apiCommand,
+	apiCommandBuilder,
+	apiDocsURL,
+} from '../lib/command/api-command.js'
+import {
+	type OutputItemOrListConfig,
+	type OutputItemOrListFlags,
+	outputItemOrList,
+	outputItemOrListBuilder,
+} from '../lib/command/listing-io.js'
 import { shortARNorURL, tableFieldDefinitions, verboseApps } from '../lib/command/util/apps-util.js'
 
 

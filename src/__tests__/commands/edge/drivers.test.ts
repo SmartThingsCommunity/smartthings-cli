@@ -10,7 +10,6 @@ import type {
 
 import type { CommandArgs } from '../../../commands/edge/drivers.js'
 import type { WithOrganization } from '../../../lib/api-helpers.js'
-import type { apiDocsURL } from '../../../lib/command/api-command.js'
 import type {
 	APIOrganizationCommand,
 	APIOrganizationCommandFlags,
@@ -29,14 +28,12 @@ import {
 	type listDrivers,
 	listTableFieldDefinitions,
 } from '../../../lib/command/util/edge/drivers-util.js'
+import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 import { tableGeneratorMock } from '../../test-lib/table-mock.js'
 
 
-const apiDocsURLMock = jest.fn<typeof apiDocsURL>()
-jest.unstable_mockModule('../../../lib/command/api-command.js', () => ({
-	apiDocsURL: apiDocsURLMock,
-}))
+const { apiDocsURLMock } = apiCommandMocks('../../..')
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
@@ -105,6 +102,7 @@ test('builder', () => {
 
 	expect(positionalMock).toHaveBeenCalledTimes(2)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

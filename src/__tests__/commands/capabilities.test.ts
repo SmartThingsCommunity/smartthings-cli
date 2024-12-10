@@ -116,8 +116,8 @@ test('builder', () => {
 		.toHaveBeenCalledExactlyOnceWith(capabilityIdOrIndexBuilderArgvMock)
 
 	expect(optionMock).toHaveBeenCalledTimes(2)
-	expect(exampleMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
+	expect(exampleMock).toHaveBeenCalledTimes(1)
 })
 
 describe('handler', () => {

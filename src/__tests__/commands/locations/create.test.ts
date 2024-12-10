@@ -16,7 +16,7 @@ jest.unstable_mockModule('../../../lib/command/util/locations-util.js', () => ({
 	tableFieldDefinitions,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
 
 const inputAndOutputItemMock = jest.fn<typeof inputAndOutputItem>()
 const inputAndOutputItemBuilderMock = jest.fn<typeof inputAndOutputItemBuilder>()
@@ -50,6 +50,7 @@ test('builder', () => {
 	expect(inputAndOutputItemBuilderMock).toHaveBeenCalledWith(apiCommandBuilderArgvMock)
 
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

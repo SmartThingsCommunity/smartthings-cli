@@ -11,7 +11,6 @@ import type {
 
 import type { CommandArgs } from '../../commands/deviceprofiles.js'
 import type { WithOrganization, forAllOrganizations } from '../../lib/api-helpers.js'
-import type { apiDocsURL } from '../../lib/command/api-command.js'
 import type {
 	APIOrganizationCommand,
 	APIOrganizationCommandFlags,
@@ -30,6 +29,7 @@ import type { outputItemOrList, outputItemOrListBuilder } from '../../lib/comman
 import type { ValueTableFieldDefinition } from '../../lib/table-generator.js'
 import type { shortARNorURL, verboseApps } from '../../lib/command/util/apps-util.js'
 import type { buildTableOutput } from '../../lib/command/util/deviceprofiles-util.js'
+import { apiCommandMocks } from '../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 import { tableGeneratorMock } from '../test-lib/table-mock.js'
 
@@ -39,10 +39,7 @@ jest.unstable_mockModule('../../lib/api-helpers.js', () => ({
 	forAllOrganizations: forAllOrganizationsMock,
 }))
 
-const apiDocsURLMock = jest.fn<typeof apiDocsURL>()
-jest.unstable_mockModule('../../lib/command/api-command.js', () => ({
-	apiDocsURL: apiDocsURLMock,
-}))
+const { apiDocsURLMock } = apiCommandMocks('../..')
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
@@ -110,6 +107,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
@@ -238,6 +236,5 @@ describe('handler', () => {
 		expect(manufacturerNameValue({} as DeviceProfile)).toBe('')
 		expect(manufacturerNameValue({ metadata: { mnmn: 'mnmn-value' } } as unknown as DeviceProfile))
 			.toBe('mnmn-value')
-
 	})
 })
