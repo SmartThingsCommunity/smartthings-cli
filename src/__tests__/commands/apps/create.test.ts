@@ -29,7 +29,7 @@ import {
 } from '../../test-lib/table-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
 
 const lambdaAuthBuilderMock = jest.fn<typeof lambdaAuthBuilder>()
 jest.unstable_mockModule('../../../lib/command/common-flags.js', () => ({
@@ -94,6 +94,7 @@ test('builder', () => {
 
 	expect(exampleMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
+	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

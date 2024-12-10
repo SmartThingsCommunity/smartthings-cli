@@ -11,7 +11,7 @@ import { apiCommandMocks } from '../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../..')
+const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../..')
 
 const outputItemOrListMock = jest.fn<typeof outputItemOrList>()
 const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
@@ -47,6 +47,7 @@ test('builder', () => {
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

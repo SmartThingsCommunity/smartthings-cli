@@ -7,7 +7,6 @@ import type { SchemaAppRequest, SchemaCreateResponse, SchemaEndpoint } from '@sm
 import type { CommandArgs } from '../../../commands/schema/create.js'
 import { type addSchemaPermission, schemaAWSPrincipal } from '../../../lib/aws-util.js'
 import type { fatalError } from '../../../lib/util.js'
-import type { apiDocsURL } from '../../../lib/command/api-command.js'
 import type {
 	APIOrganizationCommand,
 	APIOrganizationCommandFlags,
@@ -24,6 +23,7 @@ import type {
 	getSchemaAppCreateFromUser,
 	SchemaAppWithOrganization,
 } from '../../../lib/command/util/schema-util.js'
+import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
 
@@ -39,10 +39,7 @@ jest.unstable_mockModule('../../../lib/util.js', () => ({
 	fatalError: fatalErrorMock,
 }))
 
-const apiDocsURLMock = jest.fn<typeof apiDocsURL>()
-jest.unstable_mockModule('../../../lib/command/api-command.js', () => ({
-	apiDocsURL: apiDocsURLMock,
-}))
+const { apiDocsURLMock } = apiCommandMocks('../../..')
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
@@ -108,6 +105,7 @@ test('builder', () => {
 
 	expect(exampleMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
+	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

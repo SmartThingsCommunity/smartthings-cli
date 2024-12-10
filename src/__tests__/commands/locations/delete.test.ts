@@ -11,7 +11,7 @@ import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
 
 const chooseLocationMock = jest.fn<typeof chooseLocation>()
 jest.unstable_mockModule('../../../lib/command/util/locations-util.js', () => ({
@@ -43,6 +43,7 @@ test('builder', () => {
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
