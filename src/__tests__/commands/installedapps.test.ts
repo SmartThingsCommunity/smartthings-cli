@@ -143,7 +143,7 @@ describe('handler', () => {
 			.toHaveBeenCalledExactlyOnceWith(clientMock, installedAppList)
 	})
 
-	it('lists details of a specified virtual device', async () => {
+	it('lists details of a specified installed app', async () => {
 		const inputArgv = {
 			...defaultInputArgv,
 			idOrIndex: 'installed-app-from-arg',
