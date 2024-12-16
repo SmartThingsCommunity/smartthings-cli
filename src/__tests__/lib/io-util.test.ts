@@ -1,8 +1,10 @@
 import { jest } from '@jest/globals'
 
-import { existsSync } from 'fs'
+import type { existsSync } from 'fs'
 
 import { stdin as mockStdin } from 'mock-stdin'
+
+import type { fatalError } from '../../lib/util.js'
 import { validData, validYAML, SimpleType } from '../test-lib/simple-type.js'
 
 
@@ -13,8 +15,12 @@ jest.unstable_mockModule('fs', () => ({
 	},
 }))
 
+const fatalErrorMock = jest.fn<typeof fatalError>().mockReturnValue('never return' as never)
+jest.unstable_mockModule('../../lib/util.js', () => ({
+	fatalError: fatalErrorMock,
+}))
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 const { formatFromFilename, parseJSONOrYAML, readDataFromStdin, stdinIsTTY, yamlExists } =
 	await import('../../lib/io-util.js')
 
@@ -44,11 +50,15 @@ describe('parseJSONOrYAML', () => {
 	})
 
 	it('throws error with no data', function () {
-		expect(() => parseJSONOrYAML('', 'empty')).toThrow('did not get any data from empty')
+		expect(parseJSONOrYAML('', 'empty')).toBe('never return')
+
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith('did not get any data from empty')
 	})
 
 	it('throws error with simple string data', function () {
-		expect(() => parseJSONOrYAML('just a string', 'empty')).toThrow('got simple string from empty')
+		expect(parseJSONOrYAML('just a string', 'empty')).toBe('never return')
+
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith('got simple string from empty')
 	})
 })
 
@@ -85,8 +95,11 @@ describe('yamlExists', () => {
 		'/Users/user/.config/@smartthings/cli',
 		'c:\\users\\user\\AppData\\Local',
 	])('throws error when %s is checked', (path) => {
-		expect(() => yamlExists(path)).toThrow('Invalid file extension')
-		expect(existsSyncMock).not.toBeCalled()
+		expect(yamlExists(path)).toBe('never return')
+		expect(existsSyncMock).not.toHaveBeenCalled()
+
+		expect(fatalErrorMock)
+			.toHaveBeenCalledExactlyOnceWith(expect.stringContaining('Invalid file extension: '))
 	})
 
 	it.each([

@@ -5,6 +5,7 @@ import { Configuration as Log4jsConfig, Logger, FileAppender, StandardErrorAppen
 import { Logger as CoreSDKLogger } from '@smartthings/core-sdk'
 
 import { yamlExists } from './io-util.js'
+import { fatalError } from './util.js'
 
 
 const defaultLogFileSize = 1_000_000 // bytes
@@ -57,7 +58,7 @@ export function loadLog4jsConfig(configFilename: string, defaultConfig: Log4jsCo
 		return parsedConfig
 	}
 
-	throw new Error(`invalid or unreadable logging config file format; see ${loggingDocsURL}`)
+	return fatalError(`invalid or unreadable logging config file format; see ${loggingDocsURL}`)
 }
 
 /**

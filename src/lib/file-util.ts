@@ -2,6 +2,8 @@ import fs from 'fs'
 
 import yaml from 'js-yaml'
 
+import { fatalError } from './util.js'
+
 
 export const fileExists = async (path: string): Promise<boolean> => {
 	try {
@@ -45,8 +47,7 @@ export const requireDir = async (dirName: string): Promise<string> => {
 	if (await isDir(dirName)) {
 		return dirName
 	}
-	// TODO: fix for yargs
-	throw Error(`missing required directory: ${dirName}`)
+	return fatalError(`missing required directory: ${dirName}`)
 }
 
 export type YAMLFileData = {
@@ -68,12 +69,11 @@ export const readYAMLFile = (filename: string): YAMLFileData => {
 		}
 
 		if (data == null) {
-			throw Error('empty file')
+			return fatalError(`empty file ${filename}`)
 		}
 
-		throw Error('invalid file')
+		return fatalError(`invalid file ${filename}`)
 	} catch (error) {
-		// TODO: fix for yargs
-		throw Error(`error "${error.message}" reading ${filename}`)
+		return fatalError(`error "${error.message}" reading ${filename}`)
 	}
 }

@@ -4,6 +4,7 @@ import { Logger } from 'log4js'
 import yaml from 'js-yaml'
 
 import { yamlExists } from './io-util.js'
+import { fatalError } from './util.js'
 
 
 export const seeConfigDocs = 'see https://github.com/SmartThingsCommunity/smartthings-cli/blob/main/packages/cli/doc/configuration.md for more information'
@@ -83,11 +84,11 @@ export const loadConfigFile = async (filename: string): Promise<ProfilesByName> 
 				}
 			}
 			if (errors.length) {
-				throw Error(`${errors.join('\n')}\n${seeConfigDocs}`)
+				return fatalError(`${errors.join('\n')}\n${seeConfigDocs}`)
 			}
 			return config
 		} else {
-			throw Error('invalid config file format\n' + seeConfigDocs)
+			return fatalError('invalid config file format\n' + seeConfigDocs)
 		}
 	}
 	return {}

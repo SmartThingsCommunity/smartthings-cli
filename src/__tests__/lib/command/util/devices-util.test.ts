@@ -14,11 +14,17 @@ import { TableCommonListOutputProducer } from '../../../../lib/command/format.js
 import { BuildOutputFormatterFlags } from '../../../../lib/command/output-builder.js'
 import type { createChooseFn, ChooseFunction } from '../../../../lib/command/util/util-util.js'
 import { ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
+import { fatalError } from '../../../../lib/util.js'
 
 
 const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
 jest.unstable_mockModule('../../../../lib/command/command-util.js', () => ({
 	stringTranslateToId: stringTranslateToIdMock,
+}))
+
+const fatalErrorMock = jest.fn<typeof fatalError>().mockReturnValue('never return' as never)
+jest.unstable_mockModule('../../../../lib/util.js', () => ({
+	fatalError: fatalErrorMock,
 }))
 
 const createChooseFnMock = jest.fn<typeof createChooseFn<Device>>()
@@ -149,10 +155,11 @@ describe('chooseComponentFn', () => {
 	)
 
 	it.each(devicesWithNoComponents)(
-		'throws for device with no components by not defaulting to main %#',
+		'display fatal error message for device with no components when not defaulting to main %#',
 		device => {
-			expect(() => chooseComponentFn(device, { defaultToMain: false }))
-				.toThrow('No components found')
+			expect(chooseComponentFn(device, { defaultToMain: false })).toBe('never return')
+
+			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith('No components found')
 		},
 	)
 })

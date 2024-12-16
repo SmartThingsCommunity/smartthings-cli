@@ -34,8 +34,7 @@ jest.unstable_mockModule('../../../../lib/aws-util.js', () => ({
 	addPermission: addPermissionMock,
 }))
 
-const fatalErrorMock = jest.fn<typeof fatalError>()
-	.mockImplementation(() => { throw Error('fatal error') })
+const fatalErrorMock = jest.fn<typeof fatalError>().mockReturnValue('never return' as never)
 jest.unstable_mockModule('../../../../lib/util.js', () => ({
 	fatalError: fatalErrorMock,
 }))
@@ -293,8 +292,7 @@ describe('shortARNorURL', () => {
 
 describe('authorizeApp', () => {
 	it('errors for non-lambda apps', async () => {
-		await expect(authorizeApp({} as AppUpdateRequest, 'principal', 'statement'))
-			.rejects.toThrow('fatal error')
+		expect(await authorizeApp({} as AppUpdateRequest, 'principal', 'statement')).toBe('never return')
 
 		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
 			'Authorization is only applicable to Lambda SmartApps.',

@@ -10,6 +10,7 @@ import {
 	ProfilesByName,
 } from '../../lib/cli-config.js'
 import { yamlExists } from '../../lib/io-util.js'
+import { fatalError } from '../../lib/util.js'
 
 
 const readFileMock = jest.fn<typeof readFile>().mockResolvedValue('good contents')
@@ -34,6 +35,11 @@ const yamlExistsMock = jest.fn<typeof yamlExists>()
 yamlExistsMock.mockReturnValue(true)
 jest.unstable_mockModule('../../lib/io-util.js', () => ({
 	yamlExists: yamlExistsMock,
+}))
+
+const fatalErrorMock = jest.fn<typeof fatalError>().mockReturnValue('never return' as never)
+jest.unstable_mockModule('../../lib/util.js', () => ({
+	fatalError: fatalErrorMock,
 }))
 
 
@@ -78,8 +84,7 @@ describe('loadConfigFile', () => {
 		readFileMock.mockResolvedValueOnce('file contents')
 		yamlLoadMock.mockReturnValueOnce(parsedYAML)
 
-		await expect(loadConfigFile('configFilename.json'))
-			.rejects.toThrow('invalid config file format\n' + seeConfigDocs)
+		expect(await loadConfigFile('configFilename.json')).toBe('never return')
 
 		expect(yamlExistsMock).toHaveBeenCalledTimes(1)
 		expect(yamlExistsMock).toHaveBeenCalledWith('configFilename.json')
@@ -87,6 +92,9 @@ describe('loadConfigFile', () => {
 		expect(readFileMock).toHaveBeenCalledWith('configFilename.json', 'utf-8')
 		expect(yamlLoadMock).toHaveBeenCalledTimes(1)
 		expect(yamlLoadMock).toHaveBeenCalledWith('file contents')
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
+			'invalid config file format\n' + seeConfigDocs,
+		)
 	})
 
 	it('combines errors for individual profiles', async () => {
@@ -97,9 +105,7 @@ describe('loadConfigFile', () => {
 			badProfile2: ['array', 'of', 'strings'],
 		})
 
-		await expect(loadConfigFile('file with bad configs'))
-			.rejects.toThrow('bad profile badProfile1; profile must be an object\n' +
-				'bad profile badProfile2; profile must be an object\n' +  seeConfigDocs)
+		expect(await loadConfigFile('file with bad configs')).toBe('never return')
 
 		expect(yamlExistsMock).toHaveBeenCalledTimes(1)
 		expect(yamlExistsMock).toHaveBeenCalledWith('file with bad configs')
@@ -107,6 +113,11 @@ describe('loadConfigFile', () => {
 		expect(readFileMock).toHaveBeenCalledWith('file with bad configs', 'utf-8')
 		expect(yamlLoadMock).toHaveBeenCalledTimes(1)
 		expect(yamlLoadMock).toHaveBeenCalledWith('config with multiple errors')
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
+			'bad profile badProfile1; profile must be an object\n' +
+				'bad profile badProfile2; profile must be an object\n' +
+				seeConfigDocs,
+		)
 	})
 
 	it('returns properly formatted config file', async () => {

@@ -1,8 +1,8 @@
 import { formatAndWriteList, type FormatAndWriteListConfig } from './format.js'
-import { GetDataFunction } from './io-defs.js'
+import { type GetDataFunction } from './io-defs.js'
 import { sort } from './output.js'
 import { buildOutputFormatterBuilder, type BuildOutputFormatterFlags } from './output-builder.js'
-import { SmartThingsCommand } from './smartthings-command.js'
+import { type SmartThingsCommand } from './smartthings-command.js'
 
 
 export type OutputListFlags = BuildOutputFormatterFlags
