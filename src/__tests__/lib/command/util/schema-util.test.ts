@@ -47,9 +47,7 @@ jest.unstable_mockModule('../../../../lib/io-util.js', () => ({
 }))
 
 const clipToMaximumMock = jest.fn<typeof clipToMaximum>().mockReturnValue('clipped result')
-const fatalErrorMock = jest.fn<typeof fatalError>()
-	// simulate never returning with an error
-	.mockImplementation(() => { throw Error('fatal error') })
+const fatalErrorMock = jest.fn<typeof fatalError>().mockReturnValue('never return' as never)
 jest.unstable_mockModule('../../../../lib/util.js', () => ({
 	clipToMaximum: clipToMaximumMock,
 	fatalError: fatalErrorMock,
@@ -480,8 +478,8 @@ describe('getSchemaAppEnsuringOrganization', () => {
 				stdoutIsTTYMock.mockReturnValueOnce(stdoutIsTTYReturn)
 			}
 
-			await expect(getSchemaAppEnsuringOrganization(commandMock, 'sans-organization', flags))
-				.rejects.toThrow('fatal error')
+			expect(await getSchemaAppEnsuringOrganization(commandMock, 'sans-organization', flags))
+				.toBe('never return')
 
 			expect(apiSchemaListMock).toHaveBeenCalledExactlyOnceWith()
 			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(

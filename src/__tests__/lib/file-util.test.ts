@@ -1,10 +1,11 @@
 import { jest } from '@jest/globals'
 
-import fs from 'fs'
+import type fs from 'fs'
 
-import yaml from 'js-yaml'
+import type yaml from 'js-yaml'
 
-import { YAMLFileData } from '../../lib/file-util.js'
+import type { YAMLFileData } from '../../lib/file-util.js'
+import type { fatalError } from '../../lib/util.js'
 
 
 const readFileSyncMock = jest.fn<typeof fs.readFileSync>()
@@ -30,6 +31,11 @@ jest.unstable_mockModule('js-yaml', () => ({
 	},
 }))
 
+const fatalErrorMock = jest.fn<typeof fatalError>()
+jest.unstable_mockModule('../../lib/util.js', () => ({
+	fatalError: fatalErrorMock,
+}))
+
 
 const {
 	fileExists,
@@ -49,8 +55,7 @@ describe('fileExists', () => {
 
 		expect(await fileExists('file-path')).toBe(true)
 
-		expect(statMock).toHaveBeenCalledTimes(1)
-		expect(statMock).toHaveBeenCalledWith('file-path')
+		expect(statMock).toHaveBeenCalledExactlyOnceWith('file-path')
 	})
 
 	it('returns false when file does not exist', async () => {
@@ -58,16 +63,14 @@ describe('fileExists', () => {
 
 		expect(await fileExists('file-path')).toBe(false)
 
-		expect(statMock).toHaveBeenCalledTimes(1)
-		expect(statMock).toHaveBeenCalledWith('file-path')
+		expect(statMock).toHaveBeenCalledExactlyOnceWith('file-path')
 	})
 
 	it('passes on unexpected exceptions', async () => {
 		statMock.mockRejectedValueOnce(Error('unexpected-error'))
 
 		await expect(fileExists('file-path')).rejects.toThrow('unexpected-error')
-		expect(statMock).toHaveBeenCalledTimes(1)
-		expect(statMock).toHaveBeenCalledWith('file-path')
+		expect(statMock).toHaveBeenCalledExactlyOnceWith('file-path')
 	})
 })
 
@@ -77,8 +80,7 @@ describe('isFile', () => {
 
 		expect(await isFile('non-existent.stl')).toBe(false)
 
-		expect(statMock).toHaveBeenCalledTimes(1)
-		expect(statMock).toHaveBeenCalledWith('non-existent.stl')
+		expect(statMock).toHaveBeenCalledExactlyOnceWith('non-existent.stl')
 	})
 
 	it('returns false if exists but is not a file', async () => {
@@ -89,8 +91,7 @@ describe('isFile', () => {
 
 		expect(statMock).toHaveBeenCalledTimes(2)
 		expect(statMock).toHaveBeenCalledWith('directory')
-		expect(statsIsFileMock).toHaveBeenCalledTimes(1)
-		expect(statsIsFileMock).toHaveBeenCalledWith()
+		expect(statsIsFileMock).toHaveBeenCalledExactlyOnceWith()
 	})
 
 	it('returns true if exists and is a file', async () => {
@@ -101,8 +102,7 @@ describe('isFile', () => {
 
 		expect(statMock).toHaveBeenCalledTimes(2)
 		expect(statMock).toHaveBeenCalledWith('file')
-		expect(statsIsFileMock).toHaveBeenCalledTimes(1)
-		expect(statsIsFileMock).toHaveBeenCalledWith()
+		expect(statsIsFileMock).toHaveBeenCalledExactlyOnceWith()
 	})
 })
 
@@ -112,8 +112,7 @@ describe('isDir', () => {
 
 		expect(await isDir('non-existent')).toBe(false)
 
-		expect(statMock).toHaveBeenCalledTimes(1)
-		expect(statMock).toHaveBeenCalledWith('non-existent')
+		expect(statMock).toHaveBeenCalledExactlyOnceWith('non-existent')
 	})
 
 	it('returns false if exists but is not a directory', async () => {
@@ -135,8 +134,7 @@ describe('isDir', () => {
 
 		expect(statMock).toHaveBeenCalledTimes(2)
 		expect(statMock).toHaveBeenCalledWith('directory')
-		expect(statsIsDirectoryMock).toHaveBeenCalledTimes(1)
-		expect(statsIsDirectoryMock).toHaveBeenCalledWith()
+		expect(statsIsDirectoryMock).toHaveBeenCalledExactlyOnceWith()
 	})
 })
 
@@ -146,10 +144,8 @@ test('isSymbolicLink', async () => {
 
 	expect(await isSymbolicLink('/path/to/file')).toBe(true)
 
-	expect(lstatMock).toHaveBeenCalledTimes(1)
-	expect(lstatMock).toHaveBeenCalledWith('/path/to/file')
-	expect(lstatIsSymbolicLinkMock).toHaveBeenCalledTimes(1)
-	expect(lstatIsSymbolicLinkMock).toHaveBeenCalledWith()
+	expect(lstatMock).toHaveBeenCalledExactlyOnceWith('/path/to/file')
+	expect(lstatIsSymbolicLinkMock).toHaveBeenCalledExactlyOnceWith()
 })
 
 test('realPathForSymbolicLink', async () => {
@@ -157,8 +153,7 @@ test('realPathForSymbolicLink', async () => {
 
 	expect(await realPathForSymbolicLink('/symbolic/link/path')).toBe('/real/file/path')
 
-	expect(realpathMock).toHaveBeenCalledTimes(1)
-	expect(realpathMock).toHaveBeenCalledWith('/symbolic/link/path')
+	expect(realpathMock).toHaveBeenCalledExactlyOnceWith('/symbolic/link/path')
 })
 
 describe('findYAMLFilename', () => {
@@ -170,8 +165,7 @@ describe('findYAMLFilename', () => {
 
 		expect(statMock).toHaveBeenCalledTimes(2)
 		expect(statMock).toHaveBeenCalledWith('filename.yaml')
-		expect(statsIsFileMock).toHaveBeenCalledTimes(1)
-		expect(statsIsFileMock).toHaveBeenCalledWith()
+		expect(statsIsFileMock).toHaveBeenCalledExactlyOnceWith()
 	})
 
 	it('returns filename with yml extension if that is found', async () => {
@@ -216,11 +210,12 @@ describe('requireDir', () => {
 	it('throws exception when directory does not exist', async () => {
 		// mimic `isDirSpy.mockResolvedValue(false)`
 		statMock.mockRejectedValueOnce({ code: 'ENOENT' })
+		fatalErrorMock.mockReturnValue('never return' as never)
 
-		await expect(requireDir('not-a-dir')).rejects.toThrow('missing required directory: not-a-dir')
+		expect(await requireDir('not-a-dir')).toBe('never return')
 
-		expect(statMock).toHaveBeenCalledTimes(1)
-		expect(statMock).toHaveBeenCalledWith('not-a-dir')
+		expect(statMock).toHaveBeenCalledExactlyOnceWith('not-a-dir')
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith('missing required directory: not-a-dir')
 	})
 })
 
@@ -232,32 +227,33 @@ describe('readYAMLFile', () => {
 
 		expect(readYAMLFile('filename')).toBe(yamlFile)
 
-		expect(readFileSyncMock).toHaveBeenCalledTimes(1)
-		expect(readFileSyncMock).toHaveBeenCalledWith('filename', 'utf-8')
-		expect(yamlLoadMock).toHaveBeenCalledTimes(1)
-		expect(yamlLoadMock).toHaveBeenCalledWith('file contents')
+		expect(readFileSyncMock).toHaveBeenCalledExactlyOnceWith('filename', 'utf-8')
+		expect(yamlLoadMock).toHaveBeenCalledExactlyOnceWith('file contents')
 	})
 
 	it('passes error message into user-facing error', () => {
 		readFileSyncMock.mockImplementation(() => { throw Error('read failure') })
+		fatalErrorMock.mockReturnValueOnce('never return' as never)
 
-		expect(() => readYAMLFile('filename'))
-			.toThrow('error "read failure" reading filename')
+		expect(readYAMLFile('filename')).toBe('never return')
 
-		expect(readFileSyncMock).toHaveBeenCalledTimes(1)
-		expect(readFileSyncMock).toHaveBeenCalledWith('filename', 'utf-8')
+		expect(readFileSyncMock).toHaveBeenCalledExactlyOnceWith('filename', 'utf-8')
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith('error "read failure" reading filename')
 	})
 
 	it.each`
 		invalidYaml | errorMessage
-		${{}}       | ${'error "invalid file" reading filename'}
-		${null}     | ${'error "empty file" reading filename'}
-		${''}       | ${'error "invalid file" reading filename'}
-		${0}        | ${'error "invalid file" reading filename'}
+		${{}}       | ${'invalid file filename'}
+		${null}     | ${'empty file filename'}
+		${''}       | ${'invalid file filename'}
+		${0}        | ${'invalid file filename'}
 	`('throws $errorMessage when reading $invalidYaml', ({ invalidYaml, errorMessage }) => {
 		readFileSyncMock.mockReturnValueOnce('file contents')
 		yamlLoadMock.mockReturnValueOnce(invalidYaml)
+		fatalErrorMock.mockReturnValueOnce('never return' as never)
 
-		expect(() => readYAMLFile('filename')).toThrow(errorMessage)
+		expect(readYAMLFile('filename')).toBe('never return')
+
+		expect(fatalErrorMock).toHaveBeenCalledWith(errorMessage)
 	})
 })

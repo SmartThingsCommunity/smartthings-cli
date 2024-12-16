@@ -12,10 +12,6 @@ import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
 
-jest.unstable_mockModule('../../../lib/command/util/locations-util.js', () => ({
-	tableFieldDefinitions,
-}))
-
 const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
 
 const inputAndOutputItemMock = jest.fn<typeof inputAndOutputItem>()

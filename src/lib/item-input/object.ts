@@ -43,7 +43,9 @@ export type ObjectDefOptions<T> = {
 	validateFinal?: (item: T, context?: unknown[]) => true | string
 }
 
-const defaultSummarizeForEditFn = (name: string) => (): string => { throw Error(`missing implementation of summarizeForEdit for objectDef ${name}`) }
+const defaultSummarizeForEditFn = (name: string) => (): string => {
+	throw Error(`missing implementation of summarizeForEdit for objectDef ${name}`)
+}
 export type ObjectItemTypeData<T> = {
 	type: 'object'
 	inputDefsByProperty: InputDefsByProperty<T>

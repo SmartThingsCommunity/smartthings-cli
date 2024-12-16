@@ -5,7 +5,7 @@ import {
 	type SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { asTextBulletedList } from '../../util.js'
+import { asTextBulletedList, fatalError } from '../../util.js'
 import { type ListDataFunction } from '../io-defs.js'
 import { sort } from '../output.js'
 
@@ -95,7 +95,7 @@ export const translateToId = async (
 
 	const items = sort(await listFunction(), sortKeyName)
 	if (index < 1 || index > items.length) {
-		throw Error(`invalid index ${index} (enter an id or index between 1 and ${items.length}` +
+		return fatalError(`invalid index ${index} (enter an id or index between 1 and ${items.length}` +
 			'inclusive)')
 	}
 	const matchingItem: CapabilitySummaryWithNamespace = items[index - 1]

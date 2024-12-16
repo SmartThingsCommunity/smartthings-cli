@@ -2,7 +2,7 @@ import { jest } from '@jest/globals'
 
 import type { GetDataFunction } from '../../../lib/command/io-defs.js'
 import type { OutputListConfig, OutputListFlags } from '../../../lib/command/output-list.js'
-import type { formatAndWriteItem, formatAndWriteList } from '../../../lib/command/format.js'
+import type { formatAndWriteList } from '../../../lib/command/format.js'
 import type {
 	buildInputProcessor,
 	inputProcessorBuilder,
@@ -16,10 +16,8 @@ import type {
 import type { SimpleType } from '../../test-lib/simple-type.js'
 
 
-const formatAndWriteItemMock = jest.fn<typeof formatAndWriteItem>()
 const formatAndWriteListMock = jest.fn<typeof formatAndWriteList>()
 jest.unstable_mockModule('../../../lib/command/format.js', () => ({
-	formatAndWriteItem: formatAndWriteItemMock,
 	formatAndWriteList: formatAndWriteListMock,
 }))
 

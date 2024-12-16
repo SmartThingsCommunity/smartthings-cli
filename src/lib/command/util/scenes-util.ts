@@ -1,7 +1,7 @@
 import { type SceneSummary } from '@smartthings/core-sdk'
 
-import { TableFieldDefinition } from '../../table-generator.js'
-import { ChooseFunction, createChooseFn } from './util-util.js'
+import { type TableFieldDefinition } from '../../table-generator.js'
+import { type ChooseFunction, createChooseFn } from './util-util.js'
 
 
 export const tableFieldDefinitions: TableFieldDefinition<SceneSummary>[] = [

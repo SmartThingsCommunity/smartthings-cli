@@ -7,14 +7,22 @@ import type {
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import type { asTextBulletedList } from '../../../../lib/util.js'
-import { ListDataFunction } from '../../../../lib/command/io-defs.js'
-import { CapabilitySummaryWithNamespace } from '../../../../lib/command/util/capabilities-util.js'
+import type { asTextBulletedList, fatalError } from '../../../../lib/util.js'
+import type { ListDataFunction } from '../../../../lib/command/io-defs.js'
+import { sort } from '../../../../lib/command/output.js'
+import type { CapabilitySummaryWithNamespace } from '../../../../lib/command/util/capabilities-util.js'
 
 
 const asTextBulletedListMock = jest.fn<typeof asTextBulletedList>()
+const fatalErrorMock = jest.fn<typeof fatalError>()
 jest.unstable_mockModule('../../../../lib/util.js', () => ({
 	asTextBulletedList: asTextBulletedListMock,
+	fatalError: fatalErrorMock,
+}))
+
+const sortMock = jest.fn<typeof sort>()
+jest.unstable_mockModule('../../../../lib/command/output.js', () => ({
+	sort: sortMock,
 }))
 
 
@@ -118,6 +126,7 @@ const buttonCapability = { id: 'button', version: 1, namespace: 'st' }
 const bridgeCapability = { id: 'bridge', version: 1, status: 'deprecated', namespace: 'st' }
 const standardCapabilitiesWithNamespaces = [switchCapability, buttonCapability, bridgeCapability]
 const allCapabilitiesWithNamespaces = [...standardCapabilitiesWithNamespaces, ...customCapabilitiesWithNamespaces]
+const sortedCapabilitiesWithNamespaces = [...customCapabilitiesWithNamespaces, ...standardCapabilitiesWithNamespaces]
 
 
 describe('getCustomByNamespace', () => {
@@ -165,13 +174,15 @@ describe('getStandard', () => {
 describe('translateToId', () => {
 	const listFunctionMock = jest.fn<ListDataFunction<CapabilitySummaryWithNamespace>>()
 		.mockResolvedValue(allCapabilitiesWithNamespaces)
+	sortMock.mockReturnValue(sortedCapabilitiesWithNamespaces)
 
 	it('returns input if it is a `CapabilityId`', async () => {
 		const capabilityId = { id: 'capability-id', version: 1 }
 
 		expect(await translateToId('id', capabilityId, listFunctionMock)).toBe(capabilityId)
 
-		expect(apiCapabilitiesListMock).toHaveBeenCalledTimes(0)
+		expect(apiCapabilitiesListMock).not.toHaveBeenCalled()
+		expect(sortMock).not.toHaveBeenCalled()
 	})
 
 	it('returns `CapabilityId` with input as id if input is a string', async () => {
@@ -179,18 +190,28 @@ describe('translateToId', () => {
 
 		expect(await translateToId('id', capabilityId.id, listFunctionMock)).toStrictEqual(capabilityId)
 
-		expect(apiCapabilitiesListMock).toHaveBeenCalledTimes(0)
+		expect(apiCapabilitiesListMock).not.toHaveBeenCalled()
+		expect(sortMock).not.toHaveBeenCalled()
 	})
 
 	it('returns id when input is integer (index) and is in range', async () => {
-		expect(await translateToId('id', '2', listFunctionMock)).toStrictEqual({ id: 'button', version: 1 })
+		expect(await translateToId('id', '5', listFunctionMock)).toStrictEqual({ id: 'button', version: 1 })
 
-		expect(listFunctionMock).toHaveBeenCalledTimes(1)
-		expect(listFunctionMock).toHaveBeenCalledWith()
+		expect(listFunctionMock).toHaveBeenCalledExactlyOnceWith()
+		expect(sortMock).toHaveBeenCalledExactlyOnceWith(allCapabilitiesWithNamespaces, 'id')
 	})
 
-	it('throws error is out-of-range integer', async () => {
+	it('fails with fatal error for out-of-range integer', async () => {
+		fatalErrorMock.mockImplementation(() => {
+			// simulate not returning by throwing an error
+			throw Error('fatal error')
+		})
+
 		await expect(translateToId('id', '0', listFunctionMock)).rejects.toThrow()
 		await expect(translateToId('id', '7', listFunctionMock)).rejects.toThrow()
+
+		expect(fatalErrorMock).toHaveBeenCalledTimes(2)
+		expect(fatalErrorMock).toHaveBeenCalledWith(expect.stringContaining('invalid index 0'))
+		expect(fatalErrorMock).toHaveBeenCalledWith(expect.stringContaining('invalid index 7'))
 	})
 })

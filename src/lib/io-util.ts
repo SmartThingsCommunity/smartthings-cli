@@ -3,6 +3,8 @@ import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 
+import { fatalError } from './util.js'
+
 
 export type IOFormat =
 	| 'yaml'
@@ -25,10 +27,10 @@ export function formatFromFilename(filename: string): IOFormat {
 export function parseJSONOrYAML<T>(rawInputData: string, source: string): T {
 	const data = yaml.load(rawInputData)
 	if (!data) {
-		throw Error(`did not get any data from ${source}`)
+		return fatalError(`did not get any data from ${source}`)
 	}
 	if (typeof data === 'string') {
-		throw Error(`got simple string from ${source}`)
+		return fatalError(`got simple string from ${source}`)
 	}
 	return data as unknown as T
 }
@@ -75,7 +77,7 @@ export function yamlExists(filepath: string): boolean {
 	const parsedPath = path.parse(filepath)
 
 	if (parsedPath.ext !== '.yaml') {
-		throw Error(`Invalid file extension: ${parsedPath.ext}`)
+		return fatalError(`Invalid file extension: ${parsedPath.ext}`)
 	}
 
 	if (!fs.existsSync(filepath)) {

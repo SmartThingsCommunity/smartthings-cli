@@ -6,6 +6,7 @@ import {
 	type SmartThingsClient,
 } from '@smartthings/core-sdk'
 
+import { fatalError } from '../../util.js'
 import { type ChooseFunction, createChooseFn } from './util-util.js'
 
 
@@ -41,7 +42,7 @@ export const chooseComponentFn = (
 		if (defaultToMain) {
 			return async () => 'main'
 		} else {
-			throw Error('No components found')
+			return fatalError('No components found')
 		}
 	}
 

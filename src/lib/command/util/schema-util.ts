@@ -164,7 +164,7 @@ export const getSchemaAppEnsuringOrganization = async (
 	const appFromList = apps.find(app => app.endpointAppId === schemaAppId)
 	if (appFromList && !appFromList.organizationId) {
 		if (flags.json || flags.yaml || flags.output || flags.input || !stdinIsTTY()  || !stdoutIsTTY()) {
-			fatalError(
+			return fatalError(
 				'Schema app does not have an organization associated with it.\n' +
 					`Please run "smartthings schema ${schemaAppId}" and choose an organization when prompted.`,
 			)

@@ -5,6 +5,7 @@ import {
 	type InputProcessorFlags,
 } from './input-builder.js'
 import { type IOFormat } from '../io-util.js'
+import { fatalError } from '../util.js'
 
 
 export type InputItemFlags = InputProcessorFlags
@@ -18,7 +19,6 @@ export async function inputItem<I extends object>(flags: InputItemFlags,
 		const item = await inputProcessor.read()
 		return [item, inputProcessor.ioFormat]
 	} else {
-		// TODO: standardize error handling
-		throw Error('input is required either via file specified with --input option or from stdin')
+		return fatalError('input is required either via file specified with --input option or from stdin')
 	}
 }

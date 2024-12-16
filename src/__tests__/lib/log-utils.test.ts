@@ -1,11 +1,12 @@
 import { jest } from '@jest/globals'
 
-import { readFileSync } from 'fs'
+import { type readFileSync } from 'fs'
 
-import log4js, { Logger } from 'log4js'
-import yaml from 'js-yaml'
+import log4js, { type Logger } from 'log4js'
+import type yaml from 'js-yaml'
 
-import { yamlExists } from '../../lib/io-util.js'
+import type { yamlExists } from '../../lib/io-util.js'
+import { fatalError } from '../../lib/util.js'
 
 
 const readFileSyncMock = jest.fn<typeof readFileSync>()
@@ -25,6 +26,11 @@ jest.unstable_mockModule('js-yaml', () => ({
 const yamlExistsMock = jest.fn<typeof yamlExists>()
 jest.unstable_mockModule('../../lib/io-util.js', () => ({
 	yamlExists: yamlExistsMock,
+}))
+
+const fatalErrorMock = jest.fn<typeof fatalError>().mockReturnValue('never return' as never)
+jest.unstable_mockModule('../../lib/util.js', () => ({
+	fatalError: fatalErrorMock,
 }))
 
 
@@ -94,13 +100,11 @@ describe('loadLog4jsConfig', () => {
 
 		expect(loadLog4jsConfig('filename', defaultConfig)).toStrictEqual(loadedConfig)
 
-		expect(readFileSyncMock).toHaveBeenCalledTimes(1)
-		expect(readFileSyncMock).toHaveBeenCalledWith('filename', 'utf-8')
-		expect(yamlLoadMock).toHaveBeenCalledTimes(1)
-		expect(yamlLoadMock).toHaveBeenCalledWith('file contents')
+		expect(readFileSyncMock).toHaveBeenCalledExactlyOnceWith('filename', 'utf-8')
+		expect(yamlLoadMock).toHaveBeenCalledExactlyOnceWith('file contents')
 	})
 
-	it('throws error if config is invalid', () => {
+	it('ends with error if config is invalid', () => {
 		const invalidConfig = {
 			appenders: {},
 		}
@@ -108,12 +112,14 @@ describe('loadLog4jsConfig', () => {
 		readFileSyncMock.mockReturnValueOnce('bad file contents')
 		yamlLoadMock.mockReturnValueOnce(invalidConfig)
 
-		expect(() => loadLog4jsConfig('filename', defaultConfig))
-			.toThrow('invalid or unreadable logging config file format')
+		expect(loadLog4jsConfig('filename', defaultConfig)).toBe('never return')
 
-		expect(readFileSyncMock).toHaveBeenCalledTimes(1)
-		expect(yamlLoadMock).toHaveBeenCalledTimes(1)
-		expect(yamlLoadMock).toHaveBeenCalledWith('bad file contents')
+		expect(readFileSyncMock).toHaveBeenCalledExactlyOnceWith('filename', 'utf-8')
+		expect(yamlLoadMock).toHaveBeenCalledExactlyOnceWith('bad file contents')
+
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
+			expect.stringContaining('invalid or unreadable logging config file format'),
+		)
 	})
 })
 
@@ -151,28 +157,22 @@ describe('coreSDKLoggerFromLog4JSLogger', () => {
 
 	it('provides proxies for logging methods', () => {
 		coreSDKLogger.trace('trace message', 'trace arg')
-		expect(mockLogger.trace).toHaveBeenCalledTimes(1)
-		expect(mockLogger.trace).toHaveBeenCalledWith('trace message', 'trace arg')
+		expect(mockLogger.trace).toHaveBeenCalledExactlyOnceWith('trace message', 'trace arg')
 
 		coreSDKLogger.debug('debug message', 'debug arg')
-		expect(mockLogger.debug).toHaveBeenCalledTimes(1)
-		expect(mockLogger.debug).toHaveBeenCalledWith('debug message', 'debug arg')
+		expect(mockLogger.debug).toHaveBeenCalledExactlyOnceWith('debug message', 'debug arg')
 
 		coreSDKLogger.info('info message', 'info arg')
-		expect(mockLogger.info).toHaveBeenCalledTimes(1)
-		expect(mockLogger.info).toHaveBeenCalledWith('info message', 'info arg')
+		expect(mockLogger.info).toHaveBeenCalledExactlyOnceWith('info message', 'info arg')
 
 		coreSDKLogger.warn('warn message', 'warn arg')
-		expect(mockLogger.warn).toHaveBeenCalledTimes(1)
-		expect(mockLogger.warn).toHaveBeenCalledWith('warn message', 'warn arg')
+		expect(mockLogger.warn).toHaveBeenCalledExactlyOnceWith('warn message', 'warn arg')
 
 		coreSDKLogger.error('error message', 'error arg')
-		expect(mockLogger.error).toHaveBeenCalledTimes(1)
-		expect(mockLogger.error).toHaveBeenCalledWith('error message', 'error arg')
+		expect(mockLogger.error).toHaveBeenCalledExactlyOnceWith('error message', 'error arg')
 
 		coreSDKLogger.fatal('fatal message', 'fatal arg')
-		expect(mockLogger.fatal).toHaveBeenCalledTimes(1)
-		expect(mockLogger.fatal).toHaveBeenCalledWith('fatal message', 'fatal arg')
+		expect(mockLogger.fatal).toHaveBeenCalledExactlyOnceWith('fatal message', 'fatal arg')
 	})
 
 	it('provides proxies for is<method>Enabled methods', () => {
