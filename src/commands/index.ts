@@ -1,8 +1,9 @@
 import { CommandModule } from 'yargs'
 
 import appsCommand from './apps.js'
-import appsCreateCommand from './apps/create.js'
 import appsAuthorizeCommand from './apps/authorize.js'
+import appsCreateCommand from './apps/create.js'
+import appsDeleteCommand from './apps/delete.js'
 import appsOAuthGenerateCommand from './apps/oauth/generate.js'
 import appsOAuthUpdateCommand from './apps/oauth/update.js'
 import appsSettingsUpdateCommand from './apps/settings/update.js'
@@ -30,8 +31,9 @@ import virtualdevicesCommand from './virtualdevices.js'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const commands: CommandModule<object, any>[] = [
 	appsCommand,
-	appsCreateCommand,
 	appsAuthorizeCommand,
+	appsCreateCommand,
+	appsDeleteCommand,
 	appsOAuthGenerateCommand,
 	appsOAuthUpdateCommand,
 	appsSettingsUpdateCommand,

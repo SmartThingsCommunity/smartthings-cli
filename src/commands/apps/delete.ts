@@ -6,35 +6,35 @@ import {
 	apiCommandBuilder,
 	apiDocsURL,
 } from '../../lib/command/api-command.js'
-import { chooseLocation } from '../../lib/command/util/locations-util.js'
+import { chooseApp } from '../../lib/command/util/apps-util.js'
 
 
 export type CommandArgs = APICommandFlags & {
 	id?: string
 }
 
-export const command = 'locations:delete [id]'
+export const command = 'apps:delete [id]'
 
-const describe = 'delete a location'
+const describe = 'delete an app'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	apiCommandBuilder(yargs)
-		.positional('id', { describe: 'location id', type: 'string' })
+		.positional('id', { describe: 'app id', type: 'string' })
 		.example([
-			['$0 locations:delete', 'choose the location to delete from a list'],
+			['$0 apps:delete', 'choose the app to delete from a list'],
 			[
-				'$0 locations:delete 43daec4d-f2c6-4bc3-9df7-50ed1012c137',
-				'delete the location with the specified id',
+				'$0 apps:delete 5dfd6626-ab1d-42da-bb76-90def3153998',
+				'delete the app with the specified id',
 			],
 		])
-		.epilog(apiDocsURL('deleteLocation'))
+		.epilog(apiDocsURL('deleteApp'))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)
 
-	const id = await chooseLocation(command, argv.id)
-	await command.client.locations.delete(id)
-	console.log(`Location ${id} deleted.`)
+	const id = await chooseApp(command, argv.id)
+	await command.client.apps.delete(id)
+	console.log(`App ${id} deleted.`)
 }
 
 const cmd: CommandModule<object, CommandArgs> = { command, describe, builder, handler }
