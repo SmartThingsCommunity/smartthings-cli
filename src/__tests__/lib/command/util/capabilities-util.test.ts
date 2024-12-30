@@ -9,7 +9,7 @@ import type {
 
 import type { asTextBulletedList, fatalError } from '../../../../lib/util.js'
 import type { ListDataFunction } from '../../../../lib/command/io-defs.js'
-import { sort } from '../../../../lib/command/output.js'
+import type { sort } from '../../../../lib/command/output.js'
 import type { CapabilitySummaryWithNamespace } from '../../../../lib/command/util/capabilities-util.js'
 
 
@@ -28,6 +28,7 @@ jest.unstable_mockModule('../../../../lib/command/output.js', () => ({
 
 const {
 	attributeTypeDisplayString,
+	convertToId,
 	getCustomByNamespace,
 	getStandard,
 	translateToId,
@@ -185,6 +186,13 @@ describe('translateToId', () => {
 		expect(sortMock).not.toHaveBeenCalled()
 	})
 
+	it('returns undefined if input is undefined', async () => {
+		expect(await translateToId('id', undefined, listFunctionMock)).toBe(undefined)
+
+		expect(apiCapabilitiesListMock).not.toHaveBeenCalled()
+		expect(sortMock).not.toHaveBeenCalled()
+	})
+
 	it('returns `CapabilityId` with input as id if input is a string', async () => {
 		const capabilityId = { id: 'capability-id', version: 1 }
 
@@ -213,5 +221,32 @@ describe('translateToId', () => {
 		expect(fatalErrorMock).toHaveBeenCalledTimes(2)
 		expect(fatalErrorMock).toHaveBeenCalledWith(expect.stringContaining('invalid index 0'))
 		expect(fatalErrorMock).toHaveBeenCalledWith(expect.stringContaining('invalid index 7'))
+	})
+})
+
+describe('convertToId', () => {
+	it('returns false for empty string', () => {
+		expect(convertToId('', allCapabilitiesWithNamespaces)).toBeFalse()
+	})
+
+	it('returns id if item found', () => {
+		expect(convertToId('button', allCapabilitiesWithNamespaces)).toBe('button')
+	})
+
+	it('returns false if item not found', () => {
+		expect(convertToId('bad-capability-id', allCapabilitiesWithNamespaces)).toBeFalse()
+	})
+
+	it('returns id looked up by index for integer in range', () => {
+		expect(convertToId('5', allCapabilitiesWithNamespaces)).toBe('capability-2')
+	})
+
+	it('returns false for index that is out of range', () => {
+		expect(convertToId('0', allCapabilitiesWithNamespaces)).toBeFalse()
+		expect(convertToId('7', allCapabilitiesWithNamespaces)).toBeFalse()
+	})
+
+	it('throws exception if type of id is not a string', () => {
+		expect(() => convertToId('1', [{ id: 1993 } as unknown as CapabilitySummaryWithNamespace])).toThrow()
 	})
 })
