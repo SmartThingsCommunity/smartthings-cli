@@ -1,8 +1,15 @@
 import { jest } from '@jest/globals'
 
-import { ArgumentsCamelCase, Argv, Options } from 'yargs'
+import type { ArgumentsCamelCase, Argv, Options } from 'yargs'
 
-import { AppClassification, AppResponse, AppType, AppsEndpoint, PagedApp, SmartThingsClient } from '@smartthings/core-sdk'
+import {
+	AppClassification,
+	type AppResponse,
+	AppType,
+	type AppsEndpoint,
+	type PagedApp,
+	type SmartThingsClient,
+} from '@smartthings/core-sdk'
 
 import { APICommand, APICommandFlags } from '../../lib/command/api-command.js'
 import { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'

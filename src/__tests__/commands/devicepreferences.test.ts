@@ -1,11 +1,16 @@
 import { jest } from '@jest/globals'
 
-import { ArgumentsCamelCase, Argv } from 'yargs'
+import type { ArgumentsCamelCase, Argv } from 'yargs'
 
-import { DevicePreference, DevicePreferencesEndpoint, OrganizationResponse, SmartThingsClient } from '@smartthings/core-sdk'
+import type {
+	DevicePreference,
+	DevicePreferencesEndpoint,
+	OrganizationResponse,
+	SmartThingsClient,
+} from '@smartthings/core-sdk'
 
-import { WithOrganization, forAllOrganizations } from '../../lib/api-helpers.js'
-import {
+import type { WithOrganization, forAllOrganizations } from '../../lib/api-helpers.js'
+import type {
 	APIOrganizationCommand,
 	APIOrganizationCommandFlags,
 	apiOrganizationCommand,
@@ -77,12 +82,9 @@ test('builder', () => {
 
 	expect(builder(yargsMock)).toBe(argvMock)
 
-	expect(apiOrganizationCommandBuilderMock).toHaveBeenCalledTimes(1)
-	expect(apiOrganizationCommandBuilderMock).toHaveBeenCalledWith(yargsMock)
-	expect(allOrganizationsBuilderMock).toHaveBeenCalledTimes(1)
-	expect(allOrganizationsBuilderMock).toHaveBeenCalledWith(apiOrganizationCommandBuilderArgvMock)
-	expect(outputItemOrListBuilderMock).toHaveBeenCalledTimes(1)
-	expect(outputItemOrListBuilderMock).toHaveBeenCalledWith(allOrganizationsBuilderArgvMock)
+	expect(apiOrganizationCommandBuilderMock).toHaveBeenCalledExactlyOnceWith(yargsMock)
+	expect(allOrganizationsBuilderMock).toHaveBeenCalledExactlyOnceWith(apiOrganizationCommandBuilderArgvMock)
+	expect(outputItemOrListBuilderMock).toHaveBeenCalledExactlyOnceWith(allOrganizationsBuilderArgvMock)
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(2)
