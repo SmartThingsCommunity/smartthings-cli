@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import inquirer from 'inquirer'
+import type inquirer from 'inquirer'
 
 import type { SmartThingsClient } from '@smartthings/core-sdk'
 
