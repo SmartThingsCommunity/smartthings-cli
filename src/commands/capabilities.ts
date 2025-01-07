@@ -40,7 +40,7 @@ export type CommandArgs =
 		standard: boolean
 	}
 
-const command = 'capabilities [id-or-index]'
+const command = 'capabilities [id-or-index] [capability-version]'
 
 const describe = 'get a specific capability or a list of capabilities'
 
@@ -75,7 +75,7 @@ export const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'list capabilities for the specified organization',
 			],
 			[
-				'$0 capabilities --namespace happycat12345',
+				'$0 capabilities --namespace cathappy12345',
 				'list capabilities for the specified namespace',
 			],
 			['$0 capabilities --standard', 'list standard capabilities'],
