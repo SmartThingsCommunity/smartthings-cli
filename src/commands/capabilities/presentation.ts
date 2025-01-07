@@ -27,7 +27,7 @@ export type CommandArgs =
 		namespace?: string
 	}
 
-const command = 'capabilities:presentation [id-or-index]'
+const command = 'capabilities:presentation [id-or-index] [capability-version]'
 
 const describe = 'get presentation information for a specific capability'
 
@@ -44,12 +44,12 @@ export const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'prompt for a capability and display its presentation information',
 			],
 			[
-				'$0 capabilities:presentations --namespace happycat12345',
+				'$0 capabilities:presentations --namespace cathappy12345',
 				'prompt for a capability from the specified namespace and display its' +
 					' presentation information',
 			],
 			[
-				'$0 capabilities:presentations happycat12345.myCapability',
+				'$0 capabilities:presentations cathappy12345.myCapability',
 				'display details for a capability by id',
 			],
 			[
