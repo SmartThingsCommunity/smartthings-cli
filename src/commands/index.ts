@@ -12,6 +12,7 @@ import appsSettingsUpdateCommand from './apps/settings/update.js'
 import capabilitiesCommand from './capabilities.js'
 import capabilitiesPresentationCommand from './capabilities/presentation.js'
 import capabilitiesPresentationCreateCommand from './capabilities/presentation/create.js'
+import capabilitiesPresentationUpdateCommand from './capabilities/presentation/update.js'
 import configCommand from './config.js'
 import devicepreferencesCommand from './devicepreferences.js'
 import devicepreferencesTranslationsCreateCommand from './devicepreferences/translations/create.js'
@@ -46,6 +47,7 @@ export const commands: CommandModule<object, any>[] = [
 	capabilitiesCommand,
 	capabilitiesPresentationCommand,
 	capabilitiesPresentationCreateCommand,
+	capabilitiesPresentationUpdateCommand,
 	configCommand,
 	devicepreferencesCommand,
 	devicepreferencesTranslationsCreateCommand,
