@@ -1,17 +1,19 @@
 import log4js from 'log4js'
-import { Argv } from 'yargs'
+import { type Argv } from 'yargs'
 
-import { CLIConfig, loadConfig, Profile } from '../cli-config.js'
+import { type CLIConfig, loadConfig, type Profile } from '../cli-config.js'
 import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../log-utils.js'
 import { BuildOutputFormatterFlags } from './output-builder.js'
-import { defaultTableGenerator, TableGenerator } from '../table-generator.js'
+import { defaultTableGenerator, type TableGenerator } from '../table-generator.js'
 
 
 export type SmartThingsCommandFlags = {
 	profile: string
 }
 
-export const smartThingsCommandBuilder = <T extends object = object>(yargs: Argv<T>): Argv<T & SmartThingsCommandFlags> =>
+export const smartThingsCommandBuilder = <T extends object = object>(
+	yargs: Argv<T>,
+): Argv<T & SmartThingsCommandFlags> =>
 	yargs.env('SMARTTHINGS')
 		.option('profile', {
 			alias: 'p',
@@ -55,10 +57,12 @@ export type SmartThingsCommand<T extends SmartThingsCommandFlags = SmartThingsCo
 /**
  * A function to be called at the start of every CLI command that sets up shared things.
  */
-export const smartThingsCommand = async <T extends SmartThingsCommandFlags>(flags: T): Promise<SmartThingsCommand<T>> => {
+export const smartThingsCommand = async <T extends SmartThingsCommandFlags>(
+	flags: T,
+): Promise<SmartThingsCommand<T>> => {
 	// TODO: need to be platform-independent
 	const configDir = `${process.env['HOME']}/.config/@smartthings/cli`
-	const cacheDir = `${process.env['HOME']}/.config/@smartthings/cli`
+	const cacheDir = `${process.env['HOME']}/Library/Caches/@smartthings/cli`
 
 	const defaultLogConfig = buildDefaultLog4jsConfig(`${cacheDir}/smartthings.log`)
 	const logConfig = loadLog4jsConfig(`${configDir}/logging.yaml`, defaultLogConfig)
@@ -71,7 +75,7 @@ export const smartThingsCommand = async <T extends SmartThingsCommandFlags>(flag
 
 	const cliConfig = await loadConfig({
 		configFilename: `${configDir}/config.yaml`,
-		managedConfigFilename: `${configDir}/config-managed.yaml`,
+		managedConfigFilename: `${cacheDir}/config-managed.yaml`,
 		profileName,
 	}, logger)
 

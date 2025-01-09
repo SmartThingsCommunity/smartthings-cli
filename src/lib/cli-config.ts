@@ -1,13 +1,14 @@
 import { readFile, writeFile } from 'fs/promises'
 
-import { Logger } from 'log4js'
+import { type Logger } from 'log4js'
 import yaml from 'js-yaml'
 
 import { yamlExists } from './io-util.js'
 import { fatalError } from './util.js'
 
 
-export const seeConfigDocs = 'see https://github.com/SmartThingsCommunity/smartthings-cli/blob/main/packages/cli/doc/configuration.md for more information'
+export const seeConfigDocs = 'see https://github.com/SmartThingsCommunity/smartthings-cli/blob/' +
+	'main/packages/cli/doc/configuration.md for more information'
 
 export type Profile = Record<string, unknown>
 export type ProfilesByName = Record<string, Profile>
@@ -175,11 +176,15 @@ export const loadConfig = async (description: CLIConfigDescription, logger: Logg
 	}
 }
 
-const managedConfigHeader =
-`# This file is used to store settings managed by the CLI. Users are not meant to edit it directly.
+/**
+ * Generate managed config file contents. If there are no profiles to save, we skip calling
+ * `yaml.dump` which returns `{}` in that case.
+ */
+export const buildManagedConfigFileContents = (config: CLIConfig): string =>
+	`# This file is used to store settings managed by the CLI. Users are not meant to edit it directly.
 # Any options in the main config file will override values from this one.
 
-`
+` + (Object.keys(config.managedProfiles).length > 0 ? yaml.dump(config.managedProfiles) : '')
 
 /**
  * Save the specified configuration key into managed config so it will be picked up
@@ -187,7 +192,7 @@ const managedConfigHeader =
  */
 export const setConfigKey = async (config: CLIConfig, key: string, value: unknown): Promise<void> => {
 	config.managedProfiles = mergeProfiles({ [config.profileName]: { [key]: value } }, config.managedProfiles)
-	await writeFile(config.managedConfigFilename, managedConfigHeader + yaml.dump(config.managedProfiles))
+	await writeFile(config.managedConfigFilename, buildManagedConfigFileContents(config))
 	config.mergedProfiles = mergeProfiles(config.profiles, config.managedProfiles)
 }
 
@@ -197,15 +202,20 @@ export const setConfigKey = async (config: CLIConfig, key: string, value: unknow
  *
  * This can be used to wipe out default values when something is deleted.
  */
-export const resetManagedConfigKey = async (config: CLIConfig, key: string, predicate?: (value: unknown) => boolean): Promise<void> => {
-	config.managedProfiles = Object.fromEntries(Object.entries(config.managedProfiles).map(([profileName, profile]) => {
-		if (key in profile && (!predicate || predicate(profile[key]))) {
-			delete profile[key]
-		}
-		return [profileName, profile]
-	}))
+export const resetManagedConfigKey = async (
+		config: CLIConfig,
+		key: string,
+		predicate?: (value: unknown) => boolean,
+): Promise<void> => {
+	config.managedProfiles =
+		Object.fromEntries(Object.entries(config.managedProfiles).map(([profileName, profile]) => {
+			if (key in profile && (!predicate || predicate(profile[key]))) {
+				delete profile[key]
+			}
+			return [profileName, profile]
+		}))
 
-	await writeFile(config.managedConfigFilename, managedConfigHeader + yaml.dump(config.managedProfiles))
+	await writeFile(config.managedConfigFilename, buildManagedConfigFileContents(config))
 	config.mergedProfiles = mergeProfiles(config.profiles, config.managedProfiles)
 }
 
@@ -215,6 +225,6 @@ export const resetManagedConfigKey = async (config: CLIConfig, key: string, pred
 export const resetManagedConfig = async (config: CLIConfig, profileName: string): Promise<void> => {
 	config.managedProfiles = { ...config.managedProfiles }
 	delete config.managedProfiles[profileName]
-	await writeFile(config.managedConfigFilename, managedConfigHeader + yaml.dump(config.managedProfiles))
+	await writeFile(config.managedConfigFilename, buildManagedConfigFileContents(config))
 	config.mergedProfiles = mergeProfiles(config.profiles, config.managedProfiles)
 }

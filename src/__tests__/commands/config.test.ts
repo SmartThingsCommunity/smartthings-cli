@@ -1,27 +1,27 @@
 import { jest } from '@jest/globals'
 
-import { ArgumentsCamelCase, Argv } from 'yargs'
+import type { ArgumentsCamelCase, Argv } from 'yargs'
 
-import { Profile, ProfilesByName } from '../../lib/cli-config.js'
-import { CommandArgs } from '../../commands/config.js'
-import { stringTranslateToId } from '../../lib/command/command-util.js'
-import { TableCommonListOutputProducer, TableCommonOutputProducer } from '../../lib/command/format.js'
-import { outputItemOrListBuilder } from '../../lib/command/listing-io.js'
-import { outputItem } from '../../lib/command/output-item.js'
-import { outputList, outputListBuilder } from '../../lib/command/output-list.js'
-import {
+import type { Profile, ProfilesByName } from '../../lib/cli-config.js'
+import type { CommandArgs } from '../../commands/config.js'
+import type { stringTranslateToId } from '../../lib/command/command-util.js'
+import type { TableCommonListOutputProducer, TableCommonOutputProducer } from '../../lib/command/format.js'
+import type { outputItemOrListBuilder } from '../../lib/command/listing-io.js'
+import type { outputItem } from '../../lib/command/output-item.js'
+import { type outputList } from '../../lib/command/output-list.js'
+import type {
 	OutputFormatter,
 	calculateOutputFormat,
 	writeOutput,
 } from '../../lib/command/output.js'
-import { BuildOutputFormatterFlags, buildOutputFormatter } from '../../lib/command/output-builder.js'
-import {
+import type { BuildOutputFormatterFlags, buildOutputFormatter } from '../../lib/command/output-builder.js'
+import type {
 	SmartThingsCommand,
 	SmartThingsCommandFlags,
 	smartThingsCommand,
 	smartThingsCommandBuilder,
 } from '../../lib/command/smartthings-command.js'
-import { ValueTableFieldDefinition } from '../../lib/table-generator.js'
+import type { ValueTableFieldDefinition } from '../../lib/table-generator.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
 
@@ -42,7 +42,6 @@ jest.unstable_mockModule('../../lib/command/output-item.js', () => ({
 
 const outputListMock = jest.fn<typeof outputList>()
 jest.unstable_mockModule('../../lib/command/output-list.js', () => ({
-	outputListBuilder,
 	outputList: outputListMock,
 }))
 
