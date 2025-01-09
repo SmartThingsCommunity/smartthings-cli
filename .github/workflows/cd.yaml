@@ -67,8 +67,8 @@ jobs:
     steps:
       - name: Install and Setup QEMU
         run: |
-          sudo apt-get update
-          sudo apt-get install qemu binfmt-support qemu-user-static
+          sudo apt update
+          sudo apt install binfmt-support qemu-user-static
 
       # see https://github.com/vercel/pkg/issues/1251#issuecomment-1024832725
       - name: Download and Install ldid Codesign Utility
