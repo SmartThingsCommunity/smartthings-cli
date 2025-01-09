@@ -1,16 +1,16 @@
 import { jest } from '@jest/globals'
 
-import { readFile, writeFile } from 'fs/promises'
+import type { readFile, writeFile } from 'fs/promises'
 
-import yaml from 'js-yaml'
+import type yaml from 'js-yaml'
 
-import {
+import type {
 	CLIConfig,
 	CLIConfigDescription,
 	ProfilesByName,
 } from '../../lib/cli-config.js'
-import { yamlExists } from '../../lib/io-util.js'
-import { fatalError } from '../../lib/util.js'
+import type { yamlExists } from '../../lib/io-util.js'
+import type { fatalError } from '../../lib/util.js'
 
 
 const readFileMock = jest.fn<typeof readFile>().mockResolvedValue('good contents')
@@ -44,6 +44,7 @@ jest.unstable_mockModule('../../lib/util.js', () => ({
 
 
 const {
+	buildManagedConfigFileContents,
 	loadConfig,
 	loadConfigFile,
 	mergeProfiles,
@@ -440,6 +441,34 @@ describe('loadConfig', () => {
 			expect(warnMock)
 				.toHaveBeenLastCalledWith('expected boolean value for config key validNumber but got number')
 		})
+	})
+})
+
+describe('buildManagedConfigFileContents', () => {
+	it('includes config data as yaml', () => {
+		const config = {
+			managedProfiles: { profile1: {} } as ProfilesByName,
+		} as CLIConfig
+		yamlDumpMock.mockReturnValueOnce('yaml output')
+
+		const result = buildManagedConfigFileContents(config)
+		expect(result).toMatch(/^# This file/m)
+		expect(result).toMatch(/^# Any options/m)
+		expect(result).toMatch(/^yaml output$/m)
+
+		expect(yamlDumpMock).toHaveBeenCalledExactlyOnceWith(config.managedProfiles)
+	})
+
+	it('skips yaml dump when there is no yaml to output', () => {
+		const config = {
+			managedProfiles: {},
+		} as CLIConfig
+
+		const result = buildManagedConfigFileContents(config)
+		expect(result).toMatch(/^# This file/m)
+		expect(result).toMatch(/^# Any options/m)
+
+		expect(yamlDumpMock).not.toHaveBeenCalled()
 	})
 })
 

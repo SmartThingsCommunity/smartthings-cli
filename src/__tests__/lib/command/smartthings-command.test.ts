@@ -72,7 +72,7 @@ describe('smartThingsCommand', () => {
 		expect(loadConfigMock).toHaveBeenCalledTimes(1)
 		expect(loadConfigMock).toHaveBeenCalledWith({
 			configFilename: expect.stringContaining('/.config/@smartthings/cli/config.yaml'),
-			managedConfigFilename: expect.stringContaining('/.config/@smartthings/cli/config-managed.yaml'),
+			managedConfigFilename: expect.stringContaining('/Library/Caches/@smartthings/cli/config-managed.yaml'),
 			profileName: 'default',
 		}, loggerMock)
 		expect(defaultTableGeneratorMock).toHaveBeenCalledTimes(1)
