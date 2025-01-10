@@ -22,7 +22,7 @@
 
 		<!-- https://github.com/kurtanr/WiXInstallerExamples/tree/main/00_HelloWorldInstaller#directory -->
 		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="ProgramFilesFolder">
+			<Directory Id="ProgramFiles64Folder">
 				<Directory Id="INSTALLDIR" Name="SmartThings" />
 			</Directory>
 		</Directory>

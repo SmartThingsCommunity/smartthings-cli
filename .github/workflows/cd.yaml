@@ -258,7 +258,7 @@ jobs:
         run: Add-Content $env:GITHUB_PATH "C:\Program Files (x86)\WiX Toolset v3.11\bin"
 
       - name: Compile WiX file
-        run: candle.exe smartthings.wxs -ext WixUIExtension
+        run: candle.exe smartthings.wxs -ext WixUIExtension -arch x64
         working-directory: packages\cli\wix
         env:
           SMARTTHINGS_SEMVER: ${{ steps.safe-semver.outputs.version }}
