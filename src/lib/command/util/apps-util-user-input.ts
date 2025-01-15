@@ -1,3 +1,4 @@
+// TODO: rename to apps-user-input-create.ts to match apps-user-input-update.ts
 import inquirer from 'inquirer'
 import { v4 as uuid } from 'uuid'
 
@@ -18,9 +19,9 @@ import {
 	staticDef,
 	stringDef,
 } from '../../item-input/index.js'
+import { oauthAppScopeDef, redirectUrisDef, smartAppHelpText } from './apps-util-input-primitives.js'
 import type { InputAndOutputItemFlags } from '../input-and-output-item.js'
 import { type SmartThingsCommandFlags, type SmartThingsCommand } from '../smartthings-command.js'
-import { oauthAppScopeDef, redirectUrisDef, smartAppHelpText } from './apps-util-input-primitives.js'
 
 
 const appNameDef = computedDef((context?: unknown[]): string => {

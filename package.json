@@ -58,7 +58,7 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-lambda": "^3.654.0",
-		"@smartthings/core-sdk": "^8.3.2",
+		"@smartthings/core-sdk": "^8.4.0",
 		"axios": "1.7.7",
 		"chalk": "^5.3.0",
 		"eventsource": "^2.0.2",
