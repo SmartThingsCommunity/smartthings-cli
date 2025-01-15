@@ -49,7 +49,7 @@ jest.unstable_mockModule('../../../../lib/item-input/index.js', () => ({
 const {
 	arnDef,
 	webHookUrlDef,
-} = await import('../../../../lib/command/util/schema-util-input-primitives.js')
+} = await import('../../../../lib/command/util/schema-input-primitives.js')
 
 
 const generatedStringDef = { name: 'Generated String Def' } as InputDefinition<string>

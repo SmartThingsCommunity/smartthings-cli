@@ -50,7 +50,7 @@ jest.unstable_mockModule('../../../../lib/command/util/apps-util.js', () => ({
 }))
 
 const oauthAppScopeDefMock = buildInputDefMock<string>('Scopes Mock')
-jest.unstable_mockModule('../../../../lib/command/util/apps-util-input-primitives.js', () => ({
+jest.unstable_mockModule('../../../../lib/command/util/apps-input-primitives.js', () => ({
 	oauthAppScopeDef: oauthAppScopeDefMock,
 }))
 

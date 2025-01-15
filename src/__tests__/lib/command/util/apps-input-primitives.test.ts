@@ -31,7 +31,7 @@ arrayDefMock.mockReturnValueOnce(redirectUrisDefMock)
 const {
 	oauthAppScopeDef,
 	redirectUrisDef,
-} = await import('../../../../lib/command/util/apps-util-input-primitives.js')
+} = await import('../../../../lib/command/util/apps-input-primitives.js')
 
 
 expect(oauthAppScopeDef).toBe(oauthAppScopeDefMock)

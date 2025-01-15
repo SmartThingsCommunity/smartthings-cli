@@ -18,7 +18,7 @@ import {
 } from '../../../lib/command/input-and-output-item.js'
 import { inputProcessor } from '../../../lib/command/input-processor.js'
 import { chooseApp } from '../../../lib/command/util/apps-util.js'
-import { oauthAppScopeDef } from '../../../lib/command/util/apps-util-input-primitives.js'
+import { oauthAppScopeDef } from '../../../lib/command/util/apps-input-primitives.js'
 import { objectDef, stringDef, updateFromUserInput } from '../../../lib/item-input/index.js'
 
 

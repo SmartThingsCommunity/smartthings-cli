@@ -27,7 +27,7 @@ import type {
 } from '../../../../lib/item-input/index.js'
 import type {
 	getAppCreateRequestFromUser as getAppCreateRequestFromUserForType,
-} from '../../../../lib/command/util/apps-util-user-input.js'
+} from '../../../../lib/command/util/apps-user-input-create.js'
 import { buildInputDefMock } from '../../../test-lib/input-type-mock.js'
 
 
@@ -76,7 +76,7 @@ jest.unstable_mockModule('../../../../lib/item-input/index.js', () => ({
 
 const oauthAppScopeDefMock = buildInputDefMock('Scopes Mock')
 const redirectUrisDefMock = buildInputDefMock('Redirect URIs Mock')
-jest.unstable_mockModule('../../../../lib/command/util/apps-util-input-primitives.js', () => ({
+jest.unstable_mockModule('../../../../lib/command/util/apps-input-primitives.js', () => ({
 	oauthAppScopeDef: oauthAppScopeDefMock,
 	redirectUrisDef: redirectUrisDefMock,
 	smartAppHelpText: 'smartapp help text',
@@ -102,7 +102,7 @@ test('module initialization', async () => {
 	objectDefMock.mockReturnValueOnce(oauthDefMock)
 	objectDefMock.mockReturnValueOnce(oauthAppCreateRequestDefMock)
 
-	getAppCreateRequestFromUser = (await import('../../../../lib/command/util/apps-util-user-input.js'))
+	getAppCreateRequestFromUser = (await import('../../../../lib/command/util/apps-user-input-create.js'))
 		.getAppCreateRequestFromUser
 
 	expect(computedDefMock).toHaveBeenCalledTimes(2)

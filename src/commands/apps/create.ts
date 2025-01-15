@@ -19,7 +19,7 @@ import {
 	authorizeApp,
 	tableFieldDefinitions,
 } from '../../lib/command/util/apps-util.js'
-import { getAppCreateRequestFromUser } from '../../lib/command/util/apps-util-user-input.js'
+import { getAppCreateRequestFromUser } from '../../lib/command/util/apps-user-input-create.js'
 
 
 export type CommandArgs = APICommandFlags & InputAndOutputItemFlags & LambdaAuthFlags & {

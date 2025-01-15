@@ -19,7 +19,7 @@ import { chooseApp, oauthTableFieldDefinitions } from '../../../lib/command/util
 import {
 	oauthAppScopeDef,
 	redirectUrisDef,
-} from '../../../lib/command/util/apps-util-input-primitives.js'
+} from '../../../lib/command/util/apps-input-primitives.js'
 import { objectDef, stringDef, updateFromUserInput } from '../../../lib/item-input/index.js'
 
 
