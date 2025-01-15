@@ -19,7 +19,7 @@ import {
 	staticDef,
 	stringDef,
 } from '../../item-input/index.js'
-import { oauthAppScopeDef, redirectUrisDef, smartAppHelpText } from './apps-util-input-primitives.js'
+import { oauthAppScopeDef, redirectUrisDef, smartAppHelpText } from './apps-input-primitives.js'
 import type { InputAndOutputItemFlags } from '../input-and-output-item.js'
 import { type SmartThingsCommandFlags, type SmartThingsCommand } from '../smartthings-command.js'
 

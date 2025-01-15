@@ -15,7 +15,7 @@ import {
 	updateFromUserInput,
 } from '../../item-input/index.js'
 import { type APICommand } from '../api-command.js'
-import { smartAppHelpText } from './apps-util-input-primitives.js'
+import { smartAppHelpText } from './apps-input-primitives.js'
 import { type InputAndOutputItemFlags } from '../input-and-output-item.js'
 
 

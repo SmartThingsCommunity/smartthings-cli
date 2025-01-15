@@ -52,7 +52,7 @@ jest.unstable_mockModule('../../../../lib/item-input/index.js', () => ({
 	updateFromUserInput: updateFromUserInputMock,
 }))
 
-jest.unstable_mockModule('../../../../lib/command//util/apps-util-input-primitives.js', () => ({
+jest.unstable_mockModule('../../../../lib/command//util/apps-input-primitives.js', () => ({
 	smartAppHelpText: 'smartapp help text',
 }))
 

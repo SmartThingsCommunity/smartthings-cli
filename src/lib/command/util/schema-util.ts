@@ -23,7 +23,7 @@ import { clipToMaximum, fatalError } from '../../util.js'
 import { emailValidate, httpsURLValidate } from '../../validate-util.js'
 import { type APICommand } from '../api-command.js'
 import { chooseOrganization, organizationDef } from './organizations-util.js'
-import { arnDef, webHookUrlDef } from './schema-util-input-primitives.js'
+import { arnDef, webHookUrlDef } from './schema-input-primitives.js'
 import { type ChooseFunction, createChooseFn } from './util-util.js'
 import { stdinIsTTY, stdoutIsTTY } from '../../io-util.js'
 

@@ -32,7 +32,7 @@ import type {
 import type {
 	arnDef,
 	webHookUrlDef,
-} from '../../../../lib/command/util/schema-util-input-primitives.js'
+} from '../../../../lib/command/util/schema-input-primitives.js'
 import type {
 	createChooseFn,
 	ChooseFunction,
@@ -84,7 +84,7 @@ jest.unstable_mockModule('../../../../lib/item-input/index.js', () => ({
 
 const arnDefMock = jest.fn<typeof arnDef>()
 const webHookUrlDefMock = jest.fn<typeof webHookUrlDef>()
-jest.unstable_mockModule('../../../../lib/command/util/schema-util-input-primitives.js', () => ({
+jest.unstable_mockModule('../../../../lib/command/util/schema-input-primitives.js', () => ({
 	arnDef: arnDefMock,
 	webHookUrlDef: webHookUrlDefMock,
 }))

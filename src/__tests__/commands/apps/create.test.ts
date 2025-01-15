@@ -18,7 +18,7 @@ import type {
 } from '../../../lib/command/input-and-output-item.js'
 import { InputProcessor, userInputProcessor } from '../../../lib/command/input-processor.js'
 import { type authorizeApp, tableFieldDefinitions } from '../../../lib/command/util/apps-util.js'
-import { getAppCreateRequestFromUser } from '../../../lib/command/util/apps-util-user-input.js'
+import { getAppCreateRequestFromUser } from '../../../lib/command/util/apps-user-input-create.js'
 import type { CommandArgs } from '../../../commands/apps/create.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
@@ -59,7 +59,7 @@ jest.unstable_mockModule('../../../lib/command/util/apps-util.js', () => ({
 }))
 
 const getAppCreateRequestFromUserMock = jest.fn<typeof getAppCreateRequestFromUser>()
-jest.unstable_mockModule('../../../lib/command/util/apps-util-user-input.js', () => ({
+jest.unstable_mockModule('../../../lib/command/util/apps-user-input-create.js', () => ({
 	getAppCreateRequestFromUser: getAppCreateRequestFromUserMock,
 }))
 
