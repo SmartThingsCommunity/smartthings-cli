@@ -79,7 +79,7 @@ const redirectUrisDefMock = buildInputDefMock('Redirect URIs Mock')
 jest.unstable_mockModule('../../../../lib/command/util/apps-util-input-primitives.js', () => ({
 	oauthAppScopeDef: oauthAppScopeDefMock,
 	redirectUrisDef: redirectUrisDefMock,
-	smartAppHelpText: 'smart app help text',
+	smartAppHelpText: 'smartapp help text',
 }))
 
 const appNameDefMock = buildInputDefMock('App Name Mock')
