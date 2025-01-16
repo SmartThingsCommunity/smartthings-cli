@@ -23,7 +23,7 @@ export type CommandArgs =
 	& CapabilityIdInputFlags
 	& InputAndOutputItemFlags
 
-const command = 'capabilities:presentation:create [id] [capability-version]'
+const command = 'capabilities:presentation:create [id]'
 
 const describe = 'create presentation model for a capability'
 

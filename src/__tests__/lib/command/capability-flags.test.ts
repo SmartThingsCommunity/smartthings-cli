@@ -8,17 +8,19 @@ const {
 
 
 test('lambdaAuthBuilder', () => {
-	const { argvMock, positionalMock } = buildArgvMock<object>()
+	const { argvMock, optionMock, positionalMock } = buildArgvMock<object>()
 
 	expect(capabilityIdBuilder(argvMock)).toBe(argvMock)
 
-	expect(positionalMock).toHaveBeenCalledTimes(2)
+	expect(positionalMock).toHaveBeenCalledTimes(1)
+	expect(optionMock).toHaveBeenCalledTimes(1)
 })
 
 test('allOrganizationsBuilder', () => {
-	const { argvMock, positionalMock } = buildArgvMock<object>()
+	const { argvMock, optionMock, positionalMock } = buildArgvMock<object>()
 
 	expect(capabilityIdOrIndexBuilder(argvMock)).toBe(argvMock)
 
-	expect(positionalMock).toHaveBeenCalledTimes(2)
+	expect(positionalMock).toHaveBeenCalledTimes(1)
+	expect(optionMock).toHaveBeenCalledTimes(1)
 })
