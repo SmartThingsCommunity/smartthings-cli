@@ -11,9 +11,9 @@ export const capabilityIdBuilder = <T extends object>(
 ): Argv<T & CapabilityIdInputFlags> =>
 	yargs
 		.positional('id', { desc: 'the capability id', type: 'string' })
-		.positional(
+		.option(
 			'capability-version',
-			{ desc: 'the capability version', type: 'number', demandOption: 'id' },
+			{ desc: 'the capability version', type: 'number' },
 		)
 
 export type CapabilityIdOrIndexInputFlags = Omit<CapabilityIdInputFlags, 'id'> & {
@@ -25,7 +25,7 @@ export const capabilityIdOrIndexBuilder = <T extends object>(
 ): Argv<T & CapabilityIdOrIndexInputFlags> =>
 	yargs
 		.positional('idOrIndex', { desc: 'the capability id or number in list', type: 'string' })
-		.positional(
+		.option(
 			'capability-version',
-			{ desc: 'the capability version', type: 'number', demandOption: 'idOrIndex' },
+			{ desc: 'the capability version', type: 'number' },
 		)

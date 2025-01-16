@@ -27,7 +27,7 @@ export type CommandArgs =
 		namespace?: string
 	}
 
-const command = 'capabilities:presentation [id-or-index] [capability-version]'
+const command = 'capabilities:presentation [id-or-index]'
 
 const describe = 'get presentation information for a specific capability'
 
@@ -67,9 +67,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 		command,
 		argv.idOrIndex,
 		argv.capabilityVersion,
-		undefined,
-		argv.namespace,
-		{ allowIndex: true },
+		{ namespace: argv.namespace, allowIndex: true },
 	)
 	const presentation =
 		await command.client.capabilities.getPresentation(capabilityId.id, capabilityId.version)

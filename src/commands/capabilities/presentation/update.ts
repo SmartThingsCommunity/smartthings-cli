@@ -23,7 +23,7 @@ export type CommandArgs =
 	& InputAndOutputItemFlags
 	& CapabilityIdInputFlags
 
-const command = 'capabilities:presentation:update [id] [capability-version]'
+const command = 'capabilities:presentation:update [id]'
 
 const describe = 'update presentation information of a capability'
 

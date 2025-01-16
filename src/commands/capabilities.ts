@@ -40,7 +40,7 @@ export type CommandArgs =
 		standard: boolean
 	}
 
-const command = 'capabilities [id-or-index] [capability-version]'
+const command = 'capabilities [id-or-index]'
 
 const describe = 'get a specific capability or a list of capabilities'
 
@@ -67,7 +67,7 @@ export const builder = (yargs: Argv): Argv<CommandArgs> =>
 					' "smartthings capabilities"',
 			],
 			[
-				'$0 capabilities 5dfd6626-ab1d-42da-bb76-90def3153998',
+				'$0 capabilities cathappy12345.myCapability',
 				'display details for a capability by id',
 			],
 			[

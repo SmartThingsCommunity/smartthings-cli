@@ -2,7 +2,7 @@ import { jest } from '@jest/globals'
 
 import type inquirer from 'inquirer'
 
-import type { SmartThingsClient } from '@smartthings/core-sdk'
+import { CapabilitiesEndpoint, type SmartThingsClient } from '@smartthings/core-sdk'
 
 import type { APICommand } from '../../../../lib/command/api-command.js'
 import type { selectFromList, SelectFromListFlags } from '../../../../lib/command/select.js'
@@ -129,7 +129,12 @@ describe('getIdFromUser', () => {
 const selectedCapabilityId = { id: 'selected-capability-id', version: 1 }
 selectFromListMock.mockResolvedValue(selectedCapabilityId)
 
-const client = {} as unknown as SmartThingsClient
+const apiCapabilitiesListLocalesMock = jest.fn<typeof CapabilitiesEndpoint.prototype.listLocales>()
+const client = {
+	capabilities: {
+		listLocales: apiCapabilitiesListLocalesMock,
+	},
+} as unknown as SmartThingsClient
 const command = { client } as APICommand<SelectFromListFlags>
 
 describe('chooseCapability', () => {
@@ -151,7 +156,7 @@ describe('chooseCapability', () => {
 	it('translates id from index if `allowIndex` is specified', async () => {
 		translateToIdMock.mockResolvedValueOnce({ id: 'translated-id', version: 13 })
 
-		expect(await chooseCapability(command, '13', undefined, undefined, undefined, { allowIndex: true }))
+		expect(await chooseCapability(command, '13', undefined, { allowIndex: true }))
 			.toBe(selectedCapabilityId)
 
 		expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
@@ -197,7 +202,8 @@ describe('chooseCapability', () => {
 	})
 
 	it('passes on promptMessage', async () => {
-		expect(await chooseCapability(command, undefined, undefined, 'user prompt')).toBe(selectedCapabilityId)
+		expect(await chooseCapability(command, undefined, undefined, { promptMessage: 'user prompt' }))
+			.toBe(selectedCapabilityId)
 
 		expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
 			command,
@@ -212,7 +218,8 @@ describe('chooseCapability', () => {
 	})
 
 	it('passes on namespace', async () => {
-		expect(await chooseCapability(command, undefined, undefined, undefined, 'namespace')).toBe(selectedCapabilityId)
+		expect(await chooseCapability(command, undefined, undefined, { namespace: 'namespace' }))
+			.toBe(selectedCapabilityId)
 
 		expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
 			command,
@@ -249,5 +256,30 @@ describe('chooseCapability', () => {
 		expect(await listItems()).toBe(capabilities)
 
 		expect(getCustomByNamespaceMock).toHaveBeenCalledExactlyOnceWith(client, undefined)
+	})
+
+	it('includes list of locales in verbose mode', async () => {
+		expect(await chooseCapability(command, undefined, undefined, { verbose: true })).toBe(selectedCapabilityId)
+
+		expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
+			command,
+			expect.objectContaining({ listTableFieldDefinitions: expect.arrayContaining(['locales']) }),
+			expect.objectContaining({}),
+		)
+
+		getCustomByNamespaceMock.mockResolvedValueOnce(capabilities)
+		const listItems = selectFromListMock.mock.calls[0][2].listItems
+		apiCapabilitiesListLocalesMock.mockResolvedValueOnce([{ tag: 'es' }, { tag: 'en' }])
+		apiCapabilitiesListLocalesMock.mockResolvedValueOnce([])
+		const capabilitiesWithLocales = [
+			{ ...capabilities[0], locales: 'en, es' },
+			{ ...capabilities[1], locales: '' },
+		]
+
+		expect(await listItems()).toStrictEqual(capabilitiesWithLocales)
+
+		expect(apiCapabilitiesListLocalesMock).toHaveBeenCalledTimes(2)
+		expect(apiCapabilitiesListLocalesMock).toHaveBeenCalledWith('capability-1', 1)
+		expect(apiCapabilitiesListLocalesMock).toHaveBeenCalledWith('capability-2', 1)
 	})
 })

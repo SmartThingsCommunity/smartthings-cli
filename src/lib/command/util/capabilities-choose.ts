@@ -1,5 +1,6 @@
 import inquirer from 'inquirer'
 
+import { type WithLocales } from '../../api-helpers.js'
 import { type APICommand } from '../api-command.js'
 import { type Sorting } from '../io-defs.js'
 import { selectFromList, type SelectFromListConfig, type SelectFromListFlags } from '../select.js'
@@ -49,33 +50,49 @@ export const chooseCapability = async (
 		command: APICommand<SelectFromListFlags>,
 		idOrIndexFromArgs?: string,
 		versionFromArgs?: number,
-		promptMessage?: string,
-		namespace?: string,
-		options?: { allowIndex: boolean },
+		options?: {
+			promptMessage?: string
+			namespace?: string
+			allowIndex?: boolean
+			verbose?: boolean
+		},
 ): Promise<CapabilityId> => {
 	const sortKeyName = 'id'
-	let capabilities: CapabilitySummaryWithNamespace[]
-	const listItems = async (): Promise<CapabilitySummaryWithNamespace[]> => {
+	let capabilities: (CapabilitySummaryWithNamespace & WithLocales)[]
+	const listItems = async (): Promise<(CapabilitySummaryWithNamespace & WithLocales)[]> => {
 		if (!capabilities) {
-			capabilities = await getCustomByNamespace(command.client, namespace)
+			capabilities = await getCustomByNamespace(command.client, options?.namespace)
+			if (options?.verbose) {
+				const ops = capabilities.map(it => command.client.capabilities.listLocales(it.id, it.version))
+				const locales = await Promise.all(ops)
+				capabilities = capabilities.map((it, index) => {
+					return { ...it, locales: locales[index].map(it => it.tag).sort().join(', ') }
+				})
+			}
 		}
-
 		return capabilities
 	}
-	const preselectedId = options?.allowIndex
+	const preselectedId = options?.allowIndex && idOrIndexFromArgs?.match(/^\d+$/)
 		? await translateToId(sortKeyName, idOrIndexFromArgs, listItems)
 		: (idOrIndexFromArgs ? { id: idOrIndexFromArgs, version: versionFromArgs ?? 1 } : undefined)
-	const config: SelectFromListConfig<CapabilitySummaryWithNamespace> = {
+	const config: SelectFromListConfig<CapabilitySummaryWithNamespace & WithLocales> = {
 		itemName: 'capability',
 		pluralItemName: 'capabilities',
 		primaryKeyName: 'id',
 		sortKeyName,
 		listTableFieldDefinitions: ['id', 'version', 'status'],
 	}
-	return selectFromList(command, config, {
-		preselectedId,
-		listItems,
-		getIdFromUser,
-		promptMessage,
-	})
+	if (options?.verbose) {
+		config.listTableFieldDefinitions.splice(3, 0, 'locales')
+	}
+	return selectFromList<CapabilitySummaryWithNamespace & WithLocales, CapabilityId>(
+		command,
+		config,
+		{
+			preselectedId,
+			listItems,
+			getIdFromUser,
+			promptMessage: options?.promptMessage,
+		},
+	)
 }

@@ -112,7 +112,7 @@ describe('handler', () => {
 
 		expect(apiOrganizationCommandMock).toHaveBeenCalledExactlyOnceWith(defaultInputArgv)
 		expect(chooseCapabilityMock)
-			.toHaveBeenCalledExactlyOnceWith(command, undefined, undefined, undefined, undefined, { allowIndex: true })
+			.toHaveBeenCalledExactlyOnceWith(command, undefined, undefined, { allowIndex: true })
 		expect(apiCapabilitiesGetPresentationMock).toHaveBeenCalledExactlyOnceWith('chosen-id', 3)
 		expect(formatAndWriteItemMock).toHaveBeenCalledExactlyOnceWith(
 			command,
@@ -139,7 +139,11 @@ describe('handler', () => {
 			namespace: 'namespace',
 		})).resolves.not.toThrow()
 
-		expect(chooseCapabilityMock)
-			.toHaveBeenCalledExactlyOnceWith(command, 'cmd-line-id', 13, undefined, 'namespace', { allowIndex: true })
+		expect(chooseCapabilityMock).toHaveBeenCalledExactlyOnceWith(
+			command,
+			'cmd-line-id',
+			13,
+			{ namespace: 'namespace', allowIndex: true },
+		)
 	})
 })
