@@ -1,19 +1,38 @@
 import { jest } from '@jest/globals'
 
-import log4js from 'log4js'
+import type envPaths from 'env-paths'
+import type { Paths } from 'env-paths'
+import type log4js from 'log4js'
 
-import { CLIConfig, loadConfig } from '../../../lib/cli-config.js'
-import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../../../lib/log-utils.js'
+import type { CLIConfig, loadConfig } from '../../../lib/cli-config.js'
+import type { ensureDir } from '../../../lib/file-util.js'
+import type { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../../../lib/log-utils.js'
+import type { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
 import { defaultTableGenerator } from '../../../lib/table-generator.js'
+import { copyIfExists, oldDirs } from '../../../lib/yargs-transition-temp.js'
 import { buildArgvMock } from '../../test-lib/builder-mock.js'
-import { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
 
+
+const envPathsMock = jest.fn<typeof envPaths>()
+	.mockReturnValue({
+		config: 'test-config-dir',
+		data: 'test-data-dir',
+		log: 'test-log-dir',
+	} as Paths)
+jest.unstable_mockModule('env-paths', () => ({
+	default: envPathsMock,
+}))
 
 const { configureMock, getLoggerMock, loggerMock } = await import('../../test-lib/logger-mock.js')
 
 const loadConfigMock = jest.fn<typeof loadConfig>()
 jest.unstable_mockModule('../../../lib/cli-config.js', () => ({
 	loadConfig: loadConfigMock,
+}))
+
+const ensureDirMock = jest.fn<typeof ensureDir>()
+jest.unstable_mockModule('../../../lib/file-util.js', () => ({
+	ensureDir: ensureDirMock,
 }))
 
 const buildDefaultLog4jsConfigMock = jest.fn<typeof buildDefaultLog4jsConfig>()
@@ -28,8 +47,24 @@ jest.unstable_mockModule('../../../lib//table-generator', () => ({
 	defaultTableGenerator: defaultTableGeneratorMock,
 }))
 
+const copyIfExistsMock = jest.fn<typeof copyIfExists>()
+const oldDirsMock = jest.fn<typeof oldDirs>().mockReturnValue({
+	oldConfigDir: 'old-config-dir',
+	oldCacheDir: 'old-cache-dir',
+})
+jest.unstable_mockModule('../../../lib/yargs-transition-temp.js', () => ({
+	copyIfExists: copyIfExistsMock,
+	oldDirs: oldDirsMock,
+}))
 
-const { smartThingsCommandBuilder, smartThingsCommand } = await import('../../../lib/command/smartthings-command.js')
+const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { /* do nothing */ })
+
+
+const {
+	getConfigDirsCheckingForOldConfig,
+	smartThingsCommandBuilder,
+	smartThingsCommand,
+} = await import('../../../lib/command/smartthings-command.js')
 
 
 test('smartThingsCommandBuilder', () => {
@@ -38,7 +73,17 @@ test('smartThingsCommandBuilder', () => {
 	expect(smartThingsCommandBuilder(argvMock)).toBe(argvMock)
 
 	expect(envMock).toHaveBeenCalledTimes(1)
-	expect(optionMock).toHaveBeenCalledTimes(1)
+	expect(optionMock).toHaveBeenCalledTimes(2)
+})
+
+test('getConfigDirsCheckingForOld', async () => {
+	await expect(getConfigDirsCheckingForOldConfig({ verboseLogging: true })).resolves.not.toThrow()
+
+	expect(consoleErrorSpy).toHaveBeenCalledWith('old config dir = old-config-dir')
+	expect(consoleErrorSpy).toHaveBeenCalledWith('old cache dir = old-cache-dir')
+	expect(consoleErrorSpy).toHaveBeenCalledWith('config dir = test-config-dir')
+	expect(consoleErrorSpy).toHaveBeenCalledWith('data dir = test-data-dir')
+	expect(consoleErrorSpy).toHaveBeenCalledWith('log dir = test-log-dir')
 })
 
 describe('smartThingsCommand', () => {
@@ -71,8 +116,8 @@ describe('smartThingsCommand', () => {
 		expect(getLoggerMock).toHaveBeenCalledWith('cli')
 		expect(loadConfigMock).toHaveBeenCalledTimes(1)
 		expect(loadConfigMock).toHaveBeenCalledWith({
-			configFilename: expect.stringContaining('/.config/@smartthings/cli/config.yaml'),
-			managedConfigFilename: expect.stringContaining('/Library/Caches/@smartthings/cli/config-managed.yaml'),
+			configFilename: expect.stringContaining('test-config-dir/config.yaml'),
+			managedConfigFilename: expect.stringContaining('test-data-dir/config-managed.yaml'),
 			profileName: 'default',
 		}, loggerMock)
 		expect(defaultTableGeneratorMock).toHaveBeenCalledTimes(1)

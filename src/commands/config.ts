@@ -1,3 +1,5 @@
+import { join } from 'node:path'
+
 import yaml from 'js-yaml'
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
@@ -87,6 +89,8 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	} else {
 		const outputFormat = calculateOutputFormat(argv)
 		if (outputFormat === 'common') {
+			console.log('The CLI configuration file on your machine is:\n' +
+				`    ${join(command.configDir, 'config.yaml')}\n`)
 			await outputList(command, outputListConfig, listConfigs, true)
 		} else {
 			const outputFormatter = buildOutputFormatter(command.flags, command.cliConfig)

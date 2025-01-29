@@ -1,4 +1,5 @@
-import fs from 'fs'
+import { readFileSync } from 'node:fs'
+import { lstat, mkdir, realpath, stat } from 'node:fs/promises'
 
 import yaml from 'js-yaml'
 
@@ -7,7 +8,7 @@ import { fatalError } from './util.js'
 
 export const fileExists = async (path: string): Promise<boolean> => {
 	try {
-		await fs.promises.stat(path)
+		await stat(path)
 		return true
 	} catch (error) {
 		if (error.code === 'ENOENT') {
@@ -18,16 +19,16 @@ export const fileExists = async (path: string): Promise<boolean> => {
 }
 
 export const isFile = async (path: string): Promise<boolean> =>
-	await fileExists(path) && (await fs.promises.stat(path)).isFile()
+	await fileExists(path) && (await stat(path)).isFile()
 
 export const isDir = async (path: string): Promise<boolean> =>
-	await fileExists(path) && (await fs.promises.stat(path)).isDirectory()
+	await fileExists(path) && (await stat(path)).isDirectory()
 
 export const isSymbolicLink = async (path: string): Promise<boolean> =>
-	(await fs.promises.lstat(path)).isSymbolicLink()
+	(await lstat(path)).isSymbolicLink()
 
 export const realPathForSymbolicLink = async (path: string): Promise<string> =>
-	await fs.promises.realpath(path)
+	await realpath(path)
 
 export const findYAMLFilename = async (baseName: string): Promise<string | false> => {
 	let retVal = `${baseName}.yaml`
@@ -50,6 +51,21 @@ export const requireDir = async (dirName: string): Promise<string> => {
 	return fatalError(`missing required directory: ${dirName}`)
 }
 
+export const ensureDir = async (dirname: string): Promise<void> => {
+	try {
+		const fileInfo = await stat(dirname)
+		if (!fileInfo.isDirectory()) {
+			throw Error(`${dirname} already exists but is not a directory`)
+		}
+	} catch (error) {
+		if (error.code === 'ENOENT') {
+			await mkdir(dirname, { recursive: true })
+		} else {
+			throw error
+		}
+	}
+}
+
 export type YAMLFileData = {
 	[key: string]: string | object | number | undefined
 }
@@ -63,7 +79,7 @@ const isYAMLFileData = (data: unknown): data is YAMLFileData => {
 
 export const readYAMLFile = (filename: string): YAMLFileData => {
 	try {
-		const data = yaml.load(fs.readFileSync(filename, 'utf-8'))
+		const data = yaml.load(readFileSync(filename, 'utf-8'))
 		if (isYAMLFileData(data)) {
 			return data
 		}
