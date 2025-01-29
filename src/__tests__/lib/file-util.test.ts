@@ -1,27 +1,29 @@
 import { jest } from '@jest/globals'
 
-import type fs from 'fs'
+import { readFileSync, promises as fsPromises, Stats } from 'node:fs'
 
 import type yaml from 'js-yaml'
 
-import type { YAMLFileData } from '../../lib/file-util.js'
+import { type YAMLFileData } from '../../lib/file-util.js'
 import type { fatalError } from '../../lib/util.js'
 
 
-const readFileSyncMock = jest.fn<typeof fs.readFileSync>()
-const statMock = jest.fn<typeof fs.promises.stat>()
-const lstatMock = jest.fn<typeof fs.promises.lstat>()
-const realpathMock = jest.fn<typeof fs.promises.realpath>()
-jest.unstable_mockModule('fs', () => ({
-	default: {
-		readFileSync: readFileSyncMock,
-		promises: {
-			stat: statMock,
-			lstat: lstatMock,
-			realpath: realpathMock,
-		},
-	},
+const readFileSyncMock = jest.fn<typeof readFileSync>()
+jest.unstable_mockModule('node:fs', () => ({
+	readFileSync: readFileSyncMock,
 }))
+
+const statMock = jest.fn<typeof fsPromises.stat>()
+const lstatMock = jest.fn<typeof fsPromises.lstat>()
+const mkdirMock = jest.fn<typeof fsPromises.mkdir>()
+const realpathMock = jest.fn<typeof fsPromises.realpath>()
+jest.unstable_mockModule('node:fs/promises', () => ({
+	stat: statMock,
+	lstat: lstatMock,
+	mkdir: mkdirMock,
+	realpath: realpathMock,
+}))
+
 const yamlLoadMock = jest.fn<typeof yaml.load>()
 const yamlDumpMock = jest.fn<typeof yaml.dump>()
 jest.unstable_mockModule('js-yaml', () => ({
@@ -38,6 +40,7 @@ jest.unstable_mockModule('../../lib/util.js', () => ({
 
 
 const {
+	ensureDir,
 	fileExists,
 	findYAMLFilename,
 	isDir,
@@ -51,7 +54,7 @@ const {
 
 describe('fileExists', () => {
 	it('returns true when file exists', async () => {
-		statMock.mockResolvedValue({} as fs.Stats)
+		statMock.mockResolvedValue({} as Stats)
 
 		expect(await fileExists('file-path')).toBe(true)
 
@@ -85,7 +88,7 @@ describe('isFile', () => {
 
 	it('returns false if exists but is not a file', async () => {
 		const statsIsFileMock = jest.fn().mockReturnValue(false)
-		statMock.mockResolvedValue({ isFile: statsIsFileMock } as unknown as fs.Stats)
+		statMock.mockResolvedValue({ isFile: statsIsFileMock } as unknown as Stats)
 
 		expect(await isFile('directory')).toBe(false)
 
@@ -96,7 +99,7 @@ describe('isFile', () => {
 
 	it('returns true if exists and is a file', async () => {
 		const statsIsFileMock = jest.fn().mockReturnValue(true)
-		statMock.mockResolvedValue({ isFile: statsIsFileMock } as unknown as fs.Stats)
+		statMock.mockResolvedValue({ isFile: statsIsFileMock } as unknown as Stats)
 
 		expect(await isFile('file')).toBe(true)
 
@@ -116,9 +119,9 @@ describe('isDir', () => {
 	})
 
 	it('returns false if exists but is not a directory', async () => {
-		statMock.mockResolvedValue({} as fs.Stats)
+		statMock.mockResolvedValue({} as Stats)
 		const statsIsDirectoryMock = jest.fn().mockReturnValue(false)
-		statMock.mockResolvedValue({ isDirectory: statsIsDirectoryMock } as unknown as fs.Stats)
+		statMock.mockResolvedValue({ isDirectory: statsIsDirectoryMock } as unknown as Stats)
 
 		expect(await isDir('file')).toBe(false)
 
@@ -128,7 +131,7 @@ describe('isDir', () => {
 
 	it('returns true if exists and is a directory', async () => {
 		const statsIsDirectoryMock = jest.fn().mockReturnValue(true)
-		statMock.mockResolvedValue({ isDirectory: statsIsDirectoryMock } as unknown as fs.Stats)
+		statMock.mockResolvedValue({ isDirectory: statsIsDirectoryMock } as unknown as Stats)
 
 		expect(await isDir('directory')).toBe(true)
 
@@ -139,8 +142,8 @@ describe('isDir', () => {
 })
 
 test('isSymbolicLink', async () => {
-	const lstatIsSymbolicLinkMock = jest.fn<fs.Stats['isSymbolicLink']>().mockReturnValueOnce(true)
-	lstatMock.mockResolvedValueOnce({ isSymbolicLink: lstatIsSymbolicLinkMock } as unknown as fs.Stats)
+	const lstatIsSymbolicLinkMock = jest.fn<Stats['isSymbolicLink']>().mockReturnValueOnce(true)
+	lstatMock.mockResolvedValueOnce({ isSymbolicLink: lstatIsSymbolicLinkMock } as unknown as Stats)
 
 	expect(await isSymbolicLink('/path/to/file')).toBe(true)
 
@@ -159,7 +162,7 @@ test('realPathForSymbolicLink', async () => {
 describe('findYAMLFilename', () => {
 	it('returns filename with yaml extension if that is found', async () => {
 		const statsIsFileMock = jest.fn().mockReturnValue(true)
-		statMock.mockResolvedValue({ isFile: statsIsFileMock } as unknown as fs.Stats)
+		statMock.mockResolvedValue({ isFile: statsIsFileMock } as unknown as Stats)
 
 		expect(await findYAMLFilename('filename')).toBe('filename.yaml')
 
@@ -173,9 +176,9 @@ describe('findYAMLFilename', () => {
 		statMock.mockRejectedValueOnce({ code: 'ENOENT' })
 
 		// mimic `isFileSpy.mockResolvedValueOnce(true)` once
-		statMock.mockResolvedValueOnce({} as unknown as fs.Stats)
+		statMock.mockResolvedValueOnce({} as unknown as Stats)
 		const statsIsFileMock = jest.fn().mockReturnValue(true)
-		statMock.mockResolvedValueOnce({ isFile: statsIsFileMock } as unknown as fs.Stats)
+		statMock.mockResolvedValueOnce({ isFile: statsIsFileMock } as unknown as Stats)
 
 		expect(await findYAMLFilename('filename')).toBe('filename.yml')
 
@@ -197,9 +200,8 @@ describe('findYAMLFilename', () => {
 
 describe('requireDir', () => {
 	it('returns directory when it exists and is a directory', async () => {
-		// mimic `isDirSpy.mockResolvedValue(true)`
 		const statsIsDirectoryMock = jest.fn().mockReturnValue(true)
-		statMock.mockResolvedValue({ isDirectory: statsIsDirectoryMock } as unknown as fs.Stats)
+		statMock.mockResolvedValue({ isDirectory: statsIsDirectoryMock } as unknown as Stats)
 
 		expect(await requireDir('my-dir')).toBe('my-dir')
 
@@ -208,7 +210,6 @@ describe('requireDir', () => {
 	})
 
 	it('throws exception when directory does not exist', async () => {
-		// mimic `isDirSpy.mockResolvedValue(false)`
 		statMock.mockRejectedValueOnce({ code: 'ENOENT' })
 		fatalErrorMock.mockReturnValue('never return' as never)
 
@@ -216,6 +217,48 @@ describe('requireDir', () => {
 
 		expect(statMock).toHaveBeenCalledExactlyOnceWith('not-a-dir')
 		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith('missing required directory: not-a-dir')
+	})
+})
+
+describe('ensureDir', () => {
+	it('completes without exception when directory already exists', async () => {
+		const statsIsDirectoryMock = jest.fn().mockReturnValue(true)
+		statMock.mockResolvedValue({ isDirectory: statsIsDirectoryMock } as unknown as Stats)
+
+		await expect(ensureDir('test-dir')).resolves.not.toThrow()
+
+		expect(statMock).toHaveBeenCalledExactlyOnceWith('test-dir')
+
+		expect(mkdirMock).not.toHaveBeenCalled()
+	})
+
+	it('makes directory when needed', async () => {
+		statMock.mockRejectedValueOnce({ code: 'ENOENT' })
+
+		await expect(ensureDir('test-dir')).resolves.not.toThrow()
+
+		expect(statMock).toHaveBeenCalledExactlyOnceWith('test-dir')
+		expect(mkdirMock).toHaveBeenCalledExactlyOnceWith('test-dir', { recursive: true })
+	})
+
+	it('throws unexpected error from stat', async () => {
+		const error = Error('unexpected error')
+		statMock.mockRejectedValueOnce(error)
+
+		await expect(ensureDir('test-dir')).rejects.toThrow(error)
+
+		expect(statMock).toHaveBeenCalledExactlyOnceWith('test-dir')
+		expect(mkdirMock).not.toHaveBeenCalled()
+	})
+
+	it('throws error if file already exists but is not a directory', async () => {
+		const statsIsDirectoryMock = jest.fn().mockReturnValue(false)
+		statMock.mockResolvedValue({ isDirectory: statsIsDirectoryMock } as unknown as Stats)
+
+		await expect(ensureDir('test-dir')).rejects.toThrow('test-dir already exists but is not a directory')
+
+		expect(statMock).toHaveBeenCalledExactlyOnceWith('test-dir')
+		expect(mkdirMock).not.toHaveBeenCalled()
 	})
 })
 
