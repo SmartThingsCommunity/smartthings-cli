@@ -88,7 +88,7 @@ export const apiCommand = async <T extends APICommandFlags>(flags: T, addAdditio
 
 	const authenticator = token
 		? newBearerTokenAuthenticator(token)
-		: loginAuthenticator(`${stCommand.configDir}/credentials.json`, stCommand.profileName, clientIdProvider, userAgent)
+		: loginAuthenticator(`${stCommand.dataDir}/credentials.json`, stCommand.profileName, clientIdProvider, userAgent)
 
 	const warningLogger = (warnings: WarningFromHeader[] | string): void => {
 		const message = 'Warnings from API:\n' + (typeof(warnings) === 'string'

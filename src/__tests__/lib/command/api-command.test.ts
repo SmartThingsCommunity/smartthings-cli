@@ -52,6 +52,8 @@ const buildTableFromListMock = jest.fn<TableGenerator['buildTableFromList']>()
 buildTableFromListMock.mockReturnValue('table built from list')
 const stCommandMock = {
 	configDir: 'test-config-dir',
+	dataDir: 'test-data-dir',
+	logDir: 'test-log-dir',
 	cliConfig: cliConfigMock,
 	profileName: 'profile-from-parent',
 	profile: {},
@@ -142,6 +144,8 @@ describe('apiCommand', () => {
 		const result = await apiCommand(flags)
 
 		expect(result.configDir).toBe('test-config-dir')
+		expect(result.dataDir).toBe('test-data-dir')
+		expect(result.logDir).toBe('test-log-dir')
 		expect(result.profile).toBe(stCommandMock.profile)
 
 		expect(smartThingsCommandMock).toHaveBeenCalledTimes(1)
@@ -160,7 +164,7 @@ describe('apiCommand', () => {
 			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(0)
 			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(1)
 			expect(loginAuthenticatorMock).toHaveBeenCalledWith(
-				'test-config-dir/credentials.json',
+				'test-data-dir/credentials.json',
 				'profile-from-parent',
 				defaultClientIdProvider, userAgent)
 		})
@@ -208,7 +212,7 @@ describe('apiCommand', () => {
 			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(0)
 			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(1)
 			expect(loginAuthenticatorMock).toHaveBeenCalledWith(
-				'test-config-dir/credentials.json',
+				'test-data-dir/credentials.json',
 				'profile-from-parent',
 				defaultClientIdProvider, userAgent)
 		})
