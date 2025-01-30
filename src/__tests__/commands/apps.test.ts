@@ -11,13 +11,13 @@ import {
 	type SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { APICommand, APICommandFlags } from '../../lib/command/api-command.js'
-import { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
-import { CommandArgs } from '../../commands/apps.js'
-import { ListDataFunction } from '../../lib/command/io-defs.js'
-import { BuildOutputFormatterFlags } from '../../lib/command/output-builder.js'
-import { SmartThingsCommandFlags } from '../../lib/command/smartthings-command.js'
-import { shortARNorURL, verboseApps } from '../../lib/command/util/apps-util.js'
+import type { APICommand, APICommandFlags } from '../../lib/command/api-command.js'
+import type { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
+import type { CommandArgs } from '../../commands/apps.js'
+import type { ListDataFunction } from '../../lib/command/io-defs.js'
+import type { BuildOutputFormatterFlags } from '../../lib/command/output-builder.js'
+import type { SmartThingsCommandFlags } from '../../lib/command/smartthings-command.js'
+import type { shortARNorURL, verboseApps } from '../../lib/command/util/apps-util.js'
 import { apiCommandMocks } from '../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 

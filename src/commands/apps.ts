@@ -39,7 +39,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 	outputItemOrListBuilder(apiCommandBuilder(yargs))
 		.positional('id-or-index', { describe: 'the app id or number from list', type: 'string' })
 		.option('type', {
-			describe: 'filter results by appType',
+			describe: 'filter results by app type',
 			type: 'string',
 			choices: Object.values(AppType),
 			coerce: arg => arg.toUpperCase() as AppType,
