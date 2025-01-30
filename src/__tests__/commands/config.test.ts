@@ -1,5 +1,7 @@
 import { jest } from '@jest/globals'
 
+import type { join } from 'node:path'
+
 import type { ArgumentsCamelCase, Argv } from 'yargs'
 
 import type { Profile, ProfilesByName } from '../../lib/cli-config.js'
@@ -24,6 +26,11 @@ import type {
 import type { ValueTableFieldDefinition } from '../../lib/table-generator.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
+
+const joinMock = jest.fn<typeof join>().mockImplementation((...paths: string[]) => paths.join('|'))
+jest.unstable_mockModule('node:path', () => ({
+	join: joinMock,
+}))
 
 const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
 jest.unstable_mockModule('../../lib/command/command-util.js', () => ({
@@ -63,6 +70,8 @@ jest.unstable_mockModule('../../lib/command/smartthings-command.js', () => ({
 	smartThingsCommand: smartThingsCommandMock,
 	smartThingsCommandBuilder: smartThingsCommandBuilderMock,
 }))
+
+const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /* do nothing */ })
 
 
 const { default: cmd } = await import('../../commands/config.js')
@@ -139,7 +148,7 @@ describe('handler', () => {
 		expect(await listFunction()).toStrictEqual([profile1WithName, profile2WithName])
 	})
 
-	it('marks running config in list', async () => {
+	it('marks active config in list', async () => {
 		const inputArgv = { profile: 'profile1', verbose: false } as ArgumentsCamelCase<CommandArgs>
 		const command = {
 			cliConfig: { mergedProfiles },
@@ -283,5 +292,20 @@ describe('handler', () => {
 
 		expect(fieldDefinition.label).toBe('Definition')
 		expect(valueFunction(profile1WithName)).toBe('key1: value1\nkey2: false\n')
+	})
+
+	it('displays config file info in common output mode config list', async () => {
+		const inputArgv = { profile: 'profile1', verbose: false } as ArgumentsCamelCase<CommandArgs>
+		const command = {
+			cliConfig: { mergedProfiles },
+			configDir: 'config-dir',
+		} as SmartThingsCommand<SmartThingsCommandFlags>
+		smartThingsCommandMock.mockResolvedValueOnce(command)
+
+		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
+
+		expect(consoleLogSpy).toHaveBeenCalledWith(
+			'The CLI configuration file on your machine is:\n    config-dir|config.yaml\n',
+		)
 	})
 })

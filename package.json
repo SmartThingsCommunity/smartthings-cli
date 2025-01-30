@@ -61,6 +61,7 @@
 		"@smartthings/core-sdk": "^8.4.0",
 		"axios": "1.7.7",
 		"chalk": "^5.3.0",
+		"env-paths": "^3.0.0",
 		"eventsource": "^2.0.2",
 		"express": "^4.21.0",
 		"get-port-please": "^3.1.2",
