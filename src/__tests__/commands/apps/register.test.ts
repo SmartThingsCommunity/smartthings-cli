@@ -27,6 +27,7 @@ const { default: cmd } = await import('../../../commands/apps/register.js')
 test('builder', () => {
 	const {
 		yargsMock,
+		positionalMock,
 		exampleMock,
 		epilogMock,
 		argvMock,
@@ -39,6 +40,7 @@ test('builder', () => {
 
 	expect(apiCommandBuilderMock).toHaveBeenCalledExactlyOnceWith(yargsMock)
 
+	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
 	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
