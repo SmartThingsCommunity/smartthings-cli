@@ -34,6 +34,7 @@ import locationsUpdateCommand from './locations/update.js'
 import organizationsCommand from './organizations.js'
 import organizationsCurrentCommand from './organizations/current.js'
 import scenesCommand from './scenes.js'
+import scenesExecuteCommand from './scenes/execute.js'
 import schemaCommand from './schema.js'
 import schemaCreateCommand from './schema/create.js'
 import virtualdevicesCommand from './virtualdevices.js'
@@ -75,6 +76,7 @@ export const commands: CommandModule<object, any>[] = [
 	organizationsCommand,
 	organizationsCurrentCommand,
 	scenesCommand,
+	scenesExecuteCommand,
 	schemaCommand,
 	schemaCreateCommand,
 	virtualdevicesCommand,
