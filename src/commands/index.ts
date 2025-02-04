@@ -33,6 +33,7 @@ import devicesPreferencesCommand from './devices/preferences.js'
 import edgeDriversCommand from './edge/drivers.js'
 import installedappsCommand from './installedapps.js'
 import installedappsRenameCommand from './installedapps/rename.js'
+import installedschemaDeleteCommand from './installedschema/delete.js'
 import locationsCommand from './locations.js'
 import logoutCommand from './logout.js'
 import locationsCreateCommand from './locations/create.js'
@@ -83,6 +84,7 @@ export const commands: CommandModule<object, any>[] = [
 	edgeDriversCommand,
 	installedappsCommand,
 	installedappsRenameCommand,
+	installedschemaDeleteCommand,
 	locationsCommand,
 	logoutCommand,
 	locationsCreateCommand,
