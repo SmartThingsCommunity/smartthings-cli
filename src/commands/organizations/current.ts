@@ -1,5 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
+import { type OrganizationResponse } from '@smartthings/core-sdk'
+
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -11,7 +13,6 @@ import {
 	type FormatAndWriteItemFlags,
 } from '../../lib/command/format.js'
 import { tableFieldDefinitions } from '../../lib/command/util/organizations-util.js'
-import { OrganizationResponse } from '@smartthings/core-sdk'
 
 
 export type CommandArgs =

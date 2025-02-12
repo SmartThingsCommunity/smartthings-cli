@@ -10,7 +10,7 @@ import type {
 	formatAndWriteItem,
 	formatAndWriteItemBuilder,
 } from '../../../lib/command/format.js'
-import type { CommandArgs } from '../../../commands/apps.js'
+import type { CommandArgs } from '../../../commands/devices/preferences.js'
 import type { BuildOutputFormatterFlags } from '../.././../lib/command/output-builder.js'
 import type { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
 import type { ChooseFunction } from '../../../lib/command/util/util-util.js'
