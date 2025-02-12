@@ -45,7 +45,10 @@ export type APICommand<T extends APICommandFlags = APICommandFlags> = SmartThing
 /**
  * Base for commands that need to use Rest API via the SmartThings Core SDK.
  */
-export const apiCommand = async <T extends APICommandFlags>(flags: T, addAdditionalHeaders?: (stCommand: SmartThingsCommand<T>, headers: HttpClientHeaders) => void): Promise<APICommand<T>> => {
+export const apiCommand = async <T extends APICommandFlags>(
+	flags: T,
+	addAdditionalHeaders?: (stCommand: SmartThingsCommand<T>, headers: HttpClientHeaders) => void,
+): Promise<APICommand<T>> => {
 	const stCommand = await smartThingsCommand(flags)
 
 	// The `|| undefined` at then end of this line is to normalize falsy values to `undefined`.
