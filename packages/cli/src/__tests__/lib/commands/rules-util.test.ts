@@ -29,14 +29,6 @@ const rules = {
 
 const client = { locations, rules } as unknown as SmartThingsClient
 
-describe('tableFieldDefinitions', () => {
-	it('counts rule actions', () => {
-		const numActionsDefinition = tableFieldDefinitions[2] as { value: (rule: Rule) => string }
-		const rule = { actions: [1, 2, 3] as unknown as RuleAction[] } as Rule
-		expect(numActionsDefinition.value(rule)).toBe('3')
-	})
-})
-
 describe('getRulesByLocation', () => {
 	it('looks up location when one is specified', async () => {
 		locations.get.mockResolvedValueOnce(location1)
@@ -162,42 +154,4 @@ test('chooseRule proxies correctly to selectFromList', async () => {
 
 	expect(getRulesByLocationMock).toHaveBeenCalledTimes(1)
 	expect(getRulesByLocationMock).toHaveBeenCalledWith(client, 'location-id')
-})
-
-describe('buildExecuteResponseTableOutput', () => {
-	const buildTableFromItemMock = jest.fn().mockReturnValue('main info')
-	const buildTableFromListMock = jest.fn().mockReturnValue('actions info')
-	const tableGenerator = {
-		buildTableFromItem: buildTableFromItemMock,
-		buildTableFromList: buildTableFromListMock,
-	} as unknown as TableGenerator
-
-	it('includes actions when present', () => {
-		const executeResponse = {
-			id: 'execute-response-id',
-			actions: [{ actionId: 'action-id' }],
-		} as RuleExecutionResponse
-
-		expect(rulesUtil.buildExecuteResponseTableOutput(tableGenerator, executeResponse))
-			.toBe('main info\n\nActions\nactions info')
-
-		expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
-		expect(buildTableFromItemMock).toHaveBeenCalledWith(executeResponse,
-			['executionId', 'id', 'result'])
-		expect(buildTableFromListMock).toHaveBeenCalledTimes(1)
-		expect(buildTableFromListMock).toHaveBeenCalledWith(executeResponse.actions,
-			expect.arrayContaining(['actionId', { path: 'location.locationId' }]))
-	})
-
-	it('leaves out actions table when there are no actions', () => {
-		const executeResponse = { id: 'execute-response-id' } as RuleExecutionResponse
-
-		expect(rulesUtil.buildExecuteResponseTableOutput(tableGenerator, executeResponse))
-			.toBe('main info')
-
-		expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
-		expect(buildTableFromItemMock).toHaveBeenCalledWith(executeResponse,
-			['executionId', 'id', 'result'])
-		expect(buildTableFromListMock).toHaveBeenCalledTimes(0)
-	})
 })

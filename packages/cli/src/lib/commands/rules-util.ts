@@ -12,10 +12,6 @@ import {
 } from '@smartthings/cli-lib'
 
 
-export const tableFieldDefinitions: TableFieldDefinition<Rule>[] = ['name', 'id',
-	{ label: 'Num Actions', value: rule => rule.actions.length.toString() },
-	'timeZoneId']
-
 export const getRulesByLocation = async (client: SmartThingsClient, locationId?: string): Promise<(Rule & WithNamedLocation)[]> => {
 	let locations: LocationItem[] = []
 	if (locationId) {
@@ -67,21 +63,4 @@ export const chooseRule = async (command: APICommand<typeof APICommand.flags>, p
 		listItems: () => getRulesByLocation(command.client, locationId),
 		promptMessage,
 	})
-}
-
-export const buildExecuteResponseTableOutput = (tableGenerator: TableGenerator, executeResponse: RuleExecutionResponse): string => {
-	const mainInfo = tableGenerator.buildTableFromItem(executeResponse, ['executionId', 'id', 'result'])
-	const calculateResult = (action: ActionExecutionResult): string =>
-		action.if?.result ?? action.location?.result ?? (action.command ? action.command.length.toString() : undefined) ?? action.sleep?.result ?? ''
-	const actionsInfoTableDefinitions: TableFieldDefinition<ActionExecutionResult>[] = [
-		'actionId',
-		{ label: 'Result', value: calculateResult },
-		{ path: 'location.locationId' },
-		{ path: 'command.deviceId' },
-	]
-	const actionsInfo = executeResponse.actions
-		? tableGenerator.buildTableFromList(executeResponse.actions, actionsInfoTableDefinitions)
-		: undefined
-
-	return `${mainInfo}${actionsInfo ? `\n\nActions\n${actionsInfo}` : ''}`
 }
