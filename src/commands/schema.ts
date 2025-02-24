@@ -29,25 +29,25 @@ export type CommandArgs =
 
 const command = 'schema [id-or-index]'
 
-const describe = 'list all ST Schema Apps currently available in a user account'
+const describe = 'list all schema app links currently available in a user account'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	outputItemOrListBuilder(allOrganizationsBuilder(apiOrganizationCommandBuilder(yargs)))
 		.positional(
 			'id-or-index',
-			{ describe: 'the schema connector id or number from list', type: 'string' },
+			{ describe: 'the schema app link id or number from list', type: 'string' },
 		)
 		.option('verbose',
 			{ alias: 'v', describe: 'include ARNs in table output', type: 'boolean', default: false },
 		)
 		.example([
-			['$0 schema', 'list all schema connectors'],
+			['$0 schema', 'list all schema app links'],
 			[
 				'$0 schema 1',
-				'display details for the first schema connector in the list retrieved by running' +
+				'display details for the first schema app link in the list retrieved by running' +
 				' "smartthings schema"'],
 			['$0 schema 5dfd6626-ab1d-42da-bb76-90def3153998', 'display details for a schema' +
-				' connector by id'],
+				' app link by id'],
 			['$0 schema --verbose', 'include ARNs in the output'],
 		])
 		.epilog(apiDocsURL('getAppsByUserToken', 'getAppsByEndpointAppId'))
