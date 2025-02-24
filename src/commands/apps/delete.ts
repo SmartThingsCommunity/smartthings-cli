@@ -13,7 +13,7 @@ export type CommandArgs = APICommandFlags & {
 	id?: string
 }
 
-export const command = 'apps:delete [id]'
+const command = 'apps:delete [id]'
 
 const describe = 'delete an app'
 

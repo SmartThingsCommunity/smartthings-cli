@@ -19,6 +19,7 @@ export type ChooseOptions<T extends object> = {
 	listItems?: ListDataFunction<T>
 	autoChoose?: boolean
 	listFilter?: ListItemPredicate<T>
+	promptMessage?: string
 }
 
 export const chooseOptionsDefaults = <T extends object>(): ChooseOptions<T> => ({
@@ -62,5 +63,6 @@ export const createChooseFn = <T extends object>(
 			preselectedId,
 			autoChoose: opts.autoChoose,
 			listItems: listItemsWrapper,
+			promptMessage: opts.promptMessage,
 		})
 	}
