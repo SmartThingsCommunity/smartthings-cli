@@ -50,6 +50,7 @@ import scenesCommand from './scenes.js'
 import scenesExecuteCommand from './scenes/execute.js'
 import schemaCommand from './schema.js'
 import schemaCreateCommand from './schema/create.js'
+import schemaDeleteCommand from './schema/delete.js'
 import virtualdevicesCommand from './virtualdevices.js'
 
 
@@ -105,5 +106,6 @@ export const commands: CommandModule<object, any>[] = [
 	scenesExecuteCommand,
 	schemaCommand,
 	schemaCreateCommand,
+	schemaDeleteCommand,
 	virtualdevicesCommand,
 ]
