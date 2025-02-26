@@ -136,7 +136,7 @@ export const getSchemaAppCreateFromUser = async (
 
 export const chooseSchemaAppFn = (): ChooseFunction<SchemaApp> => createChooseFn(
 	{
-		itemName: 'schema app',
+		itemName: 'schema app link',
 		primaryKeyName: 'endpointAppId',
 		sortKeyName: 'appName',
 	},

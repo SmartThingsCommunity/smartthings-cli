@@ -375,7 +375,7 @@ test('chooseSchemaAppFn uses correct endpoint to list schema apps', async () => 
 	expect(chooseApp).toBe(chooseAppMock)
 
 	expect(createChooseFnMock).toHaveBeenCalledExactlyOnceWith(
-		expect.objectContaining({ itemName: 'schema app' }),
+		expect.objectContaining({ itemName: 'schema app link' }),
 		expect.any(Function),
 	)
 
