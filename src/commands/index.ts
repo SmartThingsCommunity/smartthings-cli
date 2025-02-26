@@ -48,6 +48,7 @@ import organizationsCommand from './organizations.js'
 import organizationsCurrentCommand from './organizations/current.js'
 import rulesCommand from './rules.js'
 import rulesCreateCommand from './rules/create.js'
+import rulesDeleteCommand from './rules/delete.js'
 import scenesCommand from './scenes.js'
 import scenesExecuteCommand from './scenes/execute.js'
 import schemaCommand from './schema.js'
@@ -105,6 +106,7 @@ export const commands: CommandModule<object, any>[] = [
 	organizationsCurrentCommand,
 	rulesCommand,
 	rulesCreateCommand,
+	rulesDeleteCommand,
 	scenesCommand,
 	scenesExecuteCommand,
 	schemaCommand,
