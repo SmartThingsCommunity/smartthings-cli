@@ -4,7 +4,7 @@ import { Room } from '@smartthings/core-sdk'
 
 import { APICommand, OutputItemOrListConfig, outputItemOrList, withLocation, WithNamedLocation } from '@smartthings/cli-lib'
 
-import { getRoomsByLocation, tableFieldDefinitions, tableFieldDefinitionsWithLocationName } from '../../lib/commands/locations/rooms-util.js'
+import { getRoomsWithLocation, tableFieldDefinitions, tableFieldDefinitionsWithLocationName } from '../../lib/commands/locations/rooms-util.js'
 
 
 export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> {
@@ -41,7 +41,7 @@ export default class RoomsCommand extends APICommand<typeof RoomsCommand.flags> 
 			config.listTableFieldDefinitions = tableFieldDefinitionsWithLocationName
 			config.tableFieldDefinitions = tableFieldDefinitionsWithLocationName
 		}
-		const rooms = await getRoomsByLocation(this.client, this.flags.location)
+		const rooms = await getRoomsWithLocation(this.client, this.flags.location)
 		await outputItemOrList(this, config, this.args.idOrIndex,
 			async () => rooms,
 			async id => {
