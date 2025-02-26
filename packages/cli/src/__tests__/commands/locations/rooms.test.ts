@@ -3,14 +3,14 @@ import { Room, RoomsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 import { outputItemOrList, withLocations, WithNamedLocation } from '@smartthings/cli-lib'
 
 import RoomsCommand from '../../../commands/locations/rooms.js'
-import { getRoomsByLocation } from '../../../lib/commands/locations/rooms-util.js'
+import { getRoomsWithLocation } from '../../../lib/commands/locations/rooms-util.js'
 
 
 jest.mock('../../../lib/commands/locations/rooms-util', () => {
 	const originalLib = jest.requireActual('../../../lib/commands/locations/rooms-util')
 	return {
 		...originalLib,
-		getRoomsByLocation: jest.fn(),
+		getRoomsWithLocation: jest.fn(),
 	}
 })
 
@@ -18,7 +18,7 @@ describe('RoomsCommand', () => {
 	const roomId = 'roomId'
 	const locationId = 'locationId'
 	const mockOutputListing = jest.mocked(outputItemOrList)
-	const mockGetRoomsByLocation = jest.mocked(getRoomsByLocation)
+	const mockGetRoomsByLocation = jest.mocked(getRoomsWithLocation)
 	const getSpy = jest.spyOn(RoomsEndpoint.prototype, 'get').mockImplementation()
 	const mockWithLocations = jest.mocked(withLocations)
 
