@@ -43,14 +43,14 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 		)
 		.positional('driver-version', { describe: 'driver version', type: 'string' })
 		.example([
-			['$0 drivers', 'list all edge drivers you own'],
-			['$0 drivers 699c7308-8c72-4363-9571-880d0f5cc725', 'display details for a driver by id'],
+			['$0 edge:drivers', 'list all edge drivers you own'],
+			['$0 edge:drivers 699c7308-8c72-4363-9571-880d0f5cc725', 'display details for a driver by id'],
 			[
-				'$0 drivers 3',
+				'$0 edge:drivers 3',
 				'display details for the third driver in the list retrieved by running "smartthings drivers"',
 			],
 			[
-				'$0 drivers 699c7308-8c72-4363-9571-880d0f5cc725 2021-10-25T00:48:23.295969',
+				'$0 edge:drivers 699c7308-8c72-4363-9571-880d0f5cc725 2021-10-25T00:48:23.295969',
 				'get information on a specific version of a driver',
 			],
 		])
