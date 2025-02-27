@@ -33,6 +33,7 @@ import devicesCapabilityStatusCommand from './devices/capability-status.js'
 import devicesCommandsCommand from './devices/commands.js'
 import devicesDeleteCommand from './devices/delete.js'
 import devicesPreferencesCommand from './devices/preferences.js'
+import edgeChannelsCommand from './edge/channels.js'
 import edgeDriversCommand from './edge/drivers.js'
 import installedappsCommand from './installedapps.js'
 import installedappsDeleteCommand from './installedapps/delete.js'
@@ -92,6 +93,7 @@ export const commands: CommandModule<object, any>[] = [
 	devicesCommandsCommand,
 	devicesDeleteCommand,
 	devicesPreferencesCommand,
+	edgeChannelsCommand,
 	edgeDriversCommand,
 	installedappsCommand,
 	installedappsDeleteCommand,
