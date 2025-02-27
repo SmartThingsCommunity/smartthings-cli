@@ -3,7 +3,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type DevicePreferenceResponse } from '@smartthings/core-sdk'
 
 import { type APICommandFlags, apiCommand, apiCommandBuilder } from '../../lib/command/api-command.js'
-import { chooseDevice } from '../../lib/command/util/devices-util.js'
+import { chooseDevice } from '../../lib/command/util/devices-choose.js'
 import { type FormatAndWriteItemFlags, formatAndWriteItem, formatAndWriteItemBuilder } from '../../lib/command/format.js'
 import { type TableGenerator } from '../../lib/table-generator.js'
 

@@ -15,11 +15,8 @@ import {
 	type FormatAndWriteItemFlags,
 } from '../../lib/command/format.js'
 import { selectFromList, type SelectFromListConfig } from '../../lib/command/select.js'
-import {
-	chooseComponentFn,
-	chooseDevice,
-	prettyPrintAttribute,
-} from '../../lib/command/util/devices-util.js'
+import { prettyPrintAttribute } from '../../lib/command/util/devices.js'
+import { chooseComponentFn, chooseDevice } from '../../lib/command/util/devices-choose.js'
 import { type TableGenerator } from '../../lib/table-generator.js'
 import { fatalError } from '../../lib/util.js'
 

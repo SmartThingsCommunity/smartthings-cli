@@ -4,7 +4,7 @@ import { Command } from '@smartthings/core-sdk'
 
 import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
 import { inputItem, inputItemBuilder, type InputItemFlags } from '../../lib/command/input-item.js'
-import { chooseDevice } from '../../lib/command/util/devices-util.js'
+import { chooseDevice } from '../../lib/command/util/devices-choose.js'
 import { commandLineInputProcessor, userInputProcessor } from '../../lib/command/input-processor.js'
 import { getInputFromUser, parseDeviceCommand } from '../../lib/command/util/devices-commands.js'
 

@@ -1,12 +1,12 @@
 import { jest } from '@jest/globals'
 
-import { ArgumentsCamelCase, Argv } from 'yargs'
+import type { ArgumentsCamelCase, Argv } from 'yargs'
 
-import { LocationsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
+import type { LocationsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
-import { CommandArgs } from '../../../commands/locations/delete.js'
-import { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
-import { chooseLocation } from '../../../lib/command/util/locations-util.js'
+import type { CommandArgs } from '../../../commands/locations/delete.js'
+import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
+import type { chooseLocation } from '../../../lib/command/util/locations-util.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
@@ -63,12 +63,9 @@ test('handler', async () => {
 
 	await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
 
-	expect(apiCommandMock).toHaveBeenCalledTimes(1)
-	expect(apiCommandMock).toHaveBeenCalledWith(inputArgv)
-	expect(chooseLocationMock).toHaveBeenCalledTimes(1)
-	expect(chooseLocationMock).toHaveBeenCalledWith(command, 'command-line-id')
-	expect(apiLocationsDeleteMock).toHaveBeenCalledTimes(1)
-	expect(apiLocationsDeleteMock).toHaveBeenCalledWith('chosen-location-id')
+	expect(apiCommandMock).toHaveBeenCalledExactlyOnceWith(inputArgv)
+	expect(chooseLocationMock).toHaveBeenCalledExactlyOnceWith(command, 'command-line-id')
+	expect(apiLocationsDeleteMock).toHaveBeenCalledExactlyOnceWith('chosen-location-id')
 
 	expect(consoleLogSpy).toHaveBeenLastCalledWith('Location chosen-location-id deleted.')
 })

@@ -28,7 +28,7 @@ import {
 const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
 const chooseDeviceMock = jest.fn<ChooseFunction<Device>>()
-jest.unstable_mockModule('../../../lib/command/util/devices-util.js', () => ({
+jest.unstable_mockModule('../../../lib/command/util/devices-choose.js', () => ({
 	chooseDevice: chooseDeviceMock,
 }))
 

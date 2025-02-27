@@ -6,7 +6,7 @@ import {
 	apiCommandBuilder,
 	apiDocsURL,
 } from '../../lib/command/api-command.js'
-import { chooseDevice } from '../../lib/command/util/devices-util.js'
+import { chooseDevice } from '../../lib/command/util/devices-choose.js'
 
 
 export type CommandArgs = APICommandFlags & {
