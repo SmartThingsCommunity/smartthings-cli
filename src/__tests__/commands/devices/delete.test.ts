@@ -6,7 +6,7 @@ import type { DevicesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/devices/delete.js'
 import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
-import type { chooseDevice } from '../../../lib/command/util/devices-util.js'
+import type { chooseDevice } from '../../../lib/command/util/devices-choose.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
@@ -14,7 +14,7 @@ import { buildArgvMock } from '../../test-lib/builder-mock.js'
 const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
 
 const chooseDeviceMock = jest.fn<typeof chooseDevice>()
-jest.unstable_mockModule('../../../lib/command/util/devices-util.js', () => ({
+jest.unstable_mockModule('../../../lib/command/util/devices-choose.js', () => ({
 	chooseDevice: chooseDeviceMock,
 }))
 

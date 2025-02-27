@@ -2,7 +2,7 @@ import { type Device, type DeviceHealth } from '@smartthings/core-sdk'
 
 import { type WithNamedRoom } from '../../api-helpers.js'
 import { type TableGenerator } from '../../table-generator.js'
-import { prettyPrintAttribute } from './devices-util.js'
+import { prettyPrintAttribute } from './devices.js'
 
 
 export const buildEmbeddedStatusTableOutput = (tableGenerator: TableGenerator, data: Device): string => {

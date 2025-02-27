@@ -21,10 +21,8 @@ import type {
 import type { BuildOutputFormatterFlags } from '../.././../lib/command/output-builder.js'
 import type { selectFromList } from '../../../lib/command/select.js'
 import type { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
-import {
-	chooseComponentFn,
-	prettyPrintAttribute,
-} from '../../../lib/command/util/devices-util.js'
+import type { prettyPrintAttribute } from '../../../lib/command/util/devices.js'
+import type { chooseComponentFn } from '../../../lib/command/util/devices-choose.js'
 import type { ChooseFunction } from '../../../lib/command/util/util-util.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 import {
@@ -50,15 +48,18 @@ jest.unstable_mockModule('../../../lib/command/select.js', () => ({
 	selectFromList: selectFromListMock,
 }))
 
+const prettyPrintAttributeMock = jest.fn<typeof prettyPrintAttribute>()
+jest.unstable_mockModule('../../../lib/command/util/devices.js', () => ({
+	prettyPrintAttribute: prettyPrintAttributeMock,
+}))
+
 const chooseComponentMock = jest.fn<ChooseFunction<Component>>()
 const chooseComponentFnMock = jest.fn<typeof chooseComponentFn>()
 	.mockReturnValue(chooseComponentMock)
 const chooseDeviceMock = jest.fn<ChooseFunction<Device>>().mockResolvedValue('chosen-device-id')
-const prettyPrintAttributeMock = jest.fn<typeof prettyPrintAttribute>()
-jest.unstable_mockModule('../../../lib/command/util/devices-util.js', () => ({
+jest.unstable_mockModule('../../../lib/command/util/devices-choose.js', () => ({
 	chooseComponentFn: chooseComponentFnMock,
 	chooseDevice: chooseDeviceMock,
-	prettyPrintAttribute: prettyPrintAttributeMock,
 }))
 
 const formatAndWriteItemMock = jest.fn<typeof formatAndWriteItem<CapabilityStatus>>()
