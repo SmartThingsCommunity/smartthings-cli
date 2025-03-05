@@ -53,6 +53,7 @@ export const listMatchingDrivers = async (client: SmartThingsClient, deviceId: s
  */
 export type DriverChoice = Pick<EdgeDriverSummary, 'driverId' | 'name'>
 
+// TODO: When moving this to yargs, deal with duplicate version in hubs-util module.
 export async function chooseDriver(command: APICommand<typeof APICommand.flags>, promptMessage: string, commandLineDriverId?: string,
 		options?: Partial<ChooseOptions<DriverChoice>>): Promise<string> {
 	const opts = {
@@ -99,6 +100,8 @@ export const listHubs = async (command: APICommand<typeof APICommand.flags>): Pr
 	return hubs.filter(hub => hub.locationId && locationIds.has(hub.locationId))
 }
 
+// TODO: when moving to yargs, delete in favor of chooseHub in hubs-choose module rather than converting this
+// (May need to update other chooseHub if this one has functionality it doesn't that is used.)
 export const chooseHub = async (command: APICommand<typeof APICommand.flags>, promptMessage: string,
 		commandLineHubId: string | undefined,
 		options?: Partial<ChooseOptions<Device>>): Promise<string> => {

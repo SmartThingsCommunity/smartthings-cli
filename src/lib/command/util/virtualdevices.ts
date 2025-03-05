@@ -1,22 +1,17 @@
 import inquirer from 'inquirer'
+
 import {
-	CapabilityAttribute,
-	CapabilityReference,
-	Component,
-	Device,
-	DeviceProfile,
-	DeviceProfileCreateRequest,
+	type CapabilityAttribute,
+	type CapabilityReference,
+	type Component,
+	type DeviceProfile,
+	type DeviceProfileCreateRequest,
 } from '@smartthings/core-sdk'
 
-import {
-	APICommand,
-	APIOrganizationCommand,
-	fileInputProcessor,
-	selectFromList,
-	SelectFromListConfig,
-} from '@smartthings/cli-lib'
-
-import { chooseDeviceProfile } from './deviceprofiles-util.js'
+import { type APICommand } from '../api-command.js'
+import { fileInputProcessor } from '../input-processor.js'
+import { selectFromList, type SelectFromListConfig } from '../select.js'
+import { chooseDeviceProfile } from './deviceprofiles-choose.js'
 
 
 export type DevicePrototype = {
@@ -71,7 +66,7 @@ export type DeviceProfileDefinition = {
 	deviceProfile?: DeviceProfileCreateRequest
 }
 
-export async function chooseDeviceName(command: APICommand<typeof APICommand.flags>, preselectedName?: string): Promise<string | undefined> {
+export const chooseDeviceName = async (preselectedName?: string): Promise<string | undefined> => {
 	if (!preselectedName) {
 		preselectedName = (await inquirer.prompt({
 			type: 'input',
@@ -82,7 +77,11 @@ export async function chooseDeviceName(command: APICommand<typeof APICommand.fla
 	return preselectedName
 }
 
-export async function chooseDeviceProfileDefinition(command: APIOrganizationCommand<typeof APIOrganizationCommand.flags>, deviceProfileId?: string, deviceProfileFile?: string): Promise<DeviceProfileDefinition> {
+export const chooseDeviceProfileDefinition = async (
+		command: APICommand,
+		deviceProfileId?: string,
+		deviceProfileFile?: string,
+): Promise<DeviceProfileDefinition> => {
 	let deviceProfile
 
 	if (deviceProfileFile) {
@@ -95,7 +94,7 @@ export async function chooseDeviceProfileDefinition(command: APIOrganizationComm
 	return { deviceProfileId, deviceProfile }
 }
 
-export async function chooseDevicePrototype(command: APICommand<typeof APICommand.flags>, preselectedId?: string): Promise<string> {
+export const chooseDevicePrototype = async (command: APICommand, preselectedId?: string): Promise<string> => {
 	const config: SelectFromListConfig<DevicePrototype> = {
 		itemName: 'device prototype',
 		primaryKeyName: 'id',
@@ -115,7 +114,10 @@ export async function chooseDevicePrototype(command: APICommand<typeof APIComman
 	return prototype
 }
 
-export async function chooseLocallyExecutingDevicePrototype(command: APICommand<typeof APICommand.flags>, preselectedId?: string): Promise<string> {
+export const chooseLocallyExecutingDevicePrototype = async (
+		command: APICommand,
+		preselectedId?: string,
+): Promise<string> => {
 	const config: SelectFromListConfig<DevicePrototype> = {
 		itemName: 'device prototype',
 		primaryKeyName: 'id',
@@ -127,7 +129,7 @@ export async function chooseLocallyExecutingDevicePrototype(command: APICommand<
 	})
 }
 
-export const chooseCapability = async (command: APICommand<typeof APICommand.flags>, component: Component): Promise<CapabilityReference> => {
+export const chooseCapability = async (command: APICommand, component: Component): Promise<CapabilityReference> => {
 	const config: SelectFromListConfig<CapabilityReference> = {
 		itemName: 'capability',
 		pluralItemName: 'capabilities',
@@ -148,7 +150,10 @@ export const chooseCapability = async (command: APICommand<typeof APICommand.fla
 	return capability
 }
 
-export const chooseAttribute = async (command: APICommand<typeof APICommand.flags>, cap: CapabilityReference): Promise<CapabilityAttributeItem> => {
+export const chooseAttribute = async (
+		command: APICommand,
+		cap: CapabilityReference,
+): Promise<CapabilityAttributeItem> => {
 	let attributeName
 	let attribute
 	const config: SelectFromListConfig<CapabilityAttributeItem> = {
@@ -177,7 +182,7 @@ export const chooseAttribute = async (command: APICommand<typeof APICommand.flag
 	return { attributeName, attribute }
 }
 
-export const chooseUnit = async (command: APICommand<typeof APICommand.flags>, attribute: CapabilityAttribute): Promise<string | undefined> => {
+export const chooseUnit = async (command: APICommand, attribute: CapabilityAttribute): Promise<string | undefined> => {
 	let unit
 	const units = attribute.schema.properties.unit?.enum
 	if (units) {
@@ -198,7 +203,11 @@ export const chooseUnit = async (command: APICommand<typeof APICommand.flags>, a
 	return unit
 }
 
-export const chooseValue = async (command: APICommand<typeof APICommand.flags>, attribute: CapabilityAttribute, name: string): Promise<string> => {
+export const chooseValue = async (
+		command: APICommand,
+		attribute: CapabilityAttribute,
+		name: string,
+): Promise<string> => {
 	let value
 	const values = attribute.schema.properties.value.enum
 	if (values) {

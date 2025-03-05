@@ -8,31 +8,9 @@ import { Device, DeviceIntegrationType } from '@smartthings/core-sdk'
 import { DriverChoice, listDrivers } from '@smartthings/plugin-cli-edge/lib/lib/commands/drivers-util'
 
 
-export const chooseHub = async (command: APICommand<typeof APICommand.flags>,
-		promptMessage: string,
-		locationId: string,
-		commandLineHubId: string | undefined,
-		autoChoose?: boolean): Promise<string> => {
-
-	const config: SelectFromListConfig<Device> = {
-		itemName: 'hub',
-		primaryKeyName: 'deviceId',
-		sortKeyName: 'name',
-		listTableFieldDefinitions: ['label', 'name', 'deviceId'],
-	}
-
-	const listItems = (): Promise<Device[]> => {
-		return command.client.devices.list({ type: DeviceIntegrationType.HUB, locationId })
-	}
-
-	const preselectedId = await stringTranslateToId(config, commandLineHubId, listItems)
-
-	return selectFromList(command, config,
-		{ preselectedId, listItems, promptMessage, autoChoose })
-}
-
 export type AllDriverChoice = DriverChoice & { organization: string }
 
+// TODO: When moving this to yargs, deal with duplicate version in drivers-util module.
 // TODO - consider default org?
 export async function chooseDriver(
 		command: APICommand<typeof APICommand.flags>,
