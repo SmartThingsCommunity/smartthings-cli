@@ -23,7 +23,7 @@ export const organizationDef = (
 
 	const choices = organizations
 		.map(organization => ({
-			name: organization.name,
+			name: organization.label ? `${organization.name} (${organization.label})` : organization.name,
 			value: organization.organizationId,
 		}))
 
@@ -37,6 +37,7 @@ export const chooseOrganizationFn = (): ChooseFunction<OrganizationResponse> => 
 		itemName: 'organization',
 		primaryKeyName: 'organizationId',
 		sortKeyName: 'name',
+		listTableFieldDefinitions: ['name', 'label', 'organizationId'],
 	},
 	command => command.client.organizations.list(),
 )
