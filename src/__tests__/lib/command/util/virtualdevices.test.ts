@@ -1,36 +1,60 @@
-import inquirer from 'inquirer'
-import {
-	APICommand,
-	APIOrganizationCommand,
-	fileInputProcessor,
-	selectFromList,
-} from '@smartthings/cli-lib'
-import {
+import { jest } from '@jest/globals'
+
+import type inquirer from 'inquirer'
+
+import { type DeviceProfile, DeviceProfileStatus } from '@smartthings/core-sdk'
+
+import type { APICommand } from '../../../../lib/command/api-command.js'
+import type { fileInputProcessor, InputProcessor } from '../../../../lib/command/input-processor.js'
+import type { selectFromList } from '../../../../lib/command/select.js'
+import type { chooseDeviceProfile } from '../../../../lib/command/util/deviceprofiles-choose.js'
+
+
+const promptMock = jest.fn<typeof inquirer.prompt>()
+jest.unstable_mockModule('inquirer', () => ({
+	default: {
+		prompt: promptMock,
+	},
+}))
+
+const fileInputProcessorMock = jest.fn<typeof fileInputProcessor<DeviceProfile>>()
+jest.unstable_mockModule('../../../../lib/command/input-processor.js', () => ({
+	fileInputProcessor: fileInputProcessorMock,
+}))
+
+const selectFromListMock = jest.fn<typeof selectFromList>()
+jest.unstable_mockModule('../../../../lib/command/select.js', () => ({
+	selectFromList: selectFromListMock,
+}))
+
+const chooseDeviceProfileMock = jest.fn<typeof chooseDeviceProfile>()
+jest.unstable_mockModule('../../../../lib/command/util/deviceprofiles-choose.js', () => ({
+	chooseDeviceProfile: chooseDeviceProfileMock,
+}))
+
+
+const {
 	chooseDeviceName,
 	chooseDeviceProfileDefinition,
 	chooseDevicePrototype,
 	chooseAttribute,
 	chooseCapability,
-	chooseComponent,
 	chooseUnit,
 	chooseValue,
-} from '../../../lib/commands/virtualdevices-util.js'
-import { chooseDeviceProfile } from '../../../lib/commands/deviceprofiles-util.js'
-import { Device, DeviceIntegrationType, DeviceProfile, DeviceProfileStatus } from '@smartthings/core-sdk'
+} = await import('../../../../lib/command/util/virtualdevices.js')
 
 
-jest.mock('../../../lib/commands/deviceprofiles-util')
+const apiCapabilitiesGetMock = jest.fn()
+const client = { capabilities: { get: apiCapabilitiesGetMock } }
+const command = { client } as unknown as APICommand
 
 describe('chooseDeviceName function', () => {
-	const command = {} as unknown as APICommand<typeof APICommand.flags>
-
 	test('choose with from prompt', async () => {
-		const promptSpy = jest.spyOn(inquirer, 'prompt')
-		promptSpy.mockResolvedValue({ deviceName: 'Device Name' })
+		promptMock.mockResolvedValue({ deviceName: 'Device Name' })
 
-		const value = await chooseDeviceName(command)
-		expect(promptSpy).toHaveBeenCalledTimes(1)
-		expect(promptSpy).toHaveBeenCalledWith({
+		const value = await chooseDeviceName()
+		expect(promptMock).toHaveBeenCalledTimes(1)
+		expect(promptMock).toHaveBeenCalledWith({
 			type: 'input', name: 'deviceName',
 			message: 'Device Name:',
 		})
@@ -39,21 +63,17 @@ describe('chooseDeviceName function', () => {
 	})
 
 	test('choose with default', async () => {
-		const promptSpy = jest.spyOn(inquirer, 'prompt')
-		promptSpy.mockResolvedValue({ deviceName: 'Another Device Name' })
+		promptMock.mockResolvedValue({ deviceName: 'Another Device Name' })
 
-		const value = await chooseDeviceName(command, 'Device Name')
-		expect(promptSpy).toHaveBeenCalledTimes(0)
+		const value = await chooseDeviceName('Device Name')
+		expect(promptMock).toHaveBeenCalledTimes(0)
 		expect(value).toBeDefined()
 		expect(value).toBe('Device Name')
 	})
 })
 
 describe('chooseDeviceProfileDefinition function', () => {
-	const chooseDeviceProfileMock = jest.mocked(chooseDeviceProfile)
-	const command = {} as unknown as APIOrganizationCommand<typeof APIOrganizationCommand.flags>
-
-	test('choose profile ID from prompt', async () => {
+	test('choose profile id from prompt', async () => {
 		chooseDeviceProfileMock.mockResolvedValueOnce('device-profile-id')
 
 		const value = await chooseDeviceProfileDefinition(command)
@@ -63,15 +83,15 @@ describe('chooseDeviceProfileDefinition function', () => {
 			undefined,
 			expect.objectContaining({ allowIndex: true }))
 		expect(value).toBeDefined()
-		expect(value).toEqual({ deviceProfileId: 'device-profile-id', deviceProfile: undefined })
+		expect(value).toStrictEqual({ deviceProfileId: 'device-profile-id', deviceProfile: undefined })
 	})
 
-	test('choose profile ID from default', async () => {
+	test('choose profile id from default', async () => {
 		const value = await chooseDeviceProfileDefinition(command, 'device-profile-id')
 
 		expect(chooseDeviceProfileMock).toHaveBeenCalledTimes(0)
 		expect(value).toBeDefined()
-		expect(value).toEqual({ deviceProfileId: 'device-profile-id', deviceProfile: undefined })
+		expect(value).toStrictEqual({ deviceProfileId: 'device-profile-id', deviceProfile: undefined })
 	})
 
 	test('choose definition from file argument', async () => {
@@ -82,21 +102,24 @@ describe('chooseDeviceProfileDefinition function', () => {
 			status: DeviceProfileStatus.PUBLISHED,
 		}
 
-		const fileSpy = jest.spyOn(fileInputProcessor.prototype, 'read').mockResolvedValueOnce(deviceProfile)
+		const readMock = jest.fn<InputProcessor<DeviceProfile>['read']>().mockResolvedValueOnce(deviceProfile)
+		fileInputProcessorMock.mockReturnValueOnce({
+			ioFormat: 'json',
+			hasInput: () => true,
+			read: readMock,
+		})
 
 		const value = await chooseDeviceProfileDefinition(command, undefined, 'device-profile-file')
 
 		expect(chooseDeviceProfileMock).toHaveBeenCalledTimes(0)
-		expect(fileSpy).toHaveBeenCalledTimes(1)
+		expect(fileInputProcessorMock).toHaveBeenCalledExactlyOnceWith('device-profile-file')
+		expect(readMock).toHaveBeenCalledExactlyOnceWith()
 		expect(value).toBeDefined()
-		expect(value).toEqual({ deviceProfileId: undefined, deviceProfile })
+		expect(value).toStrictEqual({ deviceProfileId: undefined, deviceProfile })
 	})
 })
 
 describe('chooseDevicePrototype function', () => {
-	const selectFromListMock = jest.mocked(selectFromList)
-	const command = {} as unknown as APICommand<typeof APICommand.flags>
-
 	test('choose from default list prompt', async () => {
 		selectFromListMock.mockResolvedValueOnce('VIRTUAL_SWITCH')
 
@@ -152,81 +175,9 @@ describe('chooseDevicePrototype function', () => {
 		expect(value).toBe('VIRTUAL_CONTACT_SENSOR')
 	})
 
-	describe('chooseComponent', () => {
-		const command = {} as unknown as APICommand<typeof APICommand.flags>
-		const selectFromListMock = jest.mocked(selectFromList)
-
-		it('returns single component when only one', async () => {
-			selectFromListMock.mockImplementation(async () => 'main')
-			const device: Device = {
-				deviceId: 'device-id',
-				presentationId: 'presentation-id',
-				manufacturerName: 'manufacturer-name',
-				restrictionTier: 1,
-				type: DeviceIntegrationType.VIRTUAL,
-				components: [
-					{
-						id: 'main',
-						capabilities: [],
-						categories: [],
-					},
-				],
-			}
-
-			const component = await chooseComponent(command, device)
-			expect(selectFromListMock).toHaveBeenCalledTimes(1)
-			expect(selectFromListMock).toHaveBeenCalledWith(command,
-				expect.objectContaining({ primaryKeyName: 'id', sortKeyName: 'id' }),
-				expect.objectContaining({ preselectedId: 'main' }))
-			expect(component).toBeDefined()
-			expect(component.id).toBe('main')
-		})
-
-		it('prompts when multiple components', async () => {
-			selectFromListMock.mockImplementation(async () => 'channel1')
-
-			const device: Device = {
-				deviceId: 'device-id',
-				presentationId: 'presentation-id',
-				manufacturerName: 'manufacturer-name',
-				restrictionTier: 1,
-				type: DeviceIntegrationType.VIRTUAL,
-				components: [
-					{
-						id: 'main',
-						capabilities: [],
-						categories: [],
-					},
-					{
-						id: 'channel1',
-						capabilities: [],
-						categories: [],
-					},
-					{
-						id: 'channel2',
-						capabilities: [],
-						categories: [],
-					},
-				],
-			}
-
-			const component = await chooseComponent(command, device)
-			expect(selectFromListMock).toHaveBeenCalledTimes(1)
-
-			expect(selectFromListMock).toHaveBeenCalledWith(command,
-				expect.objectContaining({ primaryKeyName: 'id', sortKeyName: 'id' }),
-				expect.not.objectContaining({ preselectedId: 'main' }))
-			expect(component).toBeDefined()
-			expect(component.id).toBe('channel1')
-		})
-	})
-
 	describe('chooseCapability', () => {
-		const command = {} as unknown as APICommand<typeof APICommand.flags>
-		const selectFromListMock = jest.mocked(selectFromList)
-
 		it('returns single capability when only one', async () => {
-			selectFromListMock.mockImplementation(async () => 'switch')
+			selectFromListMock.mockResolvedValueOnce('switch')
 			const component = {
 				id: 'main',
 				capabilities: [
@@ -248,7 +199,7 @@ describe('chooseDevicePrototype function', () => {
 		})
 
 		it('prompts when multiple capabilities', async () => {
-			selectFromListMock.mockImplementation(async () => 'switchLevel')
+			selectFromListMock.mockResolvedValueOnce('switchLevel')
 
 			const component = {
 				id: 'main',
@@ -276,13 +227,8 @@ describe('chooseDevicePrototype function', () => {
 	})
 
 	describe('chooseAttribute', () => {
-		const selectFromListMock = jest.mocked(selectFromList)
-		const getCapabilityMock = jest.fn()
-		const client = { capabilities: { get: getCapabilityMock } }
-		const command = { client } as unknown as APICommand<typeof APICommand.flags>
-
 		it('returns single attribute when only one', async () => {
-			selectFromListMock.mockImplementation(async () => 'switch')
+			selectFromListMock.mockResolvedValueOnce('switch')
 			const capabilityReference = {
 				id: 'switch',
 				version: 1,
@@ -308,7 +254,7 @@ describe('chooseDevicePrototype function', () => {
 					},
 				},
 			}
-			getCapabilityMock.mockImplementation(async () => capabilityDefinition)
+			apiCapabilitiesGetMock.mockImplementation(async () => capabilityDefinition)
 
 			const attribute = await chooseAttribute(command, capabilityReference)
 			expect(selectFromListMock).toHaveBeenCalledTimes(1)
@@ -321,11 +267,8 @@ describe('chooseDevicePrototype function', () => {
 	})
 
 	describe('chooseValue', () => {
-		const selectFromListMock = jest.mocked(selectFromList)
-		const command = {} as unknown as APICommand<typeof APICommand.flags>
-
 		test('enum value', async () => {
-			selectFromListMock.mockImplementation(async () => 'on')
+			selectFromListMock.mockResolvedValueOnce('on')
 			const attribute = {
 				schema: {
 					type: 'object',
@@ -353,8 +296,7 @@ describe('chooseDevicePrototype function', () => {
 		})
 
 		test('numeric value', async () => {
-			const promptSpy = jest.spyOn(inquirer, 'prompt')
-			promptSpy.mockResolvedValue({ value: '72' })
+			promptMock.mockResolvedValue({ value: '72' })
 			const attribute = {
 				schema: {
 					type: 'object',
@@ -379,8 +321,8 @@ describe('chooseDevicePrototype function', () => {
 
 			const value = await chooseValue(command, attribute, 'temperature')
 			expect(selectFromListMock).toHaveBeenCalledTimes(0)
-			expect(promptSpy).toHaveBeenCalledTimes(1)
-			expect(promptSpy).toHaveBeenCalledWith({
+			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(promptMock).toHaveBeenCalledWith({
 				type: 'input', name: 'value',
 				message: 'Enter \'temperature\' attribute value:',
 			})
@@ -390,11 +332,8 @@ describe('chooseDevicePrototype function', () => {
 	})
 
 	describe('chooseUnit', () => {
-		const selectFromListMock = jest.mocked(selectFromList)
-		const command = {} as unknown as APICommand<typeof APICommand.flags>
-
 		it('prompts when multiple units', async () => {
-			selectFromListMock.mockImplementation(async () => 'F')
+			selectFromListMock.mockResolvedValueOnce('F')
 			const attribute = {
 				schema: {
 					type: 'object',
@@ -427,7 +366,7 @@ describe('chooseDevicePrototype function', () => {
 		})
 
 		it('does not prompt when only one unit', async () => {
-			selectFromListMock.mockImplementation(async () => 'ppm')
+			selectFromListMock.mockResolvedValueOnce('ppm')
 			const attribute = {
 				schema: {
 					type: 'object',
