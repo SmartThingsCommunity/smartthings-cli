@@ -99,7 +99,7 @@ export const organizationDef = (organizations: OrganizationResponse[]): InputDef
 
 	const choices = organizations
 		.map(organization => ({
-			name: organization.name,
+			name: organization.label ? `${organization.name} (${organization.label})` : organization.name,
 			value: organization.organizationId,
 		}))
 
