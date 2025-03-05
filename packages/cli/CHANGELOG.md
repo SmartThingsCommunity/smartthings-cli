@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.10.3
+
+### Patch Changes
+
+- [#699](https://github.com/SmartThingsCommunity/smartthings-cli/pull/699) [`a471d47`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a471d471d1ecd7e95f2ed0869685764c1e2775ff) Thanks [@rossiam](https://github.com/rossiam)! - include label as well as name when prompting user for an organization
+
 ## 1.10.2
 
 ### Patch Changes
