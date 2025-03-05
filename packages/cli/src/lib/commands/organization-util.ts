@@ -20,6 +20,7 @@ export const chooseOrganization = async (
 		itemName: 'organization',
 		primaryKeyName: 'organizationId',
 		sortKeyName: 'name',
+		listTableFieldDefinitions: ['name', 'label', 'organizationId'],
 	}
 	const listItems = (): Promise<OrganizationResponse[]> => command.client.organizations.list()
 	const preselectedId = opts.allowIndex
