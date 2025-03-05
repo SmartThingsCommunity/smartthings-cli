@@ -56,6 +56,7 @@ import schemaCommand from './schema.js'
 import schemaCreateCommand from './schema/create.js'
 import schemaDeleteCommand from './schema/delete.js'
 import virtualdevicesCommand from './virtualdevices.js'
+import virtualdevicesCreateStandardCommand from './virtualdevices/create-standard.js'
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -116,4 +117,5 @@ export const commands: CommandModule<object, any>[] = [
 	schemaCreateCommand,
 	schemaDeleteCommand,
 	virtualdevicesCommand,
+	virtualdevicesCreateStandardCommand,
 ]

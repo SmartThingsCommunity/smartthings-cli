@@ -1,4 +1,4 @@
-import { Room } from '@smartthings/core-sdk'
+import { type Room } from '@smartthings/core-sdk'
 
 import { type WithNamedLocation } from '../../api-helpers.js'
 import { fatalError } from '../../util.js'

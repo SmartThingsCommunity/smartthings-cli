@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import inquirer from 'inquirer'
+import type inquirer from 'inquirer'
 
 import type { ValidateFunction } from '../../lib/user-query.js'
 import type { DefaultValueFunction } from '../../lib/item-input/defs.js'

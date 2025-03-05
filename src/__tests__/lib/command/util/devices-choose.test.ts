@@ -7,6 +7,7 @@ import type {
 	DevicesEndpoint,
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
+
 import { APICommand } from '../../../../lib/command/api-command.js'
 import type { stringTranslateToId } from '../../../../lib/command/command-util.js'
 import { TableCommonListOutputProducer } from '../../../../lib/command/format.js'
