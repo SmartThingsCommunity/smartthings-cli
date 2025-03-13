@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.3.1
+
+### Patch Changes
+
+- [#702](https://github.com/SmartThingsCommunity/smartthings-cli/pull/702) [`b2392f7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b2392f7b77b868c4dce462c5439ae3c3540c3050) Thanks [@rossiam](https://github.com/rossiam)! - fixed bug where prompts for optional integers were treating 0 as if no value was entered
+
+- [#703](https://github.com/SmartThingsCommunity/smartthings-cli/pull/703) [`44ffaa8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/44ffaa8b6e32142940b9c45497d249ba85073bfd) Thanks [@rossiam](https://github.com/rossiam)! - update to Node 22; update core SDK and axios dependencies
+
 ## 2.3.0
 
 ### Minor Changes
