@@ -11,8 +11,7 @@
 	"main": "dist/index",
 	"types": "dist/index",
 	"engines": {
-		"node": ">=18.5.0 <19",
-		"npm": ">=9.5"
+		"node": ">=22"
 	},
 	"files": [
 		"dist",
@@ -30,9 +29,9 @@
 	"dependencies": {
 		"@log4js-node/log4js-api": "^1.0.2",
 		"@oclif/core": "^1.16.3",
-		"@smartthings/core-sdk": "^8.3.1",
+		"@smartthings/core-sdk": "^8.4.1",
 		"@types/eventsource": "^1.1.9",
-		"axios": "^0.28.0",
+		"axios": "^1.8.3",
 		"chalk": "^4.1.2",
 		"eventsource": "^2.0.2",
 		"express": "^4.20.0",
@@ -51,7 +50,7 @@
 		"@types/jest": "^28.1.5",
 		"@types/js-yaml": "^4.0.5",
 		"@types/lodash.at": "^4.6.7",
-		"@types/node": "^18.15.11",
+		"@types/node": "^22.13.10",
 		"@types/qs": "^6.9.8",
 		"@typescript-eslint/eslint-plugin": "^5.30.6",
 		"@typescript-eslint/parser": "^5.30.6",
