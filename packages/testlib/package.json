@@ -11,8 +11,7 @@
 	"main": "dist/index",
 	"types": "dist/index",
 	"engines": {
-		"node": ">=18.5.0 <19",
-		"npm": ">=9.5"
+		"node": ">=22"
 	},
 	"files": [
 		"dist",
@@ -29,12 +28,12 @@
 	},
 	"dependencies": {
 		"@smartthings/cli-lib": "^2.3.0",
-		"@smartthings/core-sdk": "^8.3.1"
+		"@smartthings/core-sdk": "^8.4.1"
 	},
 	"devDependencies": {
 		"@types/jest": "^28.1.5",
 		"@types/js-yaml": "^4.0.5",
-		"@types/node": "^18.15.11",
+		"@types/node": "^22.13.10",
 		"@typescript-eslint/eslint-plugin": "^5.30.6",
 		"@typescript-eslint/parser": "^5.30.6",
 		"eslint": "^8.19.0",
