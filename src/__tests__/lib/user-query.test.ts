@@ -233,6 +233,14 @@ describe('askForOptionalInteger', () => {
 		expect(promptMock).toHaveBeenCalledTimes(1)
 	})
 
+	it('returns "0" entered as 0', async () => {
+		promptMock.mockResolvedValue({ value: '0' })
+
+		expect(await askForOptionalInteger('prompt message')).toBe(0)
+
+		expect(promptMock).toHaveBeenCalledTimes(1)
+	})
+
 	it('passes validate to inquirer', async () => {
 		promptMock.mockResolvedValue({ value: '' })
 

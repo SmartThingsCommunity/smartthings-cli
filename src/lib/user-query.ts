@@ -139,7 +139,7 @@ export const askForOptionalInteger = async (message: string, options?: AskForInt
 		...options,
 		validate: options?.validate ? allowEmptyFn(options.validate) : undefined,
 	}
-	return await promptForInteger(message, updatedOptions) || undefined
+	return await promptForInteger(message, updatedOptions)
 }
 
 /**
