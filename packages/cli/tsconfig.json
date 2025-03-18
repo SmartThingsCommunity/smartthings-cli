@@ -13,10 +13,6 @@
 		{
 			"path": "../testlib",
 			"name": "@smartthings/cli-testlib"
-		},
-		{
-			"path": "../edge",
-			"name": "@smartthings/plugin-cli-edge"
 		}
 	],
 	"exclude": [

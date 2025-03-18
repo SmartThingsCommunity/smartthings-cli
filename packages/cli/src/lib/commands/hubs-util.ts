@@ -4,8 +4,10 @@ import {
 	SelectFromListConfig,
 	stringTranslateToId,
 } from '@smartthings/cli-lib'
+
 import { Device, DeviceIntegrationType } from '@smartthings/core-sdk'
-import { DriverChoice, listDrivers } from '@smartthings/plugin-cli-edge/lib/lib/commands/drivers-util'
+
+import { DriverChoice, listDrivers } from './drivers-util'
 
 
 export const chooseHub = async (command: APICommand<typeof APICommand.flags>,

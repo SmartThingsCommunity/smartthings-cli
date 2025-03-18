@@ -1,3 +1,5 @@
+import log4js from '@log4js-node/log4js-api'
+import { CliUx } from '@oclif/core'
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios'
 import { createHash, randomBytes, BinaryLike } from 'crypto'
 import express from 'express'
@@ -6,9 +8,8 @@ import getPort from 'get-port'
 import open from 'open'
 import path from 'path'
 import qs from 'qs'
+
 import { SmartThingsURLProvider, defaultSmartThingsURLProvider, Authenticator, HttpClientHeaders } from '@smartthings/core-sdk'
-import log4js from '@log4js-node/log4js-api'
-import { CliUx } from '@oclif/core'
 
 
 export type ClientIdProvider = SmartThingsURLProvider & {
@@ -195,7 +196,7 @@ export class LoginAuthenticator implements Authenticator {
 					this.updateTokenFromResponse(response)
 					res.send('<html><body><h1>You can close the window.</h1></body></html>')
 				})
-				.catch(error => {
+				.catch((error: AxiosError) => {
 					this.logger.error('error obtaining token:', error.message)
 					if (error.isAxiosError) {
 						const axiosError = error as AxiosError
@@ -268,7 +269,7 @@ export class LoginAuthenticator implements Authenticator {
 			.then((response: AxiosResponse<any>) => {
 				this.updateTokenFromResponse(response)
 			})
-			.catch(error => {
+			.catch((error: AxiosError) => {
 				this.logger.error('error trying to refresh token:', error.message)
 				if (error.isAxiosError) {
 					const axiosError = error as AxiosError

@@ -19,12 +19,11 @@
 		"package": "npm run package -w packages/cli",
 		"version": "changeset version && npm i --package-lock-only && npm run build && npm run version -w packages/cli",
 		"release": "npm run build && changeset publish",
-		"readme": "npm run readme -w packages/edge && npm run readme -w packages/cli"
+		"readme": "npm run readme -w packages/cli"
 	},
 	"workspaces": [
 		"packages/lib",
 		"packages/testlib",
-		"packages/edge",
 		"packages/cli"
 	],
 	"devDependencies": {
