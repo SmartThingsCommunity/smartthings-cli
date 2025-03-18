@@ -1,5 +1,14 @@
 # Change Log
 
+## 2.0.8
+
+### Patch Changes
+
+- [#703](https://github.com/SmartThingsCommunity/smartthings-cli/pull/703) [`44ffaa8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/44ffaa8b6e32142940b9c45497d249ba85073bfd) Thanks [@rossiam](https://github.com/rossiam)! - update to Node 22; update core SDK and axios dependencies
+
+- Updated dependencies [[`b2392f7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b2392f7b77b868c4dce462c5439ae3c3540c3050), [`44ffaa8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/44ffaa8b6e32142940b9c45497d249ba85073bfd)]:
+  - @smartthings/cli-lib@2.3.1
+
 ## 2.0.7
 
 ### Patch Changes

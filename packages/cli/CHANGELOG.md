@@ -1,5 +1,18 @@
 # Change Log
 
+## 1.10.3
+
+### Patch Changes
+
+- [#699](https://github.com/SmartThingsCommunity/smartthings-cli/pull/699) [`a471d47`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/a471d471d1ecd7e95f2ed0869685764c1e2775ff) Thanks [@rossiam](https://github.com/rossiam)! - include label as well as name when prompting user for an organization
+
+- [#702](https://github.com/SmartThingsCommunity/smartthings-cli/pull/702) [`b2392f7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b2392f7b77b868c4dce462c5439ae3c3540c3050) Thanks [@rossiam](https://github.com/rossiam)! - fixed bug where prompts for optional integers were treating 0 as if no value was entered
+
+- [#703](https://github.com/SmartThingsCommunity/smartthings-cli/pull/703) [`44ffaa8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/44ffaa8b6e32142940b9c45497d249ba85073bfd) Thanks [@rossiam](https://github.com/rossiam)! - update to Node 22; update core SDK and axios dependencies
+
+- Updated dependencies [[`b2392f7`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b2392f7b77b868c4dce462c5439ae3c3540c3050), [`44ffaa8`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/44ffaa8b6e32142940b9c45497d249ba85073bfd)]:
+  - @smartthings/cli-lib@2.3.1
+
 ## 1.10.2
 
 ### Patch Changes
