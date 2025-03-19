@@ -1,9 +1,15 @@
 import inquirer from 'inquirer'
-import { Errors, Flags } from '@oclif/core'
 
-import { DeviceActivity, DeviceHistoryRequest, PaginatedList, SmartThingsClient } from '@smartthings/core-sdk'
+import {
+	type DeviceActivity,
+	type DeviceHistoryRequest,
+	type PaginatedList,
+	type SmartThingsClient,
+} from '@smartthings/core-sdk'
 
-import { SmartThingsCommandInterface, Table } from '@smartthings/cli-lib'
+import { type Table } from '../../table-generator.js'
+import { cancelCommand } from '../../util.js'
+import { type SmartThingsCommand } from '../smartthings-command.js'
 
 
 // The history endpoints will only return 300 items maximum per request, no matter what the limit is set to.
@@ -16,26 +22,6 @@ export type DeviceActivityOptions = {
 	utcTimeFormat?: boolean
 }
 
-export const historyFlags = {
-	after: Flags.string({
-		char: 'A',
-		description: 'return events newer than or equal to this timestamp, expressed as an epoch time in milliseconds or an ISO time string',
-	}),
-	before: Flags.string({
-		char: 'B',
-		description: 'return events older than than this timestamp, expressed as an epoch time in milliseconds or an ISO time string',
-	}),
-	limit: Flags.integer({
-		char: 'L',
-		description: 'maximum number of events to return',
-		default: 20,
-	}),
-	utc: Flags.boolean({
-		char: 'U',
-		description: 'display times in UTC time zone. Defaults to local time',
-	}),
-}
-
 export const toEpochTime = (date?: string): number | undefined =>
 	date ? (date.match(/^\d+$/) ? Number(date) : new Date(date).getTime()) : undefined
 
@@ -44,7 +30,8 @@ export const sortEvents = (list: DeviceActivity[]): DeviceActivity[] => list.sor
 export const getNextDeviceEvents = (
 		table: Table,
 		items: DeviceActivity[],
-		options: Partial<DeviceActivityOptions>): void => {
+		options: Partial<DeviceActivityOptions>,
+): void => {
 	for (const item of items) {
 		const date = new Date(item.time)
 		const value = JSON.stringify(item.value)
@@ -63,9 +50,10 @@ export const getNextDeviceEvents = (
 }
 
 export const writeDeviceEventsTable = async (
-		command: SmartThingsCommandInterface,
+		command: SmartThingsCommand,
 		data:  PaginatedList<DeviceActivity>,
-		options?: Partial<DeviceActivityOptions>): Promise<void> => {
+		options?: Partial<DeviceActivityOptions>,
+): Promise<void> => {
 	const opts = { includeName: false, utcTimeFormat: false, ...options }
 	const head = options && options.includeName ?
 		['Time', 'Device Name', 'Component', 'Capability', 'Attribute', 'Value'] :
@@ -98,11 +86,14 @@ export const writeDeviceEventsTable = async (
 	}
 }
 
-export const calculateRequestLimit = (limit: number): number =>
-	limit > maxItemsPerRequest ? maxItemsPerRequest : limit
+export const calculateRequestLimit = (limit: number): number => limit > maxItemsPerRequest ? maxItemsPerRequest : limit
 
-export const getHistory = async (client: SmartThingsClient, limit: number, perRequestLimit: number,
-		params: DeviceHistoryRequest): Promise<DeviceActivity[]> => {
+export const getHistory = async (
+		client: SmartThingsClient,
+		limit: number,
+		perRequestLimit: number,
+		params: DeviceHistoryRequest,
+): Promise<DeviceActivity[]> => {
 	// if limit is > ${maxHistoryItemsPerRequest} we need a loop;
 	// warn user if more than some number of requests will be made
 	if (limit > perRequestLimit) {
@@ -117,13 +108,16 @@ export const getHistory = async (client: SmartThingsClient, limit: number, perRe
 				choices: [
 					{ name: 'Yes, I understand this might take a long time and/or hit API rate limits.', value: 'yes' },
 					{ name: 'No, cancel the request.', value: 'cancel' },
-					{ name: `Continue but limit results to ${maxItemsPerRequest * maxRequestsBeforeWarning}`, value: 'reduce' },
+					{
+						name: `Continue but limit results to ${maxItemsPerRequest * maxRequestsBeforeWarning}`,
+						value: 'reduce',
+					},
 				],
 			})).answer as string
 			if (answer === 'reduce') {
 				limit = maxRequestsBeforeWarning * maxItemsPerRequest
 			} else if (answer === 'cancel') {
-				throw new Errors.CLIError('user canceled request')
+				return cancelCommand('user canceled request')
 			}
 		}
 	}
