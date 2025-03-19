@@ -1,10 +1,34 @@
-import inquirer from 'inquirer'
+import { jest } from '@jest/globals'
 
-import { DeviceActivity, HistoryEndpoint, PaginatedList, SmartThingsClient } from '@smartthings/core-sdk'
+import type inquirer from 'inquirer'
 
-import { SmartThingsCommandInterface, Table, TableGenerator } from '@smartthings/cli-lib'
+import type { DeviceActivity, HistoryEndpoint, PaginatedList, SmartThingsClient } from '@smartthings/core-sdk'
 
+import type { cancelCommand } from '../../../../lib/util.js'
+import type { SmartThingsCommand } from '../../../../lib/command/smartthings-command.js'
 import {
+	newOutputTableMock,
+	tableGeneratorMock,
+	tableMock,
+	tablePushMock,
+	tableToStringMock,
+} from '../../../test-lib/table-mock.js'
+
+
+const promptMock = jest.fn<typeof inquirer.prompt>()
+jest.unstable_mockModule('inquirer', () => ({
+	default: {
+		prompt: promptMock,
+	},
+}))
+
+const cancelCommandMock = jest.fn<typeof cancelCommand>().mockImplementation(() => { throw Error('command canceled') })
+jest.unstable_mockModule('../../../../lib/util.js', () => ({
+	cancelCommand: cancelCommandMock,
+}))
+
+
+const {
 	toEpochTime,
 	sortEvents,
 	getNextDeviceEvents,
@@ -13,10 +37,8 @@ import {
 	getHistory,
 	maxItemsPerRequest,
 	maxRequestsBeforeWarning,
-} from '../../../lib/commands/history-util.js'
+} = await import('../../../../lib/command/util/history.js')
 
-
-jest.mock('inquirer')
 
 describe('toEpochTime', () => {
 	it ('handles ISO input', () => {
@@ -60,13 +82,6 @@ describe('sortEvents', () => {
 })
 
 describe('getNextDeviceEvents', () => {
-	const tablePushMock: jest.Mock<number, [(string | undefined)[]]> = jest.fn()
-	const tableToStringMock = jest.fn()
-	const tableMock = {
-		push: tablePushMock,
-		toString: tableToStringMock,
-	} as unknown as Table
-
 	it('outputs local time and string values', () => {
 		const time = new Date()
 		const items = [
@@ -127,26 +142,11 @@ describe('getNextDeviceEvents', () => {
 })
 
 describe('writeDeviceEventsTable', () => {
-	const promptSpy = jest.spyOn(inquirer, 'prompt')
-	const stdOutSpy = jest.spyOn(process.stdout, 'write')
-	const tablePushMock: jest.Mock<number, [(string | undefined)[]]> = jest.fn()
-	const tableToStringMock = jest.fn().mockReturnValue('table')
-	const tableMock = {
-		push: tablePushMock,
-		toString: tableToStringMock,
-	} as unknown as Table
+	const stdoutWriteSpy = jest.spyOn(process.stdout, 'write')
 
-	const newOutputTableMock = jest.fn().mockReturnValue(tableMock)
-
-	const tableGeneratorMock: TableGenerator = {
-		newOutputTable: newOutputTableMock,
-		buildTableFromItem: jest.fn(),
-		buildTableFromList: jest.fn(),
-	} as TableGenerator
-
-	const commandMock = {
+	const command = {
 		tableGenerator: tableGeneratorMock,
-	} as SmartThingsCommandInterface
+	} as SmartThingsCommand
 
 	const items = [
 		{ time: new Date(), deviceName: 'Thermometer', component: 'main', capability: 'temperature', attribute: 'temp', value: 72, unit: 'F' },
@@ -163,7 +163,7 @@ describe('writeDeviceEventsTable', () => {
 	it('omits the device name by default', async () => {
 		hasNext.mockReturnValue(false)
 
-		await writeDeviceEventsTable(commandMock, dataMock)
+		await writeDeviceEventsTable(command, dataMock)
 
 		expect(newOutputTableMock).toHaveBeenCalledTimes(1)
 		expect(newOutputTableMock).toHaveBeenCalledWith({
@@ -171,13 +171,13 @@ describe('writeDeviceEventsTable', () => {
 			head: ['Time', 'Component', 'Capability', 'Attribute', 'Value'],
 		})
 		expect(tablePushMock).toHaveBeenCalledTimes(1)
-		expect(stdOutSpy).toHaveBeenCalledTimes(1)
+		expect(stdoutWriteSpy).toHaveBeenCalledTimes(1)
 	})
 
 	it('includes the device name when specified', async () => {
 		hasNext.mockReturnValue(false)
 
-		await writeDeviceEventsTable(commandMock, dataMock, { includeName: true })
+		await writeDeviceEventsTable(command, dataMock, { includeName: true })
 
 		expect(newOutputTableMock).toHaveBeenCalledTimes(1)
 		expect(newOutputTableMock).toHaveBeenCalledWith({
@@ -185,33 +185,33 @@ describe('writeDeviceEventsTable', () => {
 			head: ['Time', 'Device Name', 'Component', 'Capability', 'Attribute', 'Value'],
 		})
 		expect(tablePushMock).toHaveBeenCalledTimes(1)
-		expect(stdOutSpy).toHaveBeenCalledTimes(1)
+		expect(stdoutWriteSpy).toHaveBeenCalledTimes(1)
 	})
 
 	it('returns next page when prompted until no more', async () => {
 		hasNext.mockReturnValueOnce(true)
 		hasNext.mockReturnValueOnce(true)
 		hasNext.mockReturnValueOnce(false)
-		promptSpy.mockResolvedValueOnce({ more: true })
-		promptSpy.mockResolvedValueOnce({ more: true })
+		promptMock.mockResolvedValueOnce({ more: true })
+		promptMock.mockResolvedValueOnce({ more: true })
 
-		await writeDeviceEventsTable(commandMock, dataMock)
+		await writeDeviceEventsTable(command, dataMock)
 
 		expect(newOutputTableMock).toHaveBeenCalledTimes(3)
 		expect(tablePushMock).toHaveBeenCalledTimes(3)
-		expect(stdOutSpy).toHaveBeenCalledTimes(3)
+		expect(stdoutWriteSpy).toHaveBeenCalledTimes(3)
 	})
 
 	it('returns next page until canceled', async () => {
 		hasNext.mockReturnValue(true)
-		promptSpy.mockResolvedValueOnce({ more: true })
-		promptSpy.mockResolvedValueOnce({ more: false })
+		promptMock.mockResolvedValueOnce({ more: true })
+		promptMock.mockResolvedValueOnce({ more: false })
 
-		await writeDeviceEventsTable(commandMock, dataMock)
+		await writeDeviceEventsTable(command, dataMock)
 
 		expect(newOutputTableMock).toHaveBeenCalledTimes(2)
 		expect(tablePushMock).toHaveBeenCalledTimes(2)
-		expect(stdOutSpy).toHaveBeenCalledTimes(2)
+		expect(stdoutWriteSpy).toHaveBeenCalledTimes(2)
 	})
 })
 
@@ -225,12 +225,11 @@ describe('calculateHistoryRequestLimit', () => {
 })
 
 describe('getHistory', () => {
-	const historyDevicesMock = jest.fn()
-	const history = { devices: historyDevicesMock } as unknown as HistoryEndpoint
-	const client = { history } as SmartThingsClient
+	const apiHistoryDevicesMock = jest.fn<typeof HistoryEndpoint.prototype.devices>()
+	const client = { history: { devices: apiHistoryDevicesMock } } as unknown as SmartThingsClient
 
-	const hasNextMock = jest.fn().mockReturnValue(false)
-	const nextMock = jest.fn().mockImplementation()
+	const hasNextMock = jest.fn<PaginatedList<DeviceActivity>['hasNext']>().mockReturnValue(false)
+	const nextMock = jest.fn<PaginatedList<DeviceActivity>['next']>()
 
 	const params = { locationId: 'location-id', deviceId: 'device-id' }
 	const items: DeviceActivity[] = []
@@ -242,8 +241,6 @@ describe('getHistory', () => {
 		} as DeviceActivity)
 	}
 
-	const promptMock = jest.mocked(inquirer.prompt)
-
 	// Since the core SDK mutates this object via the `.next` call, each test needs its own instance.
 	const makeHistoryResponse = (items: DeviceActivity[]): PaginatedList<DeviceActivity> => ({
 		items,
@@ -253,12 +250,12 @@ describe('getHistory', () => {
 
 	it('uses single request when one is enough', async () => {
 		const returnedItems = items.slice(0, 2)
-		historyDevicesMock.mockResolvedValueOnce(makeHistoryResponse(returnedItems))
+		apiHistoryDevicesMock.mockResolvedValueOnce(makeHistoryResponse(returnedItems))
 
 		expect(await getHistory(client, 20, 20, params)).toStrictEqual(returnedItems)
 
-		expect(historyDevicesMock).toHaveBeenCalledTimes(1)
-		expect(historyDevicesMock).toHaveBeenCalledWith(params)
+		expect(apiHistoryDevicesMock).toHaveBeenCalledTimes(1)
+		expect(apiHistoryDevicesMock).toHaveBeenCalledWith(params)
 		expect(hasNextMock).toHaveBeenCalledTimes(1)
 		expect(nextMock).toHaveBeenCalledTimes(0)
 		expect(promptMock).toHaveBeenCalledTimes(0)
@@ -269,14 +266,17 @@ describe('getHistory', () => {
 		const secondItemSet = items.slice(2, 4)
 		const allItems = items.slice(0, 4)
 		const historyResponse = makeHistoryResponse(firstItemSet)
-		historyDevicesMock.mockResolvedValueOnce(historyResponse)
+		apiHistoryDevicesMock.mockResolvedValueOnce(historyResponse)
 		hasNextMock.mockReturnValueOnce(true)
-		nextMock.mockImplementationOnce(async () => historyResponse.items = secondItemSet)
+		nextMock.mockImplementationOnce(async () => {
+			historyResponse.items = secondItemSet
+			return false
+		})
 
 		expect(await getHistory(client, 20, 20, params)).toStrictEqual(allItems)
 
-		expect(historyDevicesMock).toHaveBeenCalledTimes(1)
-		expect(historyDevicesMock).toHaveBeenCalledWith(params)
+		expect(apiHistoryDevicesMock).toHaveBeenCalledTimes(1)
+		expect(apiHistoryDevicesMock).toHaveBeenCalledWith(params)
 		expect(hasNextMock).toHaveBeenCalledTimes(2)
 		expect(nextMock).toHaveBeenCalledTimes(1)
 		expect(promptMock).toHaveBeenCalledTimes(0)
@@ -285,11 +285,13 @@ describe('getHistory', () => {
 	it('abandons large query when requested to do so', async () => {
 		promptMock.mockResolvedValueOnce({ answer: 'cancel' })
 
-		await expect(getHistory(client, maxItemsPerRequest * maxRequestsBeforeWarning + 1, maxItemsPerRequest,
-			params)).rejects.toThrow()
+		await expect(
+			getHistory(client, maxItemsPerRequest * maxRequestsBeforeWarning + 1, maxItemsPerRequest, params),
+		).rejects.toThrow('command canceled')
 
 		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(historyDevicesMock).toHaveBeenCalledTimes(0)
+		expect(cancelCommandMock).toHaveBeenCalledExactlyOnceWith('user canceled request')
+		expect(apiHistoryDevicesMock).toHaveBeenCalledTimes(0)
 		expect(hasNextMock).toHaveBeenCalledTimes(0)
 		expect(nextMock).toHaveBeenCalledTimes(0)
 	})
@@ -298,12 +300,13 @@ describe('getHistory', () => {
 		promptMock.mockResolvedValueOnce({ answer: 'reduce' })
 		const firstItemSet = items.slice(0, maxItemsPerRequest)
 		const historyResponse = makeHistoryResponse(firstItemSet)
-		historyDevicesMock.mockResolvedValueOnce(historyResponse)
+		apiHistoryDevicesMock.mockResolvedValueOnce(historyResponse)
 		hasNextMock.mockReturnValue(true)
 		let nextStart = 300
 		nextMock.mockImplementation(async () => {
 			historyResponse.items = items.slice(nextStart, nextStart + maxItemsPerRequest)
 			nextStart += maxItemsPerRequest
+			return false
 		})
 
 		const result = await getHistory(client, maxItemsPerRequest * maxRequestsBeforeWarning + 1,
@@ -311,8 +314,8 @@ describe('getHistory', () => {
 		expect(result).toStrictEqual(items.slice(0, maxRequestsBeforeWarning * maxItemsPerRequest))
 
 		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(historyDevicesMock).toHaveBeenCalledTimes(1)
-		expect(historyDevicesMock).toHaveBeenCalledWith(params)
+		expect(apiHistoryDevicesMock).toHaveBeenCalledTimes(1)
+		expect(apiHistoryDevicesMock).toHaveBeenCalledWith(params)
 		expect(hasNextMock).toHaveBeenCalledTimes(5)
 		expect(nextMock).toHaveBeenCalledTimes(5)
 	})
@@ -321,20 +324,21 @@ describe('getHistory', () => {
 		promptMock.mockResolvedValueOnce({ answer: 'yes' })
 		const firstItemSet = items.slice(0, maxItemsPerRequest)
 		const historyResponse = makeHistoryResponse(firstItemSet)
-		historyDevicesMock.mockResolvedValueOnce(historyResponse)
+		apiHistoryDevicesMock.mockResolvedValueOnce(historyResponse)
 		hasNextMock.mockReturnValue(true)
 		let nextStart = 300
 		nextMock.mockImplementation(async () => {
 			historyResponse.items = items.slice(nextStart, nextStart + maxItemsPerRequest)
 			nextStart += maxItemsPerRequest
+			return false
 		})
 
 		const result = await getHistory(client, items.length, maxItemsPerRequest, params)
 		expect(result).toStrictEqual(items)
 
 		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(historyDevicesMock).toHaveBeenCalledTimes(1)
-		expect(historyDevicesMock).toHaveBeenCalledWith(params)
+		expect(apiHistoryDevicesMock).toHaveBeenCalledTimes(1)
+		expect(apiHistoryDevicesMock).toHaveBeenCalledWith(params)
 		expect(hasNextMock).toHaveBeenCalledTimes(6)
 		expect(nextMock).toHaveBeenCalledTimes(6)
 	})
@@ -343,20 +347,21 @@ describe('getHistory', () => {
 		promptMock.mockResolvedValueOnce({ answer: 'yes' })
 		const firstItemSet = items.slice(0, maxItemsPerRequest)
 		const historyResponse = makeHistoryResponse(firstItemSet)
-		historyDevicesMock.mockResolvedValueOnce(historyResponse)
+		apiHistoryDevicesMock.mockResolvedValueOnce(historyResponse)
 		hasNextMock.mockReturnValue(true)
 		let nextStart = 300
 		nextMock.mockImplementation(async () => {
 			historyResponse.items = items.slice(nextStart, nextStart + maxItemsPerRequest)
 			nextStart += maxItemsPerRequest
+			return false
 		})
 
 		const result = await getHistory(client, items.length - 5, maxItemsPerRequest, params)
 		expect(result).toStrictEqual(items.slice(0, items.length - 5))
 
 		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(historyDevicesMock).toHaveBeenCalledTimes(1)
-		expect(historyDevicesMock).toHaveBeenCalledWith(params)
+		expect(apiHistoryDevicesMock).toHaveBeenCalledTimes(1)
+		expect(apiHistoryDevicesMock).toHaveBeenCalledWith(params)
 		expect(hasNextMock).toHaveBeenCalledTimes(6)
 		expect(nextMock).toHaveBeenCalledTimes(6)
 	})
@@ -379,17 +384,21 @@ describe('getHistory', () => {
 			makeActivity(5, epochTimestamp + 100),
 		]
 		const historyResponse = makeHistoryResponse(firstPage)
-		historyDevicesMock.mockResolvedValueOnce(historyResponse)
+		apiHistoryDevicesMock.mockResolvedValueOnce(historyResponse)
 		hasNextMock.mockReturnValue(true)
-		nextMock.mockImplementationOnce(async () => historyResponse.items = secondPage)
+		nextMock.mockImplementationOnce(async () => {
+			historyResponse.items = secondPage
+			return false
+
+		})
 
 		const paramsWithAfter = { ...params, after: epochTimestamp + 350 }
 
 		const result = await getHistory(client, 300, 3, paramsWithAfter)
 		expect(result).toStrictEqual(firstPage)
 
-		expect(historyDevicesMock).toHaveBeenCalledTimes(1)
-		expect(historyDevicesMock).toHaveBeenCalledWith(paramsWithAfter)
+		expect(apiHistoryDevicesMock).toHaveBeenCalledTimes(1)
+		expect(apiHistoryDevicesMock).toHaveBeenCalledWith(paramsWithAfter)
 		expect(hasNextMock).toHaveBeenCalledTimes(1)
 		expect(nextMock).toHaveBeenCalledTimes(1)
 	})
