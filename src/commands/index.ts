@@ -48,6 +48,7 @@ import locationsUpdateCommand from './locations/update.js'
 import locationsRoomsDeleteCommand from './locations/rooms/delete.js'
 import organizationsCommand from './organizations.js'
 import organizationsCurrentCommand from './organizations/current.js'
+import presentationDeviceConfigCommand from './presentation/device-config.js'
 import rulesCommand from './rules.js'
 import rulesCreateCommand from './rules/create.js'
 import rulesDeleteCommand from './rules/delete.js'
@@ -110,6 +111,7 @@ export const commands: CommandModule<object, any>[] = [
 	locationsRoomsDeleteCommand,
 	organizationsCommand,
 	organizationsCurrentCommand,
+	presentationDeviceConfigCommand,
 	rulesCommand,
 	rulesCreateCommand,
 	rulesDeleteCommand,

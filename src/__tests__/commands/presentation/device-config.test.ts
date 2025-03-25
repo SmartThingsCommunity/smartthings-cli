@@ -2,14 +2,14 @@ import { jest } from '@jest/globals'
 
 import type { ArgumentsCamelCase, Argv } from 'yargs'
 
-import type { AppsEndpoint, AppSettingsResponse } from '@smartthings/core-sdk'
+import type { PresentationDeviceConfig, PresentationEndpoint } from '@smartthings/core-sdk'
 
-import type { CommandArgs } from '../../../commands/apps/settings.js'
+import type { CommandArgs } from '../../../commands/presentation/device-config.js'
 import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
 import type { OutputItemOrListFlags } from '../../../lib/command/listing-io.js'
 import type { outputItem, outputItemBuilder } from '../../../lib/command/output-item.js'
 import type { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
-import { buildTableOutput, type chooseApp } from '../../../lib/command/util/apps-util.js'
+import { buildTableOutput } from '../../../lib/command/util/presentation-device-config-table.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 import { CustomCommonOutputProducer } from '../../../lib/command/format.js'
@@ -26,14 +26,12 @@ jest.unstable_mockModule('../../../lib/command/output-item.js', () => ({
 }))
 
 const buildTableOutputMock = jest.fn<typeof buildTableOutput>()
-const chooseAppMock = jest.fn<typeof chooseApp>()
-jest.unstable_mockModule('../../../lib/command/util/apps-util.js', () => ({
+jest.unstable_mockModule('../../../lib/command/util/presentation-device-config-table.js', () => ({
 	buildTableOutput: buildTableOutputMock,
-	chooseApp: chooseAppMock,
 }))
 
 
-const { default: cmd } = await import('../../../commands/apps/settings.js')
+const { default: cmd } = await import('../../../commands/presentation/device-config.js')
 
 
 test('builder', () => {
@@ -55,51 +53,57 @@ test('builder', () => {
 
 	expect(apiCommandBuilderMock).toHaveBeenCalledExactlyOnceWith(yargsMock)
 	expect(outputItemBuilderMock).toHaveBeenCalledExactlyOnceWith(apiCommandBuilderArgvMock)
-	expect(positionalMock).toHaveBeenCalledTimes(1)
+	expect(positionalMock).toHaveBeenCalledTimes(2)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
 	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
+
 test('handler', async () => {
-	const apiAppsGetSettingsMock = jest.fn<typeof AppsEndpoint.prototype.getSettings>()
+	const apiPresentationGetMock = jest.fn<typeof PresentationEndpoint.prototype.get>()
 	const command = {
 		client: {
-			apps: {
-				getSettings: apiAppsGetSettingsMock,
+			presentation: {
+				get: apiPresentationGetMock,
 			},
 		},
 		tableGenerator: tableGeneratorMock,
 	} as unknown as APICommand<APICommandFlags>
 
 	apiCommandMock.mockResolvedValueOnce(command)
-	chooseAppMock.mockResolvedValueOnce('chosen-app-id')
 
-	const argv = { profile: 'default', idOrIndex: 'cmd-line-id' } as ArgumentsCamelCase<CommandArgs>
+	const argv = {
+		profile: 'default',
+		presentationId: 'cmd-line-id',
+		manufacturerName: 'cmd-line-manufacturer-name',
+	} as ArgumentsCamelCase<CommandArgs>
 
 	await expect(cmd.handler(argv)).resolves.not.toThrow()
 
 	expect(apiCommandMock).toHaveBeenCalledExactlyOnceWith(argv)
-	expect(chooseAppMock).toHaveBeenCalledExactlyOnceWith(command, 'cmd-line-id', { allowIndex: true })
 	expect(outputItemMock).toHaveBeenCalledExactlyOnceWith(
 		command,
 		{ buildTableOutput: expect.any(Function) },
 		expect.any(Function),
 	)
 
-	const config = outputItemMock.mock.calls[0][1] as CustomCommonOutputProducer<AppSettingsResponse>
-	const settingsResponse: AppSettingsResponse = { settings: { key: 'value' } }
+	const config = outputItemMock.mock.calls[0][1] as CustomCommonOutputProducer<PresentationDeviceConfig>
+	const deviceConfig: PresentationDeviceConfig = {
+		presentationId: 'presentation-id',
+		manufacturerName: 'Acme Smart Lighting',
+	}
 	buildTableOutputMock.mockReturnValueOnce('table output')
 
-	expect(config.buildTableOutput(settingsResponse)).toBe('table output')
+	expect(config.buildTableOutput(deviceConfig)).toBe('table output')
 
-	expect(buildTableOutputMock).toHaveBeenCalledExactlyOnceWith(tableGeneratorMock, settingsResponse)
+	expect(buildTableOutputMock).toHaveBeenCalledExactlyOnceWith(tableGeneratorMock, deviceConfig)
 
 
 	const getFunction = outputItemMock.mock.calls[0][2]
-	apiAppsGetSettingsMock.mockResolvedValueOnce(settingsResponse)
+	apiPresentationGetMock.mockResolvedValueOnce(deviceConfig)
 
-	expect(await getFunction()).toBe(settingsResponse)
+	expect(await getFunction()).toBe(deviceConfig)
 
-	expect(apiAppsGetSettingsMock).toHaveBeenCalledExactlyOnceWith('chosen-app-id')
+	expect(apiPresentationGetMock).toHaveBeenCalledExactlyOnceWith('cmd-line-id', 'cmd-line-manufacturer-name')
 })
