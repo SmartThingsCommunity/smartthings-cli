@@ -59,7 +59,7 @@ test('builder', () => {
 })
 
 describe('handler', () => {
-	const apiLocationsUpdateMock = jest.fn<typeof LocationsEndpoint.prototype['update']>()
+	const apiLocationsUpdateMock = jest.fn<typeof LocationsEndpoint.prototype.update>()
 	const clientMock = {
 		locations: {
 			update: apiLocationsUpdateMock,
