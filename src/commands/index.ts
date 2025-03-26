@@ -54,6 +54,7 @@ import presentationDeviceConfigCommand from './presentation/device-config.js'
 import rulesCommand from './rules.js'
 import rulesCreateCommand from './rules/create.js'
 import rulesDeleteCommand from './rules/delete.js'
+import rulesExecuteCommand from './rules/execute.js'
 import scenesCommand from './scenes.js'
 import scenesExecuteCommand from './scenes/execute.js'
 import schemaCommand from './schema.js'
@@ -119,6 +120,7 @@ export const commands: CommandModule<object, any>[] = [
 	rulesCommand,
 	rulesCreateCommand,
 	rulesDeleteCommand,
+	rulesExecuteCommand,
 	scenesCommand,
 	scenesExecuteCommand,
 	schemaCommand,
