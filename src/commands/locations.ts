@@ -1,9 +1,14 @@
-import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs'
+import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { Location, LocationItem } from '@smartthings/core-sdk'
+import { type Location, type LocationItem } from '@smartthings/core-sdk'
 
-import { APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../lib/command/api-command.js'
-import { OutputItemOrListConfig, OutputItemOrListFlags, outputItemOrList, outputItemOrListBuilder } from '../lib/command/listing-io.js'
+import { type APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../lib/command/api-command.js'
+import {
+	type OutputItemOrListConfig,
+	type OutputItemOrListFlags,
+	outputItemOrList,
+	outputItemOrListBuilder,
+} from '../lib/command/listing-io.js'
 import { tableFieldDefinitions } from '../lib/command/util/locations-util.js'
 
 
@@ -13,7 +18,7 @@ export type CommandArgs = APICommandFlags & OutputItemOrListFlags & {
 
 const command = 'locations [id-or-index]'
 
-const describe = 'list locations or get information for a specific Location'
+const describe = 'list locations or get information for a specific location'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	outputItemOrListBuilder(apiCommandBuilder(yargs))
