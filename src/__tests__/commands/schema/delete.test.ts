@@ -79,9 +79,9 @@ test('handler', async () => {
 	expect(chooseSchemaAppMock).toHaveBeenCalledExactlyOnceWith(
 		command,
 		'command-line-id',
-		{ promptMessage: 'Select a schema app to delete.' },
+		{ promptMessage: 'Select a Schema App to delete.' },
 	)
 	expect(apiSchemaDeleteMock).toHaveBeenCalledExactlyOnceWith('chosen-schema-id')
 
-	expect(consoleLogSpy).toHaveBeenLastCalledWith('Schema app link chosen-schema-id deleted.')
+	expect(consoleLogSpy).toHaveBeenLastCalledWith('Schema App link chosen-schema-id deleted.')
 })

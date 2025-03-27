@@ -366,7 +366,7 @@ test('getSchemaAppCreateFromUser', async () => {
 		{ dryRun: false })
 })
 
-test('chooseSchemaAppFn uses correct endpoint to list schema apps', async () => {
+test('chooseSchemaAppFn uses correct endpoint to list Schema Apps', async () => {
 	const chooseAppMock = jest.fn<ChooseFunction<SchemaApp>>()
 	createChooseFnMock.mockReturnValueOnce(chooseAppMock)
 
@@ -375,7 +375,7 @@ test('chooseSchemaAppFn uses correct endpoint to list schema apps', async () => 
 	expect(chooseApp).toBe(chooseAppMock)
 
 	expect(createChooseFnMock).toHaveBeenCalledExactlyOnceWith(
-		expect.objectContaining({ itemName: 'schema app link' }),
+		expect.objectContaining({ itemName: 'Schema App link' }),
 		expect.any(Function),
 	)
 
@@ -483,7 +483,7 @@ describe('getSchemaAppEnsuringOrganization', () => {
 
 			expect(apiSchemaListMock).toHaveBeenCalledExactlyOnceWith()
 			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
-				'Schema app does not have an organization associated with it.\n' +
+				'Schema App does not have an organization associated with it.\n' +
 					'Please run "smartthings schema sans-organization" and choose an organization ' +
 					'when prompted.',
 			)

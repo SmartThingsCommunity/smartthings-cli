@@ -136,7 +136,7 @@ export const getSchemaAppCreateFromUser = async (
 
 export const chooseSchemaAppFn = (): ChooseFunction<SchemaApp> => createChooseFn(
 	{
-		itemName: 'schema app link',
+		itemName: 'Schema App link',
 		primaryKeyName: 'endpointAppId',
 		sortKeyName: 'appName',
 	},
@@ -145,7 +145,7 @@ export const chooseSchemaAppFn = (): ChooseFunction<SchemaApp> => createChooseFn
 
 export const chooseSchemaApp = chooseSchemaAppFn()
 
-// The endpoint to get a schema app automatically assigns the users org to an app if it
+// The endpoint to get a Schema App automatically assigns the users org to an app if it
 // doesn't have one already. This causes a problem if the app is certified because the user
 // organization is almost certainly the wrong one and the user can't change it after it's been
 // set. So, here we check to see if the app has an organization before we query it and
@@ -165,7 +165,7 @@ export const getSchemaAppEnsuringOrganization = async (
 	if (appFromList && !appFromList.organizationId) {
 		if (flags.json || flags.yaml || flags.output || flags.input || !stdinIsTTY()  || !stdoutIsTTY()) {
 			return fatalError(
-				'Schema app does not have an organization associated with it.\n' +
+				'Schema App does not have an organization associated with it.\n' +
 					`Please run "smartthings schema ${schemaAppId}" and choose an organization when prompted.`,
 			)
 		}
