@@ -17,16 +17,16 @@ export type CommandArgs =
 
 export const command = 'schema:delete [id]'
 
-const describe = 'unlink a schema app from smartthings'
+const describe = 'unlink a Schema App from smartthings'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	apiOrganizationCommandBuilder(yargs)
-		.positional('id', { describe: 'schema app link id', type: 'string' })
+		.positional('id', { describe: 'Schema App link id', type: 'string' })
 		.example([
-			['$0 schema:delete', 'choose the schema app to unlink from a list'],
+			['$0 schema:delete', 'choose the Schema App to unlink from a list'],
 			[
 				'$0 schema:delete 43daec4d-f2c6-4bc3-9df7-50ed1012c137',
-				'unlink the schema app with the specified id',
+				'unlink the Schema App with the specified id',
 			],
 		])
 		.epilog(apiDocsURL('deleteAppsByEndpointAppId'))
@@ -34,9 +34,9 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)
 
-	const id = await chooseSchemaApp(command, argv.id, { promptMessage: 'Select a schema app to delete.' })
+	const id = await chooseSchemaApp(command, argv.id, { promptMessage: 'Select a Schema App to delete.' })
 	await command.client.schema.delete(id)
-	console.log(`Schema app link ${id} deleted.`)
+	console.log(`Schema App link ${id} deleted.`)
 }
 
 const cmd: CommandModule<object, CommandArgs> = { command, describe, builder, handler }

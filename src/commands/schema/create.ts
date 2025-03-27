@@ -33,7 +33,7 @@ export type CommandArgs =
 
 const command = 'schema:create'
 
-const describe = 'link schema app to SmartThings'
+const describe = 'link Schema App to SmartThings'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	inputAndOutputItemBuilder(lambdaAuthBuilder(apiOrganizationCommandBuilder(yargs)))
@@ -46,10 +46,10 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			},
 		)
 		.example([
-			['$0 schema:create', 'link schema app to SmartThings from prompted input'],
+			['$0 schema:create', 'link Schema App to SmartThings from prompted input'],
 			[
 				'$0 schema:create -i schema-app-details.yaml',
-				'link schema app to SmartThings with details defined in "schema-app-details.yaml"',
+				'link Schema App to SmartThings with details defined in "schema-app-details.yaml"',
 			],
 		])
 		.epilog(apiDocsURL('postApps'))

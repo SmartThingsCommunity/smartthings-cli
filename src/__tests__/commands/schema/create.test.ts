@@ -263,7 +263,7 @@ describe('handler', () => {
 		)
 	})
 
-	it('uses getSchemaAppCreateFromUser to build schema app from user input', async () => {
+	it('uses getSchemaAppCreateFromUser to build Schema App from user input', async () => {
 		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
 
 		expect(userInputProcessorMock).toHaveBeenCalledExactlyOnceWith(expect.any(Function))
