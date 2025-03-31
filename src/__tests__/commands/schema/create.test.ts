@@ -117,7 +117,7 @@ describe('handler', () => {
 				create: apiSchemaCreateMock,
 			},
 		},
-	} as unknown as APIOrganizationCommand<CommandArgs>
+	} as unknown as APIOrganizationCommand<ArgumentsCamelCase<CommandArgs>>
 	apiOrganizationCommandMock.mockResolvedValue(command)
 
 	const inputArgv = { profile: 'default', authorize: false } as ArgumentsCamelCase<CommandArgs>
