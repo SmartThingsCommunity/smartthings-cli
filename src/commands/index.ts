@@ -61,6 +61,7 @@ import schemaCommand from './schema.js'
 import schemaAuthorizeCommand from './schema/authorize.js'
 import schemaCreateCommand from './schema/create.js'
 import schemaDeleteCommand from './schema/delete.js'
+import schemaRegenerateCommand from './schema/regenerate.js'
 import virtualdevicesCommand from './virtualdevices.js'
 import virtualdevicesCreateStandardCommand from './virtualdevices/create-standard.js'
 
@@ -128,6 +129,7 @@ export const commands: CommandModule<object, any>[] = [
 	schemaAuthorizeCommand,
 	schemaCreateCommand,
 	schemaDeleteCommand,
+	schemaRegenerateCommand,
 	virtualdevicesCommand,
 	virtualdevicesCreateStandardCommand,
 ]
