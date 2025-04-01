@@ -47,32 +47,6 @@ export const listMatchingDrivers = async (client: SmartThingsClient, deviceId: s
 	withoutCurrentDriver(client, deviceId, await client.hubdevices.listInstalled(hubId, deviceId))
 
 /**
- * When presenting a list of drivers to choose from, we only use the `driverId` and `name` fields.
- * Using this type instead of `EdgeDriverSummary` allows the caller of `chooseDriver` (below)
- * to use functions that return other objects as long as they include these two fields.
- */
-export type DriverChoice = Pick<EdgeDriverSummary, 'driverId' | 'name'>
-
-// TODO: When moving this to yargs, deal with duplicate version in hubs-util module.
-export async function chooseDriver(command: APICommand<typeof APICommand.flags>, promptMessage: string, commandLineDriverId?: string,
-		options?: Partial<ChooseOptions<DriverChoice>>): Promise<string> {
-	const opts = {
-		...chooseOptionsDefaults(),
-		listItems: (): Promise<DriverChoice[]> => command.client.drivers.list(),
-		...options,
-	}
-	const config: SelectFromListConfig<DriverChoice> = {
-		itemName: 'driver',
-		primaryKeyName: 'driverId',
-		sortKeyName: 'name',
-	}
-	const preselectedId = opts.allowIndex
-		? await stringTranslateToId(config, commandLineDriverId, opts.listItems)
-		: commandLineDriverId
-	return selectFromList(command, config, { preselectedId, listItems: opts.listItems, promptMessage })
-}
-
-/**
  * List hubs owned by the user. Hubs in locations shared with the user are not included because edge
  * drivers cannot be managed on them.
  */
