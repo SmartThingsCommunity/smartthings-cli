@@ -113,7 +113,8 @@ const stripTempInputFields = (inputData: InputData): SchemaAppWithOrganization =
 
 export const getSchemaAppUpdateFromUser = async (
 		command: APICommand,
-		original: SchemaApp, dryRun: boolean,
+		original: SchemaApp,
+		dryRun: boolean,
 ): Promise<SchemaAppWithOrganization> => {
 	const inputDef = await buildInputDefinition(command, original)
 
@@ -139,6 +140,7 @@ export const chooseSchemaAppFn = (): ChooseFunction<SchemaApp> => createChooseFn
 		itemName: 'Schema App link',
 		primaryKeyName: 'endpointAppId',
 		sortKeyName: 'appName',
+		listTableFieldDefinitions: ['appName', 'endpointAppId', 'hostingType'],
 	},
 	(client: SmartThingsClient): Promise<SchemaApp[]> => client.schema.list(),
 )
