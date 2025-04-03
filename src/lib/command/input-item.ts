@@ -10,8 +10,10 @@ import { fatalError } from '../util.js'
 
 export type InputItemFlags = InputProcessorFlags
 export const inputItemBuilder = inputProcessorBuilder
-export async function inputItem<I extends object>(flags: InputItemFlags,
-		...alternateInputProcessors: InputProcessor<I>[]): Promise<[I, IOFormat]> {
+export async function inputItem<I extends object>(
+		flags: InputItemFlags,
+		...alternateInputProcessors: InputProcessor<I>[]
+): Promise<[I, IOFormat]> {
 	const inputProcessor = buildInputProcessor<I>(flags, ...alternateInputProcessors)
 	const hasInputResult = inputProcessor.hasInput()
 	const hasInput = typeof hasInputResult === 'boolean' ? hasInputResult : await hasInputResult
