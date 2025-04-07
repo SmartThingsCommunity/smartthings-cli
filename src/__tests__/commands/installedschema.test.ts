@@ -2,42 +2,42 @@ import { jest } from '@jest/globals'
 
 import type { ArgumentsCamelCase, Argv } from 'yargs'
 
-import {
-	type InstalledApp,
-	type InstalledAppsEndpoint,
-	type SmartThingsClient,
-} from '@smartthings/core-sdk'
+import type { InstalledSchemaApp, SchemaEndpoint } from '@smartthings/core-sdk'
 
-import type { withLocation, withLocations, WithLocation } from '../../lib/api-helpers.js'
+import type { withLocation, WithLocation } from '../../lib/api-helpers.js'
 import type { APICommand, APICommandFlags } from '../../lib/command/api-command.js'
-import type { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
-import type { BuildOutputFormatterFlags } from '../../lib/command/output-builder.js'
+import type { outputItemOrList, outputItemOrListBuilder, OutputItemOrListFlags } from '../../lib/command/listing-io.js'
 import type { SmartThingsCommandFlags } from '../../lib/command/smartthings-command.js'
-import { listTableFieldDefinitions } from '../../lib/command/util/installedapps-table.js'
-import type { CommandArgs } from '../../commands/installedapps.js'
+import { type installedSchemaInstances, listTableFieldDefinitions, tableFieldDefinitions } from '../../lib/command/util/installedschema-util.js'
+import type { CommandArgs } from '../../commands/installedschema.js'
 import { apiCommandMocks } from '../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
-import { tableGeneratorMock } from '../test-lib/table-mock.js'
+
 
 
 const withLocationMock = jest.fn<typeof withLocation>()
-const withLocationsMock = jest.fn<typeof withLocations>()
 jest.unstable_mockModule('../../lib/api-helpers.js', () => ({
 	withLocation: withLocationMock,
-	withLocations: withLocationsMock,
 }))
 
 const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../..')
 
-const outputItemOrListMock = jest.fn<typeof outputItemOrList<InstalledApp & WithLocation>>()
+const outputItemOrListMock = jest.fn<typeof outputItemOrList<InstalledSchemaApp & WithLocation>>()
 const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
 jest.unstable_mockModule('../../lib/command/listing-io.js', () => ({
 	outputItemOrList: outputItemOrListMock,
 	outputItemOrListBuilder: outputItemOrListBuilderMock,
 }))
 
+const installedSchemaInstancesMock = jest.fn<typeof installedSchemaInstances>()
+jest.unstable_mockModule('../../lib/command/util/installedschema-util', () => ({
+	installedSchemaInstances: installedSchemaInstancesMock,
+	listTableFieldDefinitions,
+	tableFieldDefinitions,
+}))
 
-const { default: cmd } = await import('../../commands/installedapps.js')
+
+const { default: cmd } = await import('../../commands/installedschema.js')
 
 
 test('builder', () => {
@@ -49,7 +49,7 @@ test('builder', () => {
 		exampleMock,
 		argvMock,
 		epilogMock,
-	} = buildArgvMock<SmartThingsCommandFlags, BuildOutputFormatterFlags>()
+	} = buildArgvMock<SmartThingsCommandFlags, OutputItemOrListFlags>()
 
 	apiCommandBuilderMock.mockReturnValue(apiCommandBuilderArgvMock)
 	outputItemOrListBuilderMock.mockReturnValue(argvMock)
@@ -68,85 +68,80 @@ test('builder', () => {
 })
 
 describe('handler', () => {
-	const installedApp = { installedAppId: 'installed-app-id' } as InstalledApp
-	const installedAppList = [installedApp] as InstalledApp[]
+	const installedSchemaApp = { endpointAppId: 'endpoint-app-id' } as InstalledSchemaApp
+	const installedSchemaAppList = [installedSchemaApp] as InstalledSchemaApp[]
 	const verboseInstalledApp =
-		{ installedAppId: 'verbose-installed-app-id' } as InstalledApp & WithLocation
+		{ endpointAppId: 'verbose-installed-app-id' } as InstalledSchemaApp & WithLocation
 
-	const apiInstalledAppsListMock = jest.fn<typeof InstalledAppsEndpoint.prototype.list>()
-		.mockResolvedValue(installedAppList)
-	const apiInstalledAppsGetMock = jest.fn<typeof InstalledAppsEndpoint.prototype.get>()
-		.mockResolvedValue(installedApp)
-	const clientMock = {
-		installedApps: {
-			list: apiInstalledAppsListMock,
-			get: apiInstalledAppsGetMock,
-		},
-	} as unknown as SmartThingsClient
+	const apiSchemaGetInstalledAppMock = jest.fn<typeof SchemaEndpoint.prototype.getInstalledApp>()
+		.mockResolvedValue(installedSchemaApp)
 	const command = {
-		client: clientMock,
-		tableGenerator: tableGeneratorMock,
-	} as APICommand<APICommandFlags>
+		client: {
+			schema: {
+				getInstalledApp: apiSchemaGetInstalledAppMock,
+			},
+		},
+	} as unknown as APICommand<APICommandFlags>
 	apiCommandMock.mockResolvedValue(command)
 
-	const defaultInputArgv = {
+	const baseInputArgv = {
 		profile: 'default',
+		verbose: false,
 	} as ArgumentsCamelCase<CommandArgs>
 
-	it('lists installedapps without args', async () => {
-		await expect(cmd.handler(defaultInputArgv)).resolves.not.toThrow()
+	it('lists installed schema apps without args', async () => {
+		await expect(cmd.handler(baseInputArgv)).resolves.not.toThrow()
 
-		expect(apiCommandMock).toHaveBeenCalledExactlyOnceWith(defaultInputArgv)
+		expect(apiCommandMock).toHaveBeenCalledExactlyOnceWith(baseInputArgv)
 		expect(outputItemOrListMock).toHaveBeenCalledExactlyOnceWith(
 			command,
 			expect.objectContaining({
-				primaryKeyName: 'installedAppId',
+				primaryKeyName: 'isaId',
 				listTableFieldDefinitions,
+				tableFieldDefinitions,
 			}),
 			undefined,
 			expect.any(Function),
 			expect.any(Function),
 		)
 
-		apiInstalledAppsListMock.mockResolvedValueOnce(installedAppList)
+		installedSchemaInstancesMock.mockResolvedValueOnce(installedSchemaAppList)
 		const listFunction = outputItemOrListMock.mock.calls[0][3]
 
-		expect(await listFunction()).toBe(installedAppList)
+		expect(await listFunction()).toBe(installedSchemaAppList)
 
-		expect(apiInstalledAppsListMock).toHaveBeenCalledExactlyOnceWith({ locationId: undefined })
-
-		expect(withLocationsMock).not.toHaveBeenCalled()
+		expect(installedSchemaInstancesMock)
+			.toHaveBeenCalledExactlyOnceWith(command.client, undefined, { verbose: false })
 	})
 
 	it('includes location with verbose flag', async () => {
-		await expect(cmd.handler({ ...defaultInputArgv, verbose: true })).resolves.not.toThrow()
+		await expect(cmd.handler({ ...baseInputArgv, verbose: true })).resolves.not.toThrow()
 
 		expect(outputItemOrListMock).toHaveBeenCalledExactlyOnceWith(
 			command,
 			expect.objectContaining({
 				listTableFieldDefinitions: expect.arrayContaining(['location', 'locationId']),
+				tableFieldDefinitions: expect.arrayContaining(['location']),
 			}),
 			undefined,
 			expect.any(Function),
 			expect.any(Function),
 		)
 
-		apiInstalledAppsListMock.mockResolvedValueOnce(installedAppList)
 		const listFunction = outputItemOrListMock.mock.calls[0][3]
 		const verboseInstalledAppsList = [verboseInstalledApp]
-		withLocationsMock.mockResolvedValueOnce(verboseInstalledAppsList)
+		installedSchemaInstancesMock.mockResolvedValueOnce(verboseInstalledAppsList)
 
 		expect(await listFunction()).toBe(verboseInstalledAppsList)
 
-		expect(apiInstalledAppsListMock).toHaveBeenCalledExactlyOnceWith({ locationId: undefined })
-		expect(withLocationsMock)
-			.toHaveBeenCalledExactlyOnceWith(clientMock, installedAppList)
+		expect(installedSchemaInstancesMock)
+			.toHaveBeenCalledExactlyOnceWith(command.client, undefined, { verbose: true })
 	})
 
-	it('lists details of a specified installed app', async () => {
+	it('lists details of a specified installed schema app', async () => {
 		const inputArgv = {
-			...defaultInputArgv,
-			idOrIndex: 'installed-app-from-arg',
+			...baseInputArgv,
+			idOrIndex: 'installed-schema-app-from-arg',
 		} as ArgumentsCamelCase<CommandArgs>
 
 		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
@@ -154,25 +149,25 @@ describe('handler', () => {
 		expect(apiCommandMock).toHaveBeenCalledExactlyOnceWith(inputArgv)
 		expect(outputItemOrListMock).toHaveBeenCalledExactlyOnceWith(
 			command,
-			expect.objectContaining({ primaryKeyName: 'installedAppId' }),
-			'installed-app-from-arg',
+			expect.objectContaining({ primaryKeyName: 'isaId' }),
+			'installed-schema-app-from-arg',
 			expect.any(Function),
 			expect.any(Function),
 		)
 
 		const getFunction = outputItemOrListMock.mock.calls[0][4]
 
-		expect(await getFunction('chosen-app-id')).toStrictEqual(installedApp)
+		expect(await getFunction('chosen-schema-app-id')).toStrictEqual(installedSchemaApp)
 
-		expect(apiInstalledAppsGetMock).toHaveBeenCalledExactlyOnceWith('chosen-app-id')
+		expect(apiSchemaGetInstalledAppMock).toHaveBeenCalledExactlyOnceWith('chosen-schema-app-id')
 
 		expect(withLocationMock).not.toHaveBeenCalled()
 	})
 
-	it('includes location for single app with verbose flag', async () => {
+	it('includes location for single schema app with verbose flag', async () => {
 		const inputArgv = {
-			...defaultInputArgv,
-			idOrIndex: 'installed-app-from-arg',
+			...baseInputArgv,
+			idOrIndex: 'installed-schema-app-from-arg',
 			verbose: true,
 		} as ArgumentsCamelCase<CommandArgs>
 
@@ -182,7 +177,7 @@ describe('handler', () => {
 		expect(outputItemOrListMock).toHaveBeenCalledExactlyOnceWith(
 			command,
 			expect.objectContaining({ tableFieldDefinitions: expect.arrayContaining(['location']) }),
-			'installed-app-from-arg',
+			'installed-schema-app-from-arg',
 			expect.any(Function),
 			expect.any(Function),
 		)
@@ -190,23 +185,22 @@ describe('handler', () => {
 		const getFunction = outputItemOrListMock.mock.calls[0][4]
 		withLocationMock.mockResolvedValueOnce(verboseInstalledApp)
 
-		expect(await getFunction('chosen-app-id')).toBe(verboseInstalledApp)
+		expect(await getFunction('chosen-schema-app-id')).toBe(verboseInstalledApp)
 
-		expect(apiInstalledAppsGetMock).toHaveBeenCalledExactlyOnceWith('chosen-app-id')
-		expect(withLocationMock).toHaveBeenCalledExactlyOnceWith(command.client, installedApp)
+		expect(apiSchemaGetInstalledAppMock).toHaveBeenCalledExactlyOnceWith('chosen-schema-app-id')
+		expect(withLocationMock).toHaveBeenCalledExactlyOnceWith(command.client, installedSchemaApp)
 	})
 
 	it('narrows by location when requested', async () => {
-		await expect(cmd.handler({ ...defaultInputArgv, location: 'location-id' }))
+		await expect(cmd.handler({ ...baseInputArgv, location: ['location-id'] }))
 			.resolves.not.toThrow()
 
-		apiInstalledAppsListMock.mockResolvedValueOnce(installedAppList)
+		installedSchemaInstancesMock.mockResolvedValueOnce(installedSchemaAppList)
 		const listFunction = outputItemOrListMock.mock.calls[0][3]
 
-		expect(await listFunction()).toBe(installedAppList)
+		expect(await listFunction()).toBe(installedSchemaAppList)
 
-		expect(apiInstalledAppsListMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
-			locationId: 'location-id',
-		}))
+		expect(installedSchemaInstancesMock)
+			.toHaveBeenCalledExactlyOnceWith(command.client, ['location-id'], { verbose: false })
 	})
 })
