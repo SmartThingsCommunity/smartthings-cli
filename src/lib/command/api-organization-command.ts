@@ -1,9 +1,9 @@
-import { Argv } from 'yargs'
+import { type Argv } from 'yargs'
 
-import { HttpClientHeaders } from '@smartthings/core-sdk'
+import { type HttpClientHeaders } from '@smartthings/core-sdk'
 
-import { APICommand, APICommandFlags, apiCommand, apiCommandBuilder } from './api-command.js'
-import { SmartThingsCommand } from './smartthings-command.js'
+import { type APICommand, type APICommandFlags, apiCommand, apiCommandBuilder } from './api-command.js'
+import { type SmartThingsCommand } from './smartthings-command.js'
 
 
 export type APIOrganizationCommandFlags = APICommandFlags & {
