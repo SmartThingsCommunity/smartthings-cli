@@ -44,14 +44,15 @@ import installedappsRenameCommand from './installedapps/rename.js'
 import installedschemaCommand from './installedschema.js'
 import installedschemaDeleteCommand from './installedschema/delete.js'
 import locationsCommand from './locations.js'
-import logoutCommand from './logout.js'
 import locationsCreateCommand from './locations/create.js'
 import locationsDeleteCommand from './locations/delete.js'
+import locationsHistoryCommand from './locations/history.js'
 import locationsUpdateCommand from './locations/update.js'
 import locationsRoomsCommand from './locations/rooms.js'
 import locationsRoomsCreateCommand from './locations/rooms/create.js'
 import locationsRoomsDeleteCommand from './locations/rooms/delete.js'
 import locationsRoomsUpdateCommand from './locations/rooms/update.js'
+import logoutCommand from './logout.js'
 import organizationsCommand from './organizations.js'
 import organizationsCurrentCommand from './organizations/current.js'
 import presentationDeviceConfigCommand from './presentation/device-config.js'
@@ -120,14 +121,15 @@ export const commands: CommandModule<object, any>[] = [
 	installedschemaCommand,
 	installedschemaDeleteCommand,
 	locationsCommand,
-	logoutCommand,
 	locationsCreateCommand,
 	locationsDeleteCommand,
+	locationsHistoryCommand,
 	locationsUpdateCommand,
 	locationsRoomsCommand,
 	locationsRoomsCreateCommand,
 	locationsRoomsDeleteCommand,
 	locationsRoomsUpdateCommand,
+	logoutCommand,
 	organizationsCommand,
 	organizationsCurrentCommand,
 	presentationDeviceConfigCommand,
