@@ -1,4 +1,11 @@
-import { Authenticator, BearerTokenAuthenticator, RESTClientConfig, SmartThingsClient } from '@smartthings/core-sdk'
+import {
+	type Authenticator,
+	BearerTokenAuthenticator,
+	EndpointClient,
+	type EndpointClientConfig,
+	type RESTClientConfig,
+	SmartThingsClient,
+} from '@smartthings/core-sdk'
 
 
 /**
@@ -10,3 +17,6 @@ export const newSmartThingsClient = (authenticator: Authenticator, config?: REST
 
 export const newBearerTokenAuthenticator = (token: string): BearerTokenAuthenticator =>
 	new BearerTokenAuthenticator(token)
+
+export const newEndpointClient = (basePath: string, config: EndpointClientConfig): EndpointClient =>
+	new EndpointClient(basePath, config)
