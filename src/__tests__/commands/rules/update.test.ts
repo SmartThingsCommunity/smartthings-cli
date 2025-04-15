@@ -78,7 +78,7 @@ test('handler', async () => {
 				update: apiRulesUpdateMock,
 			},
 		},
-	} as unknown as APICommand<APICommandFlags>
+	} as unknown as APICommand<ArgumentsCamelCase<CommandArgs>>
 	apiCommandMock.mockResolvedValue(command)
 
 	const inputArgv = {

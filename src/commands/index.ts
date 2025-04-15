@@ -74,6 +74,7 @@ import virtualdevicesCommand from './virtualdevices.js'
 import virtualdevicesCreateCommand from './virtualdevices/create.js'
 import virtualdevicesCreateStandardCommand from './virtualdevices/create-standard.js'
 import virtualdevicesDeleteCommand from './virtualdevices/delete.js'
+import virtualdevicesEventsCommand from './virtualdevices/events.js'
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -152,4 +153,5 @@ export const commands: CommandModule<object, any>[] = [
 	virtualdevicesCreateCommand,
 	virtualdevicesCreateStandardCommand,
 	virtualdevicesDeleteCommand,
+	virtualdevicesEventsCommand,
 ]
