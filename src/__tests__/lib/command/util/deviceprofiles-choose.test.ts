@@ -4,11 +4,11 @@ import type {
 	DeviceProfile,
 	DeviceProfilesEndpoint,
 	LocaleReference,
-	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
 import type { WithLocales } from '../../../../lib/api-helpers.js'
-import { createChooseFn, ChooseFunction } from '../../../../lib/command/util/util-util.js'
+import type { APICommand } from '../../../../lib/command/api-command.js'
+import { type createChooseFn, ChooseFunction } from '../../../../lib/command/util/util-util.js'
 
 
 const createChooseFnMock = jest.fn<typeof createChooseFn<DeviceProfile & WithLocales>>()
@@ -29,12 +29,14 @@ describe('chooseDeviceProfileFn', () => {
 	const locales = [{ tag: 'es_MX' }, { tag: 'en_CA' }, { tag: 'fr_CA' }] as LocaleReference[]
 	const apiDeviceProfilesListLocalesMock = jest.fn<typeof DeviceProfilesEndpoint.prototype.listLocales>()
 		.mockResolvedValue(locales)
-	const client = {
-		deviceProfiles: {
-			list: apiDeviceProfilesListMock,
-			listLocales: apiDeviceProfilesListLocalesMock,
+	const command = {
+		client: {
+			deviceProfiles: {
+				list: apiDeviceProfilesListMock,
+				listLocales: apiDeviceProfilesListLocalesMock,
+			},
 		},
-	} as unknown as SmartThingsClient
+	} as unknown as APICommand
 
 	it('uses correct endpoint to list device profiles', async () => {
 		const chooseDeviceProfile = chooseDeviceProfileFn()
@@ -51,7 +53,7 @@ describe('chooseDeviceProfileFn', () => {
 
 		const listItems = createChooseFnMock.mock.calls[0][1]
 
-		expect(await listItems(client)).toBe(deviceProfiles)
+		expect(await listItems(command)).toBe(deviceProfiles)
 
 		expect(apiDeviceProfilesListMock).toHaveBeenCalledExactlyOnceWith()
 
@@ -73,7 +75,7 @@ describe('chooseDeviceProfileFn', () => {
 
 		const listItems = createChooseFnMock.mock.calls[0][1]
 
-		expect(await listItems(client)).toStrictEqual([{
+		expect(await listItems(command)).toStrictEqual([{
 			id: 'device-profile-id',
 			locales: 'en_CA, es_MX, fr_CA',
 		}])
@@ -99,7 +101,7 @@ describe('chooseDeviceProfileFn', () => {
 		const listItems = createChooseFnMock.mock.calls[0][1]
 		apiDeviceProfilesListLocalesMock.mockImplementationOnce(() => { throw { message: 'status code 404' } })
 
-		expect(await listItems(client)).toStrictEqual([{
+		expect(await listItems(command)).toStrictEqual([{
 			id: 'device-profile-id',
 		}])
 
@@ -123,7 +125,7 @@ describe('chooseDeviceProfileFn', () => {
 		const listItems = createChooseFnMock.mock.calls[0][1]
 		apiDeviceProfilesListLocalesMock.mockImplementationOnce(() => { throw Error('other error') })
 
-		await expect(listItems(client)).rejects.toThrow('other error')
+		await expect(listItems(command)).rejects.toThrow('other error')
 
 		expect(apiDeviceProfilesListMock).toHaveBeenCalledExactlyOnceWith()
 		expect(apiDeviceProfilesListLocalesMock).toHaveBeenCalledExactlyOnceWith('device-profile-id')

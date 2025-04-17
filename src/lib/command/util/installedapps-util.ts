@@ -1,7 +1,8 @@
-import { type SmartThingsClient, type InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
+import { type InstalledApp, InstalledAppListOptions } from '@smartthings/core-sdk'
 
 import { withLocations, type WithNamedLocation } from '../../api-helpers.js'
 import { type TableFieldDefinition } from '../../table-generator.js'
+import { type APICommand } from '../api-command.js'
 import { listTableFieldDefinitions } from './installedapps-table.js'
 import { type ChooseFunction, createChooseFn } from './util-util.js'
 
@@ -20,10 +21,10 @@ const buildListTableFieldDefinitions = (
 
 const listInstalledAppsFn = (
 		options?: ChooseInstalledAppOptions,
-) => async (client: SmartThingsClient): Promise<(InstalledApp & WithNamedLocation)[]> => {
-	const installedApps = await client.installedApps.list(options?.listOptions)
+) => async (command: APICommand): Promise<(InstalledApp & WithNamedLocation)[]> => {
+	const installedApps = await command.client.installedApps.list(options?.listOptions)
 	if (options?.verbose) {
-		return await withLocations(client, installedApps)
+		return await withLocations(command.client, installedApps)
 	}
 	return installedApps
 }

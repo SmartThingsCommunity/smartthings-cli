@@ -1,9 +1,11 @@
 import { jest } from '@jest/globals'
 
+import type { EdgeDriver } from '@smartthings/core-sdk'
+
+import type { APICommand } from '../../../../../lib/command/api-command.js'
 import type { DriverChoice } from '../../../../../lib/command/util/drivers-choose.js'
 import type { ChooseFunction, createChooseFn } from '../../../../../lib/command/util/util-util.js'
 import type { listDrivers } from '../../../../../lib/command/util/edge/drivers-util.js'
-import { EdgeDriver, SmartThingsClient } from '@smartthings/core-sdk'
 
 
 const createChooseFnMock = jest.fn<typeof createChooseFn<DriverChoice>>()
@@ -26,7 +28,7 @@ describe('createDriverFn', () => {
 
 	const drivers = [] as EdgeDriver[]
 
-	const client = { drivers: {} } as SmartThingsClient
+	const command = { client: { drivers: {} } } as APICommand
 
 	it('does not include all organizations by default', async () => {
 		expect(chooseDriverFn()).toBe(createDriverMock)
@@ -40,9 +42,9 @@ describe('createDriverFn', () => {
 
 		listDriversMock.mockResolvedValueOnce(drivers)
 
-		expect(await listItems(client)).toBe(drivers)
+		expect(await listItems(command)).toBe(drivers)
 
-		expect(listDriversMock).toHaveBeenCalledExactlyOnceWith(client, undefined)
+		expect(listDriversMock).toHaveBeenCalledExactlyOnceWith(command.client, undefined)
 	})
 
 	it('requests all organizations when specified', async () => {
@@ -57,8 +59,8 @@ describe('createDriverFn', () => {
 
 		listDriversMock.mockResolvedValueOnce(drivers)
 
-		expect(await listItems(client)).toBe(drivers)
+		expect(await listItems(command)).toBe(drivers)
 
-		expect(listDriversMock).toHaveBeenCalledExactlyOnceWith(client, true)
+		expect(listDriversMock).toHaveBeenCalledExactlyOnceWith(command.client, true)
 	})
 })

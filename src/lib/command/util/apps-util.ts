@@ -57,7 +57,7 @@ export const chooseAppFn = (): ChooseFunction<PagedApp> => createChooseFn(
 		sortKeyName: 'displayName',
 		listTableFieldDefinitions: ['displayName', 'appType', 'appId'],
 	},
-	(client: SmartThingsClient) => client.apps.list(),
+	command => command.client.apps.list(),
 )
 
 export const chooseApp = chooseAppFn()

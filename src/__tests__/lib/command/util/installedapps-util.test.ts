@@ -1,8 +1,9 @@
 import { jest } from '@jest/globals'
 
-import { InstalledApp, InstalledAppListOptions, InstalledAppsEndpoint, type SmartThingsClient } from '@smartthings/core-sdk'
+import { InstalledApp, InstalledAppListOptions, InstalledAppsEndpoint } from '@smartthings/core-sdk'
 
 import type { WithLocation, withLocations, WithNamedLocation } from '../../../../lib/api-helpers.js'
+import type { APICommand } from '../../../../lib/command/api-command.js'
 import type { ChooseFunction, createChooseFn } from '../../../../lib/command/util/util-util.js'
 
 
@@ -26,11 +27,13 @@ describe('chooseInstalledAppFn', () => {
 	const installedApps = [installedApp1, installedApp2]
 	const apiInstalledAppsListMock = jest.fn<typeof InstalledAppsEndpoint.prototype.list>()
 		.mockResolvedValue(installedApps)
-	const client = {
-		installedApps: {
-			list: apiInstalledAppsListMock,
+	const command = {
+		client: {
+			installedApps: {
+				list: apiInstalledAppsListMock,
+			},
 		},
-	} as unknown as SmartThingsClient
+	} as unknown as APICommand
 
 	const chooseInstalledAppMock = jest.fn<ChooseFunction<InstalledApp & WithLocation>>()
 	createChooseFnMock.mockReturnValue(chooseInstalledAppMock)
@@ -48,7 +51,7 @@ describe('chooseInstalledAppFn', () => {
 
 		const listFunction = createChooseFnMock.mock.calls[0][1]
 
-		expect(await listFunction(client)).toBe(installedApps)
+		expect(await listFunction(command)).toBe(installedApps)
 
 		expect(apiInstalledAppsListMock).toHaveBeenCalledExactlyOnceWith(undefined)
 		expect(withLocationsMock).not.toHaveBeenCalled()
@@ -74,9 +77,9 @@ describe('chooseInstalledAppFn', () => {
 		]
 		withLocationsMock.mockResolvedValue(installedAppsWithLocations)
 
-		expect(await listFunction(client)).toBe(installedAppsWithLocations)
+		expect(await listFunction(command)).toBe(installedAppsWithLocations)
 
 		expect(apiInstalledAppsListMock).toHaveBeenCalledExactlyOnceWith(listOptions)
-		expect(withLocationsMock).toHaveBeenCalledExactlyOnceWith(client, installedApps)
+		expect(withLocationsMock).toHaveBeenCalledExactlyOnceWith(command.client, installedApps)
 	})
 })

@@ -32,8 +32,9 @@ export async function chooseChannel(command: APICommand, promptMessage: string,
 		sortKeyName: 'name',
 	}
 
-	const listItems = options?.listItems ??
-		((): Promise<ChannelChoice[]> => listChannels(command.client, { includeReadOnly: opts.includeReadOnly }))
+	const listItems = (): Promise<ChannelChoice[]> => options?.listItems
+		? options.listItems(command)
+		: listChannels(command.client, { includeReadOnly: opts.includeReadOnly })
 
 	const preselectedId = channelFromArg
 		? (opts.allowIndex
@@ -49,6 +50,9 @@ export async function chooseChannel(command: APICommand, promptMessage: string,
 				`using previously specified default channel named "${channel.name}" (${channel.channelId})`,
 		}
 		: undefined
-	return selectFromList(command, config,
-		{ preselectedId, listItems, promptMessage, defaultValue })
+	return selectFromList(
+		command,
+		config,
+		{ preselectedId, listItems, promptMessage, defaultValue },
+	)
 }

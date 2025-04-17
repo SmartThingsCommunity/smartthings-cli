@@ -1,4 +1,4 @@
-import { type EdgeDriverSummary, type SmartThingsClient } from '@smartthings/core-sdk'
+import { type EdgeDriverSummary } from '@smartthings/core-sdk'
 
 import { type ChooseFunction, createChooseFn } from './util-util.js'
 import { listDrivers } from './edge/drivers-util.js'
@@ -19,7 +19,7 @@ export const chooseDriverFn = (
 		primaryKeyName: 'driverId',
 		sortKeyName: 'name',
 	},
-	(client: SmartThingsClient) => listDrivers(client, options?.includeAllOrganizations),
+	command => listDrivers(command.client, options?.includeAllOrganizations),
 )
 
 export const chooseDriver = chooseDriverFn()

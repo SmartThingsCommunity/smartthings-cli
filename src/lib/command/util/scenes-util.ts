@@ -14,7 +14,7 @@ export const chooseSceneFn = (): ChooseFunction<SceneSummary> => createChooseFn(
 		primaryKeyName: 'sceneId',
 		sortKeyName: 'sceneName',
 	},
-	client => client.scenes.list(),
+	command => command.client.scenes.list(),
 )
 
 export const chooseScene = chooseSceneFn()

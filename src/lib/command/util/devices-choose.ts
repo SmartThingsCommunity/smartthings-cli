@@ -1,9 +1,4 @@
-import {
-	type Component,
-	type Device,
-	type DeviceListOptions,
-	type SmartThingsClient,
-} from '@smartthings/core-sdk'
+import { type Component, type Device, type DeviceListOptions } from '@smartthings/core-sdk'
 
 import { fatalError } from '../../util.js'
 import { type ChooseFunction, createChooseFn } from './util-util.js'
@@ -18,7 +13,7 @@ export const chooseDeviceFn = (
 		sortKeyName: 'label',
 		listTableFieldDefinitions: ['label', 'name', 'type', 'deviceId'],
 	},
-	(client: SmartThingsClient) => client.devices.list(deviceListOptions),
+	command => command.client.devices.list(deviceListOptions),
 )
 
 export const chooseDevice = chooseDeviceFn()

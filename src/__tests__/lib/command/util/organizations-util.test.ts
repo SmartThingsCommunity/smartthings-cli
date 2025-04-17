@@ -1,18 +1,10 @@
 import { jest } from '@jest/globals'
 
-import type {
-	OrganizationResponse,
-	OrganizationsEndpoint,
-	SmartThingsClient,
-} from '@smartthings/core-sdk'
+import type { OrganizationResponse, OrganizationsEndpoint } from '@smartthings/core-sdk'
 
-import type {
-	ValueTableFieldDefinition,
-} from '../../../../lib/table-generator.js'
-import type {
-	createChooseFn,
-	ChooseFunction,
-} from '../../../../lib/command/util/util-util.js'
+import type { ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
+import type { APICommand } from '../../../../lib/command/api-command.js'
+import type { createChooseFn, ChooseFunction } from '../../../../lib/command/util/util-util.js'
 import type {
 	InputDefinition,
 	selectDef,
@@ -97,13 +89,15 @@ test('chooseOrganizationFn uses correct endpoint to list organizations', async (
 	const apiOrganizationsListMock = jest.fn<typeof OrganizationsEndpoint.prototype.list>()
 		.mockResolvedValueOnce(organizationList)
 	const listItems = createChooseFnMock.mock.calls[0][1]
-	const client = {
-		organizations: {
-			list: apiOrganizationsListMock,
+	const command = {
+		client: {
+			organizations: {
+				list: apiOrganizationsListMock,
+			},
 		},
-	} as unknown as SmartThingsClient
+	} as unknown as APICommand
 
-	expect(await listItems(client)).toBe(organizationList)
+	expect(await listItems(command)).toBe(organizationList)
 
 	expect(apiOrganizationsListMock).toHaveBeenCalledExactlyOnceWith()
 })

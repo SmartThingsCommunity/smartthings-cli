@@ -6,10 +6,8 @@ import type {
 	SelectFromListFlags,
 } from '../../../../lib/command/select.js'
 import type { APICommand } from '../../../../lib/command/api-command.js'
-import type { SmartThingsClient } from '@smartthings/core-sdk'
-import type { ListDataFunction } from '../../../../lib/command/io-defs.js'
 import type { stringTranslateToId } from '../../../../lib/command/command-util.js'
-import type { ListItemPredicate, ChooseOptions } from '../../../../lib/command/util/util-util.js'
+import type { ListItemPredicate, ChooseOptions, CreateChooseFunctionOptions } from '../../../../lib/command/util/util-util.js'
 import type { SimpleType } from '../../../test-lib/simple-type.js'
 
 
@@ -51,8 +49,8 @@ describe('chooseOptionsWithDefaults', () => {
 	})
 
 	it('passes on other values unchanged', () => {
-		expect(chooseOptionsWithDefaults({ someOtherKey: 'some other value' } as Partial<ChooseOptions<{ someOtherKey: string }>>))
-			.toEqual(expect.objectContaining({ someOtherKey: 'some other value' }))
+		const config = { someOtherKey: 'some other value' } as Partial<ChooseOptions<{ someOtherKey: string }>>
+		expect(chooseOptionsWithDefaults(config)).toEqual(expect.objectContaining(config))
 	})
 })
 
@@ -82,17 +80,13 @@ describe('createChooseFn', () => {
 	} as unknown as APICommand<SelectFromListFlags>
 
 	describe('resulting function', () => {
-		const itemListMock = jest.fn<(client: SmartThingsClient) => Promise<SimpleType[]>>()
+		const itemListMock = jest.fn<Parameters<typeof createChooseFn<SimpleType>>[1]>()
 			.mockResolvedValue(itemList)
 		const chooseSimpleType = createChooseFn(config, itemListMock)
 
 		it('sets default for passed options', async () => {
-			const listItemsMock = jest.fn<ListDataFunction<SimpleType>>()
-			const opts: Partial<ChooseOptions<SimpleType>> = { listItems: listItemsMock }
+			expect(await chooseSimpleType(command, undefined, {})).toBe('selected-simple-type-id')
 
-			expect(await chooseSimpleType(command, undefined, opts)).toBe('selected-simple-type-id')
-
-			expect(listItemsMock).not.toHaveBeenCalled()
 			expect(stringTranslateToIdMock).not.toHaveBeenCalled()
 			expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
 				command,
@@ -169,10 +163,10 @@ describe('createChooseFn', () => {
 			expect(listFromTranslateCall).toBe(listFromSelectCall)
 		})
 
-		it('uses passed function to list items', async () => {
+		it('uses listItems from createChooseFn by default', async () => {
 			expect(await chooseSimpleType(command)).toBe('selected-simple-type-id')
 
-			expect(itemListMock).toHaveBeenCalledExactlyOnceWith(command.client)
+			expect(itemListMock).toHaveBeenCalledExactlyOnceWith(command)
 
 			const listItems = selectFromListMock.mock.calls[0][2].listItems
 
@@ -180,7 +174,69 @@ describe('createChooseFn', () => {
 			expect(await listItems()).toBe(itemList)
 			expect(await listItems()).toBe(itemList)
 
-			expect(itemListMock).toHaveBeenCalledExactlyOnceWith(command.client)
+			expect(itemListMock).toHaveBeenCalledExactlyOnceWith(command)
+		})
+
+		it('overrides listItems from createChooseFn with one from options when specified', async () => {
+			const overridingListItemsMock = jest.fn<Required<ChooseOptions<SimpleType>>['listItems']>()
+				.mockResolvedValueOnce(itemList)
+			expect(await chooseSimpleType(command, undefined, { listItems: overridingListItemsMock }))
+				.toBe('selected-simple-type-id')
+
+			expect(overridingListItemsMock).toHaveBeenCalledExactlyOnceWith(command)
+			expect(itemListMock).not.toHaveBeenCalled()
+
+			const listItems = selectFromListMock.mock.calls[0][2].listItems
+
+			// The internal function should not result in more API calls, no matter how many times it's called.
+			expect(await listItems()).toBe(itemList)
+			expect(await listItems()).toBe(itemList)
+
+			expect(overridingListItemsMock).toHaveBeenCalledExactlyOnceWith(command)
+			expect(itemListMock).not.toHaveBeenCalled()
+		})
+
+		it('throws error when `useConfigDefault` is used when no default is set up', async () => {
+			await expect(chooseSimpleType(command, undefined, { useConfigDefault: true })).rejects.toThrow()
+		})
+
+		const getItemMock = jest.fn<Required<CreateChooseFunctionOptions<SimpleType>>['defaultValue']['getItem']>()
+			.mockResolvedValue(item1)
+		const userMessageMock = jest.fn<Required<CreateChooseFunctionOptions<SimpleType>>['defaultValue']['userMessage']>()
+		const chooseSimpleTypeWithDefaultConfig = createChooseFn(
+			config,
+			itemListMock,
+			{
+				defaultValue: {
+					configKey: '',
+					getItem: getItemMock,
+					userMessage: userMessageMock,
+				},
+			},
+		)
+
+		it('passes default config options to selectFromList when configured and requested', async () => {
+			expect(await chooseSimpleTypeWithDefaultConfig(command, undefined, { useConfigDefault: true }))
+				.toBe('selected-simple-type-id')
+
+			expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
+				command,
+				config,
+				expect.objectContaining({
+					defaultValue: {
+						configKey: '',
+						getItem: expect.any(Function),
+						userMessage: userMessageMock,
+					},
+				}),
+			)
+
+			const getItem = selectFromListMock.mock.calls[0][2].defaultValue?.getItem
+
+			expect(getItem).toBeDefined()
+			expect(await getItem?.('input-id')).toBe(item1)
+
+			expect(getItemMock).toHaveBeenCalledExactlyOnceWith(command, 'input-id')
 		})
 	})
 })
