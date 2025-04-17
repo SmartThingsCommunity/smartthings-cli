@@ -1,7 +1,8 @@
 import { jest } from '@jest/globals'
 
-import type { ScenesEndpoint, SceneSummary, SmartThingsClient } from '@smartthings/core-sdk'
+import type { ScenesEndpoint, SceneSummary } from '@smartthings/core-sdk'
 
+import type { APICommand } from '../../../../lib/command/api-command.js'
 import type { ChooseFunction, createChooseFn } from '../../../../lib/command/util/util-util.js'
 
 
@@ -31,13 +32,15 @@ test('chooseSceneFn uses correct endpoint to list scenes', async () => {
 	const apiScenesListMock = jest.fn<typeof ScenesEndpoint.prototype.list>()
 		.mockResolvedValueOnce(sceneList)
 	const listItems = createChooseFnMock.mock.calls[0][1]
-	const client = {
-		scenes: {
-			list: apiScenesListMock,
+	const command = {
+		client: {
+			scenes: {
+				list: apiScenesListMock,
+			},
 		},
-	} as unknown as SmartThingsClient
+	} as unknown as APICommand
 
-	expect(await listItems(client)).toBe(sceneList)
+	expect(await listItems(command)).toBe(sceneList)
 
 	expect(apiScenesListMock).toHaveBeenCalledExactlyOnceWith()
 })

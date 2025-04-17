@@ -383,13 +383,15 @@ test('chooseSchemaAppFn uses correct endpoint to list Schema Apps', async () => 
 	const apiSchemaListMock = jest.fn<typeof SchemaEndpoint.prototype.list>()
 		.mockResolvedValueOnce(schemaList)
 	const listItems = createChooseFnMock.mock.calls[0][1]
-	const client = {
-		schema: {
-			list: apiSchemaListMock,
+	const command = {
+		client: {
+			schema: {
+				list: apiSchemaListMock,
+			},
 		},
-	} as unknown as SmartThingsClient
+	} as unknown as APICommand
 
-	expect(await listItems(client)).toBe(schemaList)
+	expect(await listItems(command)).toBe(schemaList)
 
 	expect(apiSchemaListMock).toHaveBeenCalledExactlyOnceWith()
 })

@@ -1,6 +1,6 @@
-import { type OrganizationResponse, type SmartThingsClient } from '@smartthings/core-sdk'
+import { type OrganizationResponse } from '@smartthings/core-sdk'
 
-import { TableFieldDefinition } from '../../table-generator.js'
+import { type TableFieldDefinition } from '../../table-generator.js'
 import {
 	type InputDefinition,
 	selectDef,
@@ -38,7 +38,7 @@ export const chooseOrganizationFn = (): ChooseFunction<OrganizationResponse> => 
 		primaryKeyName: 'organizationId',
 		sortKeyName: 'name',
 	},
-	(client: SmartThingsClient) => client.organizations.list(),
+	command => command.client.organizations.list(),
 )
 export const chooseOrganization = chooseOrganizationFn()
 

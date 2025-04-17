@@ -1,7 +1,8 @@
 import { jest } from '@jest/globals'
 
-import { DeviceIntegrationType, type Device, type DevicesEndpoint, type SmartThingsClient } from '@smartthings/core-sdk'
+import { DeviceIntegrationType, type Device, type DevicesEndpoint } from '@smartthings/core-sdk'
 
+import { APICommand } from '../../../../lib/command/api-command.js'
 import { createChooseFn, ChooseFunction } from '../../../../lib/command/util/util-util.js'
 
 
@@ -20,11 +21,13 @@ describe('chooseHubFn', () => {
 	const devices = [{ deviceId: 'hub-device-id' } as Device]
 	const apiDevicesListMock = jest.fn<typeof DevicesEndpoint.prototype.list>()
 		.mockResolvedValue(devices)
-	const client = {
-		devices: {
-			list: apiDevicesListMock,
+	const command = {
+		client: {
+			devices: {
+				list: apiDevicesListMock,
+			},
 		},
-	} as unknown as SmartThingsClient
+	} as unknown as APICommand
 
 	it('limits to hub devices', async () => {
 		const chooseHub = chooseHubFn()
@@ -40,7 +43,7 @@ describe('chooseHubFn', () => {
 
 		const listItems = createChooseFnMock.mock.calls[0][1]
 
-		expect(await listItems(client)).toBe(devices)
+		expect(await listItems(command)).toBe(devices)
 
 		expect(apiDevicesListMock).toHaveBeenCalledExactlyOnceWith(
 			{ type: DeviceIntegrationType.HUB, locationId: undefined },
@@ -54,7 +57,7 @@ describe('chooseHubFn', () => {
 
 		const listItems = createChooseFnMock.mock.calls[0][1]
 
-		expect(await listItems(client)).toBe(devices)
+		expect(await listItems(command)).toBe(devices)
 
 		expect(apiDevicesListMock).toHaveBeenCalledExactlyOnceWith(
 			{ type: DeviceIntegrationType.HUB, locationId: 'location-filter-id' },

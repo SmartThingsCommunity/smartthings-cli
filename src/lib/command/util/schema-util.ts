@@ -1,7 +1,6 @@
 import {
 	type SchemaApp,
 	type SchemaAppRequest,
-	type SmartThingsClient,
 	type SmartThingsURLProvider,
 	type ViperAppLinks,
 } from '@smartthings/core-sdk'
@@ -142,7 +141,7 @@ export const chooseSchemaAppFn = (): ChooseFunction<SchemaApp> => createChooseFn
 		sortKeyName: 'appName',
 		listTableFieldDefinitions: ['appName', 'endpointAppId', 'hostingType'],
 	},
-	(client: SmartThingsClient): Promise<SchemaApp[]> => client.schema.list(),
+	command => command.client.schema.list(),
 )
 
 export const chooseSchemaApp = chooseSchemaAppFn()

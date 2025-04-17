@@ -5,16 +5,15 @@ import type {
 	Device,
 	DeviceListOptions,
 	DevicesEndpoint,
-	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { APICommand } from '../../../../lib/command/api-command.js'
+import type { ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
+import type { fatalError } from '../../../../lib/util.js'
+import type { APICommand } from '../../../../lib/command/api-command.js'
 import type { stringTranslateToId } from '../../../../lib/command/command-util.js'
-import { TableCommonListOutputProducer } from '../../../../lib/command/format.js'
-import { BuildOutputFormatterFlags } from '../../../../lib/command/output-builder.js'
+import type { TableCommonListOutputProducer } from '../../../../lib/command/format.js'
+import type { BuildOutputFormatterFlags } from '../../../../lib/command/output-builder.js'
 import type { createChooseFn, ChooseFunction } from '../../../../lib/command/util/util-util.js'
-import { ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
-import { fatalError } from '../../../../lib/util.js'
 
 
 const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
@@ -43,11 +42,13 @@ describe('chooseDeviceFn', () => {
 	const deviceList = [{ deviceId: 'listed-device-id' } as Device]
 	const apiDevicesListMock = jest.fn<typeof DevicesEndpoint.prototype.list>()
 		.mockResolvedValue(deviceList)
-	const client = {
-		devices: {
-			list: apiDevicesListMock,
+	const command = {
+		client: {
+			devices: {
+				list: apiDevicesListMock,
+			},
 		},
-	} as unknown as SmartThingsClient
+	} as unknown as APICommand
 
 	it('uses correct endpoint to list devices', async () => {
 		createChooseFnMock.mockReturnValueOnce(chooseDeviceMock)
@@ -63,7 +64,7 @@ describe('chooseDeviceFn', () => {
 
 		const listItems = createChooseFnMock.mock.calls[0][1]
 
-		expect(await listItems(client)).toBe(deviceList)
+		expect(await listItems(command)).toBe(deviceList)
 
 		expect(apiDevicesListMock).toHaveBeenCalledExactlyOnceWith()
 	})
@@ -83,7 +84,7 @@ describe('chooseDeviceFn', () => {
 
 		const listItems = createChooseFnMock.mock.calls[0][1]
 
-		expect(await listItems(client)).toBe(deviceList)
+		expect(await listItems(command)).toBe(deviceList)
 
 		expect(apiDevicesListMock).toHaveBeenCalledExactlyOnceWith(deviceListOptions)
 	})
@@ -111,8 +112,8 @@ describe('chooseComponentFn', () => {
 
 		const listItems = createChooseFnMockForComponent.mock.calls[0][1]
 
-		const client = {} as unknown as SmartThingsClient
-		expect(await listItems(client)).toBe(components)
+		const command = { client: {} } as unknown as APICommand
+		expect(await listItems(command)).toBe(components)
 	})
 
 	it('includes " (default)" for main component', async () => {

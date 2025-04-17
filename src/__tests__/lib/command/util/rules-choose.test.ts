@@ -1,9 +1,10 @@
 import { jest } from '@jest/globals'
 
-import { Rule, SmartThingsClient } from '@smartthings/core-sdk'
+import type { Rule } from '@smartthings/core-sdk'
 
 import type { WithLocation } from '../../../../lib/api-helpers.js'
-import { getRulesByLocation } from '../../../../lib/command/util/rules-util.js'
+import type { APICommand } from '../../../../lib/command/api-command.js'
+import type { getRulesByLocation } from '../../../../lib/command/util/rules-util.js'
 import type { createChooseFn, ChooseFunction } from '../../../../lib/command/util/util-util.js'
 
 
@@ -39,9 +40,9 @@ test('chooseRuleFn', async () => {
 	const ruleList = [{ id: 'listed-rule-id' } as Rule & WithLocation]
 	getRulesByLocationMock.mockResolvedValueOnce(ruleList)
 	const listItems = createChooseFnMock.mock.calls[0][1]
-	const client = { rules: {} } as SmartThingsClient
+	const command = { client: { rules: {} } } as APICommand
 
-	expect(await listItems(client)).toBe(ruleList)
+	expect(await listItems(command)).toBe(ruleList)
 
-	expect(getRulesByLocationMock).toHaveBeenCalledExactlyOnceWith(client, 'location-id')
+	expect(getRulesByLocationMock).toHaveBeenCalledExactlyOnceWith(command.client, 'location-id')
 })

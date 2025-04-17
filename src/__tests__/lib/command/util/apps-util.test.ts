@@ -10,16 +10,17 @@ import {
 } from '@smartthings/core-sdk'
 
 import type { addPermission } from '../../../../lib/aws-util.js'
-import {
+import type {
 	PropertyTableFieldDefinition,
 	TableGenerator,
 	ValueTableFieldDefinition,
 } from '../../../../lib/table-generator.js'
 import type { fatalError } from '../../../../lib/util.js'
-import { stringTranslateToId } from '../../../../lib/command/command-util.js'
-import {
+import type { APICommand } from '../../../../lib/command/api-command.js'
+import type { stringTranslateToId } from '../../../../lib/command/command-util.js'
+import type {
 	createChooseFn,
-	type ChooseFunction,
+	ChooseFunction,
 } from '../../../../lib/command/util/util-util.js'
 import {
 	mockedTableOutput,
@@ -181,13 +182,15 @@ test('chooseAppFn uses correct endpoint to list apps', async () => {
 	const apiAppsListMock = jest.fn<typeof AppsEndpoint.prototype.list>()
 		.mockResolvedValueOnce(appList)
 	const listItems = createChooseFnMock.mock.calls[0][1]
-	const client = {
-		apps: {
-			list: apiAppsListMock,
+	const command = {
+		client: {
+			apps: {
+				list: apiAppsListMock,
+			},
 		},
-	} as unknown as SmartThingsClient
+	} as unknown as APICommand
 
-	expect(await listItems(client)).toBe(appList)
+	expect(await listItems(command)).toBe(appList)
 
 	expect(apiAppsListMock).toHaveBeenCalledExactlyOnceWith()
 })

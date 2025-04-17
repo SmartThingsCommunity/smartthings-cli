@@ -121,9 +121,19 @@ describe('chooseChannel', () => {
 		)).toBe('chosen-channel-id')
 
 		expect(chooseOptionsWithDefaultsMock).toHaveBeenCalledExactlyOnceWith({ listItems: listItemsMock })
-		expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(command,
+		expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
+			command,
 			expect.objectContaining({ primaryKeyName: 'channelId', sortKeyName: 'name' }),
-			expect.objectContaining({ listItems: listItemsMock }))
+			expect.objectContaining({ listItems: expect.any(Function) }),
+		)
+
+		const listItems = selectFromListMock.mock.calls[0][2].listItems
+		const channels = [channel]
+		listItemsMock.mockResolvedValueOnce(channels)
+
+		expect(await listItems()).toBe(channels)
+
+		expect(listItemsMock).toHaveBeenCalledExactlyOnceWith(command)
 	})
 
 	it('defaults to listChannels for listing channels', async () => {

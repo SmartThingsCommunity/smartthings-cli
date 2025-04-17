@@ -1,4 +1,4 @@
-import { type DevicePreference, type SmartThingsClient } from '@smartthings/core-sdk'
+import { type DevicePreference } from '@smartthings/core-sdk'
 
 import { type TableFieldDefinition } from '../../table-generator.js'
 import { type ChooseFunction, createChooseFn } from './util-util.js'
@@ -31,7 +31,7 @@ export const chooseDevicePreferenceFn = (): ChooseFunction<DevicePreference> => 
 		sortKeyName: 'preferenceId',
 		listTableFieldDefinitions: ['preferenceId', 'title', 'name'],
 	},
-	(client: SmartThingsClient) => client.devicePreferences.list(),
+	command => command.client.devicePreferences.list(),
 )
 
 export const chooseDevicePreference = chooseDevicePreferenceFn()

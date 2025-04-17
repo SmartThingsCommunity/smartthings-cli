@@ -1,11 +1,9 @@
 import { jest } from '@jest/globals'
 
-import { LocationItem, LocationsEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
-import { stringTranslateToId } from '../../../../lib/command/command-util.js'
-import {
-	createChooseFn,
-	type ChooseFunction,
-} from '../../../../lib/command/util/util-util.js'
+import type { LocationItem, LocationsEndpoint } from '@smartthings/core-sdk'
+import type { stringTranslateToId } from '../../../../lib/command/command-util.js'
+import type { createChooseFn, ChooseFunction } from '../../../../lib/command/util/util-util.js'
+import { APICommand } from '../../../../lib/command/api-command.js'
 
 
 const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
@@ -38,13 +36,15 @@ test('chooseLocationFn uses correct endpoint to list locations', async () => {
 	const apiLocationsListMock = jest.fn<typeof LocationsEndpoint.prototype.list>()
 		.mockResolvedValueOnce(locationList)
 	const listItems = createChooseFnMock.mock.calls[0][1]
-	const client = {
-		locations: {
-			list: apiLocationsListMock,
+	const command = {
+		client: {
+			locations: {
+				list: apiLocationsListMock,
+			},
 		},
-	} as unknown as SmartThingsClient
+	} as unknown as APICommand
 
-	expect(await listItems(client)).toBe(locationList)
+	expect(await listItems(command)).toBe(locationList)
 
 	expect(apiLocationsListMock).toHaveBeenCalledExactlyOnceWith()
 })

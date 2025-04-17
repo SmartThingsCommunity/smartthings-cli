@@ -1,4 +1,4 @@
-import { type Rule, type SmartThingsClient } from '@smartthings/core-sdk'
+import { type Rule } from '@smartthings/core-sdk'
 
 import { type WithNamedLocation } from '../../api-helpers.js'
 import { getRulesByLocation } from './rules-util.js'
@@ -12,7 +12,7 @@ export const chooseRuleFn = (locationId?: string): ChooseFunction<Rule & WithNam
 		sortKeyName: 'name',
 		listTableFieldDefinitions: ['name', 'id', 'locationId', 'location'],
 	},
-	(client: SmartThingsClient) => getRulesByLocation(client, locationId),
+	command => getRulesByLocation(command.client, locationId),
 )
 
 export const chooseRule = chooseRuleFn()
