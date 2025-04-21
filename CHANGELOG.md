@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.10.4
+
+### Patch Changes
+
+- [#725](https://github.com/SmartThingsCommunity/smartthings-cli/pull/725) [`3b72f39`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/3b72f3953ea1ce9193019d11fa68a35bc0858b7d) Thanks [@rossiam](https://github.com/rossiam)! - allow boolean values in edge package config file
+
 ## 1.10.3
 
 ### Patch Changes
