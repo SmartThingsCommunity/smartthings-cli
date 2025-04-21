@@ -70,12 +70,8 @@ export type YAMLFileData = {
 	[key: string]: string | object | number | undefined
 }
 
-const isYAMLFileData = (data: unknown): data is YAMLFileData => {
-	return data !== null &&
-		typeof data === 'object' &&
-		Object.keys(data).length > 0 &&
-		Object.values(data).every(value => ['string', 'object', 'number'].includes(typeof value))
-}
+const isYAMLFileData = (data: unknown): data is YAMLFileData =>
+	data !== null && typeof data === 'object' && Object.keys(data).length > 0
 
 export const readYAMLFile = (filename: string): YAMLFileData => {
 	try {
