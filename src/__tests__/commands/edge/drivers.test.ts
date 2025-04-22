@@ -27,7 +27,7 @@ import {
 	type buildTableOutput,
 	type listDrivers,
 	listTableFieldDefinitions,
-} from '../../../lib/command/util/edge/drivers-util.js'
+} from '../../../lib/command/util/edge-drivers.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 import { tableGeneratorMock } from '../../test-lib/table-mock.js'
@@ -65,7 +65,7 @@ jest.unstable_mockModule('../../../lib/command/util/apps-util.js', () => ({
 
 const buildTableOutputMock = jest.fn<typeof buildTableOutput>()
 const listDriversMock = jest.fn<typeof listDrivers>()
-jest.unstable_mockModule('../../../lib/command/util/edge/drivers-util.js', () => ({
+jest.unstable_mockModule('../../../lib/command/util/edge-drivers.js', () => ({
 	buildTableOutput: buildTableOutputMock,
 	listDrivers: listDriversMock,
 	listTableFieldDefinitions,

@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import type {
+import {
 	DriversEndpoint,
 	EdgeDriverSummary,
 	EdgeDeviceIntegrationProfileKey,
@@ -8,20 +8,22 @@ import type {
 	EdgeDriverPermissions,
 	SmartThingsClient,
 	OrganizationResponse,
+	DriverChannelDetails,
+	ChannelsEndpoint,
 } from '@smartthings/core-sdk'
 
-import type { WithOrganization, forAllOrganizations } from '../../../../../lib/api-helpers.js'
+import type { WithOrganization, forAllOrganizations } from '../../../../lib/api-helpers.js'
 import {
 	buildTableFromItemMock,
 	buildTableFromListMock,
 	mockedItemTableOutput,
 	mockedListTableOutput,
 	tableGeneratorMock,
-} from '../../../../test-lib/table-mock.js'
+} from '../../../test-lib/table-mock.js'
 
 
 const forAllOrganizationsMock = jest.fn<typeof forAllOrganizations>()
-jest.unstable_mockModule('../../../../../lib/api-helpers.js', () => ({
+jest.unstable_mockModule('../../../../lib/api-helpers.js', () => ({
 	forAllOrganizations: forAllOrganizationsMock,
 }))
 
@@ -36,9 +38,10 @@ const driverList = [{ name: 'Driver' }] as EdgeDriverSummary[]
 
 const {
 	buildTableOutput,
+	listAssignedDriversWithNames,
 	listDrivers,
 	permissionsValue,
-} = await import('../../../../../lib/command/util/edge/drivers-util.js')
+} = await import('../../../../lib/command/util/edge-drivers.js')
 
 
 describe('permissionsValue', () => {
@@ -128,5 +131,61 @@ describe('listDrivers', () => {
 		expect(await listDriversFunction(client, { organizationId: 'unused' } as
 			OrganizationResponse)).toBe(driverList)
 		expect(apiDriversListMock).toHaveBeenCalledExactlyOnceWith()
+	})
+})
+
+describe('listAssignedDriversWithNames', () => {
+	const driverChannelDetailsList = [{ channelId: 'channel-id', driverId: 'driver-id' }] as
+		unknown as DriverChannelDetails[]
+	const apiChannelsListAssignedDriversMock = jest.fn<typeof ChannelsEndpoint.prototype.listAssignedDrivers>()
+	const apiChannelsGetDriverChannelMetaInfoMock =
+		jest.fn<typeof ChannelsEndpoint.prototype.getDriverChannelMetaInfo>()
+	const client = {
+		channels: {
+			listAssignedDrivers: apiChannelsListAssignedDriversMock,
+			getDriverChannelMetaInfo: apiChannelsGetDriverChannelMetaInfoMock,
+		},
+	} as unknown as SmartThingsClient
+
+	const driver = { name: 'driver name' } as EdgeDriver
+
+	it('lists drivers with their names', async () => {
+		apiChannelsListAssignedDriversMock.mockResolvedValueOnce(driverChannelDetailsList)
+		apiChannelsGetDriverChannelMetaInfoMock.mockResolvedValueOnce(driver)
+
+		const result = await listAssignedDriversWithNames(client, 'channel-id')
+
+		expect(result).toEqual([{ channelId: 'channel-id', driverId: 'driver-id', name: 'driver name' }])
+
+		expect(apiChannelsListAssignedDriversMock).toHaveBeenCalledExactlyOnceWith('channel-id')
+		expect(apiChannelsGetDriverChannelMetaInfoMock).toHaveBeenCalledExactlyOnceWith('channel-id', 'driver-id')
+	})
+
+	it('skips deleted drivers', async () => {
+		const driverChannelDetailsList = [
+			{ channelId: 'channel-id', driverId: 'driver-id' },
+			{ channelId: 'channel-id', driverId: 'deleted-driver-id' },
+		] as unknown as DriverChannelDetails[]
+		apiChannelsListAssignedDriversMock.mockResolvedValueOnce(driverChannelDetailsList)
+		apiChannelsGetDriverChannelMetaInfoMock.mockResolvedValueOnce(driver)
+		apiChannelsGetDriverChannelMetaInfoMock.mockRejectedValueOnce({ response: { status: 404 } })
+
+		const result = await listAssignedDriversWithNames(client, 'channel-id')
+
+		expect(result).toEqual([{ channelId: 'channel-id', driverId: 'driver-id', name: 'driver name' }])
+
+		expect(apiChannelsListAssignedDriversMock).toHaveBeenCalledExactlyOnceWith('channel-id')
+		expect(apiChannelsGetDriverChannelMetaInfoMock).toHaveBeenCalledTimes(2)
+		expect(apiChannelsGetDriverChannelMetaInfoMock).toHaveBeenCalledWith('channel-id', 'driver-id')
+		expect(apiChannelsGetDriverChannelMetaInfoMock).toHaveBeenCalledWith('channel-id', 'deleted-driver-id')
+	})
+
+	it('passes on other errors from getDriverChannelMetaInfo', async () => {
+		apiChannelsListAssignedDriversMock.mockResolvedValueOnce(driverChannelDetailsList)
+		apiChannelsGetDriverChannelMetaInfoMock.mockRejectedValueOnce(Error('random error'))
+
+		await expect(listAssignedDriversWithNames(client, 'channel-id')).rejects.toThrow(Error('random error'))
+
+		expect(apiChannelsListAssignedDriversMock).toHaveBeenCalledExactlyOnceWith('channel-id')
 	})
 })

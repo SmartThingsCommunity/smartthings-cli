@@ -10,7 +10,7 @@ import {
 	type OutputItemOrListConfig,
 	type OutputItemOrListFlags,
 } from '../../../lib/command/listing-io.js'
-import { buildTableOutput, listTableFieldDefinitions } from '../../../lib/command/util/edge/drivers-util.js'
+import { buildTableOutput, listTableFieldDefinitions } from '../../../lib/command/util/edge-drivers.js'
 
 
 export type CommandArgs =

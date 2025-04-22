@@ -22,7 +22,7 @@ import {
 	buildTableOutput,
 	listDrivers,
 	listTableFieldDefinitions,
-} from '../../lib/command/util/edge/drivers-util.js'
+} from '../../lib/command/util/edge-drivers.js'
 import { apiDocsURL } from '../../lib/command/api-command.js'
 
 

@@ -1,7 +1,7 @@
 import { type EdgeDriverSummary } from '@smartthings/core-sdk'
 
+import { type DriverChannelDetailsWithName, listAssignedDriversWithNames, listDrivers } from './edge-drivers.js'
 import { type ChooseFunction, createChooseFn } from './util-util.js'
-import { listDrivers } from './edge/drivers-util.js'
 
 
 /**
@@ -23,3 +23,13 @@ export const chooseDriverFn = (
 )
 
 export const chooseDriver = chooseDriverFn()
+
+export const chooseDriverFromChannelFn = (channelId: string): ChooseFunction<DriverChannelDetailsWithName> =>
+	createChooseFn(
+		{
+			itemName: 'driver',
+			primaryKeyName: 'driverId',
+			sortKeyName: 'name',
+		},
+		command => listAssignedDriversWithNames(command.client, channelId),
+	)

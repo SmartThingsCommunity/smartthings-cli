@@ -39,6 +39,7 @@ import edgeChannelsCommand from './edge/channels.js'
 import edgeChannelsInvitesCommand from './edge/channels/invites.js'
 import edgeDriversCommand from './edge/drivers.js'
 import edgeDriversDefaultCommand from './edge/drivers/default.js'
+import edgeDriversInstallCommand from './edge/drivers/install.js'
 import installedappsCommand from './installedapps.js'
 import installedappsDeleteCommand from './installedapps/delete.js'
 import installedappsRenameCommand from './installedapps/rename.js'
@@ -118,6 +119,7 @@ export const commands: CommandModule<object, any>[] = [
 	edgeChannelsInvitesCommand,
 	edgeDriversCommand,
 	edgeDriversDefaultCommand,
+	edgeDriversInstallCommand,
 	installedappsCommand,
 	installedappsDeleteCommand,
 	installedappsRenameCommand,
