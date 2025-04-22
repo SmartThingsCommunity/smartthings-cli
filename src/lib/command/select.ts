@@ -128,8 +128,11 @@ export type SelectOptions<L extends object, ID = string> = PromptUserOptions<L, 
  * @param options More parameters bundled in an object for readability.
  * @returns Selected id if one was chosen. Logs message if no items are found and exits.
  */
-export async function selectFromList<L extends object, ID = string>(command: SmartThingsCommand<SelectFromListFlags>,
-		config: SelectFromListConfig<L>, options: SelectOptions<L, ID>): Promise<ID> {
+export async function selectFromList<L extends object, ID = string>(
+		command: SmartThingsCommand<SelectFromListFlags>,
+		config: SelectFromListConfig<L>,
+		options: SelectOptions<L, ID>,
+): Promise<ID> {
 	if (options.preselectedId) {
 		return options.preselectedId
 	}

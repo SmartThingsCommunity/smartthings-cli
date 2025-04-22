@@ -9,7 +9,7 @@ import type { fatalError } from '../../../../lib/util.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type { CustomCommonOutputProducer } from '../../../../lib/command/format.js'
 import type { outputItemOrList, outputItemOrListBuilder } from '../../../../lib/command/listing-io.js'
-import { buildTableOutput, listTableFieldDefinitions } from '../../../../lib/command/util/edge/drivers-util.js'
+import { buildTableOutput, listTableFieldDefinitions } from '../../../../lib/command/util/edge-drivers.js'
 import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock.js'
 import { tableGeneratorMock } from '../../../test-lib/table-mock.js'
@@ -30,7 +30,7 @@ jest.unstable_mockModule('../../../../lib/command/listing-io.js', () => ({
 }))
 
 const buildTableOutputMock = jest.fn<typeof buildTableOutput>()
-jest.unstable_mockModule('../../../../lib/command/util/edge/drivers-util.js', () => ({
+jest.unstable_mockModule('../../../../lib/command/util/edge-drivers.js', () => ({
 	buildTableOutput: buildTableOutputMock,
 	listTableFieldDefinitions,
 }))

@@ -3,7 +3,7 @@ import { Flags } from '@oclif/core'
 import { Device } from '@smartthings/core-sdk'
 
 import { chooseChannel } from '../../../lib/commands/channels-util.js'
-import { chooseHub, listHubs } from '../../../lib/commands/drivers-util.js'
+import { chooseHub, listOwnedHubs } from '../../../lib/commands/drivers-util.js'
 import { EdgeCommand } from '../../../lib/edge-command.js'
 
 
@@ -46,7 +46,7 @@ export class ChannelsUnenrollCommand extends EdgeCommand<typeof ChannelsUnenroll
 	async run(): Promise<void> {
 		// A special listItems for `chooseHub` that will only include hubs which are enrolled in channels.
 		const listItems = async (): Promise<Device[]> => {
-			const hubs = await listHubs(this)
+			const hubs = await listOwnedHubs(this)
 			const hubsWithChannels = await Promise.all(hubs.map(async hub =>
 				({ hub, channels: await this.client.hubdevices.enrolledChannels(hub.deviceId) })))
 			return hubsWithChannels
