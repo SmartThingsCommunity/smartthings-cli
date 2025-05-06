@@ -1,17 +1,17 @@
 import { jest } from '@jest/globals'
 
-import log4js from 'log4js'
+import type log4js from 'log4js'
 
 
 export const configureMock: jest.Mock<typeof log4js.configure> = jest.fn()
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type LogFunction = (message: any, ...args: any[]) => void
 export const getLoggerMock: jest.Mock<typeof log4js.getLogger> = jest.fn()
-export const errorMock = jest.fn() as jest.Mock<LogFunction>
-export const warnMock = jest.fn() as jest.Mock<LogFunction>
-export const debugMock = jest.fn() as jest.Mock<LogFunction>
-export const traceMock = jest.fn() as jest.Mock<LogFunction>
+export const isDebugEnabledMock = jest.fn<log4js.Logger['isDebugEnabled']>()
+export const errorMock = jest.fn<log4js.Logger['error']>()
+export const warnMock = jest.fn<log4js.Logger['warn']>()
+export const debugMock = jest.fn<log4js.Logger['debug']>()
+export const traceMock = jest.fn<log4js.Logger['trace']>()
 export const loggerMock = {
+	isDebugEnabled: isDebugEnabledMock,
 	error: errorMock,
 	warn: warnMock,
 	debug: debugMock,
