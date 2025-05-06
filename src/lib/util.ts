@@ -37,9 +37,9 @@ export const sanitize = (input?: string): string => input?.replace(/[\W]/g, '') 
 
 export const delay = async (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
 
-export const fatalError = (message?: string, code = 1): never => {
-	if (message) {
-		console.error(message)
+export const fatalError = (error?: string | Error, code = 1): never => {
+	if (error) {
+		console.error(error)
 	}
 	// eslint-disable-next-line no-process-exit
 	process.exit(code)
