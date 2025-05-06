@@ -10,7 +10,7 @@ import { convertToId, logEvent, selectFromList, Sorting, SseCommand, stringTrans
 
 import LogCatCommand from '../../../../commands/edge/drivers/logcat.js'
 import { DriverInfo, handleConnectionErrors, LiveLogClient, liveLogMessageFormatter, parseIpAndPort } from '../../../../lib/live-logging.js'
-import { runForever } from '../../../../lib/commands/drivers/logcat-util.js'
+import { runForever } from '../../../../lib/commands/drivers/logcat.js'
 import { chooseHub } from '../../../../lib/commands/drivers-util.js'
 
 
@@ -84,7 +84,7 @@ jest.mock('../../../../../src/lib/live-logging', () => ({
 	},
 }))
 
-jest.mock('../../../../../src/lib/commands/drivers/logcat-util')
+jest.mock('../../../../../src/lib/commands/drivers/logcat')
 jest.mock('../../../../lib/commands/drivers-util')
 
 describe('LogCatCommand', () => {
