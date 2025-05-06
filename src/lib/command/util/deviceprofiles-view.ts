@@ -1,9 +1,15 @@
-import { PresentationDeviceConfig, PresentationDeviceConfigCreate, PresentationDeviceConfigEntry } from '@smartthings/core-sdk'
+import {
+	type PresentationDeviceConfig,
+	type PresentationDeviceConfigCreate,
+	type PresentationDeviceConfigEntry,
+} from '@smartthings/core-sdk'
 
-import { DeviceView, ViewPresentationDeviceConfigEntry } from '../deviceprofiles-util.js'
+import { type DeviceView, type ViewPresentationDeviceConfigEntry } from './deviceprofiles-util.js'
 
 
-export const prunePresentationEntries = (entries: PresentationDeviceConfigEntry[]): ViewPresentationDeviceConfigEntry[] => {
+export const prunePresentationEntries = (
+		entries: PresentationDeviceConfigEntry[],
+): ViewPresentationDeviceConfigEntry[] => {
 	const mcd = entries.find(it => it.component !== 'main')
 	return entries.map(entry => {
 		const viewEntry: ViewPresentationDeviceConfigEntry = { ...entry }
@@ -28,7 +34,8 @@ export const prunePresentationEntries = (entries: PresentationDeviceConfigEntry[
  * "main", the version number from a capability reference if it is 1 and empty arrays.
  */
 export const prunePresentation = (view: PresentationDeviceConfig): DeviceView => {
-	const retVal = { ...view } as DeviceView & Partial<Omit<PresentationDeviceConfig, 'dashboard' | 'detailView' | 'automation'>>
+	const retVal = { ...view } as
+		DeviceView & Partial<Omit<PresentationDeviceConfig, 'dashboard' | 'detailView' | 'automation'>>
 	delete retVal.manufacturerName
 	delete retVal.presentationId
 	delete retVal.type
@@ -54,15 +61,16 @@ export const prunePresentation = (view: PresentationDeviceConfig): DeviceView =>
 	return retVal
 }
 
-export const augmentPresentationEntries = (entries: ViewPresentationDeviceConfigEntry[]): PresentationDeviceConfigEntry[] => {
-	return entries.map(entry => {
+export const augmentPresentationEntries = (
+		entries: ViewPresentationDeviceConfigEntry[],
+): PresentationDeviceConfigEntry[] =>
+	entries.map(entry => {
 		return {
 			...entry,
 			version: entry.version ?? 1,
 			component: entry.component ?? 'main',
 		} as PresentationDeviceConfigEntry
 	})
-}
 
 /**
  * Update the `DeviceView` to be a `PresentationDeviceConfigCreate` by ensuring all entries

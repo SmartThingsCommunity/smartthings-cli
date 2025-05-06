@@ -1,5 +1,12 @@
-import { PresentationDeviceConfig } from '@smartthings/core-sdk'
-import { augmentPresentation, augmentPresentationEntries, prunePresentation, prunePresentationEntries } from '../../../../lib/commands/deviceprofiles/view-util.js'
+import { type PresentationDeviceConfig } from '@smartthings/core-sdk'
+
+
+const {
+	augmentPresentation,
+	augmentPresentationEntries,
+	prunePresentation,
+	prunePresentationEntries,
+} = await import('../../../../lib/command/util/deviceprofiles-view.js')
 
 
 const entry1PrunedOnlyMain = {
