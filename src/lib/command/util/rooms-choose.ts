@@ -8,14 +8,14 @@ import { tableFieldDefinitionsWithLocationName } from './rooms-table.js'
 import { getRoomsWithLocation } from './rooms-util.js'
 
 
-export async function chooseRoom(
+export const chooseRoom = async (
 		command: APICommand,
 		preselectedId?: string,
 		options?: {
 			locationId?: string
 			autoChoose?: boolean
 		},
-): Promise<[string, string]> {
+): Promise<[string, string]> => {
 	const rooms = await getRoomsWithLocation(command.client, options?.locationId)
 	const config: SelectFromListConfig<Room & WithNamedLocation> = {
 		itemName: 'room',
