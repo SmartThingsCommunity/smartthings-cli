@@ -138,6 +138,10 @@ module.exports = {
 				selector: 'enumMember',
 				format: ['PascalCase', 'UPPER_CASE'],
 			},
+			{
+				selector: 'import',
+				format: ['camelCase', 'PascalCase'],
+			},
 		],
 	},
 }

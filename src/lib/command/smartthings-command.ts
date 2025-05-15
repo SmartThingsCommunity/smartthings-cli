@@ -119,6 +119,12 @@ export const getConfigDirsCheckingForOldConfig = async (
 		oldDir: oldCacheDir,
 		newDir: dataDir,
 	})
+	await copyIfExists({
+		...options,
+		filename: 'known_hubs.json',
+		oldDir: oldCacheDir,
+		newDir: dataDir,
+	})
 
 	return { configDir, dataDir, logDir }
 }
