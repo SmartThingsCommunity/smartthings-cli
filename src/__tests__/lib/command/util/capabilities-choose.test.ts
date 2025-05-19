@@ -9,6 +9,7 @@ import type { selectFromList, SelectFromListFlags } from '../../../../lib/comman
 import type {
 	CapabilitySummaryWithNamespace,
 	convertToId,
+	getAllFiltered,
 	getCustomByNamespace,
 	translateToId,
 } from '../../../../lib/command/util/capabilities-util.js'
@@ -28,10 +29,12 @@ jest.unstable_mockModule('../../../../lib/command/select.js', () => ({
 }))
 
 const convertToIdMock = jest.fn<typeof convertToId>()
+const getAllFilteredMock = jest.fn<typeof getAllFiltered>()
 const getCustomByNamespaceMock = jest.fn<typeof getCustomByNamespace>()
 const translateToIdMock = jest.fn<typeof translateToId>()
 jest.unstable_mockModule('../../../../lib/command/util/capabilities-util.js', () => ({
 	convertToId: convertToIdMock,
+	getAllFiltered: getAllFilteredMock,
 	getCustomByNamespace: getCustomByNamespaceMock,
 	translateToId: translateToIdMock,
 }))
@@ -39,6 +42,7 @@ jest.unstable_mockModule('../../../../lib/command/util/capabilities-util.js', ()
 
 const {
 	chooseCapability,
+	chooseCapabilityFiltered,
 	getIdFromUser,
 } = await import('../../../../lib/command/util/capabilities-choose.js')
 
@@ -281,5 +285,39 @@ describe('chooseCapability', () => {
 		expect(apiCapabilitiesListLocalesMock).toHaveBeenCalledTimes(2)
 		expect(apiCapabilitiesListLocalesMock).toHaveBeenCalledWith('capability-1', 1)
 		expect(apiCapabilitiesListLocalesMock).toHaveBeenCalledWith('capability-2', 1)
+	})
+})
+
+describe('chooseCapabilityFiltered', () => {
+	it('uses selectFromList', async () => {
+		expect(await chooseCapabilityFiltered(command, 'user prompt', 'filter')).toBe(selectedCapabilityId)
+
+		expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
+			command,
+			expect.objectContaining({ itemName: 'capability' }),
+			expect.objectContaining({
+				getIdFromUser,
+				promptMessage: 'user prompt',
+			}),
+		)
+	})
+
+	it('uses list function that uses getAllFiltered', async () => {
+		const customCapabilitiesWithNamespaces = [
+			{ id: 'capability-1', version: 1, namespace: 'namespace-1' },
+			{ id: 'capability-2', version: 1, namespace: 'namespace-1' },
+			{ id: 'capability-3', version: 1, namespace: 'namespace-2' },
+		]
+
+		expect(await chooseCapabilityFiltered(command, 'user prompt', 'filter')).toBe(selectedCapabilityId)
+
+		expect(selectFromListMock).toHaveBeenCalledTimes(1)
+
+		const listItems = selectFromListMock.mock.calls[0][2].listItems
+		getAllFilteredMock.mockResolvedValueOnce(customCapabilitiesWithNamespaces)
+
+		expect(await listItems()).toBe(customCapabilitiesWithNamespaces)
+
+		expect(getAllFilteredMock).toHaveBeenCalledExactlyOnceWith(client, 'filter')
 	})
 })

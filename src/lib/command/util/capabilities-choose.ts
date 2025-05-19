@@ -7,8 +7,9 @@ import { selectFromList, type SelectFromListConfig, type SelectFromListFlags } f
 import {
 	type CapabilityId,
 	convertToId,
-	getCustomByNamespace,
 	type CapabilitySummaryWithNamespace,
+	getAllFiltered,
+	getCustomByNamespace,
 	translateToId,
 } from './capabilities-util.js'
 
@@ -95,4 +96,23 @@ export const chooseCapability = async (
 			promptMessage: options?.promptMessage,
 		},
 	)
+}
+
+export const chooseCapabilityFiltered = async (
+		command: APICommand<SelectFromListFlags>,
+		promptMessage: string,
+		filter: string,
+): Promise<CapabilityId> => {
+	const config: SelectFromListConfig<CapabilitySummaryWithNamespace> = {
+		itemName: 'capability',
+		pluralItemName: 'capabilities',
+		primaryKeyName: 'id',
+		sortKeyName: 'id',
+		listTableFieldDefinitions: ['id', 'version', 'status'],
+	}
+	return selectFromList(command, config, {
+		listItems: () => getAllFiltered(command.client, filter),
+		getIdFromUser,
+		promptMessage,
+	})
 }

@@ -1,18 +1,18 @@
-import { Errors } from '@oclif/core'
 import inquirer from 'inquirer'
 
 import {
-	DeviceProfile,
-	DeviceProfileRequest,
-	PresentationDeviceConfig,
-	PresentationDeviceConfigCreate,
-	SmartThingsClient,
+	type DeviceProfile,
+	type DeviceProfileRequest,
+	type PresentationDeviceConfig,
+	type PresentationDeviceConfigCreate,
+	type SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import { APICommand } from '@smartthings/cli-lib'
-
-import { CapabilityId, chooseCapabilityFiltered } from '../capabilities-util.js'
-import { cleanupForCreate, cleanupForUpdate, DeviceDefinitionRequest } from '../deviceprofiles-util.js'
+import { chooseCapabilityFiltered } from './capabilities-choose.js'
+import { type CapabilityId } from './capabilities-util.js'
+import { cleanupForCreate, cleanupForUpdate, DeviceDefinitionRequest } from './deviceprofiles-util.js'
+import { APICommand } from '../api-command.js'
+import { fatalError } from '../../util.js'
 
 
 const capabilitiesWithoutPresentations = ['healthCheck', 'execute']
@@ -123,12 +123,12 @@ export const capabilityDefined = async (client: SmartThingsClient, idStr: string
 	try {
 		const capability = await client.capabilities.get(idStr, 1)
 		return !!capability
-	} catch (e) {
+	} catch {
 		return false
 	}
 }
 
-export const promptAndAddCapability = async (command: APICommand<typeof APICommand.flags>, deviceProfile: DeviceProfileRequest, componentId: string, prompt = 'Capability ID'): Promise<CapabilityId> => {
+export const promptAndAddCapability = async (command: APICommand, deviceProfile: DeviceProfileRequest, componentId: string, prompt = 'Capability ID'): Promise<CapabilityId> => {
 	let capabilityId: CapabilityId = { id: '', version: 0 }
 	const idStr = (await inquirer.prompt({
 		type: 'input',
@@ -155,7 +155,7 @@ export const promptAndAddCapability = async (command: APICommand<typeof APIComma
 		if (component) {
 			component.capabilities?.push(capabilityId)
 		} else {
-			throw new Errors.CLIError(`Component ${componentId} not defined in profile`)
+			return fatalError(`Component ${componentId} not defined in profile`)
 		}
 	}
 
@@ -181,7 +181,7 @@ export const promptAndAddComponent = async (deviceProfile: DeviceProfileRequest,
 	return componentId
 }
 
-export const getInputFromUser = async (command: APICommand<typeof APICommand.flags>): Promise<DeviceProfileRequest> => {
+export const getInputFromUser = async (command: APICommand): Promise<DeviceProfileRequest> => {
 	const name = (await inquirer.prompt({
 		type: 'input',
 		name: 'deviceProfileName',
