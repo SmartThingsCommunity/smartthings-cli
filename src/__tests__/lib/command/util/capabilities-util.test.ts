@@ -29,6 +29,7 @@ jest.unstable_mockModule('../../../../lib/command/output.js', () => ({
 const {
 	attributeTypeDisplayString,
 	convertToId,
+	getAllFiltered,
 	getCustomByNamespace,
 	getStandard,
 	translateToId,
@@ -108,15 +109,23 @@ const apiCapabilitiesListNamespacesMock =
 const apiCapabilitiesListMock = jest.fn<typeof CapabilitiesEndpoint.prototype.list>()
 const apiCapabilitiesListStandardMock =
 	jest.fn<typeof CapabilitiesEndpoint.prototype.listStandard>()
-const client = { capabilities: {
-	listNamespaces: apiCapabilitiesListNamespacesMock,
-	list: apiCapabilitiesListMock,
-	listStandard: apiCapabilitiesListStandardMock,
-} } as unknown as SmartThingsClient
+const client = {
+	capabilities: {
+		listNamespaces: apiCapabilitiesListNamespacesMock,
+		list: apiCapabilitiesListMock,
+		listStandard: apiCapabilitiesListStandardMock,
+	},
+} as unknown as SmartThingsClient
 
 const ns1Capabilities = [{ id: 'capability-1', version: 1 }, { id: 'capability-2', version: 1 }]
 const ns2Capabilities = [{ id: 'capability-3', version: 1 }]
 
+const standardCapabilities = [
+	{ id: 'switch', version: 1 },
+	{ id: 'button', version: 1 },
+	{ id: 'bridge', version: 1, status: 'deprecated' },
+]
+apiCapabilitiesListStandardMock.mockResolvedValue(standardCapabilities)
 const customCapabilitiesWithNamespaces = [
 	{ id: 'capability-1', version: 1, namespace: 'namespace-1' },
 	{ id: 'capability-2', version: 1, namespace: 'namespace-1' },
@@ -128,6 +137,8 @@ const bridgeCapability = { id: 'bridge', version: 1, status: 'deprecated', names
 const standardCapabilitiesWithNamespaces = [switchCapability, buttonCapability, bridgeCapability]
 const allCapabilitiesWithNamespaces = [...standardCapabilitiesWithNamespaces, ...customCapabilitiesWithNamespaces]
 const sortedCapabilitiesWithNamespaces = [...customCapabilitiesWithNamespaces, ...standardCapabilitiesWithNamespaces]
+apiCapabilitiesListNamespacesMock.mockResolvedValue([{ name: 'namespace-1' } as CapabilityNamespace])
+apiCapabilitiesListMock.mockResolvedValue(ns1Capabilities)
 
 
 describe('getCustomByNamespace', () => {
@@ -160,15 +171,10 @@ describe('getCustomByNamespace', () => {
 })
 
 describe('getStandard', () => {
-	const standardCapabilities = [
-		{ id: 'switch', version: 1 },
-		{ id: 'button', version: 1 },
-		{ id: 'bridge', version: 1, status: 'deprecated' },
-	]
-
 	it('returns standard capabilities with the "st" namespace', async () => {
-		apiCapabilitiesListStandardMock.mockResolvedValueOnce(standardCapabilities)
 		expect(await getStandard(client)).toStrictEqual(standardCapabilitiesWithNamespaces)
+
+		expect(apiCapabilitiesListStandardMock).toHaveBeenCalledExactlyOnceWith()
 	})
 })
 
@@ -248,5 +254,28 @@ describe('convertToId', () => {
 
 	it('throws exception if type of id is not a string', () => {
 		expect(() => convertToId('1', [{ id: 1993 } as unknown as CapabilitySummaryWithNamespace])).toThrow()
+	})
+})
+
+describe('getAllFiltered', () => {
+	it('skips filter when empty', async () => {
+		const allCapabilities = [
+			...standardCapabilitiesWithNamespaces,
+			customCapabilitiesWithNamespaces[0],
+			customCapabilitiesWithNamespaces[1],
+		]
+		expect(await getAllFiltered(client, '')).toStrictEqual(allCapabilities)
+	})
+
+	it('filters out items by name', async () => {
+		expect(await getAllFiltered(client, 'switch')).toStrictEqual([switchCapability])
+	})
+
+	it('filters out deprecated items', async () => {
+		expect(await getAllFiltered(client, 'b')).toStrictEqual([
+			buttonCapability,
+			customCapabilitiesWithNamespaces[0],
+			customCapabilitiesWithNamespaces[1],
+		])
 	})
 })

@@ -1,4 +1,5 @@
 import {
+	type DeviceComponent,
 	type DeviceProfile,
 	type DeviceProfilePreferenceRequest,
 	DeviceProfileStatus,
@@ -16,8 +17,35 @@ import {
 
 const {
 	buildTableOutput,
+	cleanupForCreate,
+	cleanupForUpdate,
 	entryValues,
 } = await import('../../../../lib/command/util/deviceprofiles-util.js')
+
+
+const baseDeviceProfileCreate = {
+	name:'Device Profile',
+	components: [],
+}
+const baseDeviceProfile: DeviceProfile & { restrictions: unknown } = {
+	...baseDeviceProfileCreate,
+	id: 'device-profile-id',
+	status: DeviceProfileStatus.PUBLISHED,
+	restrictions: 'some restrictions',
+}
+const componentsWithoutLabels: DeviceComponent[] = [
+	{ id: 'main', capabilities: [{ id: 'switch', version: 1 }] },
+	{
+		id: 'second',
+		capabilities: [{ id: 'switch', version: 1 }, { id: 'cap-2', version: 1 }],
+	},
+	{ id: 'third' },
+]
+const components: DeviceComponent[] = [
+	componentsWithoutLabels[0],
+	{ ...componentsWithoutLabels[1], label: 'Second Component' },
+	{ ...componentsWithoutLabels[2], label: 'Third Component' },
+]
 
 
 describe('entryValues', () => {
@@ -42,13 +70,6 @@ describe('entryValues', () => {
 })
 
 describe('buildTableOutput', () => {
-	const baseDeviceProfile: DeviceProfile = {
-		id: 'device-profile-id',
-		name:'Device Profile',
-		components: [],
-		status: DeviceProfileStatus.PUBLISHED,
-	}
-
 	it('includes basic info', () => {
 		expect(buildTableOutput(tableGeneratorMock, baseDeviceProfile)).toBe(mockedTableOutput)
 
@@ -87,17 +108,7 @@ describe('buildTableOutput', () => {
 	})
 
 	it('includes components with capabilities', () => {
-		const deviceProfile = {
-			...baseDeviceProfile,
-			components: [
-				{ id: 'main', capabilities: [{ id: 'switch', version: 1 }] },
-				{
-					id: 'second',
-					capabilities: [{ id: 'switch', version: 1 }, { id: 'cap-2', version: 1 }],
-				},
-				{ id: 'third' },
-			],
-		}
+		const deviceProfile = { ...baseDeviceProfile, components }
 
 		expect(buildTableOutput(tableGeneratorMock, deviceProfile)).toBe(mockedTableOutput)
 
@@ -184,5 +195,18 @@ describe('buildTableOutput', () => {
 			deviceProfile.preferences,
 			expect.arrayContaining(['preferenceId', 'title']),
 		)
+	})
+})
+
+test('cleanupForCreate', () => {
+	expect(cleanupForCreate({ ...baseDeviceProfile, components })).toStrictEqual({
+		...baseDeviceProfileCreate,
+		components: componentsWithoutLabels,
+	})
+})
+
+test('cleanupForUpdate', () => {
+	expect(cleanupForUpdate({ ...baseDeviceProfile, components })).toStrictEqual({
+		components: componentsWithoutLabels,
 	})
 })

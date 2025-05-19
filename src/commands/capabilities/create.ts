@@ -14,8 +14,8 @@ import {
 } from '@smartthings/core-sdk'
 
 import { fatalError } from '../../lib/util.js'
-import { apiCommandBuilder, apiDocsURL } from '../../lib/command/api-command.js'
-import { apiOrganizationCommand, type APIOrganizationCommandFlags } from '../../lib/command/api-organization-command.js'
+import { apiDocsURL } from '../../lib/command/api-command.js'
+import { apiOrganizationCommand, apiOrganizationCommandBuilder, type APIOrganizationCommandFlags } from '../../lib/command/api-organization-command.js'
 import {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
@@ -37,7 +37,7 @@ const command = 'capabilities:create'
 const describe = 'create a capability'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
-	inputAndOutputItemBuilder(apiCommandBuilder(yargs))
+	inputAndOutputItemBuilder(apiOrganizationCommandBuilder(yargs))
 		.option('namespace', {
 			alias: 'n',
 			description: 'the namespace to create the capability under',

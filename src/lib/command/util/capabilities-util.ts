@@ -142,3 +142,16 @@ export const convertToId = (
 		return false
 	}
 }
+
+export const getAllFiltered = async (
+		client: SmartThingsClient,
+		filter: string,
+): Promise<CapabilitySummaryWithNamespace[]> => {
+	const list = (await Promise.all([getStandard(client), getCustomByNamespace(client)])).flat()
+	if (filter) {
+		filter = filter.toLowerCase()
+		return list.filter(capability =>
+			capability.id.toLowerCase().includes(filter) && capability.status !== 'deprecated')
+	}
+	return list
+}
