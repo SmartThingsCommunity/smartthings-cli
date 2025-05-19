@@ -19,6 +19,7 @@ import capabilitiesPresentationCreateCommand from './capabilities/presentation/c
 import capabilitiesPresentationUpdateCommand from './capabilities/presentation/update.js'
 import capabilitiesTranslationsCommand from './capabilities/translations.js'
 import capabilitiesTranslationsCreateCommand from './capabilities/translations/create.js'
+import capabilitiesTranslationsUpdateCommand from './capabilities/translations/update.js'
 import capabilitiesTranslationsUpsertCommand from './capabilities/translations/upsert.js'
 import configCommand from './config.js'
 import configResetCommand from './config/reset.js'
@@ -102,6 +103,7 @@ export const commands: CommandModule<object, any>[] = [
 	capabilitiesPresentationUpdateCommand,
 	capabilitiesTranslationsCommand,
 	capabilitiesTranslationsCreateCommand,
+	capabilitiesTranslationsUpdateCommand,
 	capabilitiesTranslationsUpsertCommand,
 	configCommand,
 	configResetCommand,
