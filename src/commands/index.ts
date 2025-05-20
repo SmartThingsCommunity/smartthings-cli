@@ -54,6 +54,8 @@ import locationsHistoryCommand from './locations/history.js'
 import locationsUpdateCommand from './locations/update.js'
 import locationsModesCommand from './locations/modes.js'
 import locationsModesUpdateCommand from './locations/modes/update.js'
+import locationsModesGetCurrentCommand from './locations/modes/getcurrent.js'
+import locationsModesSetCurrentCommand from './locations/modes/setcurrent.js'
 import locationsRoomsCommand from './locations/rooms.js'
 import locationsRoomsCreateCommand from './locations/rooms/create.js'
 import locationsRoomsDeleteCommand from './locations/rooms/delete.js'
@@ -139,6 +141,8 @@ export const commands: CommandModule<object, any>[] = [
 	locationsUpdateCommand,
 	locationsModesCommand,
 	locationsModesUpdateCommand,
+	locationsModesGetCurrentCommand,
+	locationsModesSetCurrentCommand,
 	locationsRoomsCommand,
 	locationsRoomsCreateCommand,
 	locationsRoomsDeleteCommand,
