@@ -20,11 +20,12 @@ import {
 } from '../../item-input/index.js'
 import { clipToMaximum, fatalError } from '../../util.js'
 import { emailValidate, httpsURLValidate } from '../../validate-util.js'
+import { stdinIsTTY, stdoutIsTTY } from '../../io-util.js'
 import { type APICommand } from '../api-command.js'
+import { type InputAndOutputItemFlags } from '../input-and-output-item.js'
 import { chooseOrganization, organizationDef } from './organizations-util.js'
 import { arnDef, webHookUrlDef } from './schema-input-primitives.js'
 import { type ChooseFunction, createChooseFn } from './util-util.js'
-import { stdinIsTTY, stdoutIsTTY } from '../../io-util.js'
 
 
 export type SchemaAppWithOrganization = SchemaAppRequest & {
@@ -154,12 +155,7 @@ export const chooseSchemaApp = chooseSchemaAppFn()
 export const getSchemaAppEnsuringOrganization = async (
 		command: APICommand,
 		schemaAppId: string,
-		flags: {
-			json?: boolean
-			yaml?: boolean
-			input?: string
-			output?: string
-		},
+		flags: InputAndOutputItemFlags,
 ): Promise<{ schemaApp: SchemaApp; organizationWasUpdated: boolean }> => {
 	const apps = await command.client.schema.list()
 	const appFromList = apps.find(app => app.endpointAppId === schemaAppId)

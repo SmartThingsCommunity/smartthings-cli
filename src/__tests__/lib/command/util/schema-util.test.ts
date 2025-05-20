@@ -14,8 +14,11 @@ import type { Profile } from '../../../../lib/cli-config.js'
 import type { stdinIsTTY, stdoutIsTTY } from '../../../../lib/io-util.js'
 import type { clipToMaximum, fatalError } from '../../../../lib/util.js'
 import type { APICommand } from '../../../../lib/command/api-command.js'
+import { type InputAndOutputItemFlags } from '../../../../lib/command/input-and-output-item.js'
 import type { chooseOrganization, organizationDef } from '../../../../lib/command/util/organizations-util.js'
 import type { InputData } from '../../../../lib/command/util/schema-util.js'
+import type { arnDef, webHookUrlDef } from '../../../../lib/command/util/schema-input-primitives.js'
+import type { createChooseFn, ChooseFunction } from '../../../../lib/command/util/util-util.js'
 import type {
 	booleanDef,
 	createFromUserInput,
@@ -29,14 +32,6 @@ import type {
 	stringDef,
 	updateFromUserInput,
 } from '../../../../lib/item-input/index.js'
-import type {
-	arnDef,
-	webHookUrlDef,
-} from '../../../../lib/command/util/schema-input-primitives.js'
-import type {
-	createChooseFn,
-	ChooseFunction,
-} from '../../../../lib/command/util/util-util.js'
 
 
 const stdinIsTTYMock = jest.fn<typeof stdinIsTTY>().mockReturnValue(true)
@@ -397,7 +392,7 @@ test('chooseSchemaAppFn uses correct endpoint to list Schema Apps', async () => 
 })
 
 describe('getSchemaAppEnsuringOrganization', () => {
-	const defaultFlags = { json: false, yaml: false }
+	const defaultFlags: InputAndOutputItemFlags = { profile: 'default', json: false, yaml: false }
 
 	it('uses get when the app already has an organization', async () => {
 		apiSchemaGetMock.mockResolvedValueOnce(schemaAppWithOrganization)
