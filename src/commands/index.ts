@@ -25,6 +25,7 @@ import configCommand from './config.js'
 import configResetCommand from './config/reset.js'
 import devicepreferencesCommand from './devicepreferences.js'
 import devicepreferencesCreateCommand from './devicepreferences/create.js'
+import devicepreferencesUpdateCommand from './devicepreferences/update.js'
 import devicepreferencesTranslationsCommand from './devicepreferences/translations.js'
 import devicepreferencesTranslationsCreateCommand from './devicepreferences/translations/create.js'
 import devicepreferencesTranslationsUpdateCommand from './devicepreferences/translations/update.js'
@@ -115,6 +116,7 @@ export const commands: CommandModule<object, any>[] = [
 	configResetCommand,
 	devicepreferencesCommand,
 	devicepreferencesCreateCommand,
+	devicepreferencesUpdateCommand,
 	devicepreferencesTranslationsCommand,
 	devicepreferencesTranslationsCreateCommand,
 	devicepreferencesTranslationsUpdateCommand,
