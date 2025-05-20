@@ -24,14 +24,14 @@ export const buildInputDefMock = <T>(
 	name: string,
 	options?: BuildInputDefMockOptions,
 ): MockedInputDefinition<T> => {
-	const input1BuildFromUserInputMock = jest.fn<InputDefinition<T>['buildFromUserInput']>()
-	const input1SummarizeForEditMock = jest.fn<InputDefinition<T>['summarizeForEdit']>()
-	const input1UpdateFromUserInputMock = jest.fn<InputDefinition<T>['updateFromUserInput']>()
+	const inputBuildFromUserInputMock = jest.fn<InputDefinition<T>['buildFromUserInput']>()
+	const inputSummarizeForEditMock = jest.fn<InputDefinition<T>['summarizeForEdit']>()
+	const inputUpdateFromUserInputMock = jest.fn<InputDefinition<T>['updateFromUserInput']>()
 
 	const mocks: InputDefinitionFunctionMockSet<T> = {
-		buildFromUserInput: input1BuildFromUserInputMock,
-		summarizeForEdit: input1SummarizeForEditMock,
-		updateFromUserInput: input1UpdateFromUserInputMock,
+		buildFromUserInput: inputBuildFromUserInputMock,
+		summarizeForEdit: inputSummarizeForEditMock,
+		updateFromUserInput: inputUpdateFromUserInputMock,
 	}
 	if (options?.includeUpdateIfNeeded) {
 		mocks.updateIfNeeded = jest.fn<Required<InputDefinition<T>>['updateIfNeeded']>()
