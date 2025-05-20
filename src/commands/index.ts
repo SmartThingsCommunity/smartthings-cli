@@ -13,6 +13,8 @@ import appsSettingsUpdateCommand from './apps/settings/update.js'
 import appsUpdateCommand from './apps/update.js'
 import capabilitiesCommand from './capabilities.js'
 import capabilitiesCreateCommand from './capabilities/create.js'
+import capabilitiesDeleteCommand from './capabilities/delete.js'
+import capabilitiesUpdateCommand from './capabilities/update.js'
 import capabilitiesNamespacesCommand from './capabilities/namespaces.js'
 import capabilitiesPresentationCommand from './capabilities/presentation.js'
 import capabilitiesPresentationCreateCommand from './capabilities/presentation/create.js'
@@ -102,6 +104,8 @@ export const commands: CommandModule<object, any>[] = [
 	appsUpdateCommand,
 	capabilitiesCommand,
 	capabilitiesCreateCommand,
+	capabilitiesDeleteCommand,
+	capabilitiesUpdateCommand,
 	capabilitiesNamespacesCommand,
 	capabilitiesPresentationCommand,
 	capabilitiesPresentationCreateCommand,
