@@ -33,7 +33,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 	outputItemOrListBuilder(apiOrganizationCommandBuilder(yargs))
 		.positional(
 			'preference-id-or-index',
-			{ describe: 'device preference id id or number from list', type: 'string' },
+			{ describe: 'device preference id or number from list', type: 'string' },
 		)
 		.positional('tag', { describe: 'the locale tag', type: 'string' })
 		.example([
