@@ -51,7 +51,6 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			],
 		])
 
-
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)
 

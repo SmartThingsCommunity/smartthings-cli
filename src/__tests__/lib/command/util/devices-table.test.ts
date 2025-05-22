@@ -1,6 +1,10 @@
 import type { Device, HubDeviceDetails, MatterDeviceDetails } from '@smartthings/core-sdk'
 
-import type { TableFieldDefinition, ValueTableFieldDefinition } from '../../../../lib/table-generator.js'
+import {
+	defaultTableGenerator,
+	type TableFieldDefinition,
+	type ValueTableFieldDefinition,
+} from '../../../../lib/table-generator.js'
 import {
 	buildTableFromItemMock,
 	tableGeneratorMock,
@@ -10,6 +14,7 @@ import {
 
 
 const {
+	buildComponentStatusTableOutput,
 	buildEmbeddedStatusTableOutput,
 	buildTableOutput,
 } = await import('../../../../lib/command/util/devices-table.js')
@@ -157,7 +162,7 @@ describe('buildTableOutput', () => {
 	it('joins multiple children with newlines', () => {
 		const device = {
 			...baseDevice,
-			childDevices:  [{ id: 'child-id-1' }, { id: 'child-id-2' }],
+			childDevices: [{ id: 'child-id-1' }, { id: 'child-id-2' }],
 		} as Device
 		tableToStringMock.mockReturnValueOnce('main table')
 
@@ -616,5 +621,58 @@ describe('buildTableOutput', () => {
 		expect(buildTableFromItemMock).toHaveBeenCalledTimes(1)
 		expect(buildTableFromItemMock).toHaveBeenCalledWith(virtual,
 			['name', { prop: 'hubId', skipEmpty: true }, { prop: 'driverId', skipEmpty: true }])
+	})
+})
+
+describe('buildComponentStatusTableOutput', () => {
+	const tableGenerator = defaultTableGenerator({ groupRows: false })
+
+	it('displays empty table when given no components', () => {
+		expect(buildComponentStatusTableOutput(tableGenerator, {})).toBe(
+			'──────────────────────────────\n' +
+			' Capability  Attribute  Value \n' +
+			'──────────────────────────────\n',
+		)
+	})
+
+	it('displays populated table for complex component', () => {
+		expect(buildComponentStatusTableOutput(tableGenerator, {
+			button: {
+				button: {
+					value: 'held',
+					timestamp: '2022-08-02T20:18:49.232Z',
+				},
+				numberOfButtons: {
+					value: 3,
+					timestamp: '2022-08-02T20:18:49.232Z',
+				},
+				supportedButtonValues: {
+					value: [
+						'up_5x',
+					],
+					timestamp: '2022-08-02T20:18:49.232Z',
+				},
+			},
+			temperatureMeasurement: {
+				temperatureRange: {
+					value: null,
+				},
+				temperature: {
+					value: 152.99142132163604,
+					unit: 'F',
+					timestamp: '2022-08-02T20:18:49.232Z',
+				},
+			},
+		})).toBe(
+			'─────────────────────────────────────────────────────────────────────\n' +
+			' Capability              Attribute              Value                \n' +
+			'─────────────────────────────────────────────────────────────────────\n' +
+			' button                  button                 "held"               \n' +
+			' button                  numberOfButtons        3                    \n' +
+			' button                  supportedButtonValues  ["up_5x"]            \n' +
+			' temperatureMeasurement  temperatureRange                            \n' +
+			' temperatureMeasurement  temperature            152.99142132163604 F \n' +
+			'─────────────────────────────────────────────────────────────────────\n',
+		)
 	})
 })
