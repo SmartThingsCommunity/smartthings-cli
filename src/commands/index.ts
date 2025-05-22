@@ -36,6 +36,7 @@ import deviceprofilesCreateCommand from './deviceprofiles/create.js'
 import deviceprofilesViewCommand from './deviceprofiles/view.js'
 import devicesCommand from './devices.js'
 import devicesCapabilityStatusCommand from './devices/capability-status.js'
+import devicesComponentStatusCommand from './devices/component-status.js'
 import devicesCommandsCommand from './devices/commands.js'
 import devicesDeleteCommand from './devices/delete.js'
 import devicesHistoryCommand from './devices/history.js'
@@ -130,6 +131,7 @@ export const commands: CommandModule<object, any>[] = [
 	deviceprofilesViewCommand,
 	devicesCommand,
 	devicesCapabilityStatusCommand,
+	devicesComponentStatusCommand,
 	devicesCommandsCommand,
 	devicesDeleteCommand,
 	devicesHistoryCommand,
