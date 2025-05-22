@@ -146,6 +146,10 @@ describe('augmentPresentationEntries', () => {
 	it('adds version 1 if omitted', () => {
 		expect(augmentPresentationEntries([entry2Pruned, entry3Pruned])).toStrictEqual([entry2, entry3])
 	})
+
+	it('returns empty arrays when not supplied entries', () => {
+		expect(augmentPresentationEntries(undefined)).toStrictEqual([])
+	})
 })
 
 describe('augmentPresentation', () => {

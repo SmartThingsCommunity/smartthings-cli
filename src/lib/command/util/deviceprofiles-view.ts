@@ -62,15 +62,15 @@ export const prunePresentation = (view: PresentationDeviceConfig): DeviceView =>
 }
 
 export const augmentPresentationEntries = (
-		entries: ViewPresentationDeviceConfigEntry[],
+		entries?: ViewPresentationDeviceConfigEntry[],
 ): PresentationDeviceConfigEntry[] =>
-	entries.map(entry => {
-		return {
+	entries?.map(entry => (
+		{
 			...entry,
 			version: entry.version ?? 1,
 			component: entry.component ?? 'main',
-		} as PresentationDeviceConfigEntry
-	})
+		} as PresentationDeviceConfigEntry),
+	) ?? []
 
 /**
  * Update the `DeviceView` to be a `PresentationDeviceConfigCreate` by ensuring all entries
