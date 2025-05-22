@@ -1,6 +1,6 @@
-import { type Mode } from '@smartthings/core-sdk'
-
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
+
+import { type Mode } from '@smartthings/core-sdk'
 
 import { type WithNamedLocation } from '../../lib/api-helpers.js'
 import { fatalError } from '../../lib/util.js'

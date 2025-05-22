@@ -56,7 +56,9 @@ import installedappsDeleteCommand from './installedapps/delete.js'
 import installedappsRenameCommand from './installedapps/rename.js'
 import installedschemaCommand from './installedschema.js'
 import installedschemaDeleteCommand from './installedschema/delete.js'
+import invitesSchema from './invites/schema.js'
 import invitesSchemaCreate from './invites/schema/create.js'
+import invitesSchemaDelete from './invites/schema/delete.js'
 import locationsCommand from './locations.js'
 import locationsCreateCommand from './locations/create.js'
 import locationsDeleteCommand from './locations/delete.js'
@@ -155,7 +157,9 @@ export const commands: CommandModule<object, any>[] = [
 	installedappsRenameCommand,
 	installedschemaCommand,
 	installedschemaDeleteCommand,
+	invitesSchema,
 	invitesSchemaCreate,
+	invitesSchemaDelete,
 	locationsCommand,
 	locationsCreateCommand,
 	locationsDeleteCommand,
