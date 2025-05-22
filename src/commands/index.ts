@@ -45,6 +45,8 @@ import devicesHistoryCommand from './devices/history.js'
 import devicesPreferencesCommand from './devices/preferences.js'
 import devicesUpdateCommand from './devices/update.js'
 import edgeChannelsCommand from './edge/channels.js'
+import edgeChannelsCreateCommand from './edge/channels/create.js'
+import edgeChannelsDeleteCommand from './edge/channels/delete.js'
 import edgeChannelsInvitesCommand from './edge/channels/invites.js'
 import edgeDriversCommand from './edge/drivers.js'
 import edgeDriversDefaultCommand from './edge/drivers/default.js'
@@ -142,6 +144,8 @@ export const commands: CommandModule<object, any>[] = [
 	devicesPreferencesCommand,
 	devicesUpdateCommand,
 	edgeChannelsCommand,
+	edgeChannelsCreateCommand,
+	edgeChannelsDeleteCommand,
 	edgeChannelsInvitesCommand,
 	edgeDriversCommand,
 	edgeDriversDefaultCommand,
