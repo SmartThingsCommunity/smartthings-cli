@@ -39,7 +39,6 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 		])
 		.epilog(apiDocsURL('createMode'))
 
-
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)
 
