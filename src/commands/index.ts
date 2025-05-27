@@ -81,6 +81,7 @@ import organizationsCommand from './organizations.js'
 import organizationsCurrentCommand from './organizations/current.js'
 import presentationDeviceConfigCommand from './presentation/device-config.js'
 import presentationDeviceConfigCreateCommand from './presentation/device-config/create.js'
+import presentationDeviceConfigGenerateCommand from './presentation/device-config/generate.js'
 import rulesCommand from './rules.js'
 import rulesCreateCommand from './rules/create.js'
 import rulesDeleteCommand from './rules/delete.js'
@@ -185,6 +186,7 @@ export const commands: CommandModule<object, any>[] = [
 	organizationsCurrentCommand,
 	presentationDeviceConfigCommand,
 	presentationDeviceConfigCreateCommand,
+	presentationDeviceConfigGenerateCommand,
 	rulesCommand,
 	rulesCreateCommand,
 	rulesDeleteCommand,
