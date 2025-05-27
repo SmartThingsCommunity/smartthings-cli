@@ -38,6 +38,7 @@ import deviceprofilesTranslations from './deviceprofiles/translations.js'
 import deviceprofilesTranslationsDelete from './deviceprofiles/translations/delete.js'
 import deviceprofilesTranslationsUpsertCommand from './deviceprofiles/translations/upsert.js'
 import deviceprofilesViewCreateCommand from './deviceprofiles/view/create.js'
+import deviceprofilesViewUpdateCommand from './deviceprofiles/view/update.js'
 import devicesCommand from './devices.js'
 import devicesCapabilityStatusCommand from './devices/capability-status.js'
 import devicesComponentStatusCommand from './devices/component-status.js'
@@ -144,6 +145,7 @@ export const commands: CommandModule<object, any>[] = [
 	deviceprofilesTranslationsDelete,
 	deviceprofilesTranslationsUpsertCommand,
 	deviceprofilesViewCreateCommand,
+	deviceprofilesViewUpdateCommand,
 	devicesCommand,
 	devicesCapabilityStatusCommand,
 	devicesComponentStatusCommand,

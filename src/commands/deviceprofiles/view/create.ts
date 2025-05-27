@@ -34,7 +34,6 @@ const describe = 'create a new device profile and device configuration'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	inputAndOutputItemBuilder(apiOrganizationCommandBuilder(yargs))
-		.positional('device-preference-id', { describe: 'device preference id', type: 'string' })
 		.example([
 			[
 				'$0 deviceprofiles:view:create -i view.yaml',
