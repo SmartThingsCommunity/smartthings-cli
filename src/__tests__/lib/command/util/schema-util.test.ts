@@ -17,7 +17,11 @@ import type { APICommand } from '../../../../lib/command/api-command.js'
 import { type InputAndOutputItemFlags } from '../../../../lib/command/input-and-output-item.js'
 import type { chooseOrganization, organizationDef } from '../../../../lib/command/util/organizations-util.js'
 import type { InputData } from '../../../../lib/command/util/schema-util.js'
-import type { arnDef, webHookUrlDef } from '../../../../lib/command/util/schema-input-primitives.js'
+import type {
+	arnDef,
+	schemaOutURLValidate,
+	webHookUrlDef,
+} from '../../../../lib/command/util/schema-input-primitives.js'
 import type { createChooseFn, ChooseFunction } from '../../../../lib/command/util/util-util.js'
 import type {
 	booleanDef,
@@ -78,9 +82,11 @@ jest.unstable_mockModule('../../../../lib/item-input/index.js', () => ({
 }))
 
 const arnDefMock = jest.fn<typeof arnDef>()
+const schemaOutURLValidateMock = jest.fn<typeof schemaOutURLValidate>()
 const webHookUrlDefMock = jest.fn<typeof webHookUrlDef>()
 jest.unstable_mockModule('../../../../lib/command/util/schema-input-primitives.js', () => ({
 	arnDef: arnDefMock,
+	schemaOutURLValidate: schemaOutURLValidateMock,
 	webHookUrlDef: webHookUrlDefMock,
 }))
 

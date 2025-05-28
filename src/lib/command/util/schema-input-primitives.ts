@@ -1,6 +1,7 @@
 import { type SchemaAppRequest } from '@smartthings/core-sdk'
 
 import { awsHelpText } from '../../aws-util.js'
+import { urlValidateFn } from '../../validate-util.js'
 import {
 	optionalDef,
 	optionalStringDef,
@@ -9,6 +10,9 @@ import {
 	type InputDefinition,
 } from '../../item-input/index.js'
 
+
+// The SmartThings services handling Schema Apps are limited to connecting to apps in the range 80-8002.
+export const schemaOutURLValidate = urlValidateFn({ httpsRequired: true, minPort: 80, maxPort: 8002 })
 
 export const arnDef = (
 		name: string,
@@ -44,7 +48,7 @@ export const webHookUrlDef = (
 
 	const initiallyActive = initialValue?.hostingType === 'webhook'
 	return optionalDef(
-		stringDef('Webhook URL'),
+		stringDef('Webhook URL', { validate: schemaOutURLValidate }),
 		(context?: unknown[]) =>
 			(context?.[0] as Pick<SchemaAppRequest, 'hostingType'>)?.hostingType === 'webhook',
 		{ initiallyActive },

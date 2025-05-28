@@ -24,7 +24,7 @@ import { stdinIsTTY, stdoutIsTTY } from '../../io-util.js'
 import { type APICommand } from '../api-command.js'
 import { type InputAndOutputItemFlags } from '../input-and-output-item.js'
 import { chooseOrganization, organizationDef } from './organizations-util.js'
-import { arnDef, webHookUrlDef } from './schema-input-primitives.js'
+import { arnDef, schemaOutURLValidate, webHookUrlDef } from './schema-input-primitives.js'
 import { type ChooseFunction, createChooseFn } from './util-util.js'
 
 
@@ -80,8 +80,8 @@ export const buildInputDefinition = async (
 			default: (context?: unknown[]) =>
 				(context?.[0] as Pick<SchemaAppRequest, 'partnerName'>)?.partnerName ?? '',
 		}),
-		oAuthAuthorizationUrl: stringDef('OAuth Authorization URL', { validate: httpsURLValidate }),
-		oAuthTokenUrl: stringDef('Partner OAuth Refresh Token URL', { validate: httpsURLValidate }),
+		oAuthAuthorizationUrl: stringDef('OAuth Authorization URL', { validate: schemaOutURLValidate }),
+		oAuthTokenUrl: stringDef('Partner OAuth Refresh Token URL', { validate: schemaOutURLValidate }),
 		icon: optionalStringDef('Icon URL', { validate: httpsURLValidate }),
 		icon2x: optionalStringDef('2x Icon URL', { validate: httpsURLValidate }),
 		icon3x: optionalStringDef('3x Icon URL', { validate: httpsURLValidate }),
