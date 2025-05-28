@@ -171,7 +171,7 @@ describe('webHookUrlDef', () => {
 		expect(webHookUrlDef(false, webhookInitialValue)).toBe(generatedARNDef)
 
 		expect(stringDefMock).toHaveBeenCalledTimes(1)
-		expect(stringDefMock).toHaveBeenCalledWith('Webhook URL')
+		expect(stringDefMock).toHaveBeenCalledWith('Webhook URL', { validate: expect.any(Function) })
 		expect(optionalDefMock).toHaveBeenCalledTimes(1)
 		expect(optionalDefMock).toHaveBeenCalledWith(generatedStringDef, expect.any(Function), { initiallyActive: true })
 

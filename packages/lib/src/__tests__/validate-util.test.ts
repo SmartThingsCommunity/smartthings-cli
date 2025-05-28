@@ -1,4 +1,12 @@
-import { emailValidate, httpsURLValidate, integerValidateFn, localhostOrHTTPSValidate, stringValidateFn, urlValidate } from '../validate-util'
+import {
+	emailValidate,
+	httpsURLValidate,
+	integerValidateFn,
+	localhostOrHTTPSValidate,
+	stringValidateFn,
+	urlValidate,
+	urlValidateFn,
+} from '../validate-util'
 
 
 describe('stringValidateFn', () => {
@@ -104,6 +112,25 @@ describe('integerValidateFn', () => {
 	`('validates minimum and maximum together value', ({ min, max, input, expected }) => {
 		const fn = integerValidateFn({ min, max })
 		expect(fn(input)).toBe(expected)
+	})
+})
+
+describe('urlValidateFn', () => {
+	// We only need to get minPort and maxPort here as other bits are tested via tests of
+	// `urlValidate`, `httpsURLValidate`, and `localhostOrHTTPSValidate` below.
+	it.each([1, 2, 1023])('rejects %s when lower bound is 1024', (port) => {
+		expect(urlValidateFn({ minPort: 1024 })(`https://example.com:${port}`))
+			.toBe('Port must be between 1024 and 65535 inclusive.')
+	})
+
+	it.each([10001, 10002, 65000])('rejects %s when upper bound is 10000', (port) => {
+		expect(urlValidateFn({ maxPort: 10000 })(`https://example.com:${port}`))
+			.toBe('Port must be between 1 and 10000 inclusive.')
+	})
+
+	it.each([22, 79, 8003, 8004])('rejects %s when bounds are 80-8002', (port) => {
+		expect(urlValidateFn({ minPort: 80, maxPort: 8002 })(`https://example.com:${port}`))
+			.toBe('Port must be between 80 and 8002 inclusive.')
 	})
 })
 

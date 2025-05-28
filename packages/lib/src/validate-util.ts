@@ -89,13 +89,27 @@ type URLValidateFnOptions = {
 	 * Required by default.
 	 */
 	required?: boolean
+
+	// default min is 1
+	minPort?: number
+
+	// default max is 65535
+	maxPort?: number
 }
 
 const allowedHTTPHosts = ['localhost', '127.0.0.1']
-const urlValidateFn = (options?: URLValidateFnOptions): ValidateFunction => {
+export const urlValidateFn = (options?: URLValidateFnOptions): ValidateFunction => {
 	return (input: string): true | string => {
 		try {
 			const url = new URL(input)
+			const minPort = options?.minPort ?? 1
+			const maxPort = options?.maxPort ?? 65535
+			if (url.port) {
+				const portNum = parseInt(url.port)
+				if (portNum < minPort || portNum > maxPort) {
+					return `Port must be between ${minPort} and ${maxPort} inclusive.`
+				}
+			}
 			if (options?.httpsRequired) {
 				if (options.allowLocalhostHTTP) {
 					return url.protocol === 'https:' ||
