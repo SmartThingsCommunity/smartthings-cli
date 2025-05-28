@@ -31,6 +31,7 @@ import {
 	stringTranslateToId,
 	undefinedDef,
 	updateFromUserInput,
+	urlValidateFn,
 } from '@smartthings/cli-lib'
 import { awsHelpText } from '../aws-utils'
 import { chooseOrganization } from './organization-util'
@@ -55,13 +56,16 @@ export const arnDef = (name: string, inChina: boolean, initialValue?: SchemaAppR
 		{ initiallyActive })
 }
 
+// The SmartThings services handling Schema Apps are limited to connecting to apps in the range 80-8002.
+export const schemaOutURLValidate = urlValidateFn({ httpsRequired: true, minPort: 80, maxPort: 8002 })
+
 export const webHookUrlDef = (inChina: boolean, initialValue?: SchemaAppRequest): InputDefinition<string | undefined> => {
 	if (inChina) {
 		return undefinedDef
 	}
 
 	const initiallyActive = initialValue?.hostingType === 'webhook'
-	return optionalDef(stringDef('Webhook URL'),
+	return optionalDef(stringDef('Webhook URL', { validate: schemaOutURLValidate }),
 		(context?: unknown[]) => (context?.[0] as Pick<SchemaAppRequest, 'hostingType'>)?.hostingType === 'webhook',
 		{ initiallyActive })
 }
@@ -133,8 +137,8 @@ export const buildInputDefinition = async (
 		appName: optionalStringDef('App Name', {
 			default: (context?: unknown[]) => (context?.[0] as Pick<SchemaAppRequest, 'partnerName'>)?.partnerName ?? '',
 		}),
-		oAuthAuthorizationUrl: stringDef('OAuth Authorization URL', { validate: httpsURLValidate }),
-		oAuthTokenUrl: stringDef('Partner OAuth Refresh Token URL', { validate: httpsURLValidate }),
+		oAuthAuthorizationUrl: stringDef('OAuth Authorization URL', { validate: schemaOutURLValidate }),
+		oAuthTokenUrl: stringDef('Partner OAuth Refresh Token URL', { validate: schemaOutURLValidate }),
 		icon: optionalStringDef('Icon URL', { validate: httpsURLValidate }),
 		icon2x: optionalStringDef('2x Icon URL', { validate: httpsURLValidate }),
 		icon3x: optionalStringDef('3x Icon URL', { validate: httpsURLValidate }),
