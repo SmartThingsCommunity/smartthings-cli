@@ -1,4 +1,4 @@
-import type { Device, HubDeviceDetails, MatterDeviceDetails } from '@smartthings/core-sdk'
+import type { Device, DeviceStatus, HubDeviceDetails, MatterDeviceDetails } from '@smartthings/core-sdk'
 
 import {
 	defaultTableGenerator,
@@ -16,6 +16,7 @@ import {
 const {
 	buildComponentStatusTableOutput,
 	buildEmbeddedStatusTableOutput,
+	buildStatusTableOutput,
 	buildTableOutput,
 } = await import('../../../../lib/command/util/devices-table.js')
 
@@ -674,5 +675,72 @@ describe('buildComponentStatusTableOutput', () => {
 			' temperatureMeasurement  temperature            152.99142132163604 F \n' +
 			'─────────────────────────────────────────────────────────────────────\n',
 		)
+	})
+})
+
+describe('buildStatusTableOutput', () => {
+	const tableGenerator = defaultTableGenerator({ groupRows: false })
+
+	it('returns empty string for no components', () => {
+		expect(buildStatusTableOutput(tableGenerator, {})).toEqual('')
+		expect(buildStatusTableOutput(tableGenerator, { components: {} })).toEqual('')
+	})
+
+	it('handles a single component', () => {
+		const deviceStatus: DeviceStatus = {
+			components: {
+				main: {
+					switch: {
+						switch: {
+							value: 'off',
+						},
+					},
+				},
+			},
+		}
+
+		expect(buildStatusTableOutput(tableGenerator, deviceStatus)).toEqual(
+			'main component\n' +
+			'──────────────────────────────\n' +
+			' Capability  Attribute  Value \n' +
+			'──────────────────────────────\n' +
+			' switch      switch     "off" \n' +
+			'──────────────────────────────\n')
+	})
+
+	it('handles a multiple components', () => {
+		const deviceStatus: DeviceStatus = {
+			components: {
+				main: {
+					switch: {
+						switch: {
+							value: 'off',
+						},
+					},
+				},
+				light: {
+					switchLevel: {
+						level: {
+							value: 80,
+						},
+					},
+				},
+			},
+		}
+
+		expect(buildStatusTableOutput(tableGenerator, deviceStatus)).toEqual(
+			'main component\n' +
+			'──────────────────────────────\n' +
+			' Capability  Attribute  Value \n' +
+			'──────────────────────────────\n' +
+			' switch      switch     "off" \n' +
+			'──────────────────────────────\n' +
+			'\n\n' +
+			'light component\n' +
+			'───────────────────────────────\n' +
+			' Capability   Attribute  Value \n' +
+			'───────────────────────────────\n' +
+			' switchLevel  level      80    \n' +
+			'───────────────────────────────\n')
 	})
 })
