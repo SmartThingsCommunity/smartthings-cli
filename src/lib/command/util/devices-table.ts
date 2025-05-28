@@ -1,4 +1,4 @@
-import { type ComponentStatus, type Device, type DeviceHealth } from '@smartthings/core-sdk'
+import { type DeviceStatus, type ComponentStatus, type Device, type DeviceHealth } from '@smartthings/core-sdk'
 
 import { type WithNamedRoom } from '../../api-helpers.js'
 import { type TableGenerator } from '../../table-generator.js'
@@ -214,4 +214,20 @@ export const buildComponentStatusTableOutput = (
 		'attribute',
 		{ label: 'Value', value: attribute => prettyPrintAttribute(attribute.state) },
 	])
+}
+
+export const buildStatusTableOutput = (tableGenerator: TableGenerator, data: DeviceStatus): string => {
+	if (!data.components || Object.keys(data.components).length === 0) {
+		return ''
+	}
+
+	return Object.entries(data.components).map(([componentId, componentStatus]) => {
+		const attributeValues = Object.entries(componentStatus).flatMap(([capability, capabilityStatus]) =>
+			Object.entries(capabilityStatus).map(([attribute, attributeState]) => ({
+				capability, attribute, value: prettyPrintAttribute(attributeState),
+			})),
+		)
+		return `${componentId} component\n` +
+			tableGenerator.buildTableFromList(attributeValues, ['capability', 'attribute', 'value'])
+	}).join('\n\n')
 }
