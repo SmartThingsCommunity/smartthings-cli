@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.10.5
+
+### Patch Changes
+
+- [#754](https://github.com/SmartThingsCommunity/smartthings-cli/pull/754) [`b9f0ecb`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b9f0ecb6d1a7146a8c0da09986f4d04f17d5e54d) Thanks [@rossiam](https://github.com/rossiam)! - Limit port range for Schema Apps to 80-8002.
+
+- Updated dependencies [[`b9f0ecb`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/b9f0ecb6d1a7146a8c0da09986f4d04f17d5e54d)]:
+  - @smartthings/cli-lib@2.3.2
+
 ## 1.10.4
 
 ### Patch Changes
