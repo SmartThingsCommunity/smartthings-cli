@@ -26,7 +26,7 @@ const describe = 'list default drivers available to all users'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	outputItemOrListBuilder(apiCommandBuilder(yargs))
-		.positional('id-or-index', { describe: 'the driver id or number in list', type: 'string' })
+		.positional('id-or-index', { describe: 'driver id or number in list', type: 'string' })
 		.example([
 			['$0 edge:drivers:default', 'list default drivers'],
 			[
