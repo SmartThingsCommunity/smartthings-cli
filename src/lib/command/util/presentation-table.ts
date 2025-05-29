@@ -1,12 +1,20 @@
-import { PresentationDevicePresentation } from '@smartthings/core-sdk'
+import { type PresentationDevicePresentation } from '@smartthings/core-sdk'
 
-import { APICommand, outputItem, TableGenerator } from '@smartthings/cli-lib'
+import { type TableGenerator } from '../../table-generator.js'
 
 
-export function buildTableOutput(tableGenerator: TableGenerator, presentation: PresentationDevicePresentation): string {
-	const basicInfo = tableGenerator.buildTableFromItem(presentation, [
-		{ prop: 'presentationId', label: 'Presentation ID' }, { prop: 'manufacturerName', label: 'Manufacturer Name' }, 'iconUrl',
-	])
+export const buildTableOutput = (
+		tableGenerator: TableGenerator,
+		presentation: PresentationDevicePresentation,
+): string => {
+	const basicInfo = tableGenerator.buildTableFromItem(
+		presentation,
+		[
+			{ prop: 'presentationId', label: 'Presentation ID' },
+			{ prop: 'manufacturerName', label: 'Manufacturer Name' },
+			'iconUrl',
+		],
+	)
 
 	let dashboardStates = 'No dashboard states'
 	if (presentation.dashboard?.states && presentation.dashboard.states.length > 0) {
@@ -24,7 +32,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, presentation: P
 		dashboardStates = `Dashboard States\n${subTable.toString()}`
 	}
 
-	function buildDisplayTypeTable(items: { displayType: string }[]): string {
+	const buildDisplayTypeTable = (items: { displayType: string }[]): string => {
 		const subTable = tableGenerator.newOutputTable({ head: ['Display Type'] })
 		for (const item of items) {
 			subTable.push([item.displayType])
@@ -32,7 +40,7 @@ export function buildTableOutput(tableGenerator: TableGenerator, presentation: P
 		return subTable.toString()
 	}
 
-	function buildLabelDisplayTypeTable(items: { label: string; displayType: string }[]): string {
+	const buildLabelDisplayTypeTable = (items: { label: string; displayType: string }[]): string => {
 		const subTable = tableGenerator.newOutputTable({ head: ['Label', 'Display Type'] })
 		for (const item of items) {
 			subTable.push([item.label, item.displayType])
@@ -80,47 +88,4 @@ export function buildTableOutput(tableGenerator: TableGenerator, presentation: P
 		`${detailViews}\n\n` +
 		`${automationConditions}\n\n` +
 		automationActions
-}
-
-export default class PresentationCommand extends APICommand<typeof PresentationCommand.flags> {
-	static description = 'query device presentation by vid' +
-		this.apiDocsURL('getDevicePresentation')
-
-	static flags = {
-		...APICommand.flags,
-		...outputItem.flags,
-	}
-
-	static args = [
-		{
-			name: 'presentationId',
-			description: 'system generated identifier that corresponds to a device presentation',
-			required: true,
-		},
-		{
-			name: 'manufacturerName',
-			description: 'manufacturer name. Defaults to SmartThingsCommunity',
-			required: false,
-		},
-	]
-
-	static examples = [
-		'$ smartthings presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf',
-		'$ smartthings presentation 4ea31e30-2aba-41c7-a3ec-8f97423d565a SmartThings',
-		'$ smartthings presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf --language=ko',
-		'$ smartthings presentation fd4adb7f-4a23-4134-9b39-05ed889a03cf --language=NONE',
-		'',
-		'Specifying only the presentationId defaults to the "SmartThingsCommunity" manufacturer',
-		'name and the language set for the computer\'s operating system. The language can be',
-		'overridden by specifying an ISO language code. If "NONE" is specified for the language',
-		'flag then no language header is specified in the API request',
-	]
-
-	async run(): Promise<void> {
-		const config = {
-			buildTableOutput: (data: PresentationDevicePresentation) => buildTableOutput(this.tableGenerator, data),
-		}
-		await outputItem(this, config,
-			() => this.client.presentation.getPresentation(this.args.presentationId, this.args.manufacturerName))
-	}
 }
