@@ -15,7 +15,7 @@ export type CommandArgs =
 
 const command = 'presentation:device-config <presentationId> [manufacturer-name]'
 
-const describe = 'query device config by presentationId'
+const describe = 'query device config by presentation id'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	outputItemBuilder(apiCommandBuilder(yargs))
@@ -25,9 +25,8 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			required: true,
 		})
 		.positional('manufacturer-name', {
-			describe: 'manufacturer name',
+			describe: 'manufacturer name, defaults to SmartThingsCommunity',
 			type: 'string',
-			default: 'SmartThingsCommunity',
 		})
 		.example([
 			[
