@@ -1,4 +1,7 @@
 import {
+	type Device,
+	DeviceIntegrationType,
+	type LanDeviceDetails,
 	type DriverChannelDetails,
 	type EdgeDriver,
 	type EdgeDriverSummary,
@@ -70,4 +73,57 @@ export const listAssignedDriversWithNames = async (
 				throw error
 			}
 		}))).filter((driver): driver is DriverChannelDetailsWithName => !!driver)
+}
+
+export const edgeDeviceTypes = [
+	DeviceIntegrationType.LAN,
+	DeviceIntegrationType.MATTER,
+	DeviceIntegrationType.ZIGBEE,
+	DeviceIntegrationType.ZWAVE,
+]
+
+export type DeviceDriverInfo = {
+	label?: string
+	type: DeviceIntegrationType
+	deviceId: string
+	driverId?: string
+	hubId?: string
+	hubLabel?: string
+}
+
+type DeviceTypeInfo = Pick<LanDeviceDetails, 'driverId' | 'hubId'>
+
+const deviceTypeInfo = (device: Device): DeviceTypeInfo => {
+	if (device.type === DeviceIntegrationType.LAN && device.lan) {
+		return device.lan
+	}
+	if (device.type === DeviceIntegrationType.MATTER && device.matter) {
+		return device.matter
+	}
+	if (device.type === DeviceIntegrationType.ZIGBEE && device.zigbee) {
+		return device.zigbee
+	}
+	if (device.type === DeviceIntegrationType.ZWAVE && device.zwave) {
+		return device.zwave
+	}
+	throw Error(`unexpected device type ${device.type} or missing type info`)
+}
+
+const deviceToDeviceDriverInfo = (device: Device, hubDevices: Device[]): DeviceDriverInfo => {
+	const typeInfo = deviceTypeInfo(device)
+	const hubDevice = hubDevices.find(hub => typeInfo.hubId && hub.deviceId === typeInfo.hubId)
+	return {
+		type: device.type,
+		label: device.label,
+		deviceId: device.deviceId,
+		driverId: typeInfo.driverId,
+		hubId: typeInfo.hubId,
+		hubLabel: hubDevice?.label,
+	}
+}
+
+export const getDriverDevices = async (client: SmartThingsClient): Promise<DeviceDriverInfo[]> => {
+	const hubDevices = await client.devices.list({ type: DeviceIntegrationType.HUB })
+	return (await client.devices.list({ type: edgeDeviceTypes }))
+		.map(device => deviceToDeviceDriverInfo(device, hubDevices))
 }

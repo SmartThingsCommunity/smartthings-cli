@@ -1,18 +1,22 @@
 import { jest } from '@jest/globals'
 
 import {
-	DriversEndpoint,
-	EdgeDriverSummary,
-	EdgeDeviceIntegrationProfileKey,
-	EdgeDriver,
-	EdgeDriverPermissions,
-	SmartThingsClient,
-	OrganizationResponse,
-	DriverChannelDetails,
-	ChannelsEndpoint,
+	type ChannelsEndpoint,
+	type Device,
+	DeviceIntegrationType,
+	DevicesEndpoint,
+	type DriverChannelDetails,
+	type DriversEndpoint,
+	type EdgeDeviceIntegrationProfileKey,
+	type EdgeDriver,
+	type EdgeDriverPermissions,
+	type EdgeDriverSummary,
+	type OrganizationResponse,
+	type SmartThingsClient,
 } from '@smartthings/core-sdk'
 
 import type { WithOrganization, forAllOrganizations } from '../../../../lib/api-helpers.js'
+import type { DeviceDriverInfo } from '../../../../lib/command/util/edge-drivers.js'
 import {
 	buildTableFromItemMock,
 	buildTableFromListMock,
@@ -27,8 +31,12 @@ jest.unstable_mockModule('../../../../lib/api-helpers.js', () => ({
 	forAllOrganizations: forAllOrganizationsMock,
 }))
 
+const apiDevicesListMock = jest.fn<typeof DevicesEndpoint.prototype.list>()
 const apiDriversListMock = jest.fn<typeof DriversEndpoint.prototype.list>()
 const client = {
+	devices: {
+		list: apiDevicesListMock,
+	},
 	drivers: {
 		list: apiDriversListMock,
 	},
@@ -38,6 +46,8 @@ const driverList = [{ name: 'Driver' }] as EdgeDriverSummary[]
 
 const {
 	buildTableOutput,
+	edgeDeviceTypes,
+	getDriverDevices,
 	listAssignedDriversWithNames,
 	listDrivers,
 	permissionsValue,
@@ -187,5 +197,114 @@ describe('listAssignedDriversWithNames', () => {
 		await expect(listAssignedDriversWithNames(client, 'channel-id')).rejects.toThrow(Error('random error'))
 
 		expect(apiChannelsListAssignedDriversMock).toHaveBeenCalledExactlyOnceWith('channel-id')
+	})
+})
+
+describe('getDriverDevices', () => {
+	it('includes only edge device types', async () => {
+		const hubDevices = [
+			{ deviceId: 'hub-device-id', label: 'Hub Label' },
+		] as Device[]
+		const edgeDevices = [
+			{
+				type: DeviceIntegrationType.LAN,
+				deviceId: 'lan-device-id',
+				label: 'LAN Device',
+				lan: {
+					driverId: 'lan-driver-id',
+					hubId: 'hub-device-id',
+				},
+			},
+			{
+				type: DeviceIntegrationType.MATTER,
+				deviceId: 'matter-device-id',
+				label: 'Matter Device',
+				matter: {
+					driverId: 'matter-driver-id',
+					hubId: 'hub-device-id',
+				},
+			},
+			{
+				type: DeviceIntegrationType.ZIGBEE,
+				deviceId: 'zigbee-device-id',
+				label: 'Zigbee Device',
+				zigbee: {
+					driverId: 'zigbee-driver-id',
+					hubId: 'hub-device-id',
+				},
+			},
+			{
+				type: DeviceIntegrationType.ZWAVE,
+				deviceId: 'zwave-device-id',
+				label: 'Z-Wave Device',
+				zwave: {
+					driverId: 'zwave-driver-id',
+					hubId: 'bad-hub-device-id',
+				},
+			},
+		] as Device[]
+		const driverDevices: DeviceDriverInfo[] = [
+			{
+				type: DeviceIntegrationType.LAN,
+				label: 'LAN Device',
+				deviceId: 'lan-device-id',
+				driverId: 'lan-driver-id',
+				hubId: 'hub-device-id',
+				hubLabel: 'Hub Label',
+			},
+			{
+				type: DeviceIntegrationType.MATTER,
+				label: 'Matter Device',
+				deviceId: 'matter-device-id',
+				driverId: 'matter-driver-id',
+				hubId: 'hub-device-id',
+				hubLabel: 'Hub Label',
+			},
+			{
+				type: DeviceIntegrationType.ZIGBEE,
+				label: 'Zigbee Device',
+				deviceId: 'zigbee-device-id',
+				driverId: 'zigbee-driver-id',
+				hubId: 'hub-device-id',
+				hubLabel: 'Hub Label',
+			},
+			{
+				type: DeviceIntegrationType.ZWAVE,
+				label: 'Z-Wave Device',
+				deviceId: 'zwave-device-id',
+				driverId: 'zwave-driver-id',
+				hubId: 'bad-hub-device-id',
+				hubLabel: undefined,
+			},
+		]
+
+		apiDevicesListMock.mockResolvedValueOnce(hubDevices)
+		apiDevicesListMock.mockResolvedValueOnce(edgeDevices)
+
+		expect(await getDriverDevices(client)).toStrictEqual(driverDevices)
+
+		expect(apiDevicesListMock).toHaveBeenCalledTimes(2)
+		expect(apiDevicesListMock).toHaveBeenCalledWith({ type: DeviceIntegrationType.HUB })
+		expect(apiDevicesListMock).toHaveBeenCalledWith({ type: edgeDeviceTypes })
+	})
+
+	it('throws exception for invalid device input', async () => {
+		const hubDevices = [{ deviceId: 'hub-device-id', label: 'Hub Label' }] as Device[]
+		const edgeDevices = [
+			{
+				type: DeviceIntegrationType.LAN,
+				deviceId: 'lan-device-id',
+				label: 'LAN Device',
+			},
+		] as Device[]
+
+		apiDevicesListMock.mockResolvedValueOnce(hubDevices)
+		apiDevicesListMock.mockResolvedValueOnce(edgeDevices)
+
+		await expect(getDriverDevices(client)).rejects.toThrow('unexpected device type LAN or missing type info')
+
+		expect(apiDevicesListMock).toHaveBeenCalledTimes(2)
+		expect(apiDevicesListMock).toHaveBeenCalledWith({ type: DeviceIntegrationType.HUB })
+		expect(apiDevicesListMock).toHaveBeenCalledWith({ type: edgeDeviceTypes })
 	})
 })
