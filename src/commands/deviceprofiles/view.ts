@@ -29,7 +29,7 @@ const describe = 'show device profile and device configuration in a single, cons
 
 export const builder = (yargs: Argv): Argv<CommandArgs> =>
 	formatAndWriteItemBuilder(apiOrganizationCommandBuilder(yargs))
-		.positional('id-or-index', { describe: 'the device profile id or number from list', type: 'string' })
+		.positional('id-or-index', { describe: 'device profile id or number from list', type: 'string' })
 		.example([
 			[
 				'$0 deviceprofiles:view',
