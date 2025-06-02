@@ -26,6 +26,8 @@ jest.unstable_mockModule('../../../lib/command/smartthings-command.js', () => ({
 	smartThingsCommandBuilder: smartThingsCommandBuilderMock,
 }))
 
+const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /* do nothing */ })
+
 
 const { default: cmd } = await import('../../../commands/schema/authorize.js')
 
@@ -68,4 +70,5 @@ test('handler', async () => {
 	expect(smartThingsCommandMock).toHaveBeenCalledExactlyOnceWith(inputArgv)
 	expect(addSchemaPermissionMock)
 		.toHaveBeenCalledExactlyOnceWith('cmd-line-arn', 'cmd-line-principal', 'cmd-line-statement')
+	expect(consoleLogSpy).toHaveBeenCalledWith('added')
 })

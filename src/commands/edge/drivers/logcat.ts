@@ -66,7 +66,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				choices: Object.keys(logLevels),
 				coerce: arg => {
 					console.log(`coerce; arg = ${arg}`)
-					const logLevel = arg ? arg.toLowercase() : 'trace'
+					const logLevel = arg ? arg.toLowerCase() : 'trace'
 					if ((logLevel in logLevels)) {
 						return logLevel
 					}

@@ -1,8 +1,10 @@
-import type { JestConfigWithTsJest } from 'ts-jest'
-import { defaultsESM as tsjPreset } from 'ts-jest/presets'
+import { createDefaultEsmPreset, type JestConfigWithTsJest } from 'ts-jest'
 
 
-const config: JestConfigWithTsJest = {
+const presetConfig = createDefaultEsmPreset()
+
+const jestConfig: JestConfigWithTsJest = {
+	...presetConfig,
 	testMatch: [
 		'**/__tests__/**/*.test.ts',
 	],
@@ -34,7 +36,6 @@ const config: JestConfigWithTsJest = {
 		'^(\\.{1,2}/.*)\\.js$': '$1',
 	},
 	transform: {
-		...tsjPreset.transform,
 		// '^.+\\.[tj]sx?$' to process js/ts with `ts-jest`
 		// '^.+\\.m?[tj]sx?$' to process js/ts/mjs/mts with `ts-jest`
 		// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -42,9 +43,6 @@ const config: JestConfigWithTsJest = {
 			'ts-jest',
 			{
 				useESM: true,
-				// TODO: remove when https://github.com/kulshekhar/ts-jest/issues/1967 is resolved
-				// related flag in tsconfig as well
-				isolatedModules: true,
 			},
 		],
 	},
@@ -54,4 +52,4 @@ const config: JestConfigWithTsJest = {
 	],
 }
 
-export default config
+export default jestConfig

@@ -38,7 +38,7 @@ jest.unstable_mockModule('inquirer', () => ({
 	},
 }))
 
-const uuidMock = jest.fn<typeof uuid>().mockReturnValue('generated-uuid')
+const uuidMock = jest.fn<typeof uuid>().mockReturnValue('generated-uuid' as unknown as Uint8Array<ArrayBufferLike>)
 jest.unstable_mockModule('uuid', () => ({
 	v4: uuidMock,
 }))
