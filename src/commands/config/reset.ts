@@ -1,7 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { resetManagedConfig } from '../../lib/cli-config.js'
-import { askForBoolean } from '../../lib/user-query.js'
+import { booleanInput } from '../../lib/user-query.js'
 import {
 	smartThingsCommand,
 	smartThingsCommandBuilder,
@@ -30,7 +30,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 
 	const message = 'Are you sure you want to clear saved answers to questions' +
 		`${command.profileName === 'default' ? '' : ` for the profile ${command.profileName}`}?`
-	const confirmed = await askForBoolean(message, { default: false })
+	const confirmed = await booleanInput(message, { default: false })
 
 	if (confirmed) {
 		await resetManagedConfig(command.cliConfig, command.profileName)

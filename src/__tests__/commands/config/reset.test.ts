@@ -4,7 +4,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 
 import type { CommandArgs } from '../../../commands/config/reset.js'
 import type { resetManagedConfig } from '../../../lib/cli-config.js'
-import type { askForBoolean } from '../../../lib/user-query.js'
+import type { booleanInput } from '../../../lib/user-query.js'
 import type {
 	SmartThingsCommand,
 	smartThingsCommand,
@@ -19,9 +19,9 @@ jest.unstable_mockModule('../../../lib/cli-config.js', () => ({
 	resetManagedConfig: resetManagedConfigMock,
 }))
 
-const askForBooleanMock = jest.fn<typeof askForBoolean>()
+const booleanInputMock = jest.fn<typeof booleanInput>()
 jest.unstable_mockModule('../../../lib/user-query.js', () => ({
-	askForBoolean: askForBooleanMock,
+	booleanInput: booleanInputMock,
 }))
 
 const smartThingsCommandMock = jest.fn<typeof smartThingsCommand>()
@@ -71,12 +71,12 @@ describe('handler', () => {
 
 	it('resets specified profile', async () => {
 		const [inputArgv, command] = mockSmartThingsCommand('hub1')
-		askForBooleanMock.mockResolvedValueOnce(true)
+		booleanInputMock.mockResolvedValueOnce(true)
 
 		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
 
 		expect(smartThingsCommandMock).toHaveBeenCalledExactlyOnceWith(inputArgv)
-		expect(askForBooleanMock).toHaveBeenCalledExactlyOnceWith(
+		expect(booleanInputMock).toHaveBeenCalledExactlyOnceWith(
 			expect.stringMatching(/Are you sure .* questions for the profile hub1\?/),
 			{ default: false },
 		)
@@ -86,12 +86,12 @@ describe('handler', () => {
 
 	it('leaves profile name out of message for default profile', async () => {
 		const [inputArgv] = mockSmartThingsCommand('default')
-		askForBooleanMock.mockResolvedValueOnce(true)
+		booleanInputMock.mockResolvedValueOnce(true)
 
 		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
 
 		expect(smartThingsCommandMock).toHaveBeenCalledExactlyOnceWith(inputArgv)
-		expect(askForBooleanMock).toHaveBeenCalledExactlyOnceWith(
+		expect(booleanInputMock).toHaveBeenCalledExactlyOnceWith(
 			expect.stringMatching(/Are you sure .* questions\?/),
 			{ default: false },
 		)
@@ -99,12 +99,12 @@ describe('handler', () => {
 
 	it('does not reset when canceled', async () => {
 		const [inputArgv] = mockSmartThingsCommand('default')
-		askForBooleanMock.mockResolvedValueOnce(false)
+		booleanInputMock.mockResolvedValueOnce(false)
 
 		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
 
 		expect(smartThingsCommandMock).toHaveBeenCalledExactlyOnceWith(inputArgv)
-		expect(askForBooleanMock).toHaveBeenCalledExactlyOnceWith(
+		expect(booleanInputMock).toHaveBeenCalledExactlyOnceWith(
 			expect.stringMatching(/Are you sure .* questions\?/),
 			{ default: false },
 		)

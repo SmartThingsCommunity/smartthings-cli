@@ -1,4 +1,4 @@
-import { ValidateFunction } from './user-query.js'
+import { type ValidateFunction } from './user-query.js'
 
 
 export type RegExStringValidationOptions = {
@@ -30,7 +30,7 @@ export type StringValidationOptions =
  * Builds a function that conforms to `ValidateFunction` that requires a string to match the given
  * conditions.
  */
-export const stringValidateFn = (options: StringValidationOptions): ValidateFunction => {
+export const stringValidateFn = (options: StringValidationOptions): ValidateFunction<string> => {
 	if ('regex' in options) {
 		return (input: string): true | string => {
 			const regex = typeof options.regex === 'string' ? new RegExp(options.regex) : options.regex
@@ -51,25 +51,24 @@ export const stringValidateFn = (options: StringValidationOptions): ValidateFunc
 	}
 }
 
-export type IntegerValidationOptions = {
+export type NumberValidateOptions = {
 	min?: number
 	max?: number
 }
 
-export const integerValidateFn = (options?: IntegerValidationOptions): ValidateFunction => {
+export const numberValidateFn = (options?: NumberValidateOptions): ValidateFunction<number | undefined> => {
 	if (options?.min != null && options.max != null && options.min > options.max) {
 		throw Error('max must be >= min')
 	}
 
-	return (input: string): true | string => {
-		if (!input.match(/^-?\d+$/)) {
-			return `"${input}" is not a valid integer`
+	return (input: number | undefined): true | string => {
+		if (input == null) {
+			return true
 		}
-		const asNumber = Number(input)
-		if (options?.min != null && asNumber < options.min) {
+		if (options?.min != null && input < options.min) {
 			return `must be no less than ${options.min}`
 		}
-		if (options?.max != null && asNumber > options.max) {
+		if (options?.max != null && input > options.max) {
 			return `must be no more than ${options.max}`
 		}
 		return true
@@ -92,10 +91,15 @@ type URLValidateFnOptions = {
 }
 
 const allowedHTTPHosts = ['localhost', '127.0.0.1']
-const urlValidateFn = (options?: URLValidateFnOptions): ValidateFunction => {
+const urlValidateFn = (options?: URLValidateFnOptions): ValidateFunction<string> => {
 	return (input: string): true | string => {
 		try {
 			const url = new URL(input)
+			// Invalid URLs with only a single `/` get parsed fine by `new URL` but of course are not
+			// accepted by APIs so we test specifically for that here.
+			if (!input.match(/^\w+:\/\//)) {
+				throw { code: 'ERR_INVALID_URL' }
+			}
 			if (options?.httpsRequired) {
 				if (options.allowLocalhostHTTP) {
 					return url.protocol === 'https:' ||

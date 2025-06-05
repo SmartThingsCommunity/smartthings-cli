@@ -1,13 +1,13 @@
 import { jest } from '@jest/globals'
 
-import inquirer from 'inquirer'
 import type { ArgumentsCamelCase, Argv } from 'yargs'
 
 import type { InstalledApp, InstalledAppsEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/installedapps/rename.js'
-import type { APICommand } from '../../../lib/command/api-command.js'
 import type { WithNamedLocation } from '../../../lib/api-helpers.js'
+import type { stringInput } from '../../../lib/user-query.js'
+import type { APICommand } from '../../../lib/command/api-command.js'
 import type { formatAndWriteItem, formatAndWriteItemBuilder } from '../../../lib/command/format.js'
 import type { BuildOutputFormatterFlags } from '../.././../lib/command/output-builder.js'
 import type { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
@@ -18,11 +18,9 @@ import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
 
-const promptMock = jest.fn<typeof inquirer.prompt>()
-jest.unstable_mockModule('inquirer', () => ({
-	default: {
-		prompt: promptMock,
-	},
+const stringInputMock = jest.fn<typeof stringInput>()
+jest.unstable_mockModule('../../../lib/user-query.js', () => ({
+	stringInput: stringInputMock,
 }))
 
 const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
@@ -89,7 +87,7 @@ describe('handler', () => {
 	} as ArgumentsCamelCase<CommandArgs>
 
 	it('prompts user for new name', async () => {
-		promptMock.mockResolvedValueOnce({ newName: 'Prompted New Name' })
+		stringInputMock.mockResolvedValueOnce('Prompted New Name')
 
 		const inputArgv = {
 			...baseInputArgv,
@@ -103,7 +101,7 @@ describe('handler', () => {
 			listOptions: { locationId: ['location-filter'] },
 		})
 		expect(chooseInstalledAppMock).toHaveBeenCalledExactlyOnceWith(command, undefined)
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ type: 'input' }))
+		expect(stringInputMock).toHaveBeenCalledTimes(1)
 		expect(apiInstalledAppsUpdateMock)
 			.toHaveBeenCalledExactlyOnceWith('chosen-installed-app-id', { displayName: 'Prompted New Name' })
 		expect(formatAndWriteItemMock).toHaveBeenCalledExactlyOnceWith(command, { tableFieldDefinitions }, updatedApp)
@@ -126,6 +124,6 @@ describe('handler', () => {
 		expect(apiInstalledAppsUpdateMock)
 			.toHaveBeenCalledExactlyOnceWith('chosen-installed-app-id', { displayName: 'Cmd Line New Name' })
 		expect(formatAndWriteItemMock).toHaveBeenCalledExactlyOnceWith(command, { tableFieldDefinitions }, updatedApp)
-		expect(promptMock).not.toHaveBeenCalled()
+		expect(stringInputMock).not.toHaveBeenCalled()
 	})
 })
