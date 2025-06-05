@@ -1,8 +1,8 @@
-import inquirer from 'inquirer'
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type InstalledAppListOptions } from '@smartthings/core-sdk'
 
+import { stringInput } from '../../lib/user-query.js'
 import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
 import {
 	formatAndWriteItem,
@@ -56,12 +56,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	const listOptions: InstalledAppListOptions = { locationId: argv.location }
 	const installedAppId = await chooseInstalledAppFn({ verbose: argv.verbose, listOptions })(command, argv.id)
 
-	const displayName = argv.newName ??
-		(await inquirer.prompt({
-			type: 'input',
-			name: 'newName',
-			message: 'Enter new installed app name:',
-		})).newName
+	const displayName = argv.newName ?? await stringInput('Enter new installed app name:')
 	const updatedApp = await command.client.installedApps.update(installedAppId, { displayName })
 	await formatAndWriteItem(command, { tableFieldDefinitions }, updatedApp)
 }

@@ -5,7 +5,7 @@ import inquirer from 'inquirer'
 
 import { type Sorting } from '../io-defs.js'
 import { type DriverInfo } from '../../live-logging.js'
-import { askForBoolean } from '../../user-query.js'
+import { booleanInput } from '../../user-query.js'
 import { fatalError } from '../../util.js'
 import { convertToId, stringTranslateToId } from '../command-util.js'
 import { selectFromList, type SelectFromListConfig } from '../select.js'
@@ -93,7 +93,7 @@ export const checkServerIdentity = async (
 	if (!known || known.fingerprint !== cert.fingerprint) {
 		console.warn(`The authenticity of ${authority} can't be established. Certificate fingerprint is` +
 			` ${cert.fingerprint}`)
-		const verified = await askForBoolean('Are you sure you want to continue connecting?', { default: false })
+		const verified = await booleanInput('Are you sure you want to continue connecting?', { default: false })
 		if (!verified) {
 			return fatalError('Hub verification failed.')
 		}

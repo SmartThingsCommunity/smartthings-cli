@@ -14,7 +14,7 @@ import {
 } from './defs.js'
 import { cancelCommand } from '../util.js'
 import { BuildOutputFormatterFlags } from '../command/output-builder.js'
-import { askForBoolean } from '../user-query.js'
+import { booleanInput } from '../user-query.js'
 
 
 export type UpdateFromUserInputOptions = {
@@ -45,7 +45,7 @@ export const updateFromUserInput = async <T extends object>(
 			?? (formatter === yamlFormatter ? 2 : 4)
 		const output = formatter(indent)(retVal)
 
-		const editAgain = await askForBoolean(
+		const editAgain = await booleanInput(
 			output + '\n\nWould you like to edit further?',
 			{ default: false },
 		)

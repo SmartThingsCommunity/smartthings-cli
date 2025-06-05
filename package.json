@@ -58,6 +58,7 @@
 	},
 	"dependencies": {
 		"@aws-sdk/client-lambda": "^3.817.0",
+		"@inquirer/prompts": "^7.5.3",
 		"@smartthings/core-sdk": "^8.4.1",
 		"axios": "1.9.0",
 		"chalk": "^5.4.1",
