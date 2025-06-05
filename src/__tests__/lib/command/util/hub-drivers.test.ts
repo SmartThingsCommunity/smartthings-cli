@@ -7,7 +7,7 @@ import type inquirer from 'inquirer'
 import type { Question } from 'inquirer'
 
 import type { DriverInfo } from '../../../../lib/live-logging.js'
-import type { askForBoolean } from '../../../../lib/user-query.js'
+import type { booleanInput } from '../../../../lib/user-query.js'
 import type { fatalError } from '../../../../lib/util.js'
 import { convertToId, stringTranslateToId } from '../../../../lib/command/command-util.js'
 import type { selectFromList } from '../../../../lib/command/select.js'
@@ -31,9 +31,9 @@ jest.unstable_mockModule('inquirer', () => ({
 	},
 }))
 
-const askForBooleanMock = jest.fn<typeof askForBoolean>()
+const booleanInputMock = jest.fn<typeof booleanInput>()
 jest.unstable_mockModule('../../../../lib/user-query.js', () => ({
-	askForBoolean: askForBooleanMock,
+	booleanInput: booleanInputMock,
 }))
 
 const fatalErrorMock = jest.fn<typeof fatalError>().mockReturnValue('never return' as never)
@@ -211,12 +211,12 @@ describe('checkServerIdentity', () => {
 	})
 
 	it('prompts user to confirm new host', async () => {
-		askForBooleanMock.mockResolvedValueOnce(true)
+		booleanInputMock.mockResolvedValueOnce(true)
 
 		await checkServerIdentity(command, 'hub2', hub2Certificate)
 
 		expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringMatching(/The authenticity of .* can't be established./))
-		expect(askForBooleanMock).toHaveBeenCalledExactlyOnceWith(
+		expect(booleanInputMock).toHaveBeenCalledExactlyOnceWith(
 			'Are you sure you want to continue connecting?',
 			{ default : false },
 		)
@@ -230,7 +230,7 @@ describe('checkServerIdentity', () => {
 	})
 
 	it('fails if user rejects host', async () => {
-		askForBooleanMock.mockResolvedValueOnce(false)
+		booleanInputMock.mockResolvedValueOnce(false)
 
 		expect(await checkServerIdentity(command, 'hub2', hub2Certificate)).toBe('never return')
 

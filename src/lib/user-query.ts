@@ -1,125 +1,115 @@
-import inquirer, { InputQuestion } from 'inquirer'
+import { confirm, input } from '@inquirer/prompts'
 
-
-export type ValidateFunction = (input: string) => true | string | Promise<true | string>
-export type TransformerFunction = (input: string, answers: { value: string }, flags: { isFinal?: boolean | undefined }) => string | Promise<string>
 
 /**
- * Converts the empty string entered by the user to the word 'none` for the user when entering
- * optional numbers.
+ * Simplified, generic version of type required by `inquirer` for validation functions, which
+ * inquirer does not export.
  */
-export const numberTransformer: TransformerFunction = (input, _, { isFinal }) => isFinal && input === '' ? 'none' : input
+export type ValidateFunction<T> = (input: T) => true | string
 
 /**
- * Adjust the given validate function to always allow an empty value.
+ * Simplified, generic version of type required by `inquirer` for transformer functions, which
+ * inquirer does not export.
  */
-export const allowEmptyFn = (validate: ValidateFunction): ValidateFunction =>
-	(input: string): true | string | Promise<true | string> => input === '' || validate(input)
+export type TransformerFunction = (input: string, flags: { isFinal?: boolean | undefined }) => string
+
+// Converts the empty string entered by the user to the word 'none` for the user when entering optional numbers.
+export const displayNoneForEmpty: TransformerFunction = (input, { isFinal }) => isFinal && input === '' ? 'none' : input
 
 export type DefaultValueOrFn<T> = T | (() => T)
-export type AskForStringOptions = {
-	default?: DefaultValueOrFn<string>
-	validate?: ValidateFunction
+
+export type OptionalStringInputOptions = {
+	default?: DefaultValueOrFn<string | undefined>
+	validate?: ValidateFunction<string>
 	helpText?: string
 }
-
-const promptForString = async (message: string, options: AskForStringOptions): Promise<string | undefined> => {
-	const buildValidateFunction = (): ValidateFunction | undefined => {
-		// When there is a validate method defined and we have help text, we have to allow '?'.
-		if (options.helpText && options.validate) {
-			return input => input === '?' || options.validate === undefined || options.validate(input)
-		}
-
-		return options.validate
+const internalStringInput = async (
+		message: string,
+		options: OptionalStringInputOptions & { required: boolean },
+): Promise<string> => {
+	const optValidate = options.validate
+	const validate = (options?.helpText && optValidate)
+		? (input: string) => input === '?' || optValidate(input)
+		: optValidate
+	const question = {
+		message: options?.helpText ? `${message} (? for help)` : message,
+		default: typeof options?.default === 'function' ? options.default() : options?.default,
+		validate,
+		required: options.required,
 	}
 
-	const question: InputQuestion = {
-		type: 'input',
-		name: 'value',
-		message: options.helpText ? `${message} (? for help)` : message,
-		default: typeof options.default === 'function' ? options.default() : options.default,
-	}
-	const validate = buildValidateFunction()
-	// inquirer fails if validate is included but undefined
-	if (validate) {
-		question.validate = validate
-	}
-	const prompt = async (): Promise<string | undefined> =>
-		(await inquirer.prompt(question)).value as string | undefined
-
-	let entered = await prompt()
-	while (options.helpText && entered === '?') {
+	let entered = await input(question)
+	while (options?.helpText && entered === '?') {
 		console.log(options.helpText)
-		entered = await prompt()
+		entered = await input(question)
 	}
 
 	return entered
 }
 
-/**
- * Simple wrapper around querying a user for a string. The return value will always be a string
- * with at least one character or undefined.
- */
-export const askForOptionalString = async (message: string, options?: AskForStringOptions): Promise<string | undefined> => {
-	const updatedOptions = {
-		...options,
-		validate: options?.validate ? allowEmptyFn(options.validate) : undefined,
-	}
-	if (options && !options.validate) {
-		delete options.validate
-	}
-	return await promptForString(message, updatedOptions) || undefined
+export const optionalStringInput = async (
+		message: string,
+		options?: OptionalStringInputOptions,
+): Promise<string | undefined> => {
+	const entered = await internalStringInput(message, { ...options, required: false })
+
+	// inquirer returns an empty string when nothing entered; convert that to undefined
+	return entered ? entered : undefined
 }
 
-/**
- * Simple wrapper around querying a user for a string. The return value will always be a string
- * which may be empty (unless a validation function is specified which disallows it).
- */
-export const askForString = async (message: string, options?: AskForStringOptions): Promise<string> =>  {
-	const updatedOptions = {
-		...options,
-		validate: (input: string) =>
-			input ? (options?.validate ? options.validate(input) : true) : 'value is required',
+export type StringInputOptions =
+	& Omit<OptionalStringInputOptions, 'default'>
+	& {
+		default?: DefaultValueOrFn<string | undefined>
 	}
-	return await promptForString(message, updatedOptions) as string
-}
+export const stringInput = async ( message: string, options?: StringInputOptions ): Promise<string> =>
+	internalStringInput(message, { ...options, required: true })
 
-export type AskForIntegerOptions = {
-	default?: DefaultValueOrFn<number>
+export type IntegerInputOptions<T extends number | undefined> = {
+	default?: DefaultValueOrFn<T>
 
 	/**
-	 * A validation function targeted at `inquirer`'s prompt method. Note that `inquirer` input is
-	 * always a string, so this method gets the raw `string` entered by the user (not a `number`).
-	 * For simple min/max validation, use `integerValidateFn`.
+	 * A validation function targeted at `inquirer`'s input method. For simple min/max validation,
+	 * use `numberValidateFn`.
 	 */
-	validate?: ValidateFunction
+	validate?: ValidateFunction<number | undefined>
 
 	helpText?: string
 }
 
-const promptForInteger = async (message: string, options: AskForIntegerOptions): Promise<number | undefined> => {
-	const buildValidateFunctionFn = (): ValidateFunction | undefined => {
-		// When there is a validate method defined and we have help text, we have to allow '?'.
-		if (options.helpText && options.validate) {
-			return input => input === '?' || options.validate === undefined || options.validate(input)
+const internalIntegerInput = async (
+		message: string,
+		options: IntegerInputOptions<number | undefined> & { required: boolean },
+): Promise<number | undefined> => {
+	const validate = (input: string): true | string => {
+		if (options?.helpText && input === '?') {
+			return true
 		}
 
-		return options.validate
+		if (!options.required && input === '') {
+			return true
+		}
+
+		if (!input.match(/^-?\d+$/)) {
+			return `"${input}" is not a valid integer`
+		}
+
+		if (!options.validate) {
+			return true
+		}
+
+		return options.validate(Number(input))
 	}
 
-	const question: InputQuestion = {
-		type: 'input',
-		name: 'value',
+	// Using `inquirer`'s `number` function instead of `input` would be nice but it doesn't allow
+	// us to accept `?` for help text.
+	const prompt = async (): Promise<string | undefined> => await input({
 		message: options.helpText ? `${message} (? for help)` : message,
-		transformer: numberTransformer,
-		default: typeof options.default === 'function' ? options.default() : options.default,
-	}
-	const validate = buildValidateFunctionFn()
-	if (validate) {
-		question.validate = validate
-	}
-	const prompt = async (): Promise<string | undefined> =>
-		(await inquirer.prompt(question)).value as string | undefined
+		transformer: displayNoneForEmpty,
+		validate,
+		default: (typeof options.default === 'function' ? options.default() : options.default)?.toString(),
+		required: options.required,
+	})
 
 	let entered = await prompt()
 	while (options.helpText && entered === '?') {
@@ -131,70 +121,78 @@ const promptForInteger = async (message: string, options: AskForIntegerOptions):
 }
 
 /**
- * Simple wrapper around querying a user for an integer. The return value will always be a number
- * that is an integer or undefined.
+ * Prompt the user for an optional integer. The return value will always be a number that is an
+ * integer or undefined.
  */
-export const askForOptionalInteger = async (message: string, options?: AskForIntegerOptions): Promise<number | undefined> => {
-	const updatedOptions = {
-		...options,
-		validate: options?.validate ? allowEmptyFn(options.validate) : undefined,
-	}
-	return await promptForInteger(message, updatedOptions)
-}
+export const optionalIntegerInput = async (
+		message: string,
+		options?: IntegerInputOptions<number | undefined>,
+): Promise<number | undefined> =>
+	await internalIntegerInput(message, { ...options, required: false })
 
 /**
  * Simple wrapper around querying a user for a string. The return value will always be a string
  * which may be empty (unless a validation function is specified which disallows it).
  */
-export const askForInteger = async (message: string, options?: AskForIntegerOptions): Promise<number> =>  {
-	const updatedOptions = {
-		...options,
-		validate: (input: string) => input ? (options?.validate ? options.validate(input) : true) : 'value is required',
-	}
-	return await promptForInteger(message, updatedOptions) as number
+export const integerInput = async (message: string, options?: IntegerInputOptions<number>): Promise<number> =>
+	await internalIntegerInput(message, { ...options, required: true }) as number
+
+
+export type NumberInputOptions = {
+	default?: DefaultValueOrFn<number>
+
+	/**
+	 * A validation function targeted at `inquirer`'s prompt method. Note that `inquirer` input is
+	 * always a string, so this method gets the raw `string` entered by the user (not a `number`).
+	 * For simple min/max validation, use `integerValidateFn`.
+	 */
+	validate?: ValidateFunction<number | undefined>
+
+	helpText?: string
 }
 
-export const askForNumber = async (message: string, min?: number, max?: number): Promise<number | undefined> => {
-	const value = (await inquirer.prompt({
-		type: 'input',
-		name: 'value',
-		message,
-		transformer: numberTransformer,
+export const optionalNumberInput = async (
+		message: string,
+		options?: NumberInputOptions,
+): Promise<number | undefined> => {
+	// Using `inquirer`'s `number` function instead of `input` would be nice but it doesn't allow
+	// us to accept `?` for help text.
+	const prompt = async (): Promise<string | undefined> => await input({
+		...options,
+		message: options?.helpText ? `${message} (? for help)` : message,
+		transformer: displayNoneForEmpty,
 		validate: input => {
+			if (options?.helpText && input === '?') {
+				return true
+			}
 			if (input === '') {
 				return true
 			}
 			const asNumber = Number(input)
 			if (isNaN(asNumber)) {
-				return `${input} is not a valid number`
+				return `"${input}" is not a valid number`
 			}
-			if (min !== undefined && asNumber < min) {
-				return `must be no less than ${min}`
-			}
-			if (max !== undefined && asNumber > max) {
-				return `must be no more than ${max}`
-			}
-			return true
+			return options?.validate ? options.validate(asNumber) : true
 		},
-	})).value as string
+		default: (typeof options?.default === 'function' ? options.default() : options?.default)?.toString(),
+		required: false,
+	})
 
-	return value === '' ? undefined : Number(value)
+	let entered = await prompt()
+	while (options?.helpText && entered === '?') {
+		console.log(options.helpText)
+		entered = await prompt()
+	}
+
+	return entered ? Number(entered) : undefined
 }
 
-export type AskForBooleanOptions = {
+export type BooleanInputOptions = {
 	/**
 	 * Specify a default value for when the user hits enter. The default default is true.
 	 */
 	default?: boolean
 }
 
-export const askForBoolean = async (message: string, options?: AskForBooleanOptions): Promise<boolean> => {
-	const answer = (await inquirer.prompt({
-		type: 'confirm',
-		name: 'answer',
-		message,
-		default: options?.default ?? true,
-	})).answer as boolean
-
-	return answer
-}
+export const booleanInput = async (message: string, options?: BooleanInputOptions): Promise<boolean> =>
+	confirm({ message, default: options?.default ?? true })

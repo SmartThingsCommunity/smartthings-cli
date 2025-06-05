@@ -1,6 +1,13 @@
 import { jest } from '@jest/globals'
 
-import { emailValidate, httpsURLValidate, integerValidateFn, localhostOrHTTPSValidate, stringValidateFn, urlValidate } from '../../lib/validate-util.js'
+import {
+	emailValidate,
+	httpsURLValidate,
+	localhostOrHTTPSValidate,
+	numberValidateFn,
+	stringValidateFn,
+	urlValidate,
+} from '../../lib/validate-util.js'
 
 
 describe('stringValidateFn', () => {
@@ -64,47 +71,45 @@ describe('stringValidateFn', () => {
 	})
 })
 
-describe('integerValidateFn', () => {
+describe('numberValidateFn', () => {
 	it('throws exception if min is greater than max', () => {
-		expect(() => integerValidateFn({ min: 10, max: 9 })).toThrow('max must be >= min')
+		expect(() => numberValidateFn({ min: 10, max: 9 })).toThrow('max must be >= min')
 	})
 
-	it('requires a valid integer', () => {
-		const fn = integerValidateFn()
-		expect(fn('not an integer')).toBe('"not an integer" is not a valid integer')
-		expect(fn('3.2')).toBe('"3.2" is not a valid integer')
-		expect(fn('81')).toBe(true)
+	it('accepts nullish values', () => {
+		expect(numberValidateFn()(null as unknown as undefined)).toBe(true)
+		expect(numberValidateFn()(undefined)).toBe(true)
 	})
 
 	it.each`
 		min   | input   | expected
-		${12} | ${'13'} | ${true}
-		${13} | ${'13'} | ${true}
-		${14} | ${'13'} | ${'must be no less than 14'}
+		${12} | ${13} | ${true}
+		${13} | ${13} | ${true}
+		${14} | ${13} | ${'must be no less than 14'}
 	`('validates minimum value', ({ min, input, expected }) => {
-		const fn = integerValidateFn({ min })
+		const fn = numberValidateFn({ min })
 		expect(fn(input)).toBe(expected)
 	})
 
 	it.each`
 		max   | input   | expected
-		${12} | ${'13'} | ${'must be no more than 12'}
-		${13} | ${'13'} | ${true}
-		${14} | ${'13'} | ${true}
+		${12} | ${13} | ${'must be no more than 12'}
+		${13} | ${13} | ${true}
+		${14} | ${13} | ${true}
 	`('validates maximum value', ({ max, input, expected }) => {
-		const fn = integerValidateFn({ max })
+		const fn = numberValidateFn({ max })
 		expect(fn(input)).toBe(expected)
 	})
 
 	it.each`
 		min   | max   | input   | expected
-		${12} | ${14} | ${'11'} | ${'must be no less than 12'}
-		${12} | ${14} | ${'12'} | ${true}
-		${12} | ${14} | ${'13'} | ${true}
-		${12} | ${14} | ${'14'} | ${true}
-		${12} | ${14} | ${'15'} | ${'must be no more than 14'}
+		${12} | ${14} | ${11} | ${'must be no less than 12'}
+		${12} | ${14} | ${12} | ${true}
+		${12} | ${14} | ${13} | ${true}
+		${12} | ${14} | ${14} | ${true}
+		${12} | ${14} | ${15} | ${'must be no more than 14'}
 	`('validates minimum and maximum together value', ({ min, max, input, expected }) => {
-		const fn = integerValidateFn({ min, max })
+		const fn = numberValidateFn({ min, max })
 		expect(fn(input)).toBe(expected)
 	})
 })
@@ -121,6 +126,7 @@ describe('urlValidate', () => {
 	it.each([
 		'I love NeoPixels. I hope you do too.',
 		'74',
+		'http:/missing.a.slash',
 	])('rejects "%s"', (input) => {
 		expect(urlValidate(input)).toBe('must be a valid URL')
 	})
@@ -145,6 +151,7 @@ describe('httpsURLValidate', () => {
 	it.each([
 		'I love NeoPixels. I hope you do too.',
 		'74',
+		'https:/missing.a.slash',
 	])('rejects "%s" when https required', (input) => {
 		expect(httpsURLValidate(input)).toBe('must be a valid URL with https protocol')
 	})

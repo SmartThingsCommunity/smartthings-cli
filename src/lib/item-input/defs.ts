@@ -80,8 +80,7 @@ export type InputDefinition<T> = {
  * of `ValidationFunction` since `context` is optional. i.e. Any function that conforms to
  * `ValidateFunction` will work for a `InputDefinitionValidateFunction` as well.
  */
-export type InputDefinitionValidateFunction = (input: string,
-	context?: unknown[]) => true | string | Promise<true | string>
+export type InputDefinitionValidateFunction<T> = (input: T, context?: unknown[]) => true | string
 export type DefaultValueFunction<T> = (context?: unknown[]) => T
 export type InputDefinitionDefaultValueOrFn<T> = T | DefaultValueFunction<T>
 
