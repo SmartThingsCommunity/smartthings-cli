@@ -5,7 +5,7 @@ import inquirer from 'inquirer'
 import type { Profile } from '../../../lib/cli-config.js'
 import type { red } from '../../../lib/colors.js'
 import type { cancelCommand } from '../../../lib/util.js'
-import type { askForBoolean } from '../../../lib/user-query.js'
+import type { booleanInput } from '../../../lib/user-query.js'
 import {
 	cancelAction,
 	editAction,
@@ -43,9 +43,9 @@ jest.unstable_mockModule('../../../lib/util.js', () => ({
 	cancelCommand: cancelCommandMock,
 }))
 
-const askForBooleanMock = jest.fn<typeof askForBoolean>()
+const booleanInputMock = jest.fn<typeof booleanInput>()
 jest.unstable_mockModule('../../../lib/user-query.js', () => ({
-	askForBoolean: askForBooleanMock,
+	booleanInput: booleanInputMock,
 }))
 
 const jsonOutputFormatterMock = jest.fn<OutputFormatter<SimpleType>>()
@@ -228,7 +228,7 @@ describe('updateFromUserInput', () => {
 
 	it('allows previewing JSON', async () => {
 		promptMock.mockResolvedValueOnce({ action: previewJSONAction })
-		askForBooleanMock.mockResolvedValueOnce(false)
+		booleanInputMock.mockResolvedValueOnce(false)
 		promptMock.mockResolvedValueOnce({ action: finishAction })
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
@@ -238,7 +238,7 @@ describe('updateFromUserInput', () => {
 		expect(jsonFormatterMock).toHaveBeenCalledExactlyOnceWith(4)
 		expect(jsonOutputFormatterMock).toHaveBeenCalledTimes(1)
 		expect(jsonOutputFormatterMock).toHaveBeenCalledWith(simpleValue)
-		expect(askForBooleanMock).toHaveBeenCalledWith(
+		expect(booleanInputMock).toHaveBeenCalledWith(
 			'formatted JSON\n\nWould you like to edit further?',
 			{ default: false },
 		)
@@ -246,7 +246,7 @@ describe('updateFromUserInput', () => {
 
 	it('allows editing after preview', async () => {
 		promptMock.mockResolvedValueOnce({ action: previewJSONAction })
-		askForBooleanMock.mockResolvedValueOnce(true)
+		booleanInputMock.mockResolvedValueOnce(true)
 		updateFromUserInputMock.mockResolvedValueOnce(updatedValue)
 		promptMock.mockResolvedValueOnce({ action: finishAction })
 
@@ -261,7 +261,7 @@ describe('updateFromUserInput', () => {
 
 	it('sticks to original upon cancelation after editing after preview', async () => {
 		promptMock.mockResolvedValueOnce({ action: previewJSONAction })
-		askForBooleanMock.mockResolvedValueOnce(true)
+		booleanInputMock.mockResolvedValueOnce(true)
 		updateFromUserInputMock.mockResolvedValueOnce(cancelAction)
 		promptMock.mockResolvedValueOnce({ action: finishAction })
 
@@ -276,7 +276,7 @@ describe('updateFromUserInput', () => {
 
 	it('allows previewing YAML', async () => {
 		promptMock.mockResolvedValueOnce({ action: previewYAMLAction })
-		askForBooleanMock.mockResolvedValueOnce(false)
+		booleanInputMock.mockResolvedValueOnce(false)
 		promptMock.mockResolvedValueOnce({ action: finishAction })
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
@@ -285,7 +285,7 @@ describe('updateFromUserInput', () => {
 		expect(promptMock).toHaveBeenCalledTimes(2)
 		expect(yamlFormatterMock).toHaveBeenCalledExactlyOnceWith(2)
 		expect(yamlOutputFormatterMock).toHaveBeenCalledExactlyOnceWith(simpleValue)
-		expect(askForBooleanMock).toHaveBeenCalledWith(
+		expect(booleanInputMock).toHaveBeenCalledWith(
 			'formatted YAML\n\nWould you like to edit further?',
 			{ default: false },
 		)
@@ -294,7 +294,7 @@ describe('updateFromUserInput', () => {
 	it('accepts indent level from config', async () => {
 		const commandMock = buildCommandMock({}, { indent: 13 })
 		promptMock.mockResolvedValueOnce({ action: previewYAMLAction })
-		askForBooleanMock.mockResolvedValueOnce(false)
+		booleanInputMock.mockResolvedValueOnce(false)
 		promptMock.mockResolvedValueOnce({ action: finishAction })
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
