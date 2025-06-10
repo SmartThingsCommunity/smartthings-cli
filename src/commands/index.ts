@@ -48,6 +48,7 @@ import devicesComponentStatusCommand from './devices/component-status.js'
 import devicesCommandsCommand from './devices/commands.js'
 import devicesStatusCommand from './devices/status.js'
 import devicesDeleteCommand from './devices/delete.js'
+import devicesHealthCommand from './devices/health.js'
 import devicesHistoryCommand from './devices/history.js'
 import devicesPreferencesCommand from './devices/preferences.js'
 import devicesUpdateCommand from './devices/update.js'
@@ -165,6 +166,7 @@ export const commands: CommandModule<object, any>[] = [
 	devicesCommandsCommand,
 	devicesStatusCommand,
 	devicesDeleteCommand,
+	devicesHealthCommand,
 	devicesHistoryCommand,
 	devicesPreferencesCommand,
 	devicesUpdateCommand,
