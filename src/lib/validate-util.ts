@@ -1,6 +1,9 @@
 import { type ValidateFunction } from './user-query.js'
 
 
+// TODO: it would be simpler and more flexible if we allowed min/max alongside regex here.
+// Even though min/max can be specified in the regex, we can give the user better error messages
+// if we include them specifically.
 export type RegExStringValidationOptions = {
 	regex: string | RegExp
 
