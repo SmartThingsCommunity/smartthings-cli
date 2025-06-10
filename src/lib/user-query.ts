@@ -51,7 +51,13 @@ export const optionalStringInput = async (
 		message: string,
 		options?: OptionalStringInputOptions,
 ): Promise<string | undefined> => {
-	const entered = await internalStringInput(message, { ...options, required: false })
+	const internalOptions = { ...options, required: false }
+	// ensure empty input is allowed regardless of the validator
+	const originalValidate = internalOptions.validate
+	if (originalValidate) {
+		internalOptions.validate = input => !input || originalValidate(input)
+	}
+	const entered = await internalStringInput(message, internalOptions)
 
 	// inquirer returns an empty string when nothing entered; convert that to undefined
 	return entered ? entered : undefined
@@ -151,18 +157,18 @@ export type NumberInputOptions = {
 	helpText?: string
 }
 
-export const optionalNumberInput = async (
+export const internalNumberInput = async (
 		message: string,
-		options?: NumberInputOptions,
+		options: NumberInputOptions & { required: boolean },
 ): Promise<number | undefined> => {
 	// Using `inquirer`'s `number` function instead of `input` would be nice but it doesn't allow
 	// us to accept `?` for help text.
-	const prompt = async (): Promise<string | undefined> => await input({
+	const prompt = async (): Promise<string> => await input({
 		...options,
-		message: options?.helpText ? `${message} (? for help)` : message,
+		message: options.helpText ? `${message} (? for help)` : message,
 		transformer: displayNoneForEmpty,
 		validate: input => {
-			if (options?.helpText && input === '?') {
+			if (options.helpText && input === '?') {
 				return true
 			}
 			if (input === '') {
@@ -172,20 +178,32 @@ export const optionalNumberInput = async (
 			if (isNaN(asNumber)) {
 				return `"${input}" is not a valid number`
 			}
-			return options?.validate ? options.validate(asNumber) : true
+			return options.validate ? options.validate(asNumber) : true
 		},
-		default: (typeof options?.default === 'function' ? options.default() : options?.default)?.toString(),
-		required: false,
+		default: (typeof options.default === 'function' ? options.default() : options.default)?.toString(),
+		required: options.required,
 	})
 
 	let entered = await prompt()
-	while (options?.helpText && entered === '?') {
+	while (options.helpText && entered === '?') {
 		console.log(options.helpText)
 		entered = await prompt()
 	}
 
 	return entered ? Number(entered) : undefined
 }
+
+export const optionalNumberInput = async (
+		message: string,
+		options?: NumberInputOptions,
+): Promise<number | undefined> =>
+	internalNumberInput(message, { ...options, required: false })
+
+export const numberInput = async (
+		message: string,
+		options?: NumberInputOptions,
+): Promise<number> =>
+	await internalNumberInput(message, { ...options, required: true }) as number
 
 export type BooleanInputOptions = {
 	/**

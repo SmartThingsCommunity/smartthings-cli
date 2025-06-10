@@ -20,6 +20,7 @@ const {
 	booleanInput,
 	displayNoneForEmpty,
 	integerInput,
+	numberInput,
 	optionalIntegerInput,
 	optionalNumberInput,
 	optionalStringInput,
@@ -128,6 +129,22 @@ describe('optionalStringInput', () => {
 		validateMock.mockReturnValueOnce('please enter better input')
 		expect(generatedValidate('bad input')).toBe('please enter better input')
 		expect(validateMock).toHaveBeenCalledExactlyOnceWith('bad input')
+	})
+
+	it('allows empty even with custom validate function', async () => {
+		const validateMock = jest.fn<ValidateFunction<string>>().mockReturnValue(true)
+		inputMock.mockResolvedValueOnce('')
+
+		expect(await optionalStringInput('prompt message', { validate: validateMock })).toBe(undefined)
+
+		expect(inputMock).toHaveBeenCalledWith(expect.objectContaining({
+			message: 'prompt message',
+			validate: expect.any(Function),
+		}))
+
+		const generatedValidate = (inputMock.mock.calls[0][0] as { validate: ValidateFunction<string> }).validate
+		expect(generatedValidate('')).toBeTrue()
+		expect(validateMock).toHaveBeenCalledTimes(0)
 	})
 })
 
@@ -425,6 +442,35 @@ describe('optionalNumberInput', () => {
 		const generatedValidate = (inputMock.mock.calls[0][0] as { validate: ValidateFunction<string> }).validate
 		expect(generatedValidate('?')).toBeTrue()
 		expect(validateMock).toHaveBeenCalledTimes(0)
+	})
+})
+
+describe('numberInput', () => {
+	it('requires input', async () => {
+		inputMock.mockResolvedValueOnce('43.9999')
+
+		expect(await numberInput('prompt message')).toBe(43.9999)
+
+		expect(inputMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ required: true }))
+	})
+
+	it('incorporates supplied validation', async () => {
+		inputMock.mockResolvedValueOnce('13.31')
+
+		const validateMock = jest.fn<ValidateFunction<number | undefined>>()
+
+		expect(await numberInput('prompt message', { validate: validateMock })).toBe(13.31)
+
+		expect(inputMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+			validate: expect.any(Function),
+		}))
+
+		const generatedValidate = (inputMock.mock.calls[0][0] as { validate: ValidateFunction<string> }).validate
+
+		validateMock.mockReturnValue(true)
+
+		expect(generatedValidate('77')).toBe(true)
+		expect(validateMock).toHaveBeenCalledExactlyOnceWith(77)
 	})
 })
 

@@ -1,4 +1,4 @@
-import inquirer from 'inquirer'
+import { select } from '@inquirer/prompts'
 import log4js from 'log4js'
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
@@ -13,9 +13,14 @@ import {
 	type HttpClientParams,
 } from '@smartthings/core-sdk'
 
+import { booleanInput, integerInput, numberInput, optionalIntegerInput, optionalNumberInput, optionalStringInput, stringInput } from '../../lib/user-query.js'
 import { fatalError } from '../../lib/util.js'
 import { apiDocsURL } from '../../lib/command/api-command.js'
-import { apiOrganizationCommand, apiOrganizationCommandBuilder, type APIOrganizationCommandFlags } from '../../lib/command/api-organization-command.js'
+import {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	type APIOrganizationCommandFlags,
+} from '../../lib/command/api-organization-command.js'
 import {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
@@ -23,6 +28,7 @@ import {
 } from '../../lib/command/input-and-output-item.js'
 import { userInputProcessor } from '../../lib/command/input-processor.js'
 import { buildTableOutput } from '../../lib/command/util/capabilities-table.js'
+import { numberValidateFn, stringValidateFn } from '../../lib/validate-util.js'
 
 
 export type CommandArgs =
@@ -52,22 +58,12 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 
 const logger = log4js.getLogger('cli')
 
-const enum Type {
-	INTEGER = 'integer',
-	NUMBER = 'number',
-	STRING = 'string',
-	BOOLEAN = 'boolean',
-}
+type Type = 'integer' | 'number' | 'string' | 'boolean'
 
-const attributeAndCommandNamePattern = /^[a-z][a-zA-Z]{0,35}$/
-function commandOrAttributeNameValidator(input: string): boolean | string {
-	return !!attributeAndCommandNamePattern.exec(input)
-		|| 'Invalid attribute name; only letters are allowed and must start with a lowercase letter, max length 36'
-}
-
-function unitOfMeasureValidator(input: string): boolean | string {
-	return input.length < 25 ? true : 'The unit should be less than 25 characters'
-}
+const commandOrAttributeNameValidator = stringValidateFn({
+	regex: /^[a-z][a-zA-Z]{0,35}$/,
+	errorMessage: 'Only letters are allowed, must start with a lowercase letter, max length 36',
+})
 
 const addCommand = (capability: CapabilityCreate, name: string, command: CapabilityCommand): void => {
 	if (capability.commands === undefined) {
@@ -77,9 +73,7 @@ const addCommand = (capability: CapabilityCreate, name: string, command: Capabil
 }
 
 const buildSchemaMatchingAttributeType = (attribute: CapabilityAttribute, type: Type): CapabilityJSONSchema => {
-	const retVal: CapabilityJSONSchema = {
-		type,
-	}
+	const retVal: CapabilityJSONSchema = { type }
 	if (attribute.schema.properties.value.minimum !== undefined) {
 		retVal.minimum = attribute.schema.properties.value.minimum
 	}
@@ -97,11 +91,7 @@ const promptAndAddSetter = async (
 		attributeName: string, attribute: CapabilityAttribute,
 		type: Type,
 ): Promise<void> => {
-	const addSetter = (await inquirer.prompt({
-		type: 'confirm',
-		name: 'addSetter',
-		message: 'Add a setter command for this attribute?',
-	})).addSetter
+	const addSetter =  await booleanInput('Add a setter command for this attribute?')
 
 	logger.debug(`promptAndAddSetter - addSetter = ${addSetter}`)
 	if (addSetter) {
@@ -126,8 +116,7 @@ const addBasicCommand = (
 		attribute: CapabilityAttribute,
 		commandName: string,
 		type: Type,
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		value: any,
+		value: unknown,
 ): void => {
 	if (!attribute.enumCommands) {
 		attribute.enumCommands = []
@@ -150,69 +139,28 @@ const promptAndAddBasicCommands = async (
 		attribute: CapabilityAttribute,
 		type: Type,
 ): Promise<void> => {
-	let basicCommandName = ''
-	const baseMessage = 'If you want to add a basic command, enter a ' +
-		'command name now (or hit enter for none):'
-	let message = `${baseMessage}\n(Basic commands are simple commands ` +
-		'that set the attribute to a specific value.)'
+	let basicCommandName: string | undefined = undefined
+	const baseMessage = 'If you want to add a basic command, enter a command name now (or hit enter for none):'
+	let message = `${baseMessage}\n(Basic commands are simple commands that set the attribute to a specific value.)`
 	do {
-		basicCommandName = (await inquirer.prompt({
-			type: 'input',
-			name: 'basicCommandName',
-			message,
-			validate: (input) => {
-				// empty string is allowed here because it ends basic command name input
-				return !input || commandOrAttributeNameValidator(input)
-			},
-		})).basicCommandName
+		basicCommandName = await optionalStringInput(message, { validate: commandOrAttributeNameValidator })
 		message = baseMessage
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		let basicCommandValue: any = undefined
+		let basicCommandValue: unknown = undefined
 		const minimum = attribute.schema.properties.value.minimum
 		const maximum = attribute.schema.properties.value.maximum
 		const maxLength = attribute.schema.properties.value.maxLength
 		if (basicCommandName) {
-			// TODO: This switch (/if/else/else) should be handled in a
-			// more generic/object oriented way
-			if (type === Type.INTEGER || type === Type.NUMBER) {
-				basicCommandValue = parseInt((await inquirer.prompt({
-					type: 'input',
-					name: 'basicCommandValue',
-					message: 'Command Value: ',
-					validate: (input) => {
-						if (isNaN(input)) {
-							return 'Please enter a numeric value'
-						}
-						if (typeof minimum === 'number' && parseInt(input) < minimum) {
-							return 'Number must be greater than or equal to minimum.'
-						}
-						if (typeof maximum === 'number' && parseInt(input) > maximum) {
-							return 'Number must be less than or equal to maximum value.'
-						}
-						return true
-					},
-				})).basicCommandValue)
-			} else if (type === Type.STRING) {
-				basicCommandValue = (await inquirer.prompt({
-					type: 'input',
-					name: 'basicCommandValue',
-					message: 'Command Value: ',
-					validate: (input) => {
-						if (typeof maxLength === 'number' && input.length > maxLength) {
-							return 'String cannot be greater than maximum length.'
-						}
-						return true
-					},
-				})).basicCommandValue
-			} else if (type === Type.BOOLEAN) {
-				basicCommandValue = (await inquirer.prompt({
-					type: 'list',
-					name: 'basicCommandValue',
-					message: 'Command Value: ',
-					// choices must be strings as per inquirer documentation
-					choices: ['True', 'False'],
-				})).basicCommandValue
+			if (type === 'integer' || type === 'number') {
+				basicCommandValue = await (type === 'integer' ? integerInput : numberInput)(
+					'Command Value:',
+					{ validate: numberValidateFn({ min: minimum, max: maximum }) },
+				)
+			} else if (type === 'string') {
+				const validate = typeof maxLength === 'number' ? stringValidateFn({ maxLength }) : undefined
+				basicCommandValue = await stringInput('Command Value:', { validate })
+			} else if (type === 'boolean') {
+				basicCommandValue = await booleanInput('Command Value:')
 			} else {
 				logger.error('invalid state in promptAndAddBasicCommands')
 			}
@@ -223,46 +171,25 @@ const promptAndAddBasicCommands = async (
 }
 
 const promptForType = async (message: string): Promise<Type> => {
-	return (await inquirer.prompt({
-		type: 'list',
-		name: 'type',
-		message: `Select an ${message} type:`,
-		choices: [Type.INTEGER, Type.NUMBER, Type.STRING, Type.BOOLEAN],
-	})).type
-}
-
-const promptForAttributeName = async (): Promise<string> => {
-	return (await inquirer.prompt({
-		type: 'input',
-		name: 'attributeName',
-		message: 'Attribute Name: ',
-		validate: commandOrAttributeNameValidator,
-	})).attributeName
-}
-
-const promptForUnitOfMeasure = async (): Promise<string> => {
-	return (await inquirer.prompt({
-		type: 'input',
-		name: 'unitOfMeasure',
-		message: 'Unit of measure (default: none): ',
-		validate: unitOfMeasureValidator,
-	})).unitOfMeasure
+	const choices: Type[] = ['integer', 'number', 'string', 'boolean']
+	return await select({ message: `Select an ${message} type:`, choices })
 }
 
 const promptAndAddAttribute = async (capability: CapabilityCreate): Promise<void> => {
+	const promptForAttributeName = async (): Promise<string> =>
+		await stringInput('Attribute Name:', { validate: commandOrAttributeNameValidator })
+
 	let name = await promptForAttributeName()
 
 	let userAcknowledgesNoSetter = false
 	while (name.length > 33 && !userAcknowledgesNoSetter) {
-		const answer = (await inquirer.prompt({
-			type: 'list',
-			name: 'answer',
+		const answer = await select({
 			message: `Attribute Name ${name} is too long to make a setter.`,
 			choices: [
 				{ name: 'Enter a shorter name (max 33 characters)', value: 'shorter ' },
 				{ name: 'I won\'t need a setter', value: 'noSetter' },
 			],
-		})).answer
+		})
 		if (answer === 'noSetter') {
 			userAcknowledgesNoSetter = true
 		} else {
@@ -285,39 +212,25 @@ const promptAndAddAttribute = async (capability: CapabilityCreate): Promise<void
 		},
 	}
 
-	if (type === Type.INTEGER || type === Type.NUMBER) {
-		const minValue: string | undefined = (await inquirer.prompt({
-			type: 'input',
-			name: 'minValue',
-			message: 'Minimum value (default: no minimum): ',
-			validate: (input) => {
-				return input.length === 0 || !isNaN(input) || 'Please enter a numeric value'
-			},
-		})).minValue
-		if (minValue) {
-			attribute.schema.properties.value.minimum = parseInt(minValue)
+	if (type === 'integer' || type === 'number') {
+		const minValue = await (type === 'integer' ? optionalIntegerInput : optionalNumberInput)(
+			'Minimum value (default: no minimum):',
+		)
+		if (minValue != null) {
+			attribute.schema.properties.value.minimum = minValue
 		}
-		const maxValue: string | undefined = (await inquirer.prompt({
-			type: 'input',
-			name: 'maxValue',
-			message: 'Maximum value (default: no maximum): ',
-			validate: (input) => {
-				if (input.length === 0) {
-					return true
-				}
-				if (isNaN(input)) {
-					return 'Please enter a numeric value'
-				}
-				return minValue === undefined
-					|| parseInt(input) > parseInt(minValue)
-					|| 'Maximum value must be greater than minimum value.'
-			},
-		})).maxValue
-		if (maxValue) {
-			attribute.schema.properties.value.maximum = parseInt(maxValue)
+		const maxValue = await (type === 'integer' ? optionalIntegerInput : optionalNumberInput)(
+			'Minimum value (default: no maximum):',
+			{ validate: numberValidateFn( { min: minValue } ) },
+		)
+		if (maxValue != null) {
+			attribute.schema.properties.value.maximum = maxValue
 		}
 
-		const unit = await promptForUnitOfMeasure()
+		const unit = await optionalStringInput(
+			'Unit of measure (default: none):',
+			{ validate: stringValidateFn({ maxLength: 25 }) },
+		)
 		if (unit) {
 			// Note: we don't support multiple units here because we want to move toward using a single unit
 			// of measure in capabilities
@@ -327,18 +240,14 @@ const promptAndAddAttribute = async (capability: CapabilityCreate): Promise<void
 				default: unit,
 			}
 		}
-	} else if (type === Type.STRING) {
+	} else if (type === 'string') {
 		// TODO: min length also ???
-		const maxLength: string | undefined = (await inquirer.prompt({
-			type: 'input',
-			name: 'maxLength',
-			message: 'Maximum length (default: no max length): ',
-			validate: (input) => {
-				return input.length === 0 || !isNaN(input) || 'Please enter a numeric value'
-			},
-		})).maxLength
-		if (maxLength) {
-			attribute.schema.properties.value.maxLength = parseInt(maxLength)
+		const maxLength = await optionalIntegerInput(
+			'Maximum length (default: no max length):',
+			{ validate: numberValidateFn({ min: 1 }) },
+		)
+		if (maxLength != null) {
+			attribute.schema.properties.value.maxLength = maxLength
 		}
 	}
 
@@ -354,34 +263,22 @@ const promptAndAddAttribute = async (capability: CapabilityCreate): Promise<void
 }
 
 const promptAndAddCommand = async (capability: CapabilityCreate): Promise<void> => {
-	const name: string = (await inquirer.prompt({
-		type: 'input',
-		name: 'commandName',
-		message: 'Command Name: ',
-		validate: commandOrAttributeNameValidator,
-	})).commandName
+	const name: string = await stringInput('Command Name:', { validate: commandOrAttributeNameValidator })
 
 	const command: CapabilityCommand = {
 		name,
 		arguments: [],
 	}
 
-	let argumentName = ''
+	let argumentName: string | undefined = undefined
 	do {
-		argumentName = (await inquirer.prompt({
-			type: 'input',
-			name: 'argumentName',
-			message: 'If you want to add argument, enter a name for it now (enter to finish): ',
-		})).argumentName
+		argumentName =
+			await optionalStringInput('If you want to add an argument, enter a name for it now (enter to finish): ')
 
 		if (argumentName) {
 			const type = await promptForType('argument')
 
-			const optional = (await inquirer.prompt({
-				type: 'confirm',
-				name: 'optionalArgument',
-				message: 'Is this argument optional?',
-			})).optionalArgument
+			const optional = await booleanInput('Is this argument optional?')
 
 			const argument: CapabilityArgument = {
 				name: argumentName,
@@ -397,46 +294,37 @@ const promptAndAddCommand = async (capability: CapabilityCreate): Promise<void> 
 	addCommand(capability, name, command)
 }
 
-// TODO: throughout this Q&A session there seldom options to cancel input
-// choices without starting completely over. We need to look at fixing this.
-// TODO: also, this process needs more up-front validation
-const getInputFromUser = async (): Promise<CapabilityCreate> => {
-	const name = (await inquirer.prompt({
-		type: 'input',
-		name: 'capabilityName',
-		message: 'Capability Name:',
-		validate: (input: string) => {
-			return new RegExp('^[a-zA-Z0-9][a-zA-Z0-9 ]{1,35}$').test(input) || 'Invalid capability name'
-		},
-	})).capabilityName
+const getInputFromUser = async (options: { dryRun: boolean }): Promise<CapabilityCreate> => {
+	const name = await stringInput(
+		'Capability Name:',
+		{ validate: stringValidateFn({ regex: /^[a-zA-Z0-9][a-zA-Z0-9 ]{1,35}$/ }) },
+	)
 
 	const capability: CapabilityCreate = {
 		name,
 	}
 
-	const enum Action {
-		ADD_ATTRIBUTE = 'Add an attribute',
-		ADD_COMMAND = 'Add a command',
-		FINISH = 'Finish & Create',
-	}
+	const startingChoices = [
+		{ name: 'Add an attribute', value: 'add-attribute' },
+		{ name: 'Add a command', value: 'add-command' },
+	]
+	const allChoices = [
+		...startingChoices,
+		{ name: `Finish & ${options.dryRun ? 'Output' : 'Create'}`, value: 'finish' },
+	]
 	let action: string
-	let choices = [Action.ADD_ATTRIBUTE, Action.ADD_COMMAND]
+	let choices = startingChoices
 	do {
-		action = (await inquirer.prompt({
-			type: 'list',
-			name: 'action',
-			message: 'Select an action...',
-			choices,
-		})).action
+		action = await select({ message: 'Select an action...', choices })
 
-		if (action === Action.ADD_ATTRIBUTE) {
+		if (action === 'add-attribute') {
 			await promptAndAddAttribute(capability)
-		} else if (action === Action.ADD_COMMAND) {
+		} else if (action === 'add-command') {
 			await promptAndAddCommand(capability)
 		}
 
-		choices = [Action.ADD_ATTRIBUTE, Action.ADD_COMMAND, Action.FINISH]
-	} while (action !== Action.FINISH)
+		choices = allChoices
+	} while (action !== 'finish')
 
 	return capability
 }
@@ -463,7 +351,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 
 	await inputAndOutputItem(command,
 		{ buildTableOutput: data => buildTableOutput(command.tableGenerator, data) },
-		createCapability, userInputProcessor(getInputFromUser))
+		createCapability, userInputProcessor(() => getInputFromUser({ dryRun: !!argv.dryRun })))
 }
 
 const cmd: CommandModule<object, CommandArgs> = { command, describe, builder, handler }
