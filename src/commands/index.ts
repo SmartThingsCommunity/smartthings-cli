@@ -47,12 +47,13 @@ import devicesCommand from './devices.js'
 import devicesCapabilityStatusCommand from './devices/capability-status.js'
 import devicesComponentStatusCommand from './devices/component-status.js'
 import devicesCommandsCommand from './devices/commands.js'
-import devicesStatusCommand from './devices/status.js'
 import devicesDeleteCommand from './devices/delete.js'
 import devicesHealthCommand from './devices/health.js'
 import devicesHistoryCommand from './devices/history.js'
 import devicesPreferencesCommand from './devices/preferences.js'
 import devicesPresentationCommand from './devices/presentation.js'
+import devicesRenameCommand from './devices/rename.js'
+import devicesStatusCommand from './devices/status.js'
 import devicesUpdateCommand from './devices/update.js'
 import edgeChannelsCommand from './edge/channels.js'
 import edgeChannelsCreateCommand from './edge/channels/create.js'
@@ -167,12 +168,13 @@ export const commands: CommandModule<object, any>[] = [
 	devicesCapabilityStatusCommand,
 	devicesComponentStatusCommand,
 	devicesCommandsCommand,
-	devicesStatusCommand,
 	devicesDeleteCommand,
 	devicesHealthCommand,
 	devicesHistoryCommand,
 	devicesPreferencesCommand,
 	devicesPresentationCommand,
+	devicesRenameCommand,
+	devicesStatusCommand,
 	devicesUpdateCommand,
 	edgeChannelsCommand,
 	edgeChannelsCreateCommand,
