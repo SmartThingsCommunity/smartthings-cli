@@ -1,4 +1,6 @@
-import inquirer, { CheckboxQuestion, ChoiceCollection, DistinctChoice } from 'inquirer'
+import { inspect } from 'node:util'
+
+import { checkbox, select, Separator } from '@inquirer/prompts'
 
 import { clipToMaximum, stringFromUnknown } from '../util.js'
 
@@ -8,6 +10,8 @@ import {
 	cancelAction,
 	CancelAction,
 	cancelOption,
+	type CheckboxChoice,
+	type Choice,
 	deleteAction,
 	deleteOption,
 	editAction,
@@ -17,7 +21,7 @@ import {
 	finishOption,
 	helpAction,
 	helpOption,
-	InputDefinition,
+	type InputDefinition,
 	inquirerPageSize,
 	maxItemValueLength,
 	uneditable,
@@ -78,19 +82,17 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 
 	const editItem = async (itemDef: InputDefinition<T>, list: T[], index: number, context: unknown[]): Promise<void> => {
 		const currentValue = itemSummary(list[index])
-		const choices: ChoiceCollection = [editOption(currentValue)]
+		const choices: Choice<T | symbol>[] = [editOption(currentValue)]
 		if (list.length > minItems) {
 			choices.push(deleteOption(currentValue))
 		}
 		choices.push(cancelOption)
 
-		const action = (await inquirer.prompt({
-			type: 'list',
-			name: 'action',
+		const action = await select({
 			message: `What do you want to do with ${currentValue}?`,
 			choices,
 			default: editAction,
-		})).action
+		})
 
 		if (action === editAction) {
 			const response = await itemDef.updateFromUserInput(list[index], context)
@@ -109,13 +111,13 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 	const editList = async (list: T[], context: unknown[]): Promise<FinishAction | CancelAction> => {
 		// eslint-disable-next-line no-constant-condition
 		while (true) {
-			const choices: ChoiceCollection = list.map((item, index) => ({
+			const choices: (Choice<symbol | number>)[] = list.map((item, index) => ({
 				name: `Edit ${itemSummary(item)}.`,
 				value: index,
 			}))
 
 			if (choices.length > 0) {
-				choices.push(new inquirer.Separator())
+				choices.push(new Separator())
 			}
 
 			if (options?.helpText) {
@@ -129,14 +131,12 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 			}
 			choices.push(cancelOption)
 
-			const action = (await inquirer.prompt({
-				type: 'list',
-				name: 'action',
+			const action = await select({
 				message: `Add or edit ${name}.`,
 				choices,
 				default: list.length >= minItems ? finishAction : addAction,
 				pageSize: inquirerPageSize,
-			})).action
+			})
 
 			if (action === addAction) {
 				const newValue = await itemDef.buildFromUserInput([[...list], ...context])
@@ -152,7 +152,7 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 			} else if (action === cancelAction) {
 				return cancelAction
 			} else {
-				throw Error(`unexpected state in arrayDef; action = ${JSON.stringify(action)}`)
+				throw Error(`unexpected state in arrayDef; action = ${inspect(action)}`)
 			}
 		}
 	}
@@ -183,6 +183,12 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 	return { name, buildFromUserInput, summarizeForEdit, updateFromUserInput }
 }
 
+/**
+ * Simplified version of type required by `inquirer` for checkbox validation function, which
+ * inquirer does not export.
+ */
+export type CheckboxValidateFunction<T> = (choices: readonly CheckboxChoice<T>[]) => true | string
+
 export type CheckboxDefOptions<T> = {
 	/**
 	 * A summary of the object to display to the user in a list.
@@ -192,7 +198,7 @@ export type CheckboxDefOptions<T> = {
 	 */
 	summarizeForEdit?: (item: T[], context?: unknown[]) => string
 
-	validate?: (item: T[]) => string | true
+	validate?: CheckboxValidateFunction<T>
 
 	default?: T[]
 
@@ -205,34 +211,35 @@ type ComplexCheckboxDefItem<T> = {
 }
 export type CheckboxDefItem<T> = T extends string ? string | ComplexCheckboxDefItem<T> : ComplexCheckboxDefItem<T>
 
-export function checkboxDef<T>(name: string, items: CheckboxDefItem<T>[], options?: CheckboxDefOptions<T>): InputDefinition<T[]> {
+export function checkboxDef<T>(
+		name: string,
+		items: CheckboxDefItem<T>[],
+		options?: CheckboxDefOptions<T>,
+): InputDefinition<T[]> {
 	const editValues = async (values: T[]): Promise<T[] | CancelAction> => {
 		// We can't add help to the inquirer `checkbox` so, at least for now, we'll display
 		// the help before we display the checkbox.
 		if (options?.helpText) {
 			console.log(`\n${options.helpText}\n`)
 		}
-		const choices: ChoiceCollection = items.map(item => {
+		const choices: CheckboxChoice<T>[] = items.map(item => {
 			const value = typeof item === 'string' ? item as T : item.value
+			const retVal: CheckboxChoice<T> = typeof item === 'object'
+				? { ...item }
+				: ({ name: item, value })
 			if (values.includes(value)) {
-				const retVal: DistinctChoice & { checked?: boolean } = typeof item === 'object' ? { ...item } : ({ name: item, value: item })
 				retVal.checked = true
-				return retVal
 			}
-			return item
+			return retVal
 		})
-		const question: CheckboxQuestion = {
-			type: 'checkbox',
-			name: 'values',
+		const question = {
 			message: `Select ${name}.`,
 			choices,
 			default: finishAction,
 			pageSize: inquirerPageSize,
+			validate: options?.validate,
 		}
-		if (options?.validate) {
-			question.validate = options.validate
-		}
-		const updatedValues = (await inquirer.prompt(question)).values
+		const updatedValues = await checkbox(question)
 
 		return updatedValues as T[]
 	}
