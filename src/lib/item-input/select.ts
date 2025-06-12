@@ -1,8 +1,10 @@
-import inquirer, { type ChoiceCollection } from 'inquirer'
+import { select, Separator } from '@inquirer/prompts'
 
 import {
 	type CancelAction,
 	cancelOption,
+	type Choice,
+	type HelpAction,
 	helpAction,
 	helpOption,
 	type InputDefinition,
@@ -50,12 +52,12 @@ export function selectDef<T>(
 	const namesByValue = new Map(choices.map(choice => [valueOfChoice(choice), nameOfChoice(choice)]))
 
 	const editValue = async (defaultSelection: T | undefined): Promise<T | CancelAction> => {
-		const inquirerChoices: ChoiceCollection = choices.map(choice => ({
+		const inquirerChoices: (Choice<T | CancelAction | HelpAction>)[] = choices.map(choice => ({
 			name: nameOfChoice(choice),
 			value: valueOfChoice(choice),
 		}))
 
-		inquirerChoices.push(new inquirer.Separator())
+		inquirerChoices.push(new Separator())
 		if (options?.helpText) {
 			inquirerChoices.push(helpOption)
 		}
@@ -63,14 +65,12 @@ export function selectDef<T>(
 
 		// eslint-disable-next-line no-constant-condition
 		while (true) {
-			const selection = (await inquirer.prompt({
-				type: 'list',
-				name: 'selection',
+			const selection = await select({
 				message: `Select ${name}.`,
 				choices: inquirerChoices,
 				default: defaultSelection ?? 0,
 				pageSize: inquirerPageSize,
-			})).selection
+			})
 
 			if (selection === helpAction) {
 				console.log(`\n${options?.helpText}\n`)

@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import inquirer from 'inquirer'
+import { type select, Separator } from '@inquirer/prompts'
 
 import type { clipToMaximum, stringFromUnknown } from '../../../lib/util.js'
 import {
@@ -12,12 +12,10 @@ import {
 import type { SelectDefOptions } from '../../../lib/item-input/select.js'
 
 
-const promptMock = jest.fn<typeof inquirer.prompt>()
-jest.unstable_mockModule('inquirer', () => ({
-	default: {
-		prompt: promptMock,
-		Separator: inquirer.Separator,
-	},
+const selectMock = jest.fn<typeof select>()
+jest.unstable_mockModule('@inquirer/prompts', () => ({
+	select: selectMock,
+	Separator,
 }))
 
 const clipToMaximumMock = jest.fn<typeof clipToMaximum>().mockReturnValue('clipped')
@@ -44,19 +42,18 @@ describe('selectDef', () => {
 
 	describe('buildFromUserInput', () => {
 		it('handles string values for choices', async () => {
-			promptMock.mockResolvedValueOnce({ selection: 'item 2' })
+			selectMock.mockResolvedValueOnce('item 2')
 
 			const def = selectDef('Selected Thing', ['item 1', 'item 2', 'item 3'])
 			expect(await def.buildFromUserInput()).toBe('item 2')
 
-			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
-				type: 'list',
+			expect(selectMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				message: 'Select Selected Thing.',
 				choices: [
 					{ name: 'item 1', value: 'item 1' },
 					{ name: 'item 2', value: 'item 2' },
 					{ name: 'item 3', value: 'item 3' },
-					expect.any(inquirer.Separator),
+					expect.any(Separator),
 					cancelOption,
 				],
 				default: 0,
@@ -64,19 +61,18 @@ describe('selectDef', () => {
 		})
 
 		it('handles number values for choices', async () => {
-			promptMock.mockResolvedValueOnce({ selection: 300 })
+			selectMock.mockResolvedValueOnce(300)
 
 			const def = selectDef('Selected Thing', [100, 200, 300])
 			expect(await def.buildFromUserInput()).toBe(300)
 
-			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
-				type: 'list',
+			expect(selectMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				message: 'Select Selected Thing.',
 				choices: [
 					{ name: '100', value: 100 },
 					{ name: '200', value: 200 },
 					{ name: '300', value: 300 },
-					expect.any(inquirer.Separator),
+					expect.any(Separator),
 					cancelOption,
 				],
 				default: 0,
@@ -84,18 +80,17 @@ describe('selectDef', () => {
 		})
 
 		it('handles complex values for choices', async () => {
-			promptMock.mockResolvedValueOnce({ selection: 'segundo' })
+			selectMock.mockResolvedValueOnce('segundo')
 
 			const def = selectDef('Selected Thing', [complexItem1, complexItem2])
 			expect(await def.buildFromUserInput()).toBe('segundo')
 
-			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
-				type: 'list',
+			expect(selectMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				message: 'Select Selected Thing.',
 				choices: [
 					{ name: 'First', value: 'primero' },
 					{ name: 'Second', value: 'segundo' },
-					expect.any(inquirer.Separator),
+					expect.any(Separator),
 					cancelOption,
 				],
 				default: 0,
@@ -103,7 +98,7 @@ describe('selectDef', () => {
 		})
 
 		it('uses specified default', async () => {
-			promptMock.mockResolvedValueOnce({ selection: 'primero' })
+			selectMock.mockResolvedValueOnce('primero')
 
 			const def = selectDef(
 				'Selected Thing',
@@ -112,14 +107,14 @@ describe('selectDef', () => {
 			)
 			expect(await def.buildFromUserInput()).toBe('primero')
 
-			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+			expect(selectMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				default: 'segundo',
 			}))
 		})
 
 		it('displays help text when available and requested', async () => {
-			promptMock.mockResolvedValueOnce({ selection: helpAction })
-			promptMock.mockResolvedValueOnce({ selection: 'primero' })
+			selectMock.mockResolvedValueOnce(helpAction)
+			selectMock.mockResolvedValueOnce('primero')
 
 			const def = selectDef(
 				'Selected Thing',
@@ -128,8 +123,8 @@ describe('selectDef', () => {
 			)
 			expect(await def.buildFromUserInput()).toBe('primero')
 
-			expect(promptMock).toHaveBeenCalledTimes(2)
-			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+			expect(selectMock).toHaveBeenCalledTimes(2)
+			expect(selectMock).toHaveBeenCalledWith(expect.objectContaining({
 				choices: expect.arrayContaining([helpOption]),
 			}))
 			expect(consoleLogSpy).toHaveBeenCalledWith('\nhelp text\n')
@@ -138,7 +133,7 @@ describe('selectDef', () => {
 
 	describe('summarizeForEdit', () => {
 		it('uses name of complex value and clips it', async () => {
-			promptMock.mockResolvedValueOnce({ selection: 'primero' })
+			selectMock.mockResolvedValueOnce('primero')
 
 			const def = selectDef('Selected Thing', [complexItem1, complexItem2])
 			await def.buildFromUserInput()
@@ -178,7 +173,7 @@ describe('selectDef', () => {
 		// Shares code from buildFromUserInput so much of this is tested there.
 
 		it('uses original for default', async () => {
-			promptMock.mockResolvedValueOnce({ selection: 'primero' })
+			selectMock.mockResolvedValueOnce('primero')
 
 			const def = selectDef(
 				'Selected Thing',
@@ -187,7 +182,7 @@ describe('selectDef', () => {
 			)
 			expect(await def.updateFromUserInput('segundo')).toBe('primero')
 
-			expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+			expect(selectMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 				default: 'segundo',
 			}))
 		})

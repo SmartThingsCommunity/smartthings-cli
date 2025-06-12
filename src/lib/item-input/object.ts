@@ -1,14 +1,17 @@
-import inquirer, { ChoiceCollection } from 'inquirer'
+import { select, Separator } from '@inquirer/prompts'
 
 import {
 	cancelAction,
-	CancelAction,
+	type CancelAction,
 	cancelOption,
+	type Choice,
+	type FinishAction,
 	finishAction,
 	finishOption,
+	type HelpAction,
 	helpAction,
 	helpOption,
-	InputDefinition,
+	type InputDefinition,
 	inquirerPageSize,
 	uneditable,
 } from './defs.js'
@@ -54,8 +57,12 @@ export type ObjectItemTypeData<T> = {
 
 const maxPropertiesForDefaultRollup = 3
 
-const buildPropertyChoices = <T>(inputDefsByProperty: InputDefsByProperty<T>, updated: T, contextForChildren: unknown[]): ChoiceCollection => {
-	const choices = [] as ChoiceCollection
+const buildPropertyChoices = <T>(
+	inputDefsByProperty: InputDefsByProperty<T>,
+	updated: T,
+	contextForChildren: unknown[],
+): Choice<string | HelpAction | CancelAction | FinishAction>[] => {
+	const choices: Choice<string>[] = []
 	for (const propertyName in inputDefsByProperty) {
 		const propertyInputDefinition = inputDefsByProperty[propertyName]
 		if (!propertyInputDefinition) {
@@ -145,21 +152,14 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 		while (true) {
 			const contextForChildren = [{ ...updated }, ...context]
 			const choices = buildPropertyChoices(inputDefsByProperty, updated, contextForChildren)
-			choices.push(new inquirer.Separator())
+			choices.push(new Separator())
 			if (options?.helpText) {
 				choices.push(helpOption)
 			}
 			choices.push(finishOption(name))
 			choices.push(cancelOption)
 
-			const action = (await inquirer.prompt({
-				type: 'list',
-				name: 'action',
-				message: name,
-				choices,
-				default: finishAction,
-				pageSize: inquirerPageSize,
-			})).action
+			const action = await select({ message: name, choices, default: finishAction, pageSize: inquirerPageSize })
 
 			if (action === helpAction) {
 				console.log(`\n${options?.helpText}\n`)
