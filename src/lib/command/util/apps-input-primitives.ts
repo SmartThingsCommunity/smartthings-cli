@@ -1,5 +1,5 @@
 import { localhostOrHTTPSValidate } from '../../validate-util.js'
-import { arrayDef, checkboxDef, stringDef } from '../../item-input/index.js'
+import { arrayDef, CheckboxChoice, checkboxDef, stringDef } from '../../item-input/index.js'
 
 
 const availableScopes = [
@@ -24,7 +24,7 @@ export const oauthAppScopeDef = checkboxDef<string>('Scopes', availableScopes, {
 		'To determine which scopes you need for the application, see documentation for the' +
 		' individual endpoints you will use in your app:\n' +
 		'  https://developer.smartthings.com/docs/api/public/',
-	validate: (chosen: string[]) => chosen.length > 0 || 'At least one scope is required.',
+	validate: (chosen: readonly CheckboxChoice<string>[]) => chosen.length > 0 || 'At least one scope is required.',
 })
 
 const redirectUriHelpText = 'More information on redirect URIs can be found at:\n' +

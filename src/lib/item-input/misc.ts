@@ -1,10 +1,10 @@
-import inquirer, { ChoiceCollection } from 'inquirer'
+import { select } from '@inquirer/prompts'
 
 import {
 	booleanInput,
-	BooleanInputOptions,
+	type BooleanInputOptions,
 	integerInput,
-	IntegerInputOptions,
+	type IntegerInputOptions,
 	optionalIntegerInput,
 	type DefaultValueOrFn,
 	optionalStringInput,
@@ -14,6 +14,7 @@ import {
 } from '../../lib/user-query.js'
 import {
 	type CancelAction,
+	type Choice,
 	type InputDefinition,
 	type InputDefinitionDefaultValueOrFn,
 	type InputDefinitionValidateFunction,
@@ -156,19 +157,13 @@ export const listSelectionDef = <T=string>(name: string, validItems: T[], option
 	const summarizeForEdit = options?.summarizeForEdit ?? stringFromUnknown
 
 	const updateFromUserInput = async (original?: T): Promise<T | CancelAction> => {
-		const choices: ChoiceCollection = validItems.map((validItem: T) => ({
+		const choices: Choice<T | CancelAction>[] = validItems.map((validItem: T) => ({
 			name: summarizeForEdit(validItem),
 			value: validItem,
 		}))
 		choices.push(cancelOption)
 
-		const chosen: T | CancelAction = (await inquirer.prompt({
-			type: 'list',
-			name: 'chosen',
-			message: `Select ${name}:`,
-			choices,
-			default: original,
-		})).chosen
+		const chosen = await select({ message: `Select ${name}:`, choices, default: original })
 
 		return chosen
 	}

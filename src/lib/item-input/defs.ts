@@ -1,5 +1,23 @@
-import { DistinctChoice } from 'inquirer'
+import { Separator } from '@inquirer/prompts'
 
+
+export type BaseChoice<T> = {
+	value: T
+	name?: string
+	description?: string
+	short?: string
+	disabled?: boolean | string
+}
+
+/**
+ * A simplified version of the type required by inquirer's `select` method which they don't export.
+ */
+export type Choice<T> = BaseChoice<T> | Separator
+
+/**
+ * A simplified version of the type required by inquirer's `checkbox` method which they don't export.
+ */
+export type CheckboxChoice<T> = (BaseChoice<T> & { checked?: boolean }) | Separator
 
 export const uneditable = Symbol('uneditable')
 export type Uneditable = typeof uneditable
@@ -57,7 +75,11 @@ export type InputDefinition<T> = {
 	 *   1. computed values need to be recomputed when things they depend upon have changed
 	 *   2. when selection made for one field leads to a different set of later fields requiring input
 	 */
-	updateIfNeeded?: <U extends T>(original: U, updatedPropertyName: string | number | symbol, context?: unknown[]) => Promise<T | CancelAction>
+	updateIfNeeded?: <U extends T>(
+		original: U,
+		updatedPropertyName: string | number | symbol,
+		context?: unknown[],
+	) => Promise<T | CancelAction>
 
 	/**
 	 * Specific item types can include data here for reference outside the definition builder.
@@ -86,27 +108,27 @@ export type InputDefinitionDefaultValueOrFn<T> = T | DefaultValueFunction<T>
 
 export const addAction = Symbol('add')
 export type AddAction = typeof addAction
-export const addOption = (name: string): DistinctChoice => ({ name: `Add ${name}.`, value: addAction })
+export const addOption = (name: string): Choice<AddAction> => ({ name: `Add ${name}.`, value: addAction })
 
 export const editAction = Symbol('edit')
 export type EditAction = typeof editAction
-export const editOption = (name: string): DistinctChoice => ({ name: `Edit ${name}.`, value: editAction })
+export const editOption = (name: string): Choice<EditAction> => ({ name: `Edit ${name}.`, value: editAction })
 
 export const deleteAction = Symbol('delete')
 export type DeleteAction = typeof deleteAction
-export const deleteOption = (name: string): DistinctChoice => ({ name: `Delete ${name}.`, value: deleteAction })
+export const deleteOption = (name: string): Choice<DeleteAction> => ({ name: `Delete ${name}.`, value: deleteAction })
 
 export const cancelAction = Symbol('cancel')
 export type CancelAction = typeof cancelAction
-export const cancelOption: DistinctChoice = ({ name: 'Cancel', value: cancelAction })
+export const cancelOption: Choice<CancelAction> = ({ name: 'Cancel', value: cancelAction })
 
 export const finishAction = Symbol('finish')
 export type FinishAction = typeof finishAction
-export const finishOption = (name: string): DistinctChoice => ({ name: `Finish editing ${name}.`, value: finishAction })
+export const finishOption = (name: string): Choice<FinishAction> => ({ name: `Finish editing ${name}.`, value: finishAction })
 
 export const helpAction = Symbol('help')
 export type HelpAction = typeof helpAction
-export const helpOption: DistinctChoice = ({ name: 'Help', value: helpAction })
+export const helpOption: Choice<HelpAction> = ({ name: 'Help', value: helpAction })
 
 export const previewJSONAction = Symbol('previewJSON')
 export const previewYAMLAction = Symbol('previewYAML')

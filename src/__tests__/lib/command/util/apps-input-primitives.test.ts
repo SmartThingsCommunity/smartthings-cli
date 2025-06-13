@@ -45,6 +45,6 @@ const validate = checkboxDefMock.mock.calls[0][2]?.validate
 
 test('oauthAppScopeDef requires at least one scope', () => {
 	expect(validate?.([])).toBe('At least one scope is required.')
-	expect(validate?.(['scope'])).toBe(true)
-	expect(validate?.(['scope1', 'scope2'])).toBe(true)
+	expect(validate?.([{ name: 'scope', value: 'scope' }])).toBe(true)
+	expect(validate?.([{ name: 'scope1', value: 'scope1' }, { name: 'scope2', value: 'scope2' }])).toBe(true)
 })

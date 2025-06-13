@@ -1,20 +1,21 @@
-import inquirer, { ChoiceCollection } from 'inquirer'
+import { select } from '@inquirer/prompts'
 
-import { jsonFormatter, OutputFormatter, yamlFormatter } from '../command/output.js'
 import { red } from '../colors.js'
-import { type SmartThingsCommand } from '../command/smartthings-command.js'
+import { booleanInput } from '../user-query.js'
 import {
 	cancelAction,
+	type Choice,
 	editAction,
 	editOption,
 	finishAction,
-	InputDefinition,
+	type InputDefinition,
 	previewJSONAction,
 	previewYAMLAction,
 } from './defs.js'
 import { cancelCommand } from '../util.js'
-import { BuildOutputFormatterFlags } from '../command/output-builder.js'
-import { booleanInput } from '../user-query.js'
+import { jsonFormatter, OutputFormatter, yamlFormatter } from '../command/output.js'
+import { type BuildOutputFormatterFlags } from '../command/output-builder.js'
+import { type SmartThingsCommand } from '../command/smartthings-command.js'
 
 
 export type UpdateFromUserInputOptions = {
@@ -73,7 +74,7 @@ export const updateFromUserInput = async <T extends object>(
 		}
 		const finishVerb = options.dryRun ? 'output' : (options.finishVerb ?? 'update')
 		const finishNoun = options.finishVerb === 'create' ? 'creation' : 'update'
-		const choices: ChoiceCollection = [
+		const choices: Choice<T | symbol>[] = [
 			editOption(inputDefinition.name),
 			{ name: 'Preview JSON.', value: previewJSONAction },
 			{ name: 'Preview YAML.', value: previewYAMLAction },
@@ -87,13 +88,7 @@ export const updateFromUserInput = async <T extends object>(
 			},
 		]
 
-		const action = (await inquirer.prompt({
-			type: 'list',
-			name: 'action',
-			message: 'Choose an action.',
-			choices,
-			default: finishAction,
-		})).action
+		const action = await select({ message: 'Choose an action.', choices, default: finishAction })
 
 		if (action === editAction) {
 			const answer = await inputDefinition.updateFromUserInput(retVal)

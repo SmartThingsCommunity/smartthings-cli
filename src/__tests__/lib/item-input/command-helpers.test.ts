@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import inquirer from 'inquirer'
+import type { select } from '@inquirer/prompts'
 
 import type { Profile } from '../../../lib/cli-config.js'
 import type { red } from '../../../lib/colors.js'
@@ -24,12 +24,9 @@ import { buildInputDefMock } from '../../test-lib/input-type-mock.js'
 import type { SimpleType } from '../../test-lib/simple-type.js'
 
 
-const promptMock = jest.fn<typeof inquirer.prompt>()
-jest.unstable_mockModule('inquirer', () => ({
-	default: {
-		prompt: promptMock,
-		Separator: inquirer.Separator,
-	},
+const selectMock = jest.fn<typeof select>()
+jest.unstable_mockModule('@inquirer/prompts', () => ({
+	select: selectMock,
 }))
 
 const redMock = jest.fn<typeof red>()
@@ -93,12 +90,12 @@ const badInputValue = { str: 'a bad string', num: -1_000_000 }
 
 describe('updateFromUserInput', () => {
 	it('returns input when no further updates requested', async () => {
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
 			.toStrictEqual(simpleValue)
 
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+		expect(selectMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			message: 'Choose an action.',
 			default: finishAction,
 			choices: [
@@ -116,13 +113,13 @@ describe('updateFromUserInput', () => {
 	})
 
 	it('uses "output" text when in dry-run mode', async () => {
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: true }))
 			.toBe(simpleValue)
 
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+		expect(selectMock).toHaveBeenCalledTimes(1)
+		expect(selectMock).toHaveBeenCalledWith(expect.objectContaining({
 			choices: expect.arrayContaining([
 				{ name: 'Finish and output Item-to-Input.', value: finishAction },
 			]),
@@ -130,7 +127,7 @@ describe('updateFromUserInput', () => {
 	})
 
 	it('uses specified finishVerb', async () => {
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(
 			commandMock,
@@ -139,7 +136,7 @@ describe('updateFromUserInput', () => {
 			{ dryRun: false, finishVerb: 'create' },
 		)).toBe(simpleValue)
 
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+		expect(selectMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			choices: expect.arrayContaining([
 				{ name: 'Finish and create Item-to-Input.', value: finishAction },
 			]),
@@ -147,14 +144,14 @@ describe('updateFromUserInput', () => {
 	})
 
 	it('allows editing from main menu', async () => {
-		promptMock.mockResolvedValueOnce({ action: editAction })
+		selectMock.mockResolvedValueOnce(editAction)
 		updateFromUserInputMock.mockResolvedValueOnce(updatedValue)
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
 			.toBe(updatedValue)
 
-		expect(promptMock).toHaveBeenCalledTimes(2)
+		expect(selectMock).toHaveBeenCalledTimes(2)
 		expect(updateFromUserInputMock).toHaveBeenCalledExactlyOnceWith(simpleValue)
 	})
 
@@ -169,7 +166,7 @@ describe('updateFromUserInput', () => {
 			...inputDefMock,
 			validateFinal: validateFinalMock,
 		}
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(
 			commandMock,
@@ -184,10 +181,10 @@ describe('updateFromUserInput', () => {
 		expect(redMock).toHaveBeenCalledExactlyOnceWith('error text')
 		expect(consoleLogSpy).toHaveBeenCalledWith('red error text')
 		expect(updateFromUserInputMock).toHaveBeenCalledExactlyOnceWith(badInputValue)
-		expect(promptMock).toHaveBeenCalledTimes(1)
+		expect(selectMock).toHaveBeenCalledTimes(1)
 	})
 
-	it('allows cancelation with validation error', async () => {
+	it('allows cancellation with validation error', async () => {
 		const validateFinalMock = jest.fn<Required<InputDefinition<SimpleType>>['validateFinal']>()
 			.mockReturnValue('error text')
 		redMock.mockReturnValueOnce('red error text')
@@ -211,30 +208,30 @@ describe('updateFromUserInput', () => {
 		expect(updateFromUserInputMock).toHaveBeenCalledExactlyOnceWith(badInputValue)
 		expect(cancelCommandMock).toHaveBeenCalledTimes(1)
 
-		expect(promptMock).toHaveBeenCalledTimes(0)
+		expect(selectMock).toHaveBeenCalledTimes(0)
 	})
 
-	it('accepts cancelation of editing from main menu', async () => {
-		promptMock.mockResolvedValueOnce({ action: editAction })
+	it('accepts cancellation of editing from main menu', async () => {
+		selectMock.mockResolvedValueOnce(editAction)
 		updateFromUserInputMock.mockResolvedValueOnce(cancelAction)
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
 			.toBe(simpleValue)
 
-		expect(promptMock).toHaveBeenCalledTimes(2)
+		expect(selectMock).toHaveBeenCalledTimes(2)
 		expect(updateFromUserInputMock).toHaveBeenCalledExactlyOnceWith(simpleValue)
 	})
 
 	it('allows previewing JSON', async () => {
-		promptMock.mockResolvedValueOnce({ action: previewJSONAction })
+		selectMock.mockResolvedValueOnce(previewJSONAction)
 		booleanInputMock.mockResolvedValueOnce(false)
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
 			.toBe(simpleValue)
 
-		expect(promptMock).toHaveBeenCalledTimes(2)
+		expect(selectMock).toHaveBeenCalledTimes(2)
 		expect(jsonFormatterMock).toHaveBeenCalledExactlyOnceWith(4)
 		expect(jsonOutputFormatterMock).toHaveBeenCalledTimes(1)
 		expect(jsonOutputFormatterMock).toHaveBeenCalledWith(simpleValue)
@@ -245,44 +242,44 @@ describe('updateFromUserInput', () => {
 	})
 
 	it('allows editing after preview', async () => {
-		promptMock.mockResolvedValueOnce({ action: previewJSONAction })
+		selectMock.mockResolvedValueOnce(previewJSONAction)
 		booleanInputMock.mockResolvedValueOnce(true)
 		updateFromUserInputMock.mockResolvedValueOnce(updatedValue)
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
 			.toBe(updatedValue)
 
-		expect(promptMock).toHaveBeenCalledTimes(2)
+		expect(selectMock).toHaveBeenCalledTimes(2)
 		expect(jsonFormatterMock).toHaveBeenCalledTimes(1)
 		expect(jsonOutputFormatterMock).toHaveBeenCalledTimes(1)
 		expect(updateFromUserInputMock).toHaveBeenCalledExactlyOnceWith(simpleValue)
 	})
 
-	it('sticks to original upon cancelation after editing after preview', async () => {
-		promptMock.mockResolvedValueOnce({ action: previewJSONAction })
+	it('sticks to original upon cancellation after editing after preview', async () => {
+		selectMock.mockResolvedValueOnce(previewJSONAction)
 		booleanInputMock.mockResolvedValueOnce(true)
 		updateFromUserInputMock.mockResolvedValueOnce(cancelAction)
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
 			.toBe(simpleValue)
 
-		expect(promptMock).toHaveBeenCalledTimes(2)
+		expect(selectMock).toHaveBeenCalledTimes(2)
 		expect(jsonFormatterMock).toHaveBeenCalledTimes(1)
 		expect(jsonOutputFormatterMock).toHaveBeenCalledTimes(1)
 		expect(updateFromUserInputMock).toHaveBeenCalledExactlyOnceWith(simpleValue)
 	})
 
 	it('allows previewing YAML', async () => {
-		promptMock.mockResolvedValueOnce({ action: previewYAMLAction })
+		selectMock.mockResolvedValueOnce(previewYAMLAction)
 		booleanInputMock.mockResolvedValueOnce(false)
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
 			.toBe(simpleValue)
 
-		expect(promptMock).toHaveBeenCalledTimes(2)
+		expect(selectMock).toHaveBeenCalledTimes(2)
 		expect(yamlFormatterMock).toHaveBeenCalledExactlyOnceWith(2)
 		expect(yamlOutputFormatterMock).toHaveBeenCalledExactlyOnceWith(simpleValue)
 		expect(booleanInputMock).toHaveBeenCalledWith(
@@ -293,48 +290,48 @@ describe('updateFromUserInput', () => {
 
 	it('accepts indent level from config', async () => {
 		const commandMock = buildCommandMock({}, { indent: 13 })
-		promptMock.mockResolvedValueOnce({ action: previewYAMLAction })
+		selectMock.mockResolvedValueOnce(previewYAMLAction)
 		booleanInputMock.mockResolvedValueOnce(false)
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
 			.toBe(simpleValue)
 
-		expect(promptMock).toHaveBeenCalledTimes(2)
+		expect(selectMock).toHaveBeenCalledTimes(2)
 		expect(yamlFormatterMock).toHaveBeenCalledExactlyOnceWith(13)
 		expect(yamlOutputFormatterMock).toHaveBeenCalledTimes(1)
 	})
 
 	it('accepts indent level from command line', async () => {
 		const commandMock = buildCommandMock({ indent: 14 })
-		promptMock.mockResolvedValueOnce({ action: previewJSONAction })
-		promptMock.mockResolvedValueOnce({ editAgain: false })
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(previewJSONAction)
+		selectMock.mockResolvedValueOnce({ editAgain: false })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
 			.toBe(simpleValue)
 
-		expect(promptMock).toHaveBeenCalledTimes(3)
+		expect(selectMock).toHaveBeenCalledTimes(3)
 		expect(jsonFormatterMock).toHaveBeenCalledExactlyOnceWith(14)
 		expect(jsonOutputFormatterMock).toHaveBeenCalledTimes(1)
 	})
 
 	it('command line indent overrides value from config', async () => {
 		const commandMock = buildCommandMock({ indent: 15 }, { indent: 14 })
-		promptMock.mockResolvedValueOnce({ action: previewYAMLAction })
-		promptMock.mockResolvedValueOnce({ editAgain: false })
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(previewYAMLAction)
+		selectMock.mockResolvedValueOnce({ editAgain: false })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
 			.toBe(simpleValue)
 
-		expect(promptMock).toHaveBeenCalledTimes(3)
+		expect(selectMock).toHaveBeenCalledTimes(3)
 		expect(yamlFormatterMock).toHaveBeenCalledExactlyOnceWith(15)
 		expect(yamlOutputFormatterMock).toHaveBeenCalledTimes(1)
 	})
 
 	it('calls cancel when user cancels', async () => {
-		promptMock.mockResolvedValueOnce({ action: cancelAction })
+		selectMock.mockResolvedValueOnce(cancelAction)
 
 		await expect(updateFromUserInput(commandMock, inputDefMock, simpleValue, { dryRun: false }))
 			.rejects.toThrow('canceled')
@@ -346,15 +343,15 @@ describe('updateFromUserInput', () => {
 describe('createFromUserInput', () => {
 	it('calls buildFromUserInput and updateFromUserInput', async () => {
 		buildFromUserInputMock.mockResolvedValueOnce(simpleValue)
-		promptMock.mockResolvedValueOnce({ action: editAction })
+		selectMock.mockResolvedValueOnce(editAction)
 		updateFromUserInputMock.mockResolvedValueOnce(updatedValue)
-		promptMock.mockResolvedValueOnce({ action: finishAction })
+		selectMock.mockResolvedValueOnce(finishAction)
 
 		expect(await createFromUserInput(commandMock, inputDefMock, { dryRun: false }))
 			.toStrictEqual(updatedValue)
 
 		expect(buildFromUserInputMock).toHaveBeenCalledExactlyOnceWith()
-		expect(promptMock).toHaveBeenCalledTimes(2)
+		expect(selectMock).toHaveBeenCalledTimes(2)
 		expect(updateFromUserInputMock).toHaveBeenCalledExactlyOnceWith(simpleValue)
 	})
 

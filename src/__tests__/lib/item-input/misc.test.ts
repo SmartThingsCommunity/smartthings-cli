@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import inquirer from 'inquirer'
+import { type select, Separator } from '@inquirer/prompts'
 
 import {
 	cancelOption,
@@ -22,12 +22,10 @@ import type { ListSelectionDefOptions, OptionalDefPredicateFn } from '../../../l
 import { buildInputDefMock } from '../../test-lib/input-type-mock.js'
 
 
-const promptMock = jest.fn<typeof inquirer.prompt>()
-jest.unstable_mockModule('inquirer', () => ({
-	default: {
-		prompt: promptMock,
-		Separator: inquirer.Separator,
-	},
+const selectMock = jest.fn<typeof select>()
+jest.unstable_mockModule('@inquirer/prompts', () => ({
+	select: selectMock,
+	Separator,
 }))
 const booleanInputMock = jest.fn<typeof booleanInput>()
 const integerInputMock = jest.fn<typeof integerInput>()
@@ -483,7 +481,7 @@ describe('listSelectionDef', () => {
 		it('builds choices from given options and adds cancel option', async () => {
 			const summarizeForEditMock = jest.fn<Required<ListSelectionDefOptions<string>>['summarizeForEdit']>()
 				.mockImplementation((input: string): string => `${input} summary`)
-			promptMock.mockResolvedValueOnce({ chosen: 'updated value' })
+			selectMock.mockResolvedValueOnce('updated value')
 			const def = listSelectionDef('Thing One', ['un', 'dos', 'tres'], { summarizeForEdit: summarizeForEditMock })
 
 			expect(await def.updateFromUserInput('original value')).toBe('updated value')
@@ -492,10 +490,8 @@ describe('listSelectionDef', () => {
 			expect(summarizeForEditMock).toHaveBeenCalledWith('un')
 			expect(summarizeForEditMock).toHaveBeenCalledWith('dos')
 			expect(summarizeForEditMock).toHaveBeenCalledWith('tres')
-			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledWith({
-				type: 'list',
-				name: 'chosen',
+			expect(selectMock).toHaveBeenCalledTimes(1)
+			expect(selectMock).toHaveBeenCalledWith({
 				message: 'Select Thing One:',
 				choices: [
 					{ name: 'un summary', value: 'un' },
@@ -512,25 +508,25 @@ describe('listSelectionDef', () => {
 
 	describe('buildFromUserInput', () => {
 		it('proxies to update', async () => {
-			promptMock.mockResolvedValueOnce({ chosen: 'chosen value' })
+			selectMock.mockResolvedValueOnce('chosen value')
 			const def = listSelectionDef('Thing One', ['un', 'dos', 'tres'])
 
 			expect(await def.buildFromUserInput()).toBe('chosen value')
 
-			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+			expect(selectMock).toHaveBeenCalledTimes(1)
+			expect(selectMock).toHaveBeenCalledWith(expect.objectContaining({
 				default: undefined,
 			}))
 		})
 
 		it('passes on default value to update', async () => {
-			promptMock.mockResolvedValueOnce({ chosen: 'chosen value' })
+			selectMock.mockResolvedValueOnce('chosen value')
 			const def = listSelectionDef('Thing One', ['un', 'dos', 'tres'], { default: 'default value' })
 
 			expect(await def.buildFromUserInput()).toBe('chosen value')
 
-			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledWith(expect.objectContaining({
+			expect(selectMock).toHaveBeenCalledTimes(1)
+			expect(selectMock).toHaveBeenCalledWith(expect.objectContaining({
 				default: 'default value',
 			}))
 		})
