@@ -24,14 +24,14 @@ export const chooseChannelFn = (options?: ChooseChannelOptions): ChooseFunction<
 	const listItems = async (command: APICommand): Promise<(ChannelChoice)[]> => {
 		const allChannels = await listChannels(command.client, { includeReadOnly: !!options?.includeReadOnly })
 		if (options?.withDriverId) {
-			const channelsToKeep: string[] = []
+			const filteredChannels: ChannelChoice[] = []
 			await Promise.all(allChannels.map(async channel => {
 				const assignedDrivers = await command.client.channels.listAssignedDrivers(channel.channelId)
 				if (assignedDrivers.find(assignedDriver => assignedDriver.driverId === options.withDriverId)) {
-					channelsToKeep.push(channel.channelId)
+					filteredChannels.push(channel)
 				}
 			}))
-			return allChannels.filter(channel => channelsToKeep.includes(channel.channelId))
+			return filteredChannels
 		}
 		return allChannels
 	}
