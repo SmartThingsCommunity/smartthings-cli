@@ -57,6 +57,7 @@ import devicesRenameCommand from './devices/rename.js'
 import devicesStatusCommand from './devices/status.js'
 import devicesUpdateCommand from './devices/update.js'
 import edgeChannelsCommand from './edge/channels.js'
+import edgeChannelsAssignCommand from './edge/channels/assign.js'
 import edgeChannelsCreateCommand from './edge/channels/create.js'
 import edgeChannelsDeleteCommand from './edge/channels/delete.js'
 import edgeChannelsDriversCommand from './edge/channels/drivers.js'
@@ -181,6 +182,7 @@ export const commands: CommandModule<object, any>[] = [
 	devicesStatusCommand,
 	devicesUpdateCommand,
 	edgeChannelsCommand,
+	edgeChannelsAssignCommand,
 	edgeChannelsCreateCommand,
 	edgeChannelsDeleteCommand,
 	edgeChannelsDriversCommand,
