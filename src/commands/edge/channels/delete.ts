@@ -31,9 +31,8 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)
 
-	const id = await chooseChannel(command, 'Choose a channel to delete.', argv.id)
+	const id = await chooseChannel(command, argv.id, { promptMessage: 'Choose a channel to delete.' })
 	await command.client.channels.delete(id)
-	console.log(`command.cliConfig = ${JSON.stringify(command.cliConfig)}`)
 	await resetManagedConfigKey(command.cliConfig, 'defaultChannel', value => value === id)
 	console.log(`Channel ${id} deleted.`)
 }

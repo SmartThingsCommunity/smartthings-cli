@@ -11,7 +11,7 @@ import {
 	type DriverChannelDetailsWithName,
 	listAssignedDriversWithNames,
 } from '../../../lib/command/util/edge-drivers.js'
-import { chooseChannel } from '../../../lib/command/util/edge/channels-choose.js'
+import { chooseChannelFn } from '../../../lib/command/util/edge/channels-choose.js'
 
 
 export type CommandArgs =
@@ -50,11 +50,10 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 		listTableFieldDefinitions: ['name', 'driverId', 'version', 'createdDate', 'lastModifiedDate'],
 	}
 
-	const channelId = await chooseChannel(
+	const channelId = await chooseChannelFn({ includeReadOnly: true })(
 		command,
-		'Select a channel.',
 		argv.idOrIndex,
-		{ allowIndex: true, includeReadOnly: true, useConfigDefault: true },
+		{ allowIndex: true, useConfigDefault: true },
 	)
 
 	await outputList(command, config, () => listAssignedDriversWithNames(command.client, channelId))

@@ -46,12 +46,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 			return argv.id
 		}
 
-		const channelId = await chooseChannel(
-			command,
-			'Which channel is the invite you want to delete for?',
-			argv.channel,
-			{ useConfigDefault: true },
-		)
+		const channelId = await chooseChannel(command, argv.channel, { useConfigDefault: true } )
 
 		return chooseInviteFn(command, { channelId })(
 			command,

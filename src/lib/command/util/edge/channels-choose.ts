@@ -1,58 +1,52 @@
-import { type Channel, type EnrolledChannel } from '@smartthings/core-sdk'
+import { type Channel } from '@smartthings/core-sdk'
 
 import { type APICommand } from '../../api-command.js'
-import { stringTranslateToId } from '../../command-util.js'
-import { selectFromList, type SelectFromListConfig } from '../../select.js'
-import { ChooseOptions, chooseOptionsWithDefaults } from '../util-util.js'
+import { type ChooseFunction, createChooseFn } from '../util-util.js'
 import { listChannels } from './channels.js'
 
 
 /**
- * Both Channel and Enrolled channel have all the fields necessary for choosing a channel. Using
- * this allows callers of `chooseChannel` to supply a `listItems` that returns a list of either.
+ * Using this allows callers of `chooseChannel` to supply a `listItems` that returns a list of anything
+ * that has both the channelId and name fields.
  */
-export type ChannelChoice = Channel | EnrolledChannel
+export type ChannelChoice = Pick<Channel, 'channelId' | 'name'>
 
-export type ChooseChannelOptions = ChooseOptions<ChannelChoice> & {
-	includeReadOnly: boolean
+export type ChooseChannelOptions = {
+	includeReadOnly?: boolean
+
+	/**
+	 * Include only channels that have the specified driver id assigned to them.
+	 */
+	withDriverId?: string
 }
 
-export const chooseChannelOptionsWithDefaults = (options?: Partial<ChooseChannelOptions>): ChooseChannelOptions => ({
-	includeReadOnly: false,
-	...chooseOptionsWithDefaults(options),
-})
-
-export async function chooseChannel(command: APICommand, promptMessage: string,
-		channelFromArg?: string,
-		options?: Partial<ChooseChannelOptions>): Promise<string> {
-	const opts = chooseChannelOptionsWithDefaults(options)
-	const config: SelectFromListConfig<ChannelChoice> = {
-		itemName: 'channel',
-		primaryKeyName: 'channelId',
-		sortKeyName: 'name',
+export const chooseChannelFn = (options?: ChooseChannelOptions): ChooseFunction<ChannelChoice> => {
+	const listItems = async (command: APICommand): Promise<(ChannelChoice)[]> => {
+		const allChannels = await listChannels(command.client, { includeReadOnly: !!options?.includeReadOnly })
+		if (options?.withDriverId) {
+			const channelsToKeep: string[] = []
+			await Promise.all(allChannels.map(async channel => {
+				const assignedDrivers = await command.client.channels.listAssignedDrivers(channel.channelId)
+				if (assignedDrivers.find(assignedDriver => assignedDriver.driverId === options.withDriverId)) {
+					channelsToKeep.push(channel.channelId)
+				}
+			}))
+			return allChannels.filter(channel => channelsToKeep.includes(channel.channelId))
+		}
+		return allChannels
 	}
 
-	const listItems = (): Promise<ChannelChoice[]> => options?.listItems
-		? options.listItems(command)
-		: listChannels(command.client, { includeReadOnly: opts.includeReadOnly })
-
-	const preselectedId = channelFromArg
-		? (opts.allowIndex
-			? await stringTranslateToId(config, channelFromArg, listItems)
-			: channelFromArg)
-		: undefined
-
-	const defaultValue = opts.useConfigDefault
-		? {
-			configKey: 'defaultChannel',
-			getItem: (id: string): Promise<ChannelChoice> => command.client.channels.get(id),
-			userMessage: (channel: ChannelChoice): string =>
-				`using previously specified default channel named "${channel.name}" (${channel.channelId})`,
-		}
-		: undefined
-	return selectFromList(
-		command,
-		config,
-		{ preselectedId, listItems, promptMessage, defaultValue },
+	const defaultValue = {
+		configKey: 'defaultChannel',
+		getItem: (command: APICommand, id: string): Promise<ChannelChoice> => command.client.channels.get(id),
+		userMessage: (channel: ChannelChoice): string =>
+			`using previously specified default channel named "${channel.name}" (${channel.channelId})`,
+	}
+	return createChooseFn(
+		{ itemName: 'channel', primaryKeyName: 'channelId', sortKeyName: 'name' },
+		listItems,
+		{ defaultValue },
 	)
 }
+
+export const chooseChannel = chooseChannelFn()
