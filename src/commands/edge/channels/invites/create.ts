@@ -45,7 +45,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	const command = edgeCommand(await apiCommand(argv))
 
 	const getInputFromUser = async (): Promise<InvitationCreate> => {
-		const channelId = await chooseChannel(command, 'Choose a channel:', argv.channel,
+		const channelId = await chooseChannel(command, argv.channel,
 			{ useConfigDefault: true })
 
 		const name = (await inquirer.prompt({

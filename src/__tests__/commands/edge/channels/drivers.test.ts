@@ -5,8 +5,12 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { CommandArgs } from '../../../../commands/edge/channels/drivers.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type { outputList, outputListBuilder } from '../../../../lib/command/output-list.js'
-import type { DriverChannelDetailsWithName, listAssignedDriversWithNames } from '../../../../lib/command/util/edge-drivers.js'
-import type { chooseChannel } from '../../../../lib/command/util/edge/channels-choose.js'
+import type {
+	DriverChannelDetailsWithName,
+	listAssignedDriversWithNames,
+} from '../../../../lib/command/util/edge-drivers.js'
+import type { ChooseFunction } from '../../../../lib/command/util/util-util.js'
+import type { ChannelChoice, chooseChannelFn } from '../../../../lib/command/util/edge/channels-choose.js'
 import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock.js'
 
@@ -25,9 +29,10 @@ jest.unstable_mockModule('../../../../lib/command/util/edge-drivers.js', () => (
 	listAssignedDriversWithNames: listAssignedDriversWithNamesMock,
 }))
 
-const chooseChannelMock = jest.fn<typeof chooseChannel>()
+const chooseChannelMock = jest.fn<ChooseFunction<ChannelChoice>>()
+const chooseChannelFnMock = jest.fn<typeof chooseChannelFn>().mockReturnValue(chooseChannelMock)
 jest.unstable_mockModule('../../../../lib/command/util/edge/channels-choose.js', () => ({
-	chooseChannel: chooseChannelMock,
+	chooseChannelFn: chooseChannelFnMock,
 }))
 
 
@@ -74,11 +79,11 @@ test('handler', async () => {
 	await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
 
 	expect(apiCommandMock).toHaveBeenCalledExactlyOnceWith(inputArgv)
+	expect(chooseChannelFnMock).toHaveBeenCalledExactlyOnceWith({ includeReadOnly: true })
 	expect(chooseChannelMock).toHaveBeenCalledExactlyOnceWith(
 		command,
-		'Select a channel.',
 		'cmd-line-id',
-		{ allowIndex: true, includeReadOnly: true, useConfigDefault: true },
+		{ allowIndex: true, useConfigDefault: true },
 	)
 	expect(outputListMock).toHaveBeenCalledExactlyOnceWith(
 		command,

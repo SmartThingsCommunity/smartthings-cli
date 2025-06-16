@@ -74,7 +74,11 @@ test('handler', async () => {
 	await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
 
 	expect(apiCommandMock).toHaveBeenCalledExactlyOnceWith(inputArgv)
-	expect(chooseChannelMock).toHaveBeenCalledExactlyOnceWith(command, 'Choose a channel to delete.', 'cmd-line-id')
+	expect(chooseChannelMock).toHaveBeenCalledExactlyOnceWith(
+		command,
+		'cmd-line-id',
+		{ promptMessage: 'Choose a channel to delete.' },
+	)
 	expect(apiChannelsDeleteMock).toHaveBeenCalledExactlyOnceWith('chosen-channel-id')
 	expect(resetManagedConfigKeyMock).toHaveBeenCalledExactlyOnceWith(cliConfig, 'defaultChannel', expect.any(Function))
 	expect(consoleLogSpy).toHaveBeenCalledWith('Channel chosen-channel-id deleted.')
