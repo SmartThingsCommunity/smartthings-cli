@@ -2,17 +2,17 @@ import { jest } from '@jest/globals'
 
 import type { ArgumentsCamelCase, Argv } from 'yargs'
 
-import { EnrolledChannel, HubdevicesEndpoint } from '@smartthings/core-sdk'
+import type { EnrolledChannel, HubdevicesEndpoint } from '@smartthings/core-sdk'
 
-import { CommandArgs } from '../../../../commands/edge/drivers/install.js'
+import type { CommandArgs } from '../../../../commands/edge/drivers/install.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type { selectFromList } from '../../../../lib/command/select.js'
 import type { chooseDriverFromChannelFn } from '../../../../lib/command/util/drivers-choose.js'
+import type { DriverChannelDetailsWithName } from '../../../../lib/command/util/edge-drivers.js'
 import type { chooseHub } from '../../../../lib/command/util/hubs-choose.js'
+import type { ChooseFunction } from '../../../../lib/command/util/util-util.js'
 import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock } from '../../../test-lib/builder-mock.js'
-import { ChooseFunction } from '../../../../lib/command/util/util-util.js'
-import { DriverChannelDetailsWithName } from '../../../../lib/command/util/edge-drivers.js'
 
 
 const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../../..')
