@@ -65,6 +65,7 @@ import edgeChannelsInvitesCommand from './edge/channels/invites.js'
 import edgeChannelsInvitesAcceptCommand from './edge/channels/invites/accept.js'
 import edgeChannelsInvitesCreateCommand from './edge/channels/invites/create.js'
 import edgeChannelsInvitesDeleteCommand from './edge/channels/invites/delete.js'
+import edgeChannelsMetaInfoCommand from './edge/channels/metainfo.js'
 import edgeChannelsUnassignCommand from './edge/channels/unassign.js'
 import edgeDriversCommand from './edge/drivers.js'
 import edgeDriversDefaultCommand from './edge/drivers/default.js'
@@ -190,6 +191,7 @@ export const commands: CommandModule<object, any>[] = [
 	edgeChannelsInvitesAcceptCommand,
 	edgeChannelsInvitesCreateCommand,
 	edgeChannelsInvitesDeleteCommand,
+	edgeChannelsMetaInfoCommand,
 	edgeChannelsUnassignCommand,
 	edgeDriversCommand,
 	edgeDriversDefaultCommand,
