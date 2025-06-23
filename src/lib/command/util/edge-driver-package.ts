@@ -1,15 +1,21 @@
-import fs from 'fs'
+import { createReadStream, readdirSync } from 'node:fs'
 
-import { CliUx, Errors } from '@oclif/core'
-import JSZip from 'jszip'
+import type JSZip from 'jszip'
 import picomatch from 'picomatch'
 
-import { fileExists, findYAMLFilename, isDir, isFile, isSymbolicLink, readYAMLFile,
-	realPathForSymbolicLink, requireDir, YAMLFileData } from '../../file-util.js'
+import {
+	fileExists,
+	findYAMLFilename,
+	isDir,
+	isFile,
+	isSymbolicLink,
+	readYAMLFile,
+	realPathForSymbolicLink,
+	requireDir,
+	type YAMLFileData,
+} from '../../file-util.js'
+import { fatalError } from '../../util.js'
 
-
-// Utility methods specific to the `edge:drivers:package` command. Split out here to make
-// unit testing easier.
 
 export const resolveProjectDirName = async (projectDirNameFromArgs: string): Promise<string> => {
 	let calculatedProjectDirName = projectDirNameFromArgs
@@ -17,7 +23,7 @@ export const resolveProjectDirName = async (projectDirNameFromArgs: string): Pro
 		calculatedProjectDirName = calculatedProjectDirName.slice(0, -1)
 	}
 	if (!await isDir(calculatedProjectDirName)) {
-		throw new Errors.CLIError(`${calculatedProjectDirName} must exist and be a directory`)
+		return fatalError(`${calculatedProjectDirName} must exist and be a directory`)
 	}
 	return calculatedProjectDirName
 }
@@ -25,22 +31,26 @@ export const resolveProjectDirName = async (projectDirNameFromArgs: string): Pro
 export const processConfigFile = async (projectDirectory: string, zip: JSZip): Promise<YAMLFileData> => {
 	const configFile = await findYAMLFilename(`${projectDirectory}/config`)
 	if (configFile === false) {
-		throw new Errors.CLIError('missing main config.yaml (or config.yml) file')
+		return fatalError('missing main config.yaml (or config.yml) file')
 	}
 
 	const parsedConfig = readYAMLFile(configFile)
 
-	zip.file('config.yml', fs.createReadStream(configFile))
+	zip.file('config.yml', createReadStream(configFile))
 
 	return parsedConfig
 }
 
-export const processOptionalYAMLFile = async (baseFilename: string, projectDirectory: string, zip: JSZip): Promise<void> => {
+export const processOptionalYAMLFile = async (
+		baseFilename: string,
+		projectDirectory: string,
+		zip: JSZip,
+): Promise<void> => {
 	const yamlFile = await findYAMLFilename(`${projectDirectory}/${baseFilename}`)
 	if (yamlFile !== false) {
 		// validate file is at least parsable as a YAML file
 		readYAMLFile(yamlFile)
-		zip.file(`${baseFilename}.yml`, fs.createReadStream(yamlFile))
+		zip.file(`${baseFilename}.yml`, createReadStream(yamlFile))
 	}
 }
 
@@ -53,22 +63,26 @@ export const processSearchParametersFile = async (projectDirectory: string, zip:
 export const buildTestFileMatchers = (matchersFromConfig: string[]): picomatch.Matcher[] =>
 	matchersFromConfig.map(glob => picomatch(glob))
 
-export const processSrcDir = async (projectDirectory: string, zip: JSZip, testFileMatchers: picomatch.Matcher[]): Promise<boolean> => {
+export const processSrcDir = async (
+		projectDirectory: string,
+		zip: JSZip,
+		testFileMatchers: picomatch.Matcher[],
+): Promise<boolean> => {
 	const srcDir = await requireDir(`${projectDirectory}/src`)
 	if (!await isFile(`${srcDir}/init.lua`)) {
-		throw new Errors.CLIError(`missing required ${srcDir}/init.lua file`)
+		return fatalError(`missing required ${srcDir}/init.lua file`)
 	}
 
 	let successful = true
 	const fatalIssue = (message: string): void => {
 		successful = false
-		CliUx.ux.error(message, { exit: false })
+		console.error(message)
 	}
 
 	// The max depth is 10 but the main project directory and the src directory itself count,
 	// so we start at 2.
 	const walkDir = async (fromDir: string, nested = 2): Promise<void> => {
-		await Promise.all(fs.readdirSync(fromDir).map(async filename => {
+		await Promise.all(readdirSync(fromDir).map(async filename => {
 			const fullFilename = `${fromDir}/${filename}`
 			if (await fileExists(fullFilename)) {
 				const isLink = await isSymbolicLink(fullFilename)
@@ -88,7 +102,7 @@ export const processSrcDir = async (projectDirectory: string, zip: JSZip, testFi
 					const filenameForTestMatch = fullFilename.substring(srcDir.length + 1)
 					if (!testFileMatchers.some(matcher => matcher(filenameForTestMatch))) {
 						const archiveName = `src${fullFilename.substring(srcDir.length)}`
-						zip.file(archiveName, fs.createReadStream(fullFilename))
+						zip.file(archiveName, createReadStream(fullFilename))
 					}
 				}
 			} else {
@@ -104,7 +118,7 @@ export const processSrcDir = async (projectDirectory: string, zip: JSZip, testFi
 export const processProfiles = async (projectDirectory: string, zip: JSZip): Promise<void> => {
 	const profilesDir = await requireDir(`${projectDirectory}/profiles`)
 
-	for (const filename of fs.readdirSync(profilesDir)) {
+	for (const filename of readdirSync(profilesDir)) {
 		const fullFilename = `${profilesDir}/${filename}`
 		if (filename.endsWith('.yaml') || filename.endsWith('.yml')) {
 			// read and parse to make sure profiles are at least valid yaml
@@ -113,9 +127,9 @@ export const processProfiles = async (projectDirectory: string, zip: JSZip): Pro
 			if (archiveName.endsWith('.yaml')) {
 				archiveName = `${archiveName.slice(0, -4)}yml`
 			}
-			zip.file(archiveName, fs.createReadStream(fullFilename))
+			zip.file(archiveName, createReadStream(fullFilename))
 		} else {
-			throw new Errors.CLIError(`invalid profile file "${fullFilename}" (must have .yaml or .yml extension)`)
+			return fatalError(`invalid profile file "${fullFilename}" (must have .yaml or .yml extension)`)
 		}
 	}
 }
