@@ -1,10 +1,12 @@
-import fs from 'fs'
+import { jest } from '@jest/globals'
 
-import { CliUx, Errors } from '@oclif/core'
-import JSZip from 'jszip'
-import picomatch from 'picomatch'
+import type { createReadStream, Dirent, readdirSync, ReadStream } from 'node:fs'
 
-import {
+import type JSZip from 'jszip'
+import type picomatch from 'picomatch'
+import type { Matcher, Result } from 'picomatch'
+
+import type {
 	fileExists,
 	findYAMLFilename,
 	isDir,
@@ -14,7 +16,56 @@ import {
 	realPathForSymbolicLink,
 	requireDir,
 } from '../../../../lib/file-util.js'
-import {
+import { fatalError } from '../../../../lib/util.js'
+
+
+const readStreamMock = { path: '/goes/to/here' } as ReadStream
+const createReadStreamMock = jest.fn<typeof createReadStream>().mockReturnValue(readStreamMock)
+const readdirSyncMock = jest.fn<typeof readdirSync>()
+jest.unstable_mockModule('node:fs', () => ({
+	createReadStream: createReadStreamMock,
+	readdirSync: readdirSyncMock,
+}))
+
+const zipFileMock = jest.fn<JSZip['file']>()
+const zipMock = { file: zipFileMock } as unknown as JSZip
+jest.unstable_mockModule('jszip', () => ({
+	default: zipMock,
+}))
+
+const picomatchMock = jest.fn<typeof picomatch>()
+jest.unstable_mockModule('picomatch', () => ({
+	default: picomatchMock,
+}))
+
+const fileExistsMock = jest.fn<typeof fileExists>()
+const findYAMLFilenameMock = jest.fn<typeof findYAMLFilename>()
+const isDirMock = jest.fn<typeof isDir>()
+const isFileMock = jest.fn<typeof isFile>()
+const isSymbolicLinkMock = jest.fn<typeof isSymbolicLink>()
+const readYAMLFileMock = jest.fn<typeof readYAMLFile>()
+const realPathForSymbolicLinkMock = jest.fn<typeof realPathForSymbolicLink>()
+const requireDirMock = jest.fn<typeof requireDir>()
+jest.unstable_mockModule('../../../../lib/file-util.js', () => ({
+	fileExists: fileExistsMock,
+	findYAMLFilename: findYAMLFilenameMock,
+	isDir: isDirMock,
+	isFile: isFileMock,
+	isSymbolicLink: isSymbolicLinkMock,
+	readYAMLFile: readYAMLFileMock,
+	realPathForSymbolicLink: realPathForSymbolicLinkMock,
+	requireDir: requireDirMock,
+}))
+
+const fatalErrorMock = jest.fn<typeof fatalError>().mockReturnValue('never return' as never)
+jest.unstable_mockModule('../../../../lib/util.js', () => ({
+	fatalError: fatalErrorMock,
+}))
+
+const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { /*no-op*/ })
+
+
+const {
 	buildTestFileMatchers,
 	processConfigFile,
 	processFingerprintsFile,
@@ -23,34 +74,8 @@ import {
 	processSearchParametersFile,
 	processSrcDir,
 	resolveProjectDirName,
-} from '../../../../lib/commands/drivers/package-util.js'
+} = await import('../../../../lib/command/util/edge-driver-package.js')
 
-
-jest.mock('fs')
-jest.mock('js-yaml')
-jest.mock('picomatch')
-jest.mock('../../../../../src/lib/file-util')
-
-// For some reason jest.mocked produces the wrong type signature for readdirSyncMock
-const readdirSyncMock = fs.readdirSync as unknown as jest.Mock<string[], [string]>
-const readStreamMock: fs.ReadStream = {} as fs.ReadStream
-const createReadStreamMock = jest.mocked(fs.createReadStream)
-
-const isFileMock = jest.mocked(isFile)
-const isDirMock = jest.mocked(isDir)
-const findYAMLFilenameMock = jest.mocked(findYAMLFilename)
-const requireDirMock = jest.mocked(requireDir)
-const readYAMLFileMock = jest.mocked(readYAMLFile)
-const fileExistsMock = jest.mocked(fileExists)
-const isSymbolicLinkMock = jest.mocked(isSymbolicLink)
-const realPathForSymbolicLinkMock = jest.mocked(realPathForSymbolicLink)
-
-const zipFileMock = jest.fn()
-const zipMock = {
-	file: zipFileMock,
-} as unknown as JSZip
-
-const errorSpy = jest.spyOn(CliUx.ux, 'error').mockImplementation()
 
 describe('resolveProjectDirName', () => {
 	it('returns directory from arg if it exists', async () => {
@@ -74,7 +99,9 @@ describe('resolveProjectDirName', () => {
 	it('throws exception if directory does not exist', async () => {
 		isDirMock.mockResolvedValueOnce(false)
 
-		await expect(resolveProjectDirName('my-bad-directory')).rejects.toThrow(Errors.CLIError)
+		expect(await resolveProjectDirName('my-bad-directory')).toBe('never return')
+
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith('my-bad-directory must exist and be a directory')
 	})
 })
 
@@ -100,19 +127,20 @@ describe('processConfigFile', () => {
 	it('throws error when config file is missing', async () => {
 		findYAMLFilenameMock.mockResolvedValueOnce(false)
 
-		await expect(processConfigFile('my-project-dir', zipMock))
-			.rejects.toThrow(new Errors.CLIError('missing main config.yaml (or config.yml) file'))
+		expect(await processConfigFile('my-project-dir', zipMock)).toBe('never return')
 
 		expect(findYAMLFilenameMock).toHaveBeenCalledTimes(1)
 		expect(findYAMLFilenameMock).toHaveBeenCalledWith('my-project-dir/config')
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith('missing main config.yaml (or config.yml) file')
 		expect(readYAMLFileMock).toHaveBeenCalledTimes(0)
 		expect(zipFileMock).toHaveBeenCalledTimes(0)
 	})
 })
 
 describe('processOptionalYAMLFile', () => {
+	findYAMLFilenameMock.mockResolvedValue('yaml filename')
+
 	it('includes fingerprint file if found', async () => {
-		findYAMLFilenameMock.mockResolvedValueOnce('yaml filename')
 		readYAMLFileMock.mockReturnValueOnce({ yaml: 'file contents' })
 		createReadStreamMock.mockReturnValueOnce(readStreamMock)
 
@@ -138,32 +166,25 @@ describe('processOptionalYAMLFile', () => {
 		expect(readYAMLFileMock).toHaveBeenCalledTimes(0)
 		expect(zipFileMock).toHaveBeenCalledTimes(0)
 	})
-})
 
-test('processFingerprintsFile calls processOptionalYAMLFile', async () => {
-	const processOptionalYAMLFileSpy = jest.spyOn(packageUtilModule, 'processOptionalYAMLFile')
-		.mockImplementationOnce(async () => { /* do nothing */ })
+	test('processFingerprintsFile', async () => {
+		await processFingerprintsFile('project dir', zipMock)
 
-	await processFingerprintsFile('project dir', zipMock)
+		expect(findYAMLFilenameMock).toHaveBeenCalledExactlyOnceWith('project dir/fingerprints')
+		expect(zipFileMock).toHaveBeenCalledWith('fingerprints.yml', readStreamMock)
+	})
 
-	expect(processOptionalYAMLFileSpy).toHaveBeenCalledTimes(1)
-	expect(processOptionalYAMLFileSpy).toHaveBeenCalledWith('fingerprints', 'project dir', zipMock)
-})
+	test('processSearchParametersFile', async () => {
+		await processSearchParametersFile('project dir', zipMock)
 
-test('processSearchParametersFile calls processOptionalYAMLFile', async () => {
-	const processOptionalYAMLFileSpy = jest.spyOn(packageUtilModule, 'processOptionalYAMLFile')
-		.mockImplementationOnce(async () => { /* do nothing */ })
-
-	await processSearchParametersFile('project dir', zipMock)
-
-	expect(processOptionalYAMLFileSpy).toHaveBeenCalledTimes(1)
-	expect(processOptionalYAMLFileSpy).toHaveBeenCalledWith('search-parameters', 'project dir', zipMock)
+		expect(findYAMLFilenameMock).toHaveBeenCalledExactlyOnceWith('project dir/search-parameters')
+		expect(zipFileMock).toHaveBeenCalledWith('search-parameters.yml', readStreamMock)
+	})
 })
 
 test('buildTestFileMatchers converts to matchers', () => {
-	const picomatchMock = jest.mocked(picomatch)
-	const matcher1 = (): boolean => true
-	const matcher2 = (): boolean => false
+	const matcher1 = ((): boolean => true) as unknown as Matcher
+	const matcher2 = ((): boolean => false) as unknown as Matcher
 
 	picomatchMock.mockReturnValueOnce(matcher1)
 	picomatchMock.mockReturnValueOnce(matcher2)
@@ -182,19 +203,19 @@ describe('processSrcDir', () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(false)
 
-		await expect(() => processSrcDir('project dir', zipMock, []))
-			.rejects.toThrow(Errors.CLIError)
+		expect(await processSrcDir('project dir', zipMock, [])).toBe('never return')
 
 		expect(requireDirMock).toHaveBeenCalledTimes(1)
 		expect(requireDirMock).toHaveBeenCalledWith('project dir/src')
 		expect(isFileMock).toHaveBeenCalledTimes(1)
 		expect(isFileMock).toHaveBeenCalledWith('src dir/init.lua')
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith('missing required src dir/init.lua file')
 	})
 
 	it('includes files at top level', async () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua specific check
-		readdirSyncMock.mockReturnValueOnce(['init.lua'])
+		readdirSyncMock.mockReturnValueOnce(['init.lua' as unknown as Dirent<Buffer<ArrayBufferLike>>])
 		fileExistsMock.mockResolvedValueOnce(true) // init.lua
 		isSymbolicLinkMock.mockResolvedValueOnce(false)
 		isDirMock.mockResolvedValueOnce(false) // init.lua is not a directory
@@ -224,7 +245,9 @@ describe('processSrcDir', () => {
 	it('includes nested files', async () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua specific check
-		readdirSyncMock.mockReturnValueOnce(['init.lua', 'subdirectory'])
+		readdirSyncMock.mockReturnValueOnce(
+			['init.lua', 'subdirectory'] as unknown as Dirent<Buffer<ArrayBufferLike>>[],
+		)
 		fileExistsMock.mockResolvedValueOnce(true) // init.lua
 		isSymbolicLinkMock.mockResolvedValueOnce(false) // init.lua
 		isDirMock.mockResolvedValueOnce(false) // init.lua is not a directory
@@ -232,7 +255,7 @@ describe('processSrcDir', () => {
 		fileExistsMock.mockResolvedValueOnce(true) // subdirectory
 		isSymbolicLinkMock.mockResolvedValueOnce(false) // subdirectory
 		isDirMock.mockResolvedValueOnce(true) // subdirectory is a directory
-		readdirSyncMock.mockReturnValueOnce(['lib.lua'])
+		readdirSyncMock.mockReturnValueOnce(['lib.lua' as unknown as Dirent<Buffer<ArrayBufferLike>>])
 		fileExistsMock.mockResolvedValueOnce(true) // lib.lua
 		isDirMock.mockResolvedValueOnce(false) // lib.lua
 		createReadStreamMock.mockReturnValueOnce(readStreamMock) // lib.lua
@@ -262,7 +285,7 @@ describe('processSrcDir', () => {
 	it('follows sym links to files', async () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua specific check
-		readdirSyncMock.mockReturnValueOnce(['file link'])
+		readdirSyncMock.mockReturnValueOnce(['file link' as unknown as Dirent<Buffer<ArrayBufferLike>>])
 		fileExistsMock.mockResolvedValueOnce(true)
 		isSymbolicLinkMock.mockResolvedValueOnce(true)
 		realPathForSymbolicLinkMock.mockResolvedValueOnce('real file')
@@ -288,14 +311,14 @@ describe('processSrcDir', () => {
 		expect(createReadStreamMock).toHaveBeenCalledWith('src dir/file link')
 		expect(zipFileMock).toHaveBeenCalledTimes(1)
 		expect(zipFileMock).toHaveBeenCalledWith('src/file link', readStreamMock)
-		expect(errorSpy).toHaveBeenCalledTimes(0)
+		expect(fatalErrorMock).toHaveBeenCalledTimes(0)
 	})
 
 	it('skips files that match test dir pattern', async () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua specific check
 
-		readdirSyncMock.mockReturnValueOnce(['init.lua', 'test.lua'])
+		readdirSyncMock.mockReturnValueOnce(['init.lua', 'test.lua'] as unknown as Dirent<Buffer<ArrayBufferLike>>[])
 		fileExistsMock.mockResolvedValueOnce(true) // init.lua
 		isSymbolicLinkMock.mockResolvedValueOnce(false) // init.lua
 		isDirMock.mockResolvedValueOnce(false) // init.lua is not a directory
@@ -303,11 +326,11 @@ describe('processSrcDir', () => {
 		isSymbolicLinkMock.mockResolvedValueOnce(false) // test.lua
 		isDirMock.mockResolvedValueOnce(false) // test.lua is not a directory
 
-		const matcher = jest.fn()
-			.mockReturnValueOnce(false) // init.lua is not a test file
-			.mockReturnValueOnce(true) // test.lua is a test file
+		const matcherMock = jest.fn<Matcher>()
+			.mockReturnValueOnce(false as unknown as Result) // init.lua is not a test file
+			.mockReturnValueOnce(true as unknown as Result) // test.lua is a test file
 
-		expect(await processSrcDir('project dir', zipMock, [matcher])).toBe(true)
+		expect(await processSrcDir('project dir', zipMock, [matcherMock as unknown as Matcher])).toBe(true)
 
 		expect(requireDirMock).toHaveBeenCalledTimes(1)
 		expect(requireDirMock).toHaveBeenCalledWith('project dir/src')
@@ -325,11 +348,11 @@ describe('processSrcDir', () => {
 		expect(realPathForSymbolicLinkMock).toHaveBeenCalledTimes(0)
 	})
 
-	it('throws error if nesting is too deep', async () => {
+	it('displays error if nesting is too deep', async () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua exists
 
-		readdirSyncMock.mockReturnValueOnce(['init.lua', 'subdirectory'])
+		readdirSyncMock.mockReturnValueOnce(['init.lua', 'subdirectory'] as unknown as Dirent<Buffer<ArrayBufferLike>>[])
 		fileExistsMock.mockResolvedValueOnce(true) // init.lua
 		isSymbolicLinkMock.mockResolvedValueOnce(false) // init.lua
 		isDirMock.mockResolvedValueOnce(false) // init.lua is not a directory
@@ -339,7 +362,7 @@ describe('processSrcDir', () => {
 		// The services limit nesting to 10 but count both the main directory and the source
 		// directory, so we only need to add a total of 9 directories to get one too many.
 		for (let count = 1; count <= 8; count++) {
-			readdirSyncMock.mockReturnValueOnce(['subdirectory'])
+			readdirSyncMock.mockReturnValueOnce(['subdirectory' as unknown as Dirent<Buffer<ArrayBufferLike>>])
 			fileExistsMock.mockResolvedValueOnce(true) // subdirectory
 			isSymbolicLinkMock.mockResolvedValueOnce(false) // subdirectory
 			isDirMock.mockResolvedValueOnce(true)
@@ -358,10 +381,8 @@ describe('processSrcDir', () => {
 			expect(readdirSyncMock).toHaveBeenCalledWith(`src dir${'/subdirectory'.repeat(count)}`)
 			expect(isDirMock).toHaveBeenCalledWith(`src dir${'/subdirectory'.repeat(count + 1)}`)
 		}
-		expect(errorSpy).toHaveBeenCalledTimes(1)
-		expect(errorSpy).toHaveBeenCalledWith(
+		expect(consoleErrorSpy).toHaveBeenCalledExactlyOnceWith(
 			`drivers directory nested too deeply (at src dir${'/subdirectory'.repeat(9)}); max depth is 10`,
-			{ 'exit': false },
 		)
 		expect(createReadStreamMock).toHaveBeenCalledTimes(1)
 		expect(createReadStreamMock).toHaveBeenCalledWith('src dir/init.lua')
@@ -373,7 +394,7 @@ describe('processSrcDir', () => {
 	it('logs error for sym link to directory', async () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua specific check
-		readdirSyncMock.mockReturnValueOnce(['dir link'])
+		readdirSyncMock.mockReturnValueOnce(['dir link' as unknown as Dirent<Buffer<ArrayBufferLike>>])
 		fileExistsMock.mockResolvedValueOnce(true)
 		isSymbolicLinkMock.mockResolvedValueOnce(true)
 		realPathForSymbolicLinkMock.mockResolvedValueOnce('real dir')
@@ -395,11 +416,8 @@ describe('processSrcDir', () => {
 		expect(realPathForSymbolicLinkMock).toHaveBeenCalledWith('src dir/dir link')
 		expect(isDirMock).toHaveBeenCalledTimes(1)
 		expect(isDirMock).toHaveBeenCalledWith('real dir')
-		expect(errorSpy).toHaveBeenCalledTimes(1)
-		expect(errorSpy).toHaveBeenCalledWith(
-			'sym links to directories are not allowed (src dir/dir link)',
-			{ 'exit': false },
-		)
+		expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
+		expect(consoleErrorSpy).toHaveBeenCalledWith('sym links to directories are not allowed (src dir/dir link)')
 		expect(createReadStreamMock).toHaveBeenCalledTimes(0)
 		expect(zipFileMock).toHaveBeenCalledTimes(0)
 	})
@@ -407,7 +425,7 @@ describe('processSrcDir', () => {
 	it('logs error for broken sym link', async () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua specific check
-		readdirSyncMock.mockReturnValueOnce(['file link'])
+		readdirSyncMock.mockReturnValueOnce(['file link' as unknown as Dirent<Buffer<ArrayBufferLike>>])
 		fileExistsMock.mockResolvedValueOnce(false)
 
 		expect(await processSrcDir('project dir', zipMock, [])).toBe(false)
@@ -423,11 +441,8 @@ describe('processSrcDir', () => {
 		expect(isSymbolicLinkMock).toHaveBeenCalledTimes(0)
 		expect(realPathForSymbolicLinkMock).toHaveBeenCalledTimes(0)
 		expect(isDirMock).toHaveBeenCalledTimes(0)
-		expect(errorSpy).toHaveBeenCalledTimes(1)
-		expect(errorSpy).toHaveBeenCalledWith(
-			'sym link src dir/file link points to non-existent file',
-			{ 'exit': false },
-		)
+		expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
+		expect(consoleErrorSpy).toHaveBeenCalledWith('sym link src dir/file link points to non-existent file')
 		expect(createReadStreamMock).toHaveBeenCalledTimes(0)
 		expect(zipFileMock).toHaveBeenCalledTimes(0)
 	})
@@ -453,7 +468,9 @@ describe('processProfiles', () => {
 
 	it('adds yaml files with .yml extension', async () => {
 		requireDirMock.mockResolvedValueOnce('profiles dir')
-		readdirSyncMock.mockReturnValueOnce(['profile1.yml', 'profile2.yml'])
+		readdirSyncMock.mockReturnValueOnce(
+			['profile1.yml', 'profile2.yml'] as unknown as Dirent<Buffer<ArrayBufferLike>>[],
+		)
 		createReadStreamMock.mockReturnValueOnce(readStreamMock)
 
 		await expect(processProfiles('project dir', zipMock)).resolves.not.toThrow()
@@ -475,7 +492,7 @@ describe('processProfiles', () => {
 
 	it('adds yaml files with .yaml extension as .yml', async () => {
 		requireDirMock.mockResolvedValueOnce('profiles dir')
-		readdirSyncMock.mockReturnValueOnce(['profile.yaml'])
+		readdirSyncMock.mockReturnValueOnce(['profile.yaml' as unknown as Dirent<Buffer<ArrayBufferLike>>])
 		createReadStreamMock.mockReturnValueOnce(readStreamMock)
 
 		await expect(processProfiles('project dir', zipMock)).resolves.not.toThrow()
@@ -494,16 +511,17 @@ describe('processProfiles', () => {
 
 	it('throws exception for non-yaml files in profiles directory', async () => {
 		requireDirMock.mockResolvedValueOnce('profiles dir')
-		readdirSyncMock.mockReturnValueOnce(['profile.exe'])
+		readdirSyncMock.mockReturnValueOnce(['profile.exe' as unknown as Dirent<Buffer<ArrayBufferLike>>])
 
-		await expect(processProfiles('project dir', zipMock))
-			.rejects
-			.toThrow(new Errors.CLIError('invalid profile file "profiles dir/profile.exe" (must have .yaml or .yml extension)'))
+		expect(await processProfiles('project dir', zipMock)).toBe('never return')
 
 		expect(requireDirMock).toHaveBeenCalledTimes(1)
 		expect(requireDirMock).toHaveBeenCalledWith('project dir/profiles')
 		expect(readdirSyncMock).toHaveBeenCalledTimes(1)
 		expect(readdirSyncMock).toHaveBeenCalledWith('profiles dir')
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
+			'invalid profile file "profiles dir/profile.exe" (must have .yaml or .yml extension)',
+		)
 		expect(readYAMLFileMock).toHaveBeenCalledTimes(0)
 		expect(createReadStreamMock).toHaveBeenCalledTimes(0)
 		expect(zipFileMock).toHaveBeenCalledTimes(0)

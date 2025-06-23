@@ -6,13 +6,13 @@ import type { AppsEndpoint, AppSettingsResponse } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/apps/settings.js'
 import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
+import type { CustomCommonOutputProducer } from '../../../lib/command/format.js'
 import type { OutputItemOrListFlags } from '../../../lib/command/listing-io.js'
 import type { outputItem, outputItemBuilder } from '../../../lib/command/output-item.js'
 import type { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
 import { buildTableOutput, type chooseApp } from '../../../lib/command/util/apps-util.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
-import { CustomCommonOutputProducer } from '../../../lib/command/format.js'
 import { tableGeneratorMock } from '../../test-lib/table-mock.js'
 
 
