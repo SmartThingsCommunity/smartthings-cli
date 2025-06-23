@@ -70,6 +70,7 @@ import edgeChannelsMetaInfoCommand from './edge/channels/metainfo.js'
 import edgeChannelsUnassignCommand from './edge/channels/unassign.js'
 import edgeDriversCommand from './edge/drivers.js'
 import edgeDriversDefaultCommand from './edge/drivers/default.js'
+import edgeDriversDeleteCommand from './edge/drivers/delete.js'
 import edgeDriversDevicesCommand from './edge/drivers/devices.js'
 import edgeDriversInstallCommand from './edge/drivers/install.js'
 import edgeDriversInstalledCommand from './edge/drivers/installed.js'
@@ -198,6 +199,7 @@ export const commands: CommandModule<object, any>[] = [
 	edgeChannelsUnassignCommand,
 	edgeDriversCommand,
 	edgeDriversDefaultCommand,
+	edgeDriversDeleteCommand,
 	edgeDriversDevicesCommand,
 	edgeDriversInstallCommand,
 	edgeDriversInstalledCommand,
