@@ -39,8 +39,12 @@ export type FormatAndWriteItemConfig<O extends object> = CommonOutputProducer<O>
  * @param defaultIOFormat The default IOFormat to use. This should be used when a command also takes
  *   input so the output can default to the input format.
  */
-export async function formatAndWriteItem<O extends object>(command: SmartThingsCommand<FormatAndWriteItemFlags>,
-		config: FormatAndWriteItemConfig<O>, item: O, defaultIOFormat?: IOFormat): Promise<void> {
+export async function formatAndWriteItem<O extends object>(
+		command: SmartThingsCommand<FormatAndWriteItemFlags>,
+		config: FormatAndWriteItemConfig<O>,
+		item: O,
+		defaultIOFormat?: IOFormat,
+): Promise<void> {
 	const commonFormatter = 'buildTableOutput' in config
 		? (data: O) => config.buildTableOutput(data)
 		: itemTableFormatter<O>(command.tableGenerator, config.tableFieldDefinitions)
@@ -51,6 +55,23 @@ export async function formatAndWriteItem<O extends object>(command: SmartThingsC
 export type FormatAndWriteListFlags = BuildOutputFormatterFlags
 export const formatAndWriteListBuilder = buildOutputFormatterBuilder
 export type FormatAndWriteListConfig<L extends object> = CommonListOutputProducer<L> & Naming & Sorting<L>
+export type FormatAndWriteListOptions = {
+	/**
+	 * Set this to true if you want to include an index in the output. Default is false.
+	 */
+	includeIndex?: boolean
+
+	/**
+	 * Set this to true if you're displaying this to the user for a question. This will force
+	 * output to stdout and skip the JSON/YAML formatters. Default is false.
+	 */
+	forUserQuery?: boolean
+
+	/**
+	 * A custom error message to display when no items are found.
+	 */
+	customNotFoundMessage?: string
+}
 /**
  * Format and output the given list.
  *
@@ -59,24 +80,28 @@ export type FormatAndWriteListConfig<L extends object> = CommonListOutputProduce
  *   table field definitions called `listTableFieldDefinitions` or a function to write
  *   common-formatted output called `buildTableOutput`.
  * @param list The items to be written.
- * @param includeIndex Set this to true if you want to include an index in the output.
- * @param forUserQuery Set this to true if you're displaying this to the user for a question. This
- *   will force output to stdout and skip the JSON/YAML formatters.
+ * @param options See FormatAndWriteListOptions for details.
  */
-export async function formatAndWriteList<L extends object>(command: SmartThingsCommand<FormatAndWriteListFlags>,
-		config: FormatAndWriteListConfig<L>, list: L[], includeIndex = false,
-		forUserQuery = false): Promise<void> {
+export async function formatAndWriteList<L extends object>(
+		command: SmartThingsCommand<FormatAndWriteListFlags>,
+		config: FormatAndWriteListConfig<L>,
+		list: L[],
+		options?: FormatAndWriteListOptions,
+): Promise<void> {
+	const includeIndex = !!options?.includeIndex
+	const forUserQuery = options?.forUserQuery
 	let commonFormatter: OutputFormatter<L[]>
 	if (list.length === 0) {
 		const pluralName = config.pluralItemName ?? (config.itemName ? `${config.itemName}s` : 'items')
-		commonFormatter = () => `no ${pluralName} found`
+		commonFormatter = () => options?.customNotFoundMessage ?? `no ${pluralName} found`
 	} else if ('buildListTableOutput' in config) {
 		const buildListTableOutput = config.buildListTableOutput
 		commonFormatter = data => buildListTableOutput(data)
 	} else if ('listTableFieldDefinitions' in config) {
 		commonFormatter = listTableFormatter<L>(command.tableGenerator, config.listTableFieldDefinitions, includeIndex)
 	} else if (config.sortKeyName) {
-		commonFormatter = listTableFormatter<L>(command.tableGenerator, [config.sortKeyName, config.primaryKeyName], includeIndex)
+		commonFormatter =
+			listTableFormatter<L>(command.tableGenerator, [config.sortKeyName, config.primaryKeyName], includeIndex)
 	} else {
 		commonFormatter = listTableFormatter<L>(command.tableGenerator, [config.primaryKeyName], includeIndex)
 	}

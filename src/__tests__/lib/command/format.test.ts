@@ -134,7 +134,7 @@ describe('formatAndWriteList', () => {
 			primaryKeyName: 'num',
 		}
 
-		await formatAndWriteList<SimpleType>(command, config, [], true)
+		await formatAndWriteList<SimpleType>(command, config, [], { includeIndex: true })
 
 		expect(listTableFormatterMock).toHaveBeenCalledTimes(0)
 		expect(listBuildOutputFormatterMock).toHaveBeenCalledTimes(1)
@@ -156,7 +156,7 @@ describe('formatAndWriteList', () => {
 			primaryKeyName: 'num',
 		}
 
-		await formatAndWriteList<SimpleType>(command, config, [], true)
+		await formatAndWriteList<SimpleType>(command, config, [], { includeIndex: true })
 
 		expect(listTableFormatterMock).toHaveBeenCalledTimes(0)
 		expect(listBuildOutputFormatterMock).toHaveBeenCalledTimes(1)
@@ -178,7 +178,7 @@ describe('formatAndWriteList', () => {
 			primaryKeyName: 'num',
 		}
 
-		await formatAndWriteList<SimpleType>(command, config, [], true)
+		await formatAndWriteList<SimpleType>(command, config, [], { includeIndex: true })
 
 		expect(listTableFormatterMock).toHaveBeenCalledTimes(0)
 		expect(listBuildOutputFormatterMock).toHaveBeenCalledTimes(1)
@@ -205,7 +205,8 @@ describe('formatAndWriteList', () => {
 		await formatAndWriteList(command, config, list)
 
 		expect(listTableFormatterMock).toHaveBeenCalledTimes(1)
-		expect(listTableFormatterMock).toHaveBeenCalledWith(command.tableGenerator, config.listTableFieldDefinitions, false)
+		expect(listTableFormatterMock)
+			.toHaveBeenCalledWith(command.tableGenerator, config.listTableFieldDefinitions, false)
 		expect(listBuildOutputFormatterMock).toHaveBeenCalledTimes(1)
 		expect(listBuildOutputFormatterMock).toHaveBeenCalledWith(flags, cliConfig, undefined, commonFormatter)
 		expect(outputFormatterMock).toHaveBeenCalledTimes(1)
@@ -220,7 +221,7 @@ describe('formatAndWriteList', () => {
 			primaryKeyName: 'num',
 		}
 
-		await formatAndWriteList<SimpleType>(command, config, list, true)
+		await formatAndWriteList<SimpleType>(command, config, list, { includeIndex: true })
 
 		expect(listTableFormatterMock).toHaveBeenCalledTimes(0)
 		expect(listBuildOutputFormatterMock).toHaveBeenCalledTimes(1)
@@ -244,7 +245,7 @@ describe('formatAndWriteList', () => {
 			primaryKeyName: 'num',
 		}
 
-		await formatAndWriteList<SimpleType>(command, config, list, true)
+		await formatAndWriteList<SimpleType>(command, config, list, { includeIndex: true })
 
 		expect(listTableFormatterMock).toHaveBeenCalledTimes(0)
 		expect(listBuildOutputFormatterMock).toHaveBeenCalledTimes(1)
@@ -282,6 +283,23 @@ describe('formatAndWriteList', () => {
 		expect(writeOutputMock).toHaveBeenCalledWith('output', 'output.yaml')
 	})
 
+	it('final fallback works with only `primaryKeyName`', async () => {
+		const config: CommonListOutputProducer<SimpleType> & Naming = {
+			primaryKeyName: 'num',
+		}
+
+		const commonFormatter = jest.fn<OutputFormatter<SimpleType[]>>()
+		listTableFormatterMock.mockReturnValue(commonFormatter)
+
+		await formatAndWriteList(command, config, list)
+
+		expect(listTableFormatterMock).toHaveBeenCalledExactlyOnceWith(command.tableGenerator, ['num'], false)
+		expect(listBuildOutputFormatterMock)
+			.toHaveBeenCalledExactlyOnceWith(flags, cliConfig, undefined, commonFormatter)
+		expect(outputFormatterMock).toHaveBeenCalledExactlyOnceWith(list)
+		expect(writeOutputMock).toHaveBeenCalledExactlyOnceWith('output', 'output.yaml')
+	})
+
 	it('writes common formatted output to stdout when forUserQuery specified', async () => {
 		const config: TableCommonListOutputProducer<SimpleType> = {
 			listTableFieldDefinitions: [],
@@ -291,10 +309,11 @@ describe('formatAndWriteList', () => {
 		const commonFormatter = jest.fn<OutputFormatter<SimpleType[]>>().mockReturnValue('common output')
 		listTableFormatterMock.mockReturnValue(commonFormatter)
 
-		await formatAndWriteList(command, config, list, false, true)
+		await formatAndWriteList(command, config, list, { forUserQuery: true })
 
 		expect(listTableFormatterMock).toHaveBeenCalledTimes(1)
-		expect(listTableFormatterMock).toHaveBeenCalledWith(command.tableGenerator, config.listTableFieldDefinitions, false)
+		expect(listTableFormatterMock)
+			.toHaveBeenCalledWith(command.tableGenerator, config.listTableFieldDefinitions, false)
 		expect(listBuildOutputFormatterMock).toHaveBeenCalledTimes(0)
 		expect(outputFormatterMock).toHaveBeenCalledTimes(0)
 		expect(commonFormatter).toHaveBeenCalledTimes(1)

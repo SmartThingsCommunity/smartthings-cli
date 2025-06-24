@@ -195,33 +195,3 @@ test('chooseDriverFromChannel presents user with list of drivers with names', as
 	expect(listAssignedDriversWithNamesSpy).toHaveBeenCalledTimes(1)
 	expect(listAssignedDriversWithNamesSpy).toHaveBeenCalledWith(client, 'channel-id')
 })
-
-test('chooseInstalledDriver presents user with list of drivers with names', async () => {
-	const command = { client } as APICommand<typeof APICommand.flags>
-	selectFromListMock.mockResolvedValueOnce('chosen-driver-id')
-	stringTranslateToIdMock.mockResolvedValueOnce('preselected-driver-id')
-
-	expect(await driversUtil.chooseInstalledDriver(command, 'hub-id', 'prompt message', 'command-line-driver-id'))
-		.toBe('chosen-driver-id')
-
-	expect(stringTranslateToIdMock).toHaveBeenCalledTimes(1)
-	expect(stringTranslateToIdMock).toHaveBeenCalledWith(
-		expect.objectContaining({ primaryKeyName: 'driverId', sortKeyName: 'name' }),
-		'command-line-driver-id', expect.any(Function))
-	expect(selectFromListMock).toHaveBeenCalledTimes(1)
-	expect(selectFromListMock).toHaveBeenCalledWith(command,
-		expect.objectContaining({ primaryKeyName: 'driverId', sortKeyName: 'name' }),
-		expect.objectContaining({
-			preselectedId: 'preselected-driver-id',
-			promptMessage: 'prompt message',
-		}))
-	expect(apiHubdevicesListInstalledMock).toHaveBeenCalledTimes(0)
-
-	const listItems = stringTranslateToIdMock.mock.calls[0][2]
-	apiHubdevicesListInstalledMock.mockResolvedValueOnce([installedDriver])
-
-	expect(await listItems()).toStrictEqual([installedDriver])
-
-	expect(apiHubdevicesListInstalledMock).toHaveBeenCalledTimes(1)
-	expect(apiHubdevicesListInstalledMock).toHaveBeenCalledWith('hub-id')
-})

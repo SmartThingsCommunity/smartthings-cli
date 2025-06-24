@@ -45,15 +45,3 @@ export const listAllAvailableDrivers = async (client: SmartThingsClient, deviceI
 
 export const listMatchingDrivers = async (client: SmartThingsClient, deviceId: string, hubId: string): Promise<DriverChoice[]> =>
 	withoutCurrentDriver(client, deviceId, await client.hubdevices.listInstalled(hubId, deviceId))
-
-export const chooseInstalledDriver = async (command: APICommand<typeof APICommand.flags>, hubId: string, promptMessage: string, commandLineDriverId?: string): Promise<string> => {
-	const config: SelectFromListConfig<InstalledDriver> = {
-		itemName: 'driver',
-		primaryKeyName: 'driverId',
-		sortKeyName: 'name',
-	}
-
-	const listItems = (): Promise<InstalledDriver[]> => command.client.hubdevices.listInstalled(hubId)
-	const preselectedId = await stringTranslateToId(config, commandLineDriverId, listItems)
-	return selectFromList(command, config, { preselectedId, listItems, promptMessage })
-}

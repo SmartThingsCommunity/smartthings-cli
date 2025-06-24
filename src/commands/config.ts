@@ -91,7 +91,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 		if (outputFormat === 'common') {
 			console.log('The CLI configuration file on your machine is:\n' +
 				`    ${join(command.configDir, 'config.yaml')}\n`)
-			await outputList(command, outputListConfig, listConfigs, true)
+			await outputList(command, outputListConfig, listConfigs, { includeIndex: true })
 		} else {
 			const outputFormatter = buildOutputFormatter(command.flags, command.cliConfig)
 			await writeOutput(outputFormatter(command.cliConfig.mergedProfiles), argv.output)

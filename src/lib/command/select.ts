@@ -55,6 +55,11 @@ export type PromptUserOptions<L extends object, ID = string> = {
 	 * @default: false
 	 */
 	autoChoose?: boolean
+
+	/**
+	 * A custom error message to display when no items are found.
+	 */
+	customNotFoundMessage?: string
 }
 
 /**
@@ -72,7 +77,12 @@ export async function promptUser<L extends object, ID = string>(command: SmartTh
 	if (options.autoChoose && items.length === 1) {
 		return items[0][config.primaryKeyName] as unknown as ID
 	}
-	const list = await outputList(command, config, async () => items, true, true)
+	const list = await outputList(
+		command,
+		config,
+		async () => items,
+		{ includeIndex: true, forUserQuery: true, customNotFoundMessage: options.customNotFoundMessage },
+	)
 	if (list.length === 0) {
 		// Nothing was found; user was already notified by `outputList` above.
 		// eslint-disable-next-line no-process-exit
