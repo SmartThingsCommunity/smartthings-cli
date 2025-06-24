@@ -1,6 +1,12 @@
 import { jest } from '@jest/globals'
 
-import { DeviceIntegrationType, DevicesEndpoint, type Device } from '@smartthings/core-sdk'
+import {
+	DeviceIntegrationType,
+	type DevicesEndpoint,
+	type HubdevicesEndpoint,
+	type InstalledDriver,
+	type Device,
+} from '@smartthings/core-sdk'
 
 import type { APICommand } from '../../../../lib/command/api-command.js'
 import type { listOwnedHubs } from '../../../../lib/command/util/hubs.js'
@@ -24,18 +30,21 @@ const { chooseHubFn } = await import('../../../../lib/command/util/hubs-choose.j
 describe('chooseHubFn', () => {
 	const chooseHubMock = jest.fn<ChooseFunction<Device>>()
 	createChooseFnMock.mockReturnValue(chooseHubMock)
-	const hub = { deviceId: 'hub-device-id', label: 'hub-label' } as Device
-	const hubs = [hub]
-	const apiDevicesGetMock = jest.fn<typeof DevicesEndpoint.prototype.get>()
-		.mockResolvedValue(hub)
-	const apiDevicesListMock = jest.fn<typeof DevicesEndpoint.prototype.list>()
-		.mockResolvedValue(hubs)
+	const hub1 = { deviceId: 'hub-device-id-1', label: 'hub 1' } as Device
+	const hub2 = { deviceId: 'hub-device-id-2', label: 'hub 2' } as Device
+	const hubs = [hub1, hub2]
+	const apiDevicesGetMock = jest.fn<typeof DevicesEndpoint.prototype.get>().mockResolvedValue(hub1)
+	const apiDevicesListMock = jest.fn<typeof DevicesEndpoint.prototype.list>().mockResolvedValue(hubs)
 	listOwnedHubsMock.mockResolvedValue(hubs)
+	const apiHubDevicesGetInstalledMock = jest.fn<typeof HubdevicesEndpoint.prototype.getInstalled>()
 	const command = {
 		client: {
 			devices: {
 				get: apiDevicesGetMock,
 				list: apiDevicesListMock,
+			},
+			hubdevices: {
+				getInstalled: apiHubDevicesGetInstalledMock,
 			},
 		},
 	} as unknown as APICommand
@@ -102,12 +111,46 @@ describe('chooseHubFn', () => {
 		const defaultValueConfig = createChooseFnMock.mock.calls[0][2]?.defaultValue
 		const getItem = defaultValueConfig?.getItem
 
-		expect(await getItem?.(command, 'hub-id')).toBe(hub)
+		expect(await getItem?.(command, 'hub-id')).toBe(hub1)
 
 		expect(apiDevicesGetMock).toHaveBeenCalledExactlyOnceWith('hub-id')
 
 		const userMessage = defaultValueConfig?.userMessage
 
-		expect(userMessage?.(hub)).toBe('using previously specified default hub labeled "hub-label" (hub-device-id)')
+		expect(userMessage?.(hub1)).toBe('using previously specified default hub labeled "hub 1" (hub-device-id-1)')
+	})
+
+	it('filters hubs with installed driver', async () => {
+		expect(chooseHubFn({ withInstalledDriverId: 'installed-driver-id' })).toBe(chooseHubMock)
+
+		expect(createChooseFnMock).toHaveBeenCalledWith(
+			expect.objectContaining({ itemName: 'hub' }),
+			expect.any(Function),
+			expect.objectContaining({
+				customNotFoundMessage: 'could not find hub with driver installed-driver-id installed' },
+			),
+		)
+
+		apiHubDevicesGetInstalledMock.mockResolvedValueOnce({} as InstalledDriver)
+		apiHubDevicesGetInstalledMock
+			.mockImplementationOnce(() => { throw { message: 'it is not currently installed on that hub' } })
+		const listItems = createChooseFnMock.mock.calls[0][1]
+
+		expect(await listItems(command)).toStrictEqual([hub1])
+
+		expect(apiHubDevicesGetInstalledMock).toHaveBeenCalledTimes(2)
+		expect(apiHubDevicesGetInstalledMock).toHaveBeenCalledWith('hub-device-id-1', 'installed-driver-id')
+		expect(apiHubDevicesGetInstalledMock).toHaveBeenCalledWith('hub-device-id-2', 'installed-driver-id')
+	})
+
+	it('rethrows unexpected errors from install check', async () => {
+		expect(chooseHubFn({ withInstalledDriverId: 'installed-driver-id' })).toBe(chooseHubMock)
+
+		apiHubDevicesGetInstalledMock.mockImplementationOnce(() => { throw Error('unexpected') })
+		const listItems = createChooseFnMock.mock.calls[0][1]
+
+		await expect(listItems(command)).rejects.toThrow('unexpected')
+
+		expect(apiHubDevicesGetInstalledMock).toHaveBeenCalledExactlyOnceWith('hub-device-id-1', 'installed-driver-id')
 	})
 })

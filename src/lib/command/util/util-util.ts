@@ -37,9 +37,10 @@ export const chooseOptionsWithDefaults = <T extends object>(
 })
 
 export type CreateChooseFunctionOptions<T extends object> = {
-	defaultValue: Omit<Required<SelectOptions<T>>['defaultValue'], 'getItem'> & {
+	defaultValue?: Omit<Required<SelectOptions<T>>['defaultValue'], 'getItem'> & {
 		getItem: (command: APICommand, id: string) => Promise<T>
 	}
+	customNotFoundMessage?: string
 }
 
 export type ChooseFunction<T extends object> = (
@@ -74,16 +75,18 @@ export const createChooseFn = <T extends object>(
 			autoChoose: opts.autoChoose,
 			listItems: listItemsWrapper,
 			promptMessage: opts.promptMessage,
+			customNotFoundMessage: createOptions?.customNotFoundMessage,
 		}
 
 		if (opts.useConfigDefault) {
-			if (!createOptions?.defaultValue) {
+			const defaultValue = createOptions?.defaultValue
+			if (!defaultValue) {
 				throw Error('invalid state, the choose<Thing> function was called with "useConfigDefault"' +
 					' but no default configured')
 			}
 			selectOptions.defaultValue = {
-				...createOptions.defaultValue,
-				getItem: (id: string): Promise<T> => createOptions.defaultValue.getItem(command, id),
+				...defaultValue,
+				getItem: (id: string): Promise<T> => defaultValue.getItem(command, id),
 			}
 		}
 

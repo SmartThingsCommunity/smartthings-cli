@@ -100,8 +100,12 @@ describe('promptUser', () => {
 		expect(await promptUser(command, config, { listItems: listItemsMock })).toBe('chosen-id')
 
 		expect(listItemsMock).toHaveBeenCalledExactlyOnceWith()
-		expect(outputListMock)
-			.toHaveBeenCalledExactlyOnceWith(command, config, expect.any(Function), true, true)
+		expect(outputListMock).toHaveBeenCalledExactlyOnceWith(
+			command,
+			config,
+			expect.any(Function),
+			{ includeIndex: true, forUserQuery: true },
+		)
 		expect(stringGetIdFromUserMock).toHaveBeenCalledExactlyOnceWith(config, list, undefined)
 
 		// Anonymous function passed to outputList should return same list as listItems
@@ -119,8 +123,12 @@ describe('promptUser', () => {
 		expect(await promptUser(command, config, { listItems: listItemsMock })).toBe('chosen-id')
 
 		expect(listItemsMock).toHaveBeenCalledExactlyOnceWith()
-		expect(outputListMock)
-			.toHaveBeenCalledExactlyOnceWith(command, config, expect.any(Function), true, true)
+		expect(outputListMock).toHaveBeenCalledExactlyOnceWith(
+			command,
+			config,
+			expect.any(Function),
+			{ includeIndex: true, forUserQuery: true },
+		)
 		expect(stringGetIdFromUserMock)
 			.toHaveBeenCalledExactlyOnceWith(config, singleItemList, undefined)
 	})
@@ -147,8 +155,12 @@ describe('promptUser', () => {
 			.rejects.toThrow('should exit')
 
 		expect(listItemsMock).toHaveBeenCalledTimes(1)
-		expect(outputListMock)
-			.toHaveBeenCalledExactlyOnceWith(command, config, expect.any(Function), true, true)
+		expect(outputListMock).toHaveBeenCalledExactlyOnceWith(
+			command,
+			config,
+			expect.any(Function),
+			{ includeIndex: true, forUserQuery: true },
+		)
 		expect(stringGetIdFromUserMock).not.toHaveBeenCalled()
 	})
 	it('calls custom getIdFromUser when specified', async () => {
@@ -161,8 +173,12 @@ describe('promptUser', () => {
 			.toBe('special-id')
 
 		expect(listItemsMock).toHaveBeenCalledExactlyOnceWith()
-		expect(outputListMock)
-			.toHaveBeenCalledExactlyOnceWith(command, config, expect.any(Function), true, true)
+		expect(outputListMock).toHaveBeenCalledExactlyOnceWith(
+			command,
+			config,
+			expect.any(Function),
+			{ includeIndex: true, forUserQuery: true },
+		)
 		expect(stringGetIdFromUserMock).not.toHaveBeenCalled()
 		expect(getIdFromUser).toHaveBeenCalledExactlyOnceWith(config, list, undefined)
 	})
@@ -179,11 +195,9 @@ describe('promptUser', () => {
 			command,
 			configWithName,
 			expect.any(Function),
-			true,
-			true,
+			{ includeIndex: true, forUserQuery: true },
 		)
-		expect(stringGetIdFromUserMock)
-			.toHaveBeenCalledExactlyOnceWith(configWithName, list, 'Select a thingamabob.')
+		expect(stringGetIdFromUserMock).toHaveBeenCalledExactlyOnceWith(configWithName, list, 'Select a thingamabob.')
 	})
 
 	it('passes custom prompt on', async () => {
@@ -193,10 +207,13 @@ describe('promptUser', () => {
 		expect(await promptUser(command, config, options)).toBe('chosen-id')
 
 		expect(listItemsMock).toHaveBeenCalledTimes(1)
-		expect(outputListMock)
-			.toHaveBeenCalledExactlyOnceWith(command, config, expect.any(Function), true, true)
-		expect(stringGetIdFromUserMock)
-			.toHaveBeenCalledExactlyOnceWith(config, list, 'custom prompt')
+		expect(outputListMock).toHaveBeenCalledExactlyOnceWith(
+			command,
+			config,
+			expect.any(Function),
+			{ includeIndex: true, forUserQuery: true },
+		)
+		expect(stringGetIdFromUserMock).toHaveBeenCalledExactlyOnceWith(config, list, 'custom prompt')
 	})
 })
 

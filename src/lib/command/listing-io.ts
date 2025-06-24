@@ -30,7 +30,7 @@ export async function outputItemOrListGeneric<ID, O extends object, L extends ob
 		const id = await translateToId(idOrIndex, listFunction)
 		await outputItem<O>(command, config, () => getFunction(id))
 	} else {
-		await outputList<L>(command, config, listFunction, includeIndex)
+		await outputList<L>(command, config, listFunction, { includeIndex })
 	}
 }
 

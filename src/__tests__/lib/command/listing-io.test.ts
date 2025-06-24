@@ -76,7 +76,7 @@ describe('outputItemOrListGeneric', () => {
 		await outputItemOrListGeneric<string, SimpleType, SimpleType>(command, config, undefined,
 			listFunction, getFunction, translateToId)
 
-		expect(outputListMock).toHaveBeenCalledExactlyOnceWith(command, config, listFunction, true)
+		expect(outputListMock).toHaveBeenCalledExactlyOnceWith(command, config, listFunction, { includeIndex: true })
 
 		expect(translateToId).not.toHaveBeenCalled()
 		expect(getFunction).not.toHaveBeenCalled()
@@ -111,7 +111,7 @@ describe('outputItemOrList', () => {
 
 		await outputItemOrList(command, config, undefined, listFunction, getFunction, true)
 
-		expect(outputListMock).toHaveBeenCalledExactlyOnceWith(command, config, listFunction, true)
+		expect(outputListMock).toHaveBeenCalledExactlyOnceWith(command, config, listFunction, { includeIndex: true })
 
 		expect(stringTranslateToIdMock).not.toHaveBeenCalled()
 		expect(getFunction).not.toHaveBeenCalled()

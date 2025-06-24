@@ -76,6 +76,7 @@ import edgeDriversInstallCommand from './edge/drivers/install.js'
 import edgeDriversInstalledCommand from './edge/drivers/installed.js'
 import edgeDriversLogcatCommand from './edge/drivers/logcat.js'
 import edgeDriversPackageCommand from './edge/drivers/package.js'
+import edgeDriversUninstallCommand from './edge/drivers/uninstall.js'
 import installedappsCommand from './installedapps.js'
 import installedappsDeleteCommand from './installedapps/delete.js'
 import installedappsRenameCommand from './installedapps/rename.js'
@@ -205,6 +206,7 @@ export const commands: CommandModule<object, any>[] = [
 	edgeDriversInstalledCommand,
 	edgeDriversLogcatCommand,
 	edgeDriversPackageCommand,
+	edgeDriversUninstallCommand,
 	installedappsCommand,
 	installedappsDeleteCommand,
 	installedappsRenameCommand,

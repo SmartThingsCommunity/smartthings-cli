@@ -238,5 +238,16 @@ describe('createChooseFn', () => {
 
 			expect(getItemMock).toHaveBeenCalledExactlyOnceWith(command, 'input-id')
 		})
+
+		it('passes customNotFoundMessage option on to select', async () => {
+			const chooseSimpleType = createChooseFn(config, itemListMock, { customNotFoundMessage: 'custom not found' })
+			expect(await chooseSimpleType(command, undefined)).toBe('selected-simple-type-id')
+
+			expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
+				command,
+				config,
+				expect.objectContaining({ customNotFoundMessage: 'custom not found' }),
+			)
+		})
 	})
 })

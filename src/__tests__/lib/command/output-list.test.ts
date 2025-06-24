@@ -63,23 +63,23 @@ describe('outputList', () => {
 
 		expect(sortMock).toHaveBeenCalledExactlyOnceWith(list, 'str')
 		expect(formatAndWriteListMock)
-			.toHaveBeenCalledExactlyOnceWith(command, config, sorted, false, false)
+			.toHaveBeenCalledExactlyOnceWith(command, config, sorted, undefined)
 	})
 
 	it('passes includeIndex value on to formatAndWriteList', async () => {
-		expect(await outputList<SimpleType>(command, config, getDataMock, true)).toBe(sorted)
+		expect(await outputList<SimpleType>(command, config, getDataMock, { includeIndex: true })).toBe(sorted)
 
 		expect(sortMock).toHaveBeenCalledExactlyOnceWith(list, 'str')
 		expect(formatAndWriteListMock)
-			.toHaveBeenCalledExactlyOnceWith(command, config, sorted, true, false)
+			.toHaveBeenCalledExactlyOnceWith(command, config, sorted, { includeIndex: true })
 	})
 
 	it('passes forUserQuery value on to formatAndWriteList', async () => {
-		expect(await outputList<SimpleType>(command, config, getDataMock, false, true)).toBe(sorted)
+		expect(await outputList<SimpleType>(command, config, getDataMock, { forUserQuery: true })).toBe(sorted)
 
 		expect(sortMock).toHaveBeenCalledExactlyOnceWith(list, 'str')
 		expect(formatAndWriteListMock)
-			.toHaveBeenCalledExactlyOnceWith(command, config, sorted, false, true)
+			.toHaveBeenCalledExactlyOnceWith(command, config, sorted, { forUserQuery: true })
 	})
 
 	it('skips sorting when no sort key is specified', async () => {
@@ -87,10 +87,10 @@ describe('outputList', () => {
 			listTableFieldDefinitions: [],
 			primaryKeyName: 'num',
 		}
-		expect(await outputList<SimpleType>(command, config, getDataMock, false, true)).toBe(list)
+		expect(await outputList<SimpleType>(command, config, getDataMock, { forUserQuery: true })).toBe(list)
 
 		expect(sortMock).not.toHaveBeenCalled()
 		expect(formatAndWriteListMock)
-			.toHaveBeenCalledExactlyOnceWith(command, config, list, false, true)
+			.toHaveBeenCalledExactlyOnceWith(command, config, list, { forUserQuery: true })
 	})
 })

@@ -134,7 +134,7 @@ describe('handler', () => {
 		expect(outputListMock).toHaveBeenCalledTimes(1)
 		expect(outputListMock).toHaveBeenCalledWith(command,
 			expect.objectContaining({ primaryKeyName: 'name' }),
-			expect.any(Function), true)
+			expect.any(Function), { includeIndex: true })
 
 		const outputListConfig = outputListMock.mock.calls[0][1] as TableCommonListOutputProducer<object>
 		expect(outputListConfig.listTableFieldDefinitions?.length).toBe(2)
