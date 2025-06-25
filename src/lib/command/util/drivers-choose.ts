@@ -1,15 +1,11 @@
-import { type EdgeDriverSummary } from '@smartthings/core-sdk'
-
-import { type DriverChannelDetailsWithName, listAssignedDriversWithNames, listDrivers } from './edge-drivers.js'
+import {
+	type DriverChannelDetailsWithName,
+	type DriverChoice,
+	listAssignedDriversWithNames,
+	listDrivers,
+} from './edge-drivers.js'
 import { type ChooseFunction, createChooseFn } from './util-util.js'
 
-
-/**
- * When presenting a list of drivers to choose from, we only use the `driverId` and `name` fields.
- * Using this type instead of `EdgeDriverSummary` allows the caller of `chooseDriver` (below)
- * to use functions that return other objects as long as they include these two fields.
- */
-export type DriverChoice = Pick<EdgeDriverSummary, 'driverId' | 'name'>
 
 export const chooseDriverFn = (
 		options?: { includeAllOrganizations: boolean },

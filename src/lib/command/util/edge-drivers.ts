@@ -127,3 +127,45 @@ export const getDriverDevices = async (client: SmartThingsClient): Promise<Devic
 	return (await client.devices.list({ type: edgeDeviceTypes }))
 		.map(device => deviceToDeviceDriverInfo(device, hubDevices))
 }
+
+/**
+ * When presenting a list of drivers to choose from, we only use the `driverId` and `name` fields.
+ * Using this type instead of `EdgeDriverSummary` allows the caller of `chooseDriver` (below)
+ * to use functions that return other objects as long as they include these two fields.
+ */
+export type DriverChoice = Pick<EdgeDriverSummary, 'driverId' | 'name'>
+
+/**
+ * Filter the driver currently in use by a device out of a list of drivers.
+ */
+export const withoutCurrentDriver = async (
+		client: SmartThingsClient,
+		deviceId: string,
+		drivers: DriverChoice[],
+): Promise<DriverChoice[]> => {
+	const device = await client.devices.get(deviceId)
+	const currentDriverId = device.lan?.driverId ??
+		device.matter?.driverId ??
+		device.zigbee?.driverId ??
+		device.zwave?.driverId
+
+	return drivers.filter(driver => driver.driverId !== currentDriverId)
+}
+
+export const listAllAvailableDrivers = async (
+		client: SmartThingsClient,
+		deviceId: string,
+		hubId: string,
+): Promise<DriverChoice[]> => {
+	const installedDrivers = await client.hubdevices.listInstalled(hubId)
+	const defaultDrivers = (await client.drivers.listDefault())
+		.filter(driver => !installedDrivers.find(installed => installed.driverId === driver.driverId))
+	return withoutCurrentDriver(client, deviceId, [...installedDrivers, ...defaultDrivers ])
+}
+
+export const listMatchingDrivers = async (
+		client: SmartThingsClient,
+		deviceId: string,
+		hubId: string,
+): Promise<DriverChoice[]> =>
+	withoutCurrentDriver(client, deviceId, await client.hubdevices.listInstalled(hubId, deviceId))
