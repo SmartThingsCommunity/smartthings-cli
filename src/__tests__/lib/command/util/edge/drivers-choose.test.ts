@@ -3,9 +3,9 @@ import { jest } from '@jest/globals'
 import type { EdgeDriver } from '@smartthings/core-sdk'
 
 import type { APICommand } from '../../../../../lib/command/api-command.js'
-import type { DriverChoice } from '../../../../../lib/command/util/drivers-choose.js'
 import type {
 	DriverChannelDetailsWithName,
+	DriverChoice,
 	listAssignedDriversWithNames,
 	listDrivers,
 } from '../../../../../lib/command/util/edge-drivers.js'

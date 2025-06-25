@@ -4,13 +4,15 @@ import {
 	type ChannelsEndpoint,
 	type Device,
 	DeviceIntegrationType,
-	DevicesEndpoint,
+	type DevicesEndpoint,
 	type DriverChannelDetails,
 	type DriversEndpoint,
 	type EdgeDeviceIntegrationProfileKey,
 	type EdgeDriver,
 	type EdgeDriverPermissions,
 	type EdgeDriverSummary,
+	type HubdevicesEndpoint,
+	type InstalledDriver,
 	type OrganizationResponse,
 	type SmartThingsClient,
 } from '@smartthings/core-sdk'
@@ -31,14 +33,22 @@ jest.unstable_mockModule('../../../../lib/api-helpers.js', () => ({
 	forAllOrganizations: forAllOrganizationsMock,
 }))
 
+const apiDevicesGetMock = jest.fn<typeof DevicesEndpoint.prototype.get>()
 const apiDevicesListMock = jest.fn<typeof DevicesEndpoint.prototype.list>()
 const apiDriversListMock = jest.fn<typeof DriversEndpoint.prototype.list>()
+const apiDriversListDefaultMock = jest.fn<typeof DriversEndpoint.prototype.listDefault>()
+const apiHubDevicesListInstalledMock = jest.fn<typeof HubdevicesEndpoint.prototype.listInstalled>()
 const client = {
 	devices: {
+		get: apiDevicesGetMock,
 		list: apiDevicesListMock,
 	},
 	drivers: {
 		list: apiDriversListMock,
+		listDefault: apiDriversListDefaultMock,
+	},
+	hubdevices: {
+		listInstalled: apiHubDevicesListInstalledMock,
 	},
 } as unknown as SmartThingsClient
 const driverList = [{ name: 'Driver' }] as EdgeDriverSummary[]
@@ -48,9 +58,12 @@ const {
 	buildTableOutput,
 	edgeDeviceTypes,
 	getDriverDevices,
+	listAllAvailableDrivers,
 	listAssignedDriversWithNames,
 	listDrivers,
+	listMatchingDrivers,
 	permissionsValue,
+	withoutCurrentDriver,
 } = await import('../../../../lib/command/util/edge-drivers.js')
 
 
@@ -306,5 +319,107 @@ describe('getDriverDevices', () => {
 		expect(apiDevicesListMock).toHaveBeenCalledTimes(2)
 		expect(apiDevicesListMock).toHaveBeenCalledWith({ type: DeviceIntegrationType.HUB })
 		expect(apiDevicesListMock).toHaveBeenCalledWith({ type: edgeDeviceTypes })
+	})
+})
+
+test.each`
+	deviceType  | expectedCount
+	${'lan'}    | ${3}
+	${'matter'} | ${3}
+	${'zigbee'} | ${3}
+	${'zwave'}  | ${3}
+	${'other'}  | ${4}
+`('withoutCurrentDriver filters ', async ({ deviceType, expectedCount }) => {
+	const drivers = [
+		{ name: 'lan', driverId: 'lan-driver-id' },
+		{ name: 'matter', driverId: 'matter-driver-id' },
+		{ name: 'zigbee', driverId: 'zigbee-driver-id' },
+		{ name: 'zwave', driverId: 'zwave-driver-id' },
+	]
+
+	const driverId = `${deviceType}-driver-id`
+	const device = { [deviceType]: { driverId } } as unknown as Device
+	apiDevicesGetMock.mockResolvedValueOnce(device)
+
+	const result = await withoutCurrentDriver(client, 'device-id', drivers)
+	expect(result.length).toBe(expectedCount)
+	expect(result.find(driver => driver.driverId === driverId)).toBeUndefined()
+
+	expect(apiDevicesGetMock).toHaveBeenCalledExactlyOnceWith('device-id')
+})
+
+const installedDriver = { driverId: 'installed-driver-id', name: 'Installed Driver' } as InstalledDriver
+const defaultDriver = { driverId: 'default-driver-id', name: 'Default Driver' } as EdgeDriverSummary
+const currentDriver = { driverId: 'current-driver-id', name: 'Current Driver' } as InstalledDriver
+const device = { zigbee: { driverId: 'current-driver-id' } } as Device
+
+describe('listAllAvailableDrivers', () => {
+	it('combines default and installed drivers lists', async () => {
+		apiDevicesGetMock.mockResolvedValueOnce(device)
+
+		apiHubDevicesListInstalledMock.mockResolvedValueOnce([installedDriver])
+		apiDriversListDefaultMock.mockResolvedValueOnce([defaultDriver])
+
+		const result = await listAllAvailableDrivers(client, 'device-id', 'hub-id')
+		expect(result.length).toBe(2)
+		expect(result).toEqual(expect.arrayContaining([defaultDriver, installedDriver]))
+
+		expect(apiHubDevicesListInstalledMock).toHaveBeenCalledExactlyOnceWith('hub-id')
+		expect(apiDriversListDefaultMock).toHaveBeenCalledExactlyOnceWith()
+		expect(apiDevicesGetMock).toHaveBeenCalledExactlyOnceWith('device-id')
+	})
+
+	it('filters out current driver', async () => {
+		apiDevicesGetMock.mockResolvedValueOnce(device)
+
+		apiHubDevicesListInstalledMock.mockResolvedValueOnce([installedDriver, currentDriver])
+		apiDriversListDefaultMock.mockResolvedValueOnce([defaultDriver])
+
+		const result = await listAllAvailableDrivers(client, 'device-id', 'hub-id')
+		expect(result.length).toBe(2)
+		expect(result).toEqual(expect.arrayContaining([defaultDriver, installedDriver]))
+
+		expect(apiHubDevicesListInstalledMock).toHaveBeenCalledExactlyOnceWith('hub-id')
+		expect(apiDriversListDefaultMock).toHaveBeenCalledExactlyOnceWith()
+		expect(apiDevicesGetMock).toHaveBeenCalledExactlyOnceWith('device-id')
+	})
+
+	it('filters out duplicates', async () => {
+		apiDevicesGetMock.mockResolvedValueOnce(device)
+
+		apiHubDevicesListInstalledMock.mockResolvedValueOnce([installedDriver, defaultDriver as unknown as InstalledDriver])
+		apiDriversListDefaultMock.mockResolvedValueOnce([defaultDriver])
+
+		const result = await listAllAvailableDrivers(client, 'device-id', 'hub-id')
+		expect(result.length).toBe(2)
+		expect(result).toEqual(expect.arrayContaining([defaultDriver, installedDriver]))
+
+		expect(apiHubDevicesListInstalledMock).toHaveBeenCalledExactlyOnceWith('hub-id')
+		expect(apiDriversListDefaultMock).toHaveBeenCalledExactlyOnceWith()
+		expect(apiDevicesGetMock).toHaveBeenCalledExactlyOnceWith('device-id')
+	})
+})
+
+describe('listMatchingDrivers', () => {
+	it('lists matching drivers', async () => {
+		apiHubDevicesListInstalledMock.mockResolvedValueOnce([installedDriver])
+		apiDevicesGetMock.mockResolvedValueOnce(device)
+
+		expect(await listMatchingDrivers(client, 'device-id', 'hub-id'))
+			.toStrictEqual([installedDriver])
+
+		expect(apiHubDevicesListInstalledMock).toHaveBeenCalledExactlyOnceWith('hub-id', 'device-id')
+		expect(apiDevicesGetMock).toHaveBeenCalledExactlyOnceWith('device-id')
+	})
+
+	it('filters out current driver', async () => {
+		apiHubDevicesListInstalledMock.mockResolvedValueOnce([installedDriver, currentDriver])
+		apiDevicesGetMock.mockResolvedValueOnce(device)
+
+		expect(await listMatchingDrivers(client, 'device-id', 'hub-id'))
+			.toStrictEqual([installedDriver])
+
+		expect(apiHubDevicesListInstalledMock).toHaveBeenCalledExactlyOnceWith('hub-id', 'device-id')
+		expect(apiDevicesGetMock).toHaveBeenCalledExactlyOnceWith('device-id')
 	})
 })
