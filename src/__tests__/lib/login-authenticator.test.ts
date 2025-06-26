@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import { chmod, mkdirSync, NoParamCallback, PathLike, readFileSync, writeFileSync } from 'fs'
+import { chmod, mkdirSync, NoParamCallback, PathLike, readFileSync, writeFileSync } from 'node:fs'
 
 import axios, { AxiosResponse } from 'axios'
 import express, { Express, Request, Response } from 'express'
@@ -18,7 +18,7 @@ const chmodMock = jest.fn<typeof chmod>()
 const mkdirSyncMock = jest.fn<typeof mkdirSync>()
 const readFileSyncMock = jest.fn<typeof readFileSync>()
 const writeFileSyncMock = jest.fn<typeof writeFileSync>()
-jest.unstable_mockModule('fs', () => ({
+jest.unstable_mockModule('node:fs', () => ({
 	chmod: chmodMock,
 	mkdirSync: mkdirSyncMock,
 	readFileSync: readFileSyncMock,

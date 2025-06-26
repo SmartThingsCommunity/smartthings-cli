@@ -6,7 +6,7 @@
 		"sourceMap": true,
 		"importHelpers": true,
 		"module": "Node16",
-		"lib": ["ES2023"],
+		"lib": ["ES2023", "DOM"],
 		"strict": true,
 		"target": "ES2023",
 		"esModuleInterop": true,

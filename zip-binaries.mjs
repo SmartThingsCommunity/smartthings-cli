@@ -1,9 +1,10 @@
 // @ts-check
 
-import { readdir, mkdir, rename } from 'fs/promises'
+import fs from 'node:fs'
+import { readdir, mkdir, rename } from 'node:fs/promises'
+import path from 'node:path'
+
 import archiver from 'archiver'
-import fs from 'fs'
-import path from 'path'
 
 
 /**
