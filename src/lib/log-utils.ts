@@ -1,4 +1,5 @@
-import fs from 'fs'
+import fs from 'node:fs'
+
 import yaml from 'js-yaml'
 import { Configuration as Log4jsConfig, Logger, FileAppender, StandardErrorAppender } from 'log4js'
 

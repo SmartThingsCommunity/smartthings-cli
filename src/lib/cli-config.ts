@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 
 import { type Logger } from 'log4js'
 import yaml from 'js-yaml'

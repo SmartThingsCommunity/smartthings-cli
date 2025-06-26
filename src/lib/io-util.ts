@@ -1,6 +1,7 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import log4js from 'log4js'
-import fs from 'fs'
-import path from 'path'
 import yaml from 'js-yaml'
 
 import { fatalError } from './util.js'

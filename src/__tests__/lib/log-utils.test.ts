@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import { type readFileSync } from 'fs'
+import { type readFileSync } from 'node:fs'
 
 import log4js, { type Logger } from 'log4js'
 import type yaml from 'js-yaml'
@@ -10,7 +10,7 @@ import { fatalError } from '../../lib/util.js'
 
 
 const readFileSyncMock = jest.fn<typeof readFileSync>()
-jest.unstable_mockModule('fs', () => ({
+jest.unstable_mockModule('node:fs', () => ({
 	default: {
 		readFileSync: readFileSyncMock,
 	},

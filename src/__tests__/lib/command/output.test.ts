@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import { writeFile } from 'fs/promises'
+import { writeFile } from 'node:fs/promises'
 
 import { formatFromFilename, stdoutIsTTY } from '../../../lib/io-util.js'
 import {
@@ -17,7 +17,7 @@ import { CalculateOutputFormatFlags } from '../../../lib/command/output.js'
 
 
 const writeFileMock = jest.fn<typeof writeFile>()
-jest.unstable_mockModule('fs/promises', () => ({
+jest.unstable_mockModule('node:fs/promises', () => ({
 	writeFile: writeFileMock,
 }))
 

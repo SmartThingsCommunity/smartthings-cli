@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import type { readFile, writeFile } from 'fs/promises'
+import type { readFile, writeFile } from 'node:fs/promises'
 
 import type yaml from 'js-yaml'
 
@@ -15,7 +15,7 @@ import type { fatalError } from '../../lib/util.js'
 
 const readFileMock = jest.fn<typeof readFile>().mockResolvedValue('good contents')
 const writeFileMock = jest.fn<typeof writeFile>()
-jest.unstable_mockModule('fs/promises', () => ({
+jest.unstable_mockModule('node:fs/promises', () => ({
 	readFile: readFileMock,
 	writeFile: writeFileMock,
 }))

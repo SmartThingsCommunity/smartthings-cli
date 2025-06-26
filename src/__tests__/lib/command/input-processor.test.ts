@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import { readFile } from 'fs/promises'
+import { readFile } from 'node:fs/promises'
 
 import {
 	CommandLineInputCommand,
@@ -17,7 +17,7 @@ import { SimpleType, validData } from '../../test-lib/simple-type.js'
 
 
 const readFileMock = jest.fn<typeof readFile>()
-jest.unstable_mockModule('fs/promises', () => ({
+jest.unstable_mockModule('node:fs/promises', () => ({
 	readFile: readFileMock,
 }))
 
