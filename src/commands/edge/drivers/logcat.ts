@@ -1,24 +1,29 @@
-import { PeerCertificate } from 'node:tls'
+import { type ClientRequest } from 'node:http'
+import { Agent as AxiosAgent } from 'node:https'
+import { type PeerCertificate, type TLSSocket } from 'node:tls'
 import { inspect } from 'node:util'
 
+import axios, { type AxiosError, type AxiosResponse, type Method } from 'axios'
+import { type ErrorEvent, EventSource } from 'eventsource'
+import log4js from 'log4js'
 import ora from 'ora'
+import { fetch, Agent } from 'undici'
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { green, red } from '../../../lib/colors.js'
 import {
+	type DriverInfo,
 	handleConnectionErrors,
-	type LiveLogClientConfig,
 	liveLogMessageFormatter,
 	type LogLevel,
 	logLevels,
-	newLiveLogClient,
+	networkEnvironmentInfo,
 	parseIpAndPort,
+	scrubAuthInfo,
 } from '../../../lib/live-logging.js'
 import { logEvent, parseEvent } from '../../../lib/sse-io.js'
-import { EventSourceError, handleSignals } from '../../../lib/sse-util.js'
-import { fatalError } from '../../../lib/util.js'
-import { apiCommand, apiCommandBuilder, APICommandFlags, userAgent } from '../../../lib/command/api-command.js'
-import { initSource } from '../../../lib/command/sse-command.js'
+import { fatalError, handleSignals } from '../../../lib/util.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags, userAgent } from '../../../lib/command/api-command.js'
 import { chooseHub } from '../../../lib/command/util/hubs-choose.js'
 import { checkServerIdentity, chooseHubDrivers } from '../../../lib/command/util/hub-drivers.js'
 
@@ -39,7 +44,7 @@ export type CommandArgs =
 
 const command = 'edge:drivers:logcat [driver-id]'
 
-const describe = 'stream logs from installed drivers'
+const describe = 'stream logs from installed drivers, simple temporary hard-coded version'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
 	apiCommandBuilder(yargs)
@@ -101,28 +106,161 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	const liveLogPort = port ?? defaultLiveLogPort
 	const authority = `${ipv4}:${liveLogPort}`
 	const spinner = ora()
+	const verifier = (cert: PeerCertificate): Promise<void> => checkServerIdentity(command, authority, cert)
+	const timeout = argv.connectTimeout ?? defaultLiveLogTimeout
 
-	const config: LiveLogClientConfig = {
-		authority,
-		authenticator: command.authenticator,
-		verifier: (cert: PeerCertificate) => checkServerIdentity(command, authority, cert),
-		timeout: argv.connectTimeout ?? defaultLiveLogTimeout,
-		userAgent,
+	const baseURL = new URL(`https://${authority}`)
+
+	const driversURL = new URL('drivers', baseURL)
+	const logsURL = new URL('drivers/logs', baseURL)
+	let hostVerified = false
+	const logger = log4js.getLogger('cli')
+
+	const getCertificate = (response: AxiosResponse): PeerCertificate =>
+		((response.request as ClientRequest).socket as TLSSocket).getPeerCertificate()
+
+	const unsafeAgent = new Agent({
+		connect: {
+			rejectUnauthorized: false,
+		},
+	})
+	const request = async (url: string, method: Method = 'GET'): Promise<AxiosResponse> => {
+		// Even though we are using `fetch` from `undici` below, sticking to axios here, at least
+		// for now, because I have been unable to make `fetch` work here.
+		const authHeaders = await command.authenticator.authenticate()
+		const requestConfig = {
+			url,
+			method,
+			httpsAgent: new AxiosAgent({ rejectUnauthorized: false }),
+			timeout,
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			headers: { 'User-Agent': userAgent, ...authHeaders },
+			transitional: {
+				silentJSONParsing: true,
+				forcedJSONParsing: true,
+				// throw ETIMEDOUT error instead of generic ECONNABORTED on request timeouts
+				clarifyTimeoutError: true,
+			},
+		}
+
+		try {
+			const response = await axios.request(requestConfig)
+			if (!hostVerified) {
+				await verifier(getCertificate(response))
+				hostVerified = true
+			}
+
+			return response
+		} catch (error) {
+			console.log('*** error caught')
+			if (error.isAxiosError) {
+				const axiosError = error as AxiosError
+				if (logger.isDebugEnabled()) {
+					const errorString = scrubAuthInfo(axiosError.toJSON())
+					logger.debug(`Error connecting to live-logging: ${errorString}\n\nLocal network interfaces:` +
+						` ${networkEnvironmentInfo()}`)
+				}
+
+				if (axiosError.code) {
+					handleConnectionErrors(authority, axiosError.code)
+				}
+			}
+
+			throw error
+		}
 	}
 
-	const logClient = newLiveLogClient(config)
+	const getDrivers = async (): Promise<DriverInfo[]> => (await request(driversURL.toString())).data
+
+	const getLogSource = (driverId?: string): string => {
+		const sourceURL = logsURL
+
+		if (driverId) {
+			sourceURL.searchParams.set('driver_id', driverId)
+		}
+
+		return sourceURL.toString()
+	}
 
 	// ensure host verification resolves before connecting to the event source
-	const installedDrivers = await logClient.getDrivers()
+	const installedDrivers = await getDrivers()
 
 	const driverId = argv.all
 		? undefined
 		: await chooseHubDrivers(command, installedDrivers, argv.driverId)
 
 	spinner.start('connecting')
-	const sourceURL = logClient.getLogSource(driverId)
+	const sourceURL = getLogSource(driverId)
 
-	const { source, teardown } = await initSource(command, sourceURL)
+	// assume auth is taken care of if passing an initDict
+	const authHeaders = await command.authenticator.authenticate()
+
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	const headers: HeadersInit = { 'User-Agent': userAgent, ...authHeaders }
+
+	const source = new EventSource(sourceURL, {
+		fetch: async (input, init) => {
+			// I haven't been able to successfully make this request with axios, so for now, we're
+			// sticking to how the eventsource examples do it with `fetch` from `undici`.
+			const results = await fetch(input.toString(), {
+				...init,
+				dispatcher: unsafeAgent,
+				headers: {
+					...init.headers,
+					...headers,
+				},
+			})
+
+			return results
+		},
+	})
+
+	const teardown = (): void => {
+		try {
+			source.close()
+		} catch (error) {
+			command.logger.warn(`Error during SseCommand teardown. ${error.message ?? error}`)
+		}
+	}
+
+	source.addEventListener('notice', event => {
+		command.logger.warn(`unexpected notice event: ${inspect(event)}`)
+	})
+
+	source.addEventListener('update', event => {
+		command.logger.warn(`unexpected update event: ${inspect(event)}`)
+	})
+
+	const logLevel = logLevels[argv.logLevel ?? 'trace']
+	source.addEventListener('message', event => {
+		const message = parseEvent(event)
+		if (message.log_level >= logLevel.value) {
+			logEvent(message, liveLogMessageFormatter)
+		}
+	})
+
+	source.addEventListener('error', (error: ErrorEvent) => {
+		teardown()
+		spinner.fail(red('failed'))
+
+		command.logger.debug(`Error from eventsource. URL: ${sourceURL} Error: ${inspect(error)}`)
+
+		try {
+			if (error.code === 401 || error.code === 403) {
+				return fatalError(`Unauthorized at ${authority}`)
+			}
+
+			if (error.message !== undefined) {
+				return handleConnectionErrors(authority, error.message)
+			}
+
+			console.error(`Unexpected error from event source ${inspect(error)}`)
+		} catch (error) {
+			if (error instanceof Error) {
+				return fatalError(error)
+			}
+		}
+	})
 
 	const sourceTimeoutId = setTimeout(() => {
 		teardown()
@@ -136,13 +274,11 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 		}
 	}, argv.connectTimeout).unref() // unref lets Node exit before callback is invoked
 
-	const setupSignalHandler = (): void => {
-		handleSignals(signal => {
-			command.logger.debug(`handling ${signal} and tearing down SseCommand`)
+	handleSignals(signal => {
+		command.logger.debug(`handling ${signal} and tearing down SseCommand`)
 
-			teardown()
-		})
-	}
+		teardown()
+	})
 
 	source.onopen = () => {
 		clearTimeout(sourceTimeoutId)
@@ -152,36 +288,6 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 		}
 
 		spinner.succeed(green('connected'))
-		setupSignalHandler()
-	}
-
-	source.onerror = (error: EventSourceError) => {
-		teardown()
-		spinner.fail(red('failed'))
-		command.logger.debug(`Error from eventsource. URL: ${sourceURL} Error: ${inspect(error)}`)
-		try {
-			if (error.status === 401 || error.status === 403) {
-				return fatalError(`Unauthorized at ${authority}`)
-			}
-
-			if (error.message !== undefined) {
-				handleConnectionErrors(authority, error.message)
-			}
-
-			console.error(`Unexpected error from event source ${inspect(error)}`)
-		} catch (error) {
-			if (error instanceof Error) {
-				return fatalError(error)
-			}
-		}
-	}
-
-	const logLevel = logLevels[argv.logLevel ?? 'trace']
-	source.onmessage = (event: MessageEvent<string>) => {
-		const message = parseEvent(event)
-		if (message.log_level >= logLevel.value) {
-			logEvent(message, liveLogMessageFormatter)
-		}
 	}
 }
 
