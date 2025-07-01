@@ -6,7 +6,9 @@ import {
 	clipToMaximum,
 	delay,
 	fatalError,
+	handleSignals,
 	sanitize,
+	terminationSignals,
 	stringFromUnknown,
 } from '../../lib/util.js'
 
@@ -111,5 +113,15 @@ describe('asTextBulletedList', () => {
 
 	it('combines multiple items', () => {
 		expect(asTextBulletedList(['one', 'two', 'three'])).toBe('\n  - one\n  - two\n  - three')
+	})
+})
+
+test('handleSignals adds handler for all required Signals', () => {
+	const handler = jest.fn()
+
+	handleSignals(handler)
+
+	terminationSignals.forEach(signal => {
+		expect(process.listeners(signal)).toContain(handler)
 	})
 })
