@@ -59,3 +59,13 @@ export const cancelCommand = (message?: string): never => {
 
 export const asTextBulletedList = (enums: string[]): string =>
 	enums.length === 0 ? '' : ('\n  - ' + enums.join('\n  - '))
+
+export const terminationSignals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGHUP', 'SIGBREAK']
+
+/**
+ * Listen for various NodeJS Signals for the purpose of best effort resource/connection cleanup.
+ *
+ * see: https://nodejs.org/api/process.html#process_signal_events
+ */
+export const handleSignals = (listener: NodeJS.SignalsListener): void =>
+	terminationSignals.forEach(signal => process.on(signal, listener))

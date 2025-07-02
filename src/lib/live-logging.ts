@@ -1,14 +1,7 @@
-import { type ClientRequest } from 'node:http'
-import { Agent } from 'node:https'
 import net from 'node:net'
 import { networkInterfaces } from 'node:os'
-import { type PeerCertificate, type TLSSocket } from 'node:tls'
+import { type PeerCertificate } from 'node:tls'
 import { inspect } from 'node:util'
-
-import axios, { AxiosError, AxiosResponse, Method } from 'axios'
-import log4js from 'log4js'
-
-import { type Authenticator } from '@smartthings/core-sdk'
 
 import { bgBlue, bgCyan, bgGray, bgGreen, bgRed, bgYellow, black } from './colors.js'
 import { type EventFormat, LiveLogMessage } from './sse-io.js'
@@ -106,7 +99,7 @@ export const handleConnectionErrors = (authority: string, error: string): never 
 
 export const networkEnvironmentInfo = (): string => inspect(networkInterfaces())
 
-const scrubAuthInfo = (obj: object): string => {
+export const scrubAuthInfo = (obj: object): string => {
 	const message = inspect(obj)
 	const bearerRegex = /(Bearer [0-9a-f]{8})[0-9a-f-]{28}/i
 
@@ -123,92 +116,3 @@ const scrubAuthInfo = (obj: object): string => {
  * by means that LiveLogClient isn't aware of ahead of time.
  */
 export type HostVerifier = (cert: PeerCertificate) => Promise<void | never>
-
-export type LiveLogClientConfig = {
-	/**
-	 * @example 192.168.0.1:9495
-	 */
-	authority: string
-	authenticator: Authenticator
-	verifier?: HostVerifier
-	/**
-	 * milliseconds
-	 */
-	timeout: number
-	userAgent: string
-}
-
-export type LiveLogClient = {
-	getDrivers(): Promise<DriverInfo[]>
-	getLogSource(driverId?: string): string
-}
-
-export const newLiveLogClient = (config: LiveLogClientConfig): LiveLogClient => {
-	const baseURL = new URL(`https://${config.authority}`)
-
-	const driversURL = new URL('drivers', baseURL)
-	const logsURL = new URL('drivers/logs', baseURL)
-	let hostVerified = config.verifier === undefined
-	const logger = log4js.getLogger('cli')
-
-	const getCertificate = (response: AxiosResponse): PeerCertificate =>
-		((response.request as ClientRequest).socket as TLSSocket).getPeerCertificate()
-
-	const request = async (url: string, method: Method = 'GET'): Promise<AxiosResponse> => {
-		const authHeaders = await config.authenticator.authenticate()
-		const requestConfig = {
-			url,
-			method,
-			httpsAgent: new Agent({ rejectUnauthorized: false }),
-			timeout: config.timeout,
-			// eslint-disable-next-line @typescript-eslint/naming-convention
-			headers: { 'User-Agent': config.userAgent, ...authHeaders },
-			transitional: {
-				silentJSONParsing: true,
-				forcedJSONParsing: true,
-				// throw ETIMEDOUT error instead of generic ECONNABORTED on request timeouts
-				clarifyTimeoutError: true,
-			},
-		}
-
-		try {
-			const response = await axios.request(requestConfig)
-
-			if (!hostVerified && config.verifier) {
-				await config.verifier(getCertificate(response))
-				hostVerified = true
-			}
-
-			return response
-		} catch (error) {
-			if (error.isAxiosError) {
-				const axiosError = error as AxiosError
-				if (logger.isDebugEnabled()) {
-					const errorString = scrubAuthInfo(axiosError.toJSON())
-					logger.debug(`Error connecting to live-logging: ${errorString}\n\nLocal network interfaces:` +
-						` ${networkEnvironmentInfo()}`)
-				}
-
-				if (axiosError.code) {
-					handleConnectionErrors(config.authority, axiosError.code)
-				}
-			}
-
-			throw error
-		}
-	}
-
-	const getDrivers = async (): Promise<DriverInfo[]> => (await request(driversURL.toString())).data
-
-	const getLogSource = (driverId?: string): string => {
-		const sourceURL = logsURL
-
-		if (driverId) {
-			sourceURL.searchParams.set('driver_id', driverId)
-		}
-
-		return sourceURL.toString()
-	}
-
-	return { getDrivers, getLogSource }
-}
