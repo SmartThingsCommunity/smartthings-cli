@@ -20,7 +20,7 @@ Thanks for contributing! Our community of developers is what put SmartThings on 
 
 ### Build
 
-1. Be sure you're using at least Node.js version 22.
+1. Be sure you're using at least Node.js version 24.
 1. run `npm install`
 1. run `npm run compile`
 1. To run the CLI that was just compiled, run the `run` command in bin. You can create
