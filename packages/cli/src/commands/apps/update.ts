@@ -68,7 +68,7 @@ export default class AppUpdateCommand extends APICommand<typeof AppUpdateCommand
 				appType, classifications, displayName, description,
 			} = await this.client.apps.get(appId)
 			const startingRequest: AppUpdateRequest = {
-				appName, appType, classifications, displayName, description, singleInstance, iconImage, ui,
+				appName, appType, classifications, displayName, description, singleInstance, iconImage: iconImage ?? {}, ui,
 			}
 			const propertyInputDefs: InputDefsByProperty<AppUpdateRequest> = {
 				displayName: stringDef('Display Name'),
