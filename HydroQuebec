@@ -1,0 +1,45 @@
+local Driver = require("st.driver")
+local capabilities = require("st.capabilities")
+local http = require("socket.http")
+local json = require("dkjson")
+
+local function check_peak_status()
+    local url = "https://donnees.hydroquebec.com/explore/dataset/evenements-pointe/api/?format=json"
+    local body, code, headers, status = http.request(url)
+    if code == 200 and body then
+        local data = json.decode(body)
+        for _, event in ipairs(data.records or {}) do
+            if event.fields and event.fields.en_cours == true then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function poll_device(driver, device)
+    local is_peak = check_peak_status()
+    if is_peak then
+        device:emit_event(capabilities.switch.switch.on())
+    else
+        device:emit_event(capabilities.switch.switch.off())
+    end
+end
+
+local function added(driver, device)
+    device:emit_event(capabilities.switch.switch.off())
+end
+
+local driver = Driver("hydroquebec_peak_driver", {
+    lifecycle_handlers = {
+        added = added,
+        init = function(driver, device)
+            driver:call_on_schedule(300, function()
+                poll_device(driver, device)
+            end)
+        end
+    },
+    capability_handlers = {},
+})
+
+driver:run()
