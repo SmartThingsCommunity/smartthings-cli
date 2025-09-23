@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli",
-	"version": "1.10.5",
+	"version": "2.0.0-prerelease1",
 	"description": "Command Line Interface for the SmartThings APIs",
 	"keywords": [
 		"smartthings",
@@ -22,6 +22,7 @@
 		"dist/tsconfig.tsbuildinfo",
 		"README.md",
 		"/npm-shrinkwrap.json",
+		"!*/src/build-tools",
 		"!*/src/__tests__"
 	],
 	"main": "./dist/src/index.js",
@@ -32,35 +33,18 @@
 		".": "./dist/src/index.js"
 	},
 	"engines": {
-		"node": ">=24.4.1",
+		"node": ">=24.8.0",
 		"npm": ">=11.4.2"
 	},
 	"publishConfig": {
 		"access": "public"
 	},
 	"type": "module",
-	"pkg": {
-		"scripts": [
-			"dist/**/*.js"
-		],
-		"assets": [
-			"../../node_modules/yarn"
-		],
-		"outputPath": "dist_bin",
-		"targets": [
-			"node18-macos-x64",
-			"node18-macos-arm64",
-			"node18-linux-x64",
-			"node18-linux-arm64",
-			"node18-linuxstatic-armv7",
-			"node18-win-x64"
-		]
-	},
 	"dependencies": {
 		"@aws-sdk/client-lambda": "^3.817.0",
 		"@inquirer/prompts": "^7.5.3",
 		"@smartthings/core-sdk": "^8.4.1",
-		"axios": "1.10.0",
+		"axios": "1.12.2",
 		"chalk": "^5.4.1",
 		"env-paths": "^3.0.0",
 		"eventsource": "^4.0.0",
@@ -78,7 +62,7 @@
 		"qs": "^6.14.0",
 		"table": "^6.9.0",
 		"tslib": "^2.8.1",
-		"undici": "^7.11.0",
+		"undici": "^7.16.0",
 		"uuid": "^11.1.0",
 		"yargs": "^18.0.0"
 	},
@@ -89,6 +73,7 @@
 		"@commitlint/cli": "^19.8.1",
 		"@commitlint/config-conventional": "^19.8.1",
 		"@stylistic/eslint-plugin": "^2.8.0",
+		"@types/archiver": "^6.0.3",
 		"@types/express": "^5.0.2",
 		"@types/inquirer": "^9.0.7",
 		"@types/jest": "^29.5.14",
@@ -101,6 +86,7 @@
 		"@types/yargs": "^17.0.33",
 		"@typescript-eslint/eslint-plugin": "^8.6.0",
 		"@typescript-eslint/parser": "^8.6.0",
+		"@vercel/ncc": "^0.38.4",
 		"archiver": "^7.0.1",
 		"cz-conventional-changelog": "^3.3.0",
 		"eslint": "^8.57.1",
@@ -112,7 +98,7 @@
 		"jest-extended": "^5.0.3",
 		"jest-html-reporters": "^3.1.7",
 		"mock-stdin": "^1.0.0",
-		"pkg": "^5.8.1",
+		"nexe": "^5.0.0-beta.4",
 		"rimraf": "^6.0.1",
 		"strip-ansi": "^7.1.0",
 		"ts-jest": "^29.3.4",
@@ -125,18 +111,17 @@
 		"clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
 		"full-clean": "rimraf dist_bin && rimraf coverage && rimraf jest*html* && npm run clean && rimraf node_modules",
 		"compile": "tsc",
-		"readme": "echo TODO:readme",
+		"readme": "ts-node dist/src/build-tools/update-readme.js",
 		"watch": "tsc -w --sourceMap",
 		"build": "npm run clean && npm run compile && npm run readme",
 		"debug-build": "npm run clean && tsc --sourceMap && npm run readme",
 		"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
 		"test-watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch --reporters=default",
 		"test-coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage=true",
-		"prepack": "tsc && echo TODO:readme",
-		"version": "echo TODO:readme && git add README.md && changeset version && npm i --package-lock-only && npm run build && npm run version -w packages/cli",
+		"prepack": "tsc && npm run readme",
+		"version": "npm run readme && git add README.md && changeset version && npm i --package-lock-only && npm run build && npm run version -w packages/cli",
 		"release": "npm run build && changeset publish",
-		"package": "pkg package.json && npm run zip-binaries",
-		"zip-binaries": "node zip-binaries.mjs"
+		"package": "ts-node src/build-tools/build-binaries.ts"
 	},
 	"directories": {
 		"doc": "doc"

@@ -2,10 +2,12 @@
 
 ## Overview
 
-The default CLI configuration can be overridden by creating a YAML file called `config.yaml` in the
-following location:
+The default CLI configuration can be overridden by creating a YAML file called `config.yaml`. The
+location of this file varies by operating system. The easiest way to find it is to run `smartthings config`
+on your machine and the full filename will be listed.
 
-* `$HOME/.config/@smartthings/cli` on MacOS or Linux
+* `$HOME$/Library/Preferences/@smartthings/cli` on MacOS
+* `$HOME/.config/@smartthings/cli` on Linux
 * `%LOCALAPPDATA%\@smartthings\cli` on Windows
 
 ## Profiles
