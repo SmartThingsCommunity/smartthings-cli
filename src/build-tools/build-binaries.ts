@@ -45,13 +45,14 @@ await writeFile(packFile, code)
 const buildAndZipTarget = async (target: string): Promise<void> => {
 	console.log(`Compiling for ${target}:`)
 	const binDir = path.join(distBinDir, target)
-	const binName = path.join(binDir, `smartthings${target.startsWith('windows') ? '.exe' : ''}`)
+	const binaryFilename = `smartthings${target.startsWith('windows') ? '.exe' : ''}`
+	const fullBinaryFilename = path.join(binDir, binaryFilename)
 	await compile({
 		name: 'smartthings',
 		input: packFile,
 		resources: ['package.json'],
 		remote: 'https://github.com/SmartThingsCommunity/cli-nexe-builds/releases/download/1.0.0',
-		output: binName,
+		output: fullBinaryFilename,
 		python: 'python3',
 		targets: [`${target}-${nodeVersion}`],
 	})
@@ -67,7 +68,7 @@ const buildAndZipTarget = async (target: string): Promise<void> => {
 	const archiveName = path.join(binDir, `smartthings-${platform}-${arch}.${archiveExt}`)
 
 	const archive = archiver(compressionFormat, config)
-	archive.append(fs.createReadStream(binName), { name: binName, mode: 0o755 })
+	archive.append(fs.createReadStream(fullBinaryFilename), { name: binaryFilename, mode: 0o755 })
 	archive.pipe(fs.createWriteStream(archiveName))
 
 	return archive.finalize()
