@@ -15,6 +15,12 @@
   so this flag is not necessary at this time.
 * Under-the-hood changes to make the CLI more maintainable.
 
+## 1.10.6
+
+### Patch Changes
+
+- [#784](https://github.com/SmartThingsCommunity/smartthings-cli/pull/784) [`4b19148`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/4b191484ef818ed39373fcf3fba88458351940d9) Thanks [@rossiam](https://github.com/rossiam)! - fix bug preventing interactive editing of apps with no icon image set
+
 ## 1.10.5
 
 ### Patch Changes
