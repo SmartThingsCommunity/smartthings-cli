@@ -61,7 +61,9 @@
 		"picomatch": "^4.0.3",
 		"qs": "^6.14.0",
 		"table": "^6.9.0",
+		"ts-node": "^10.9.2",
 		"tslib": "^2.8.1",
+		"tsx": "^4.20.6",
 		"undici": "^7.16.0",
 		"uuid": "^13.0.0",
 		"yargs": "^18.0.0"
@@ -101,7 +103,6 @@
 		"rimraf": "^6.0.1",
 		"strip-ansi": "^7.1.2",
 		"ts-jest": "^29.3.4",
-		"ts-node": "^10.9.2",
 		"typescript": "^5.9.2"
 	},
 	"scripts": {
@@ -110,7 +111,7 @@
 		"clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
 		"full-clean": "rimraf dist_bin && rimraf coverage && rimraf jest*html* && npm run clean && rimraf node_modules",
 		"compile": "tsc",
-		"readme": "ts-node dist/src/build-tools/update-readme.js",
+		"readme": "tsx dist/src/build-tools/update-readme.js",
 		"watch": "tsc -w --sourceMap",
 		"build": "npm run clean && npm run compile && npm run readme",
 		"debug-build": "npm run clean && tsc --sourceMap && npm run readme",
@@ -120,7 +121,7 @@
 		"prepack": "tsc && npm run readme",
 		"version": "npm run readme && git add README.md && changeset version && npm i --package-lock-only && npm run build && npm run version -w packages/cli",
 		"release": "npm run build && changeset publish",
-		"package": "ts-node src/build-tools/build-binaries.ts"
+		"package": "tsx src/build-tools/build-binaries.ts"
 	},
 	"directories": {
 		"doc": "doc"

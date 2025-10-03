@@ -19,7 +19,7 @@ const nodeVersion = process.version.substring(1)
 
 // This allows us to the the binary either:
 //   node dist/src/build-tools/build-binaries.js # after building of course
-//   ts-node src/build-tools/build-binaries.ts
+//   tsx src/build-tools/build-binaries.ts
 const workspaceDir = import.meta.dirname.endsWith('dist/src/build-tools')
 	? path.join(import.meta.dirname, '..', '..', '..')
 	: path.join(import.meta.dirname, '..', '..')
