@@ -1,6 +1,5 @@
 # Overview
 
-[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![npm version](https://badge.fury.io/js/%40smartthings%2Fcli.svg)](https://badge.fury.io/js/%40smartthings%2Fcli)
 ![npm](https://img.shields.io/npm/dm/@smartthings/cli)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
