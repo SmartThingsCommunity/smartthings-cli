@@ -68,11 +68,10 @@ const {
 
 
 test('smartThingsCommandBuilder', () => {
-	const { envMock, optionMock, argvMock } = buildArgvMock<object, SmartThingsCommandFlags>()
+	const { optionMock, argvMock } = buildArgvMock<object, SmartThingsCommandFlags>()
 
 	expect(smartThingsCommandBuilder(argvMock)).toBe(argvMock)
 
-	expect(envMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(2)
 })
 

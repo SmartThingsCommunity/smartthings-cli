@@ -18,12 +18,12 @@ export type SmartThingsCommandFlags = {
 export const smartThingsCommandBuilder = <T extends object = object>(
 	yargs: Argv<T>,
 ): Argv<T & SmartThingsCommandFlags> =>
-	yargs.env('SMARTTHINGS')
+	yargs
 		.option('profile', {
 			alias: 'p',
 			describe: 'configuration profile',
 			type: 'string',
-			default: 'default',
+			default: process.env.SMARTTHINGS_PROFILE ?? 'default',
 		})
 		// This option is temporary and will be removed when removing automatic copy
 		// of old configuration files. (See also yargs-transition-temp.ts.)

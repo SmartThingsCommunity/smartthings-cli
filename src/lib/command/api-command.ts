@@ -29,7 +29,13 @@ export type APICommandFlags = SmartThingsCommandFlags & {
 
 export const apiCommandBuilder = <T extends object>(yargs: Argv<T>): Argv<T & APICommandFlags> =>
 	smartThingsCommandBuilder(yargs)
-		.option('token', { alias: 't', desc: 'the auth token to use', type: 'string' })
+		.option('token', {
+			alias: 't',
+			desc: 'the auth token to use',
+			type: 'string',
+			default: process.env.SMARTTHINGS_TOKEN,
+			hidden: true,
+		})
 		.option('language', {
 			desc: 'ISO language code or "NONE" to not specify a language. Defaults to the OS locale',
 			type: 'string',
