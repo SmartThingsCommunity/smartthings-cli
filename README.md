@@ -20,6 +20,8 @@ The SmartThings CLI is a tool to help with developing SmartApps and drivers for 
 
 ### Homebrew (MacOS)
 
+Note that the MacOS binaries require at least MacOS 13.5.
+
 ```console
 brew install smartthingscommunity/smartthings/smartthings
 ```

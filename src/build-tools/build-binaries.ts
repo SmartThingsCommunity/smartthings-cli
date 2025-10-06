@@ -11,8 +11,7 @@ const targets = [
 	'linux-arm64',
 	'linux-x64',
 	'mac-arm64',
-	// The Intel Mac Build still isn't working properly yet.
-	// 'mac-x64',
+	'mac-x64',
 	'windows-x64',
 ]
 const nodeVersion = process.version.substring(1)
