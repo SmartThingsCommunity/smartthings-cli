@@ -1,4 +1,4 @@
-import inquirer from 'inquirer'
+import { input, select } from '@inquirer/prompts'
 
 import {
 	type DeviceProfile,
@@ -8,11 +8,12 @@ import {
 	type SmartThingsClient,
 } from '@smartthings/core-sdk'
 
+import { optionalStringInput, stringInput } from '../../user-query.js'
+import { fatalError } from '../../util.js'
+import { APICommand } from '../api-command.js'
 import { chooseCapabilityFiltered } from './capabilities-choose.js'
 import { type CapabilityId } from './capabilities-util.js'
 import { cleanupForCreate, cleanupForUpdate, DeviceDefinitionRequest } from './deviceprofiles-util.js'
-import { APICommand } from '../api-command.js'
-import { fatalError } from '../../util.js'
 
 
 const capabilitiesWithoutPresentations = ['healthCheck', 'execute']
@@ -128,18 +129,20 @@ export const capabilityDefined = async (client: SmartThingsClient, idStr: string
 	}
 }
 
-export const promptAndAddCapability = async (command: APICommand, deviceProfile: DeviceProfileRequest, componentId: string, prompt = 'Capability ID'): Promise<CapabilityId> => {
+export const promptAndAddCapability = async (
+		command: APICommand,
+		deviceProfile: DeviceProfileRequest,
+		componentId: string,
+		prompt = 'Capability Id',
+): Promise<CapabilityId> => {
 	let capabilityId: CapabilityId = { id: '', version: 0 }
-	const idStr = (await inquirer.prompt({
-		type: 'input',
-		name: 'id',
+	const idStr = await input({
 		message: `${prompt} (type ? for a list):`,
-		validate: async (input) => {
-			return (input.endsWith('?') || input === '' || await capabilityDefined(command.client, input))
+		validate: async (input) =>
+			(input.endsWith('?') || input === '' || await capabilityDefined(command.client, input))
 				? true
-				: `Invalid ID "${input}". Please enter a valid capability ID or ? for a list of available capabilities.`
-		},
-	})).id
+				: `Invalid Id "${input}". Please enter a valid capability Id or ? for a list of available capabilities.`,
+	})
 
 	if (idStr) {
 		if (idStr.endsWith('?')) {
@@ -162,34 +165,25 @@ export const promptAndAddCapability = async (command: APICommand, deviceProfile:
 	return capabilityId
 }
 
+const componentRegExp = new RegExp(/^[0-9a-zA-Z]{1,100}$/)
 export const promptAndAddComponent = async (deviceProfile: DeviceProfileRequest, previousComponentId: string): Promise<string> => {
 	const components = deviceProfile.components || []
-	let componentId: string = (await inquirer.prompt({
-		type: 'input',
-		name: 'componentId',
-		message: 'ComponentId ID: ',
-		validate: (input) => {
-			return (new RegExp(/^[0-9a-zA-Z]{1,100}$/).test(input) && !components.find(it => it.id === input)) || 'Invalid component name'
-		},
-	})).componentId
+	const componentId = await optionalStringInput('Component Id:', {
+		validate: input => (componentRegExp.test(input) && !components.find(it => it.id === input)) || 'Invalid component name',
+	})
 
 	if (componentId) {
 		components.push({ id: componentId, capabilities: [] })
-	} else {
-		componentId = previousComponentId
+		return componentId
 	}
-	return componentId
+	return previousComponentId
 }
 
+const profileNameRegExp = new RegExp(/^(?!\s)[-_!.~'() *0-9a-zA-Z]{1,100}(?<!\s)$/)
 export const getInputFromUser = async (command: APICommand): Promise<DeviceProfileRequest> => {
-	const name = (await inquirer.prompt({
-		type: 'input',
-		name: 'deviceProfileName',
-		message: 'Device Profile Name:',
-		validate: (input: string) => {
-			return new RegExp(/^(?!\s)[-_!.~'() *0-9a-zA-Z]{1,100}(?<!\s)$/).test(input) ||  'Invalid device profile name'
-		},
-	})).deviceProfileName
+	const name = await stringInput('Device Profile Name:', {
+		validate: (input: string) => profileNameRegExp.test(input) || 'Invalid device profile name',
+	})
 
 	const deviceProfile: DeviceProfileRequest = {
 		name,
@@ -203,7 +197,7 @@ export const getInputFromUser = async (command: APICommand): Promise<DeviceProfi
 
 	let primaryCapabilityId: CapabilityId
 	do {
-		primaryCapabilityId = await promptAndAddCapability(command, deviceProfile, 'main', 'Primary capability ID')
+		primaryCapabilityId = await promptAndAddCapability(command, deviceProfile, 'main', 'Primary capability Id')
 	} while (!primaryCapabilityId.id)
 
 	const enum Action {
@@ -216,12 +210,7 @@ export const getInputFromUser = async (command: APICommand): Promise<DeviceProfi
 	let componentId = 'main'
 	const choices = [Action.ADD_CAPABILITY, Action.ADD_COMPONENT, Action.FINISH]
 	do {
-		action = (await inquirer.prompt({
-			type: 'list',
-			name: 'action',
-			message: 'Select an action...',
-			choices,
-		})).action
+		action = await select({ message: 'Select an action...', choices })
 
 		if (action === Action.ADD_CAPABILITY) {
 			await promptAndAddCapability(command, deviceProfile, componentId)
