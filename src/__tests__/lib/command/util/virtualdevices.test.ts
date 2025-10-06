@@ -1,20 +1,19 @@
 import { jest } from '@jest/globals'
 
-import type inquirer from 'inquirer'
-
 import { type DeviceProfile, DeviceProfileStatus } from '@smartthings/core-sdk'
 
+import type { optionalStringInput, stringInput } from '../../../../lib/user-query.js'
 import type { APICommand } from '../../../../lib/command/api-command.js'
 import type { fileInputProcessor, InputProcessor } from '../../../../lib/command/input-processor.js'
 import type { selectFromList } from '../../../../lib/command/select.js'
 import type { chooseDeviceProfile } from '../../../../lib/command/util/deviceprofiles-choose.js'
 
 
-const promptMock = jest.fn<typeof inquirer.prompt>()
-jest.unstable_mockModule('inquirer', () => ({
-	default: {
-		prompt: promptMock,
-	},
+const optionalStringInputMock = jest.fn<typeof optionalStringInput>()
+const stringInputMock = jest.fn<typeof stringInput>()
+jest.unstable_mockModule('../../../../lib/user-query.js', () => ({
+	optionalStringInput: optionalStringInputMock,
+	stringInput: stringInputMock,
 }))
 
 const fileInputProcessorMock = jest.fn<typeof fileInputProcessor<DeviceProfile>>()
@@ -50,23 +49,19 @@ const command = { client } as unknown as APICommand
 
 describe('chooseDeviceName function', () => {
 	test('choose with from prompt', async () => {
-		promptMock.mockResolvedValue({ deviceName: 'Device Name' })
+		optionalStringInputMock.mockResolvedValue('Device Name')
 
 		const value = await chooseDeviceName()
-		expect(promptMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledWith({
-			type: 'input', name: 'deviceName',
-			message: 'Device Name:',
-		})
+		expect(optionalStringInputMock).toHaveBeenCalledExactlyOnceWith('Device Name:')
 		expect(value).toBeDefined()
 		expect(value).toBe('Device Name')
 	})
 
 	test('choose with default', async () => {
-		promptMock.mockResolvedValue({ deviceName: 'Another Device Name' })
+		optionalStringInputMock.mockResolvedValue('Another Device Name')
 
 		const value = await chooseDeviceName('Device Name')
-		expect(promptMock).toHaveBeenCalledTimes(0)
+		expect(optionalStringInputMock).not.toHaveBeenCalled()
 		expect(value).toBeDefined()
 		expect(value).toBe('Device Name')
 	})
@@ -296,7 +291,7 @@ describe('chooseDevicePrototype function', () => {
 		})
 
 		test('numeric value', async () => {
-			promptMock.mockResolvedValue({ value: '72' })
+			stringInputMock.mockResolvedValue('72')
 			const attribute = {
 				schema: {
 					type: 'object',
@@ -321,11 +316,7 @@ describe('chooseDevicePrototype function', () => {
 
 			const value = await chooseValue(command, attribute, 'temperature')
 			expect(selectFromListMock).toHaveBeenCalledTimes(0)
-			expect(promptMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledWith({
-				type: 'input', name: 'value',
-				message: 'Enter \'temperature\' attribute value:',
-			})
+			expect(stringInputMock).toHaveBeenCalledExactlyOnceWith('Enter \'temperature\' attribute value:')
 			expect(value).toBeDefined()
 			expect(value).toBe('72')
 		})

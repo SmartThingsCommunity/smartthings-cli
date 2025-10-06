@@ -1,5 +1,3 @@
-import inquirer from 'inquirer'
-
 import {
 	type CapabilityAttribute,
 	type CapabilityReference,
@@ -8,6 +6,7 @@ import {
 	type DeviceProfileCreateRequest,
 } from '@smartthings/core-sdk'
 
+import { optionalStringInput, stringInput } from '../../user-query.js'
 import { type APICommand } from '../api-command.js'
 import { fileInputProcessor } from '../input-processor.js'
 import { selectFromList, type SelectFromListConfig } from '../select.js'
@@ -67,14 +66,11 @@ export type DeviceProfileDefinition = {
 }
 
 export const chooseDeviceName = async (preselectedName?: string): Promise<string | undefined> => {
-	if (!preselectedName) {
-		preselectedName = (await inquirer.prompt({
-			type: 'input',
-			name: 'deviceName',
-			message: 'Device Name:',
-		})).deviceName
+	if (preselectedName) {
+		return preselectedName
 	}
-	return preselectedName
+
+	return optionalStringInput('Device Name:')
 }
 
 export const chooseDeviceProfileDefinition = async (
@@ -208,7 +204,6 @@ export const chooseValue = async (
 		attribute: CapabilityAttribute,
 		name: string,
 ): Promise<string> => {
-	let value
 	const values = attribute.schema.properties.value.enum
 	if (values) {
 		const config: SelectFromListConfig<CapabilityValueItem> = {
@@ -222,13 +217,7 @@ export const chooseValue = async (
 			return { value }
 		}))
 
-		value = await selectFromList(command, config, { listItems })
-	} else {
-		value = (await inquirer.prompt({
-			type: 'input',
-			name: 'value',
-			message: `Enter '${name}' attribute value:`,
-		})).value
+		return selectFromList(command, config, { listItems })
 	}
-	return value
+	return stringInput(`Enter '${name}' attribute value:`)
 }
