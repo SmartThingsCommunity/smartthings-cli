@@ -1,4 +1,4 @@
-import inquirer from 'inquirer'
+import { select } from '@inquirer/prompts'
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type DevicePreferenceCreate, type PreferenceType } from '@smartthings/core-sdk'
@@ -17,6 +17,7 @@ import {
 import { userInputProcessor } from '../../lib/command/input-processor.js'
 import { tableFieldDefinitions } from '../../lib/command/util/devicepreferences-util.js'
 import {
+	booleanInput,
 	optionalIntegerInput,
 	optionalNumberInput,
 	optionalStringInput,
@@ -64,19 +65,13 @@ const getInputFromUser = async (): Promise<DevicePreferenceCreate> => {
 	const title = await stringInput('Preference title:')
 	const description = await optionalStringInput('Preference description:')
 
-	const required = (await inquirer.prompt({
-		type: 'confirm',
-		name: 'value',
-		message: 'Is the preference required?',
-		default: false,
-	})).value as boolean
+	const required = await booleanInput('Is the preference required?', { default: false })
 
-	const preferenceType = (await inquirer.prompt({
-		type: 'list',
-		name: 'preferenceType',
+	const preferenceTypeChoices: PreferenceType[] = ['integer', 'number', 'boolean', 'string', 'enumeration']
+	const preferenceType = await select({
 		message: 'Choose a type for your preference.',
-		choices: ['integer', 'number', 'boolean', 'string', 'enumeration'],
-	})).preferenceType as PreferenceType
+		choices: preferenceTypeChoices,
+	}) as PreferenceType
 
 	const base = {
 		name, title, description, required,
@@ -115,14 +110,12 @@ const getInputFromUser = async (): Promise<DevicePreferenceCreate> => {
 	}
 
 	if (preferenceType === 'boolean') {
-		const defaultValue = (await inquirer.prompt({
-			type: 'list',
-			name: 'defaultValue',
+		const defaultValue = await select({
 			message: 'Choose a default value.',
 			choices: [{ name: 'none', value: undefined },
 				{ name: 'true', value: true },
 				{ name: 'false', value: false }],
-		})).defaultValue as boolean | undefined
+		})
 		return {
 			...base, preferenceType, definition: {
 				default: defaultValue ?? undefined,
@@ -136,13 +129,11 @@ const getInputFromUser = async (): Promise<DevicePreferenceCreate> => {
 			'Optional maximum length.',
 			{ validate: numberValidateFn({ min: minLength || 1 }) },
 		)
-		const stringType = (await inquirer.prompt({
-			type: 'list',
-			name: 'stringType',
+		const stringType = await select({
 			message: 'Choose a type of string.',
 			choices: ['text', 'password', 'paragraph'],
 			default: 'text',
-		})).stringType as 'text' | 'password' | 'paragraph'
+		}) as 'text' | 'password' | 'paragraph'
 		const defaultValue = await optionalStringInput('Optional default value.', {
 			validate: input => {
 				if (minLength !== undefined && input.length < minLength) {
@@ -179,15 +170,13 @@ const getInputFromUser = async (): Promise<DevicePreferenceCreate> => {
 			}
 		} while (name)
 
-		const defaultValue = (await inquirer.prompt({
-			type: 'list',
-			name: 'defaultValue',
+		const defaultValue = await select({
 			message: 'Choose a default option.',
 			choices: [
 				{ name: 'none', value: undefined },
 				...Object.entries(options).map(([name, value]) => ({ name: `${value} (${name})`, value: name }))],
 			default: undefined,
-		})).defaultValue as 'text' | 'password' | 'paragraph'
+		})
 
 		return {
 			...base, preferenceType, definition: {
