@@ -1,11 +1,9 @@
 import { promises as fs } from 'node:fs'
 import { type PeerCertificate } from 'node:tls'
 
-import inquirer from 'inquirer'
-
 import { type Sorting } from '../io-defs.js'
 import { type DriverInfo } from '../../live-logging.js'
-import { booleanInput } from '../../user-query.js'
+import { booleanInput, stringInput } from '../../user-query.js'
 import { fatalError } from '../../util.js'
 import { convertToId, stringTranslateToId } from '../command-util.js'
 import { selectFromList, type SelectFromListConfig } from '../select.js'
@@ -34,16 +32,13 @@ export const chooseHubDrivers = async (
 	): Promise<string> => {
 		const primaryKeyName = fieldInfo.primaryKeyName
 
-		const itemIdOrIndex: string = (await inquirer.prompt({
-			type: 'input',
-			name: 'itemIdOrIndex',
-			message: prompt ?? 'Enter id or index',
+		const itemIdOrIndex = await stringInput(prompt ?? 'Enter id or index', {
 			default: allDriversText,
 			validate: input =>
 				input === allDriversText || convertToId(input, primaryKeyName, list)
 					? true
 					: `Invalid id or index "${input}". Please enter an index or valid id.`,
-		})).itemIdOrIndex
+		})
 
 		const inputId = itemIdOrIndex === allDriversText
 			? itemIdOrIndex

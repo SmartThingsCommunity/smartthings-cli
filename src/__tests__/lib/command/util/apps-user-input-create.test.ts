@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import type inquirer from 'inquirer'
+import { select } from '@inquirer/prompts'
 import type { v4 as uuid } from 'uuid'
 
 import type {
@@ -31,11 +31,9 @@ import type {
 import { buildInputDefMock } from '../../../test-lib/input-type-mock.js'
 
 
-const promptMock = jest.fn<typeof inquirer.prompt>()
-jest.unstable_mockModule('inquirer', () => ({
-	default: {
-		prompt: promptMock,
-	},
+const selectMock = jest.fn<typeof select>()
+jest.unstable_mockModule('@inquirer/prompts', () => ({
+	select: selectMock,
 }))
 
 const uuidMock = jest.fn<typeof uuid>().mockReturnValue('generated-uuid' as unknown as Uint8Array<ArrayBufferLike>)
@@ -146,15 +144,12 @@ describe('getAppCreateRequestFromUser', () => {
 	it('queries user for app for oauth-in app', async () => {
 		const appRequest = { appName: 'App Name' } as AppCreateRequest
 
-		promptMock.mockResolvedValueOnce({ action: 'oauth-in' })
+		selectMock.mockResolvedValueOnce('oauth-in')
 		createFromUserInputMock.mockResolvedValueOnce(appRequest)
 
 		expect(await getAppCreateRequestFromUser(command)).toBe(appRequest)
 
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
-			type: 'list',
-			name: 'action',
-		}))
+		expect(selectMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ default: 'oauth-in' }))
 		expect(createFromUserInputMock).toHaveBeenCalledExactlyOnceWith(
 			command,
 			expect.objectContaining({ name: 'OAuth-In SmartApp Mock' }),
@@ -165,11 +160,11 @@ describe('getAppCreateRequestFromUser', () => {
 	})
 
 	it('allows cancel at top level', async () => {
-		promptMock.mockResolvedValueOnce({ action: 'cancel' })
+		selectMock.mockResolvedValueOnce('cancel')
 
 		await getAppCreateRequestFromUser(command)
 
-		promptMock.mockResolvedValueOnce({ action: 'oauth-in' })
+		selectMock.mockResolvedValueOnce('oauth-in')
 		expect(cancelCommandMock).toHaveBeenCalledExactlyOnceWith()
 
 		expect(createFromUserInputMock).not.toHaveBeenCalled()

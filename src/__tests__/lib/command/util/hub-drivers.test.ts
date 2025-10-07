@@ -3,11 +3,8 @@ import { jest } from '@jest/globals'
 import { promises as fs } from 'node:fs'
 import type { PeerCertificate } from 'node:tls'
 
-import type inquirer from 'inquirer'
-import type { Question } from 'inquirer'
-
 import type { DriverInfo } from '../../../../lib/live-logging.js'
-import type { booleanInput } from '../../../../lib/user-query.js'
+import type { stringInput, booleanInput } from '../../../../lib/user-query.js'
 import type { fatalError } from '../../../../lib/util.js'
 import { convertToId, stringTranslateToId } from '../../../../lib/command/command-util.js'
 import type { selectFromList } from '../../../../lib/command/select.js'
@@ -24,16 +21,11 @@ jest.unstable_mockModule('node:fs', () => ({
 	},
 }))
 
-const promptMock = jest.fn<typeof inquirer.prompt>()
-jest.unstable_mockModule('inquirer', () => ({
-	default: {
-		prompt: promptMock,
-	},
-}))
-
 const booleanInputMock = jest.fn<typeof booleanInput>()
+const stringInputMock = jest.fn<typeof stringInput>()
 jest.unstable_mockModule('../../../../lib/user-query.js', () => ({
 	booleanInput: booleanInputMock,
+	stringInput: stringInputMock,
 }))
 
 const fatalErrorMock = jest.fn<typeof fatalError>().mockReturnValue('never return' as never)
@@ -109,15 +101,14 @@ describe('chooseHubDrivers', () => {
 
 		const getIdFromUser = selectFromListMock.mock.calls[0][2].getIdFromUser
 		expect(getIdFromUser).toBeDefined()
-		promptMock.mockResolvedValueOnce({ itemIdOrIndex: 'prompt-answer' })
+		stringInputMock.mockResolvedValueOnce('prompt-answer')
 		convertToIdMock.mockReturnValueOnce('converted-id')
 
 		expect(await getIdFromUser?.({ primaryKeyName: 'driver_id' }, hubDriverList)).toBe('converted-id')
 
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
-			type: 'input',
-			message: 'Enter id or index',
-		}))
+		expect(stringInputMock).toHaveBeenCalledExactlyOnceWith(
+			'Enter id or index',
+			expect.objectContaining({ default: 'all' }))
 		expect(convertToIdMock).toHaveBeenCalledExactlyOnceWith('prompt-answer', 'driver_id', hubDriverList)
 	})
 
@@ -128,7 +119,7 @@ describe('chooseHubDrivers', () => {
 
 		const getIdFromUser = selectFromListMock.mock.calls[0][2].getIdFromUser
 		expect(getIdFromUser).toBeDefined()
-		promptMock.mockResolvedValueOnce({ itemIdOrIndex: 'all' })
+		stringInputMock.mockResolvedValueOnce('all')
 
 		expect(await getIdFromUser?.({ primaryKeyName: 'driver_id' }, hubDriverList)).toBe('all')
 
@@ -139,13 +130,13 @@ describe('chooseHubDrivers', () => {
 		expect(await chooseHubDrivers(command, hubDriverList)).toBe('chosen-id')
 
 		const getIdFromUser = selectFromListMock.mock.calls[0][2].getIdFromUser
-		promptMock.mockResolvedValueOnce({ itemIdOrIndex: 'valid input' })
+		stringInputMock.mockResolvedValueOnce('valid input')
 		convertToIdMock.mockReturnValueOnce('converted-id')
 		expect(await getIdFromUser?.({ primaryKeyName: 'driver_id' }, hubDriverList)).toBe('converted-id')
 		convertToIdMock.mockClear()
 
 		convertToIdMock.mockReturnValueOnce('converted-id')
-		const validate = (promptMock.mock.calls[0][0] as Question).validate
+		const validate = stringInputMock.mock.calls[0][1]?.validate
 		expect(validate).toBeDefined()
 		expect(validate?.('valid input')).toBe(true)
 		expect(convertToIdMock).toHaveBeenCalledExactlyOnceWith('valid input', 'driver_id', hubDriverList)
@@ -155,13 +146,13 @@ describe('chooseHubDrivers', () => {
 		expect(await chooseHubDrivers(command, hubDriverList)).toBe('chosen-id')
 
 		const getIdFromUser = selectFromListMock.mock.calls[0][2].getIdFromUser
-		promptMock.mockResolvedValueOnce({ itemIdOrIndex: 'invalid input' })
+		stringInputMock.mockResolvedValueOnce('invalid input')
 		convertToIdMock.mockReturnValueOnce('converted-id')
 		expect(await getIdFromUser?.({ primaryKeyName: 'driver_id' }, hubDriverList)).toBe('converted-id')
 		convertToIdMock.mockClear()
 
 		convertToIdMock.mockReturnValueOnce(undefined)
-		const validate = (promptMock.mock.calls[0][0] as Question).validate
+		const validate = stringInputMock.mock.calls[0][1]?.validate
 		expect(validate).toBeDefined()
 		expect(validate?.('invalid input'))
 			.toBe('Invalid id or index "invalid input". Please enter an index or valid id.')
@@ -172,7 +163,7 @@ describe('chooseHubDrivers', () => {
 		expect(await chooseHubDrivers(command, hubDriverList)).toBe('chosen-id')
 
 		const getIdFromUser = selectFromListMock.mock.calls[0][2].getIdFromUser
-		promptMock.mockResolvedValueOnce({ itemIdOrIndex: 'invalid input' })
+		stringInputMock.mockResolvedValueOnce('invalid input')
 		convertToIdMock.mockReturnValueOnce(false)
 		await expect(getIdFromUser?.({ primaryKeyName: 'driver_id' }, hubDriverList)).rejects.toThrow('invalid state')
 	})

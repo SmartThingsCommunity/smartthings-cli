@@ -1,7 +1,7 @@
-import inquirer from 'inquirer'
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type TableFieldDefinition } from '../../../../lib/table-generator.js'
+import { stringInput } from '../../../../lib/user-query.js'
 import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../../lib/command/api-command.js'
 import { edgeCommand } from '../../../../lib/command/edge-command.js'
 import {
@@ -12,6 +12,7 @@ import {
 import { userInputProcessor } from '../../../../lib/command/input-processor.js'
 import { chooseChannel } from '../../../../lib/command/util/edge/channels-choose.js'
 import { type Invitation, type InvitationCreate } from '../../../../lib/edge/endpoints/invites.js'
+import { urlValidate } from '../../../../lib/validate-util.js'
 
 
 export type CommandArgs =
@@ -48,33 +49,10 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 		const channelId = await chooseChannel(command, argv.channel,
 			{ useConfigDefault: true })
 
-		const name = (await inquirer.prompt({
-			type: 'input',
-			name: 'name',
-			message: 'Invitation name:',
-			validate: input => input ? true : 'name is required',
-		})).name as string
-
-		const description = (await inquirer.prompt({
-			type: 'input',
-			name: 'description',
-			message: 'Invitation description:',
-			validate: input => input ? true : 'description is required',
-		})).description as string
-
-		const owner = (await inquirer.prompt({
-			type: 'input',
-			name: 'owner',
-			message: 'Invitation owner:',
-			validate: input => input ? true : 'owner is required',
-		})).owner as string
-
-		const termsUrl = (await inquirer.prompt({
-			type: 'input',
-			name: 'termsUrl',
-			message: 'Invitation termsUrl:',
-			validate: input => input ? true : 'termsUrl is required',
-		})).termsUrl as string
+		const name = await stringInput('Invitation name:')
+		const description = await stringInput('Invitation description:')
+		const owner = await stringInput('Invitation owner:')
+		const termsUrl = await stringInput('Invitation termsUrl:', { validate: urlValidate })
 
 		const defaultInvitationProfileId = '61a79569-e8fd-4a4d-9b9c-a4a55ccdd15e'
 		const profileId = (command.profile.defaultInvitationProfileId as string)
