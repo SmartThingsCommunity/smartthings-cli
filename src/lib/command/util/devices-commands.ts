@@ -1,11 +1,10 @@
-import inquirer from 'inquirer'
-
 import { type Command, type Component, type CapabilityReference, type Device } from '@smartthings/core-sdk'
 
 import { cancelCommand } from '../../util.js'
 import { type APICommand } from '../api-command.js'
 import { isIndexArgument } from '../command-util.js'
 import { type SmartThingsCommand } from '../smartthings-command.js'
+import { optionalStringInput, stringInput } from '../../user-query.js'
 import { attributeTypeDisplayString } from './capabilities-util.js'
 
 
@@ -79,14 +78,9 @@ export const getComponentFromUser = async (
 		}
 		console.log(table.toString())
 
-		const input = (await inquirer.prompt({
-			type: 'input',
-			name: 'component',
-			message: 'Enter component index or id',
-			validate: (input: string) => {
-				return inputRegex.test(input) || 'Invalid command syntax'
-			},
-		})).component
+		const input = await stringInput('Enter component index or id', {
+			validate: (input: string) => inputRegex.test(input) || 'Invalid command syntax',
+		})
 
 		if (isIndexArgument(input)) {
 			cmd.component = device.components[Number.parseInt(input) - 1].id || ''
@@ -116,14 +110,9 @@ export const getCapabilityFromUser = async (
 		}
 		console.log(table.toString())
 
-		const input = (await inquirer.prompt({
-			type: 'input',
-			name: 'capability',
-			message: 'Enter capability index or id',
-			validate: (input: string) => {
-				return inputRegex.test(input) || 'Invalid command syntax'
-			},
-		})).capability
+		const input = await stringInput('Enter capability index or id', {
+			validate: (input: string) => inputRegex.test(input) || 'Invalid command syntax',
+		})
 
 		if (isIndexArgument(input)) {
 			cmd.capability = component.capabilities[Number.parseInt(input) - 1].id || ''
@@ -163,14 +152,9 @@ export const getCommandFromUser = async (
 		}
 		console.log(table.toString())
 
-		const input = (await inquirer.prompt({
-			type: 'input',
-			name: 'command',
-			message: 'Enter command',
-			validate: (input: string) => {
-				return inputRegex.test(input) || 'Invalid command syntax'
-			},
-		})).command
+		const input = await stringInput('Enter command', {
+			validate: (input: string) => inputRegex.test(input) || 'Invalid command syntax',
+		})
 
 		if (isIndexArgument(input)) {
 			cmd.command = commandNames[Number.parseInt(input) - 1]
@@ -185,13 +169,9 @@ export const getCommandFromUser = async (
 		const command = capability.commands[cmd.command]
 		if (command.arguments && command.arguments?.length > 0 && (!cmd.arguments || cmd.arguments.length === 0)) {
 			const args = command?.arguments?.map(it => it.optional ? `[${it.name}]` : it.name).join(', ') || ''
-			const input = (await inquirer.prompt({
-				type: 'input',
-				name: 'arguments',
-				message: `Enter command arguments (${args})`,
-			})).arguments
+			const input = await optionalStringInput(`Enter command arguments (${args})`)
 
-			if (input === '') {
+			if (!input) {
 				return cancelCommand()
 			}
 

@@ -1,5 +1,4 @@
-// TODO: rename to apps-user-input-create.ts to match apps-user-input-update.ts
-import inquirer from 'inquirer'
+import { select } from '@inquirer/prompts'
 import { v4 as uuid } from 'uuid'
 
 import {
@@ -67,17 +66,14 @@ const oauthAppCreateRequestInputDefinition = objectDef<AppCreateRequest>('OAuth-
 export const getAppCreateRequestFromUser = async (
 		command: SmartThingsCommand<SmartThingsCommandFlags & InputAndOutputItemFlags>,
 ): Promise<AppCreateRequest> => {
-	const action = (await inquirer.prompt({
-		type: 'list',
-		name: 'action',
-		message: 'What kind of app do you want to create? (Currently, only OAuth-In apps are' +
-			' supported.)',
+	const action = await select({
+		message: 'What kind of app do you want to create? (Currently, only OAuth-In apps are supported.)',
 		choices: [
 			{ name: 'OAuth-In App', value: 'oauth-in' },
 			{ name: 'Cancel', value: 'cancel' },
 		],
 		default: 'oauth-in',
-	})).action
+	})
 
 	if (action === 'oauth-in') {
 		return createFromUserInput(

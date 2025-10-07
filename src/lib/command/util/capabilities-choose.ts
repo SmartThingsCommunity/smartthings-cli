@@ -1,6 +1,5 @@
-import inquirer from 'inquirer'
-
 import { type WithLocales } from '../../api-helpers.js'
+import { stringInput } from '../../user-query.js'
 import { type APICommand } from '../api-command.js'
 import { type Sorting } from '../io-defs.js'
 import { selectFromList, type SelectFromListConfig, type SelectFromListFlags } from '../select.js'
@@ -19,16 +18,10 @@ export const getIdFromUser = async (
 		list: CapabilitySummaryWithNamespace[],
 		promptMessage?: string,
 ): Promise<CapabilityId> => {
-	const idOrIndex: string = (await inquirer.prompt({
-		type: 'input',
-		name: 'idOrIndex',
-		message: promptMessage ?? 'Enter id or index',
-		validate: input => {
-			return convertToId(input, list)
-				? true
-				: `Invalid id or index ${input}. Please enter an index or valid id.`
-		},
-	})).idOrIndex
+	const idOrIndex: string = await stringInput(promptMessage ?? 'Enter id or index', {
+		validate: input =>
+			convertToId(input, list) ? true : `Invalid id or index ${input}. Please enter an index or valid id.`,
+	})
 	const inputId = convertToId(idOrIndex, list)
 	if (inputId === false) {
 		throw Error(`unable to convert ${idOrIndex} to id`)

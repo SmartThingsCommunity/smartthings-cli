@@ -1,9 +1,8 @@
 import { jest } from '@jest/globals'
 
-import type inquirer from 'inquirer'
-
 import { CapabilitiesEndpoint, type SmartThingsClient } from '@smartthings/core-sdk'
 
+import { stringInput } from '../../../../lib/user-query.js'
 import type { APICommand } from '../../../../lib/command/api-command.js'
 import type { selectFromList, SelectFromListFlags } from '../../../../lib/command/select.js'
 import type {
@@ -16,11 +15,9 @@ import type {
 import type { Sorting } from '../../../../lib/command/io-defs.js'
 
 
-const promptMock = jest.fn<typeof inquirer.prompt>()
-jest.unstable_mockModule('inquirer', () => ({
-	default: {
-		prompt: promptMock,
-	},
+const stringInputMock = jest.fn<typeof stringInput>()
+jest.unstable_mockModule('../../../../lib/user-query.js', () => ({
+	stringInput: stringInputMock,
 }))
 
 const selectFromListMock = jest.fn<typeof selectFromList>()
@@ -56,74 +53,75 @@ describe('getIdFromUser', () => {
 	const fieldInfo = {} as Sorting<CapabilitySummaryWithNamespace>
 
 	it('returns selected id with version', async () => {
-		promptMock.mockResolvedValueOnce({ idOrIndex: 'chosen-id' })
+		stringInputMock.mockResolvedValueOnce('chosen-id')
 		convertToIdMock.mockReturnValueOnce('converted-chosen-id')
 
 		expect(await getIdFromUser(fieldInfo, capabilities))
 			.toStrictEqual({ id: 'converted-chosen-id', version: 1 })
 
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith(
-			expect.objectContaining({ type: 'input', message: 'Enter id or index' }),
+		expect(stringInputMock).toHaveBeenCalledExactlyOnceWith(
+			'Enter id or index',
+			expect.objectContaining({ validate: expect.any(Function) }),
 		)
 		expect(convertToIdMock).toHaveBeenCalledExactlyOnceWith('chosen-id', capabilities)
 	})
 
 	it('passes prompt message to inquirer', async () => {
-		promptMock.mockResolvedValueOnce({ idOrIndex: 'chosen-id' })
+		stringInputMock.mockResolvedValueOnce('chosen-id')
 		convertToIdMock.mockReturnValueOnce('converted-chosen-id')
 
 		expect(await getIdFromUser(fieldInfo, capabilities, 'user prompt'))
 			.toStrictEqual({ id: 'converted-chosen-id', version: 1 })
 
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith(
-			expect.objectContaining({ type: 'input', message: 'user prompt' }),
+		expect(stringInputMock).toHaveBeenCalledExactlyOnceWith(
+			'user prompt',
+			expect.objectContaining({ validate: expect.any(Function) }),
 		)
 		expect(convertToIdMock).toHaveBeenCalledExactlyOnceWith('chosen-id', capabilities)
 	})
 
 	it('throws error when convertToId fails', async () => {
-		promptMock.mockResolvedValueOnce({ idOrIndex: 'invalid' })
+		stringInputMock.mockResolvedValueOnce('invalid')
 		convertToIdMock.mockReturnValueOnce(false)
 
 		await expect(getIdFromUser(fieldInfo, capabilities))
 			.rejects.toThrow()
 
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith(
-			expect.objectContaining({ type: 'input', message: 'Enter id or index' }),
+		expect(stringInputMock).toHaveBeenCalledWith(
+			'Enter id or index',
+			expect.objectContaining({ validate: expect.any(Function) }),
 		)
 		expect(convertToIdMock).toHaveBeenCalledExactlyOnceWith('invalid', capabilities)
 	})
 
 	describe('validation function', () => {
 		it('returns true when convertToId returns truthy', async () => {
-			promptMock.mockResolvedValueOnce({ idOrIndex: 'chosen-id' })
+			stringInputMock.mockResolvedValueOnce('chosen-id')
 			convertToIdMock.mockReturnValueOnce('converted-chosen-id')
 
 			expect(await getIdFromUser(fieldInfo, capabilities, 'user prompt'))
 				.toStrictEqual({ id: 'converted-chosen-id', version: 1 })
 
-			const validateFunction = (promptMock.mock.calls[0][0] as
-				{ validate: (input: string) => true | string }).validate
+			const validateFunction = stringInputMock.mock.calls[0][1]?.validate
 
 			convertToIdMock.mockReset() // reset to clear calls made getting the function above
 			convertToIdMock.mockReturnValueOnce('truthy-value')
-			expect(validateFunction('user-input')).toBe(true)
+			expect(validateFunction?.('user-input')).toBe(true)
 			expect(convertToIdMock).toHaveBeenCalledExactlyOnceWith('user-input', capabilities)
 		})
 
 		it('returns error string when convertToId returns false', async () => {
-			promptMock.mockResolvedValueOnce({ idOrIndex: 'chosen-id' })
+			stringInputMock.mockResolvedValueOnce('chosen-id')
 			convertToIdMock.mockReturnValueOnce('converted-chosen-id')
 
 			expect(await getIdFromUser(fieldInfo, capabilities, 'user prompt'))
 				.toStrictEqual({ id: 'converted-chosen-id', version: 1 })
 
-			const validateFunction = (promptMock.mock.calls[0][0] as
-				{ validate: (input: string) => true | string }).validate
+			const validateFunction = stringInputMock.mock.calls[0][1]?.validate
 
 			convertToIdMock.mockReset() // reset to clear calls made getting the function above
 			convertToIdMock.mockReturnValueOnce(false)
-			expect(validateFunction('user-input'))
+			expect(validateFunction?.('user-input'))
 				.toBe('Invalid id or index user-input. Please enter an index or valid id.')
 			expect(convertToIdMock).toHaveBeenCalledExactlyOnceWith('user-input', capabilities)
 		})

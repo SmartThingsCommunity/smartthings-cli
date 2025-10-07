@@ -1,8 +1,9 @@
-import inquirer from 'inquirer'
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type Channel, type ChannelCreate } from '@smartthings/core-sdk'
 
+import { stringInput } from '../../../lib/user-query.js'
+import { urlValidate } from '../../../lib/validate-util.js'
 import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
 import {
 	inputAndOutputItem,
@@ -42,26 +43,9 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	const command = await apiCommand(argv)
 
 	const getInputFromUser = async (): Promise<ChannelCreate> => {
-		const name = (await inquirer.prompt({
-			type: 'input',
-			name: 'name',
-			message: 'Channel name:',
-			validate: input => input ? true : 'name is required',
-		})).name as string
-
-		const description = (await inquirer.prompt({
-			type: 'input',
-			name: 'description',
-			message: 'Channel description:',
-			validate: input => input ? true : 'description is required',
-		})).description as string
-
-		const termsOfServiceUrl = (await inquirer.prompt({
-			type: 'input',
-			name: 'termsOfServiceUrl',
-			message: 'Channel terms of service URL:',
-			validate: input => input ? true : 'termsOfServiceUrl is required',
-		})).termsOfServiceUrl as string
+		const name = await stringInput('Channel name:')
+		const description = await stringInput('Channel description:')
+		const termsOfServiceUrl = await stringInput('Channel terms of service URL:', { validate: urlValidate })
 
 		return { name, description, termsOfServiceUrl, type: 'DRIVER' }
 	}
