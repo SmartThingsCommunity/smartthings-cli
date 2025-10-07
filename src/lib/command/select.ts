@@ -1,4 +1,4 @@
-import inquirer from 'inquirer'
+import { select } from '@inquirer/prompts'
 
 import {
 	type IdRetrievalFunction,
@@ -171,16 +171,14 @@ export async function selectFromList<L extends object, ID = string>(
 
 	const neverAgainKey = `${options.defaultValue?.configKey ?? ''}::neverAskForSaveAgain`
 	if (options.defaultValue && !command.cliConfig.booleanConfigValue(neverAgainKey)) {
-		const answer = (await inquirer.prompt({
-			type: 'list',
-			name: 'answer',
+		const answer = await select({
 			message: 'Do you want to save this as the default?',
 			choices: [
 				{ name: 'Yes', value: 'yes' },
 				{ name: 'No', value: 'no' },
 				{ name: 'No, and do not ask again', value: 'never' },
 			],
-		})).answer as string
+		})
 
 		const resetInfo = 'You can reset these settings using the config:reset command.'
 		if (answer === 'yes') {

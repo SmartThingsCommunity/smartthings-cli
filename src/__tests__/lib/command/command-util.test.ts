@@ -1,17 +1,14 @@
 import { jest } from '@jest/globals'
 
-import inquirer from 'inquirer'
+import type { sort } from '../../../lib/command/output.js'
+import type { ListDataFunction, Sorting } from '../../../lib/command/io-defs.js'
+import { stringInput } from '../../../lib/user-query.js'
+import type { SimpleType } from '../../test-lib/simple-type.js'
 
-import { sort } from '../../../lib/command/output.js'
-import { ListDataFunction, Sorting } from '../../../lib/command/io-defs.js'
-import { SimpleType } from '../../test-lib/simple-type.js'
 
-
-const promptMock = jest.fn<typeof inquirer.prompt>()
-jest.unstable_mockModule('inquirer', () => ({
-	default: {
-		prompt: promptMock,
-	},
+const stringInputMock = jest.fn<typeof stringInput>()
+jest.unstable_mockModule('../../../lib/user-query.js', () => ({
+	stringInput: stringInputMock,
 }))
 
 const sortMock = jest.fn<typeof sort>()
@@ -162,55 +159,46 @@ describe('convertToId', () => {
 
 describe('stringGetIdFromUser', () => {
 	it('accepts id input from user', async () => {
-		promptMock.mockResolvedValue({ itemIdOrIndex: 'string-id-a' })
+		stringInputMock.mockResolvedValue('string-id-a')
 
 		const chosenId = await stringGetIdFromUser(config, list)
 
 		expect(chosenId).toBe('string-id-a')
 
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
-			type: 'input', name: 'itemIdOrIndex',
-			message: 'Enter id or index', validate: expect.anything(),
-		})
-		const validateFunction = (promptMock.mock.calls[0][0] as { validate: (input: string) => true | string }).validate
+		expect(stringInputMock).toHaveBeenCalledExactlyOnceWith('Enter id or index', { validate: expect.anything() })
+		const validateFunction = (stringInputMock.mock.calls[0][1] as { validate: (input: string) => true | string }).validate
 
 		expect(validateFunction('string-id-a')).toBe(true)
 	})
 
 	it('validation returns error when unable to convert', async () => {
-		promptMock.mockResolvedValue({ itemIdOrIndex: 'string-id-a' })
+		stringInputMock.mockResolvedValue('string-id-a')
 
 		const chosenId = await stringGetIdFromUser(config, list)
 
 		expect(chosenId).toBe('string-id-a')
 
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
-			type: 'input', name: 'itemIdOrIndex',
-			message: 'Enter id or index', validate: expect.anything(),
-		})
-		const validateFunction = (promptMock.mock.calls[0][0] as { validate: (input: string) => true | string }).validate
+		expect(stringInputMock).toHaveBeenCalledExactlyOnceWith('Enter id or index', { validate: expect.anything() })
+		const validateFunction = (stringInputMock.mock.calls[0][1] as { validate: (input: string) => true | string }).validate
 
 		expect(validateFunction('invalid-id')).toBe('Invalid id or index "invalid-id". Please enter an index or valid id.')
 	})
 
 	it('throws error when unable to convert entered value to a valid id', async () => {
-		promptMock.mockResolvedValue({ itemIdOrIndex: 'invalid-id' })
+		stringInputMock.mockResolvedValue('invalid-id')
 
 		await expect(stringGetIdFromUser(config, list)).rejects.toThrow('unable to convert invalid-id to id')
 	})
 
 	it('handles non-default prompt', async () => {
-		promptMock.mockResolvedValue({ itemIdOrIndex: 'string-id-a' })
+		stringInputMock.mockResolvedValue('string-id-a')
 
 		const chosenId = await stringGetIdFromUser(config, list, 'give me an id')
 
 		expect(chosenId).toBe('string-id-a')
 
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith({
-			type: 'input', name: 'itemIdOrIndex',
-			message: 'give me an id', validate: expect.anything(),
-		})
-		const validateFunction = (promptMock.mock.calls[0][0] as { validate: (input: string) => true | string }).validate
+		expect(stringInputMock).toHaveBeenCalledExactlyOnceWith('give me an id', { validate: expect.anything() })
+		const validateFunction = (stringInputMock.mock.calls[0][1] as { validate: (input: string) => true | string }).validate
 
 		expect(validateFunction('string-id-a')).toBe(true)
 	})

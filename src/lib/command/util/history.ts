@@ -1,4 +1,4 @@
-import inquirer from 'inquirer'
+import { select } from '@inquirer/prompts'
 
 import {
 	type DeviceActivity,
@@ -8,6 +8,7 @@ import {
 } from '@smartthings/core-sdk'
 
 import { type Table } from '../../table-generator.js'
+import { booleanInput } from '../../user-query.js'
 import { cancelCommand } from '../../util.js'
 import { type SmartThingsCommand } from '../smartthings-command.js'
 
@@ -65,12 +66,7 @@ export const writeDeviceEventsTable = async (
 		process.stdout.write(table.toString())
 
 		while (data.hasNext()) {
-			const more = (await inquirer.prompt({
-				type: 'confirm',
-				name: 'more',
-				message: 'Fetch more history records?',
-				default: true,
-			})).more as boolean
+			const more = await booleanInput('Fetch more history records?')
 
 			if (!more) {
 				break
@@ -100,9 +96,7 @@ export const getHistory = async (
 		const requestsToMake = Math.ceil(limit / maxItemsPerRequest)
 		if (requestsToMake > maxRequestsBeforeWarning) {
 			// prompt user if it's okay to continue
-			const answer = (await inquirer.prompt({
-				type: 'list',
-				name: 'answer',
+			const answer = await select({
 				message: `Querying ${limit} history items will result in ${requestsToMake} requests.\n` +
 					'Are you sure you want to continue?',
 				choices: [
@@ -113,7 +107,7 @@ export const getHistory = async (
 						value: 'reduce',
 					},
 				],
-			})).answer as string
+			})
 			if (answer === 'reduce') {
 				limit = maxRequestsBeforeWarning * maxItemsPerRequest
 			} else if (answer === 'cancel') {
