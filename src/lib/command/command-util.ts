@@ -1,5 +1,4 @@
-import inquirer from 'inquirer'
-
+import { stringInput } from '../user-query.js'
 import { ListDataFunction, Naming, Sorting } from './io-defs.js'
 import { sort } from './output.js'
 
@@ -81,16 +80,12 @@ export function convertToId<L>(itemIdOrIndex: string, primaryKeyName: Extract<ke
 export async function stringGetIdFromUser<L extends object>(fieldInfo: Sorting<L>, list: L[], prompt?: string): Promise<string> {
 	const primaryKeyName = fieldInfo.primaryKeyName
 
-	const itemIdOrIndex: string = (await inquirer.prompt({
-		type: 'input',
-		name: 'itemIdOrIndex',
-		message: prompt ?? 'Enter id or index',
-		validate: input => {
-			return convertToId(input, primaryKeyName, list)
+	const itemIdOrIndex: string = await stringInput(prompt ?? 'Enter id or index', {
+		validate: input =>
+			convertToId(input, primaryKeyName, list)
 				? true
-				: `Invalid id or index "${input}". Please enter an index or valid id.`
-		},
-	})).itemIdOrIndex
+				: `Invalid id or index "${input}". Please enter an index or valid id.`,
+	})
 	const inputId = convertToId(itemIdOrIndex, primaryKeyName, list)
 	if (inputId === false) {
 		throw Error(`unable to convert ${itemIdOrIndex} to id`)

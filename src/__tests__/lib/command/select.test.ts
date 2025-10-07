@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import inquirer from 'inquirer'
+import type { select } from '@inquirer/prompts'
 import log4js from 'log4js'
 
 import type {
@@ -25,12 +25,11 @@ import type {
 import type { SimpleType } from '../../test-lib/simple-type.js'
 
 
-const promptMock = jest.fn<typeof inquirer.prompt>()
-jest.unstable_mockModule('inquirer', () => ({
-	default: {
-		prompt: promptMock,
-	},
+const selectMock = jest.fn<typeof select>()
+jest.unstable_mockModule('@inquirer/prompts', () => ({
+	select: selectMock,
 }))
+
 
 const resetManagedConfigKeyMock = jest.fn<typeof resetManagedConfigKey>()
 const setConfigKeyMock = jest.fn<typeof setConfigKey>()
@@ -235,7 +234,7 @@ describe('selectFromList', () => {
 		expect(stringGetIdFromUserMock).not.toHaveBeenCalled()
 
 		expect(booleanConfigValueMock).not.toHaveBeenCalled()
-		expect(promptMock).not.toHaveBeenCalled()
+		expect(selectMock).not.toHaveBeenCalled()
 		expect(setConfigKeyMock).not.toHaveBeenCalled()
 		expect(getItemMock).not.toHaveBeenCalled()
 		expect(userMessageMock).not.toHaveBeenCalled()
@@ -251,7 +250,7 @@ describe('selectFromList', () => {
 		expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
 
 		expect(booleanConfigValueMock).not.toHaveBeenCalled()
-		expect(promptMock).not.toHaveBeenCalled()
+		expect(selectMock).not.toHaveBeenCalled()
 		expect(setConfigKeyMock).not.toHaveBeenCalled()
 		expect(getItemMock).not.toHaveBeenCalled()
 		expect(userMessageMock).not.toHaveBeenCalled()
@@ -275,7 +274,7 @@ describe('selectFromList', () => {
 		expect(stringGetIdFromUserMock).not.toHaveBeenCalled()
 
 		expect(booleanConfigValueMock).not.toHaveBeenCalled()
-		expect(promptMock).not.toHaveBeenCalled()
+		expect(selectMock).not.toHaveBeenCalled()
 		expect(setConfigKeyMock).not.toHaveBeenCalled()
 		expect(userMessageMock).toHaveBeenCalledExactlyOnceWith(item1)
 		expect(resetManagedConfigKeyMock).not.toHaveBeenCalled()
@@ -286,7 +285,7 @@ describe('selectFromList', () => {
 			defaultItem: 'default-item-id',
 		})
 		getItemMock.mockResolvedValueOnce(undefined as unknown as SimpleType)
-		promptMock.mockResolvedValue({ answer: 'No' })
+		selectMock.mockResolvedValue('no')
 
 		const options = { listItems: listItemsMock, defaultValue }
 		expect(await selectFromList(commandWithDefault, config, options)).toBe('chosen-id')
@@ -296,7 +295,7 @@ describe('selectFromList', () => {
 		expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
 
 		expect(booleanConfigValueMock).toHaveBeenCalledTimes(1)
-		expect(promptMock).toHaveBeenCalledTimes(1)
+		expect(selectMock).toHaveBeenCalledTimes(1)
 		expect(setConfigKeyMock).not.toHaveBeenCalled()
 		expect(getItemMock).toHaveBeenCalledExactlyOnceWith('default-item-id')
 		expect(userMessageMock).not.toHaveBeenCalled()
@@ -311,7 +310,7 @@ describe('selectFromList', () => {
 				defaultItem: 'default-item-id',
 			})
 			getItemMock.mockRejectedValueOnce({ response: { status: statusCode } })
-			promptMock.mockResolvedValue({ answer: 'No' })
+			selectMock.mockResolvedValue('no')
 
 			const options = { listItems: listItemsMock, defaultValue }
 			expect(await selectFromList(commandWithDefault, config, options)).toBe('chosen-id')
@@ -321,7 +320,7 @@ describe('selectFromList', () => {
 			expect(stringGetIdFromUserMock).toHaveBeenCalledTimes(1)
 
 			expect(booleanConfigValueMock).toHaveBeenCalledTimes(1)
-			expect(promptMock).toHaveBeenCalledTimes(1)
+			expect(selectMock).toHaveBeenCalledTimes(1)
 			expect(setConfigKeyMock).not.toHaveBeenCalled()
 			expect(getItemMock).toHaveBeenCalledExactlyOnceWith('default-item-id')
 			expect(userMessageMock).not.toHaveBeenCalled()
@@ -335,7 +334,7 @@ describe('selectFromList', () => {
 			defaultItem: 'default-item-id',
 		})
 		getItemMock.mockRejectedValueOnce(Error('unexpected error'))
-		promptMock.mockResolvedValue({ answer: 'No' })
+		selectMock.mockResolvedValue('no')
 
 		const options = { listItems: listItemsMock, defaultValue }
 		await expect(selectFromList(commandWithDefault, config, options))
@@ -346,7 +345,7 @@ describe('selectFromList', () => {
 		expect(stringGetIdFromUserMock).not.toHaveBeenCalled()
 
 		expect(booleanConfigValueMock).not.toHaveBeenCalled()
-		expect(promptMock).not.toHaveBeenCalled()
+		expect(selectMock).not.toHaveBeenCalled()
 		expect(setConfigKeyMock).not.toHaveBeenCalled()
 		expect(getItemMock).toHaveBeenCalledExactlyOnceWith('default-item-id')
 		expect(userMessageMock).not.toHaveBeenCalled()
@@ -355,7 +354,7 @@ describe('selectFromList', () => {
 
 	it('does not save default when user asked not to', async () => {
 		booleanConfigValueMock.mockReturnValueOnce(false)
-		promptMock.mockResolvedValue({ answer: 'No' })
+		selectMock.mockResolvedValue('no')
 
 		expect(await selectFromList(command, config,
 			{ listItems: listItemsMock, defaultValue })).toBe('chosen-id')
@@ -366,8 +365,8 @@ describe('selectFromList', () => {
 
 		expect(booleanConfigValueMock)
 			.toHaveBeenCalledExactlyOnceWith('defaultItem::neverAskForSaveAgain')
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith(
-			expect.objectContaining({ type: 'list', name: 'answer' }),
+		expect(selectMock).toHaveBeenCalledExactlyOnceWith(
+			expect.objectContaining({ message: 'Do you want to save this as the default?' }),
 		)
 		expect(setConfigKeyMock).not.toHaveBeenCalled()
 	})
@@ -384,13 +383,13 @@ describe('selectFromList', () => {
 
 		expect(booleanConfigValueMock)
 			.toHaveBeenCalledExactlyOnceWith('defaultItem::neverAskForSaveAgain')
-		expect(promptMock).not.toHaveBeenCalled()
+		expect(selectMock).not.toHaveBeenCalled()
 		expect(setConfigKeyMock).not.toHaveBeenCalled()
 	})
 
 	it('saves selected item as default', async () => {
 		booleanConfigValueMock.mockReturnValueOnce(false)
-		promptMock.mockResolvedValue({ answer: 'yes' })
+		selectMock.mockResolvedValue('yes')
 
 		expect(await selectFromList(command, config,
 			{ listItems: listItemsMock, defaultValue })).toBe('chosen-id')
@@ -401,8 +400,8 @@ describe('selectFromList', () => {
 
 		expect(booleanConfigValueMock)
 			.toHaveBeenCalledExactlyOnceWith('defaultItem::neverAskForSaveAgain')
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith(
-			expect.objectContaining({ type: 'list', name: 'answer' }),
+		expect(selectMock).toHaveBeenCalledExactlyOnceWith(
+			expect.objectContaining({ message: 'Do you want to save this as the default?' }),
 		)
 		expect(setConfigKeyMock)
 			.toHaveBeenCalledExactlyOnceWith(command.cliConfig, 'defaultItem', 'chosen-id')
@@ -412,7 +411,7 @@ describe('selectFromList', () => {
 
 	it('saves "never ask again" response"', async () => {
 		booleanConfigValueMock.mockReturnValueOnce(false)
-		promptMock.mockResolvedValue({ answer: 'never' })
+		selectMock.mockResolvedValue('never')
 
 		expect(await selectFromList(command, config,
 			{ listItems: listItemsMock, defaultValue })).toBe('chosen-id')
@@ -423,8 +422,8 @@ describe('selectFromList', () => {
 
 		expect(booleanConfigValueMock).toHaveBeenCalledTimes(1)
 		expect(booleanConfigValueMock).toHaveBeenCalledWith('defaultItem::neverAskForSaveAgain')
-		expect(promptMock).toHaveBeenCalledExactlyOnceWith(
-			expect.objectContaining({ type: 'list', name: 'answer' }),
+		expect(selectMock).toHaveBeenCalledExactlyOnceWith(
+			expect.objectContaining({ message: 'Do you want to save this as the default?' }),
 		)
 		expect(setConfigKeyMock).toHaveBeenCalledExactlyOnceWith(
 			command.cliConfig,
