@@ -8,12 +8,12 @@ import {
 	type AppResponse,
 } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../lib/help.js'
 import { type TableFieldDefinition } from '../lib/table-generator.js'
 import {
 	type APICommandFlags,
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 } from '../lib/command/api-command.js'
 import {
 	type OutputItemOrListConfig,
@@ -61,7 +61,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 apps --classification SERVICE', 'list SERVICE classification apps'],
 			['$0 apps --type API_ONLY', 'list API-only apps'],
 		])
-		.epilog(apiDocsURL('listApps', 'getApp'))
+		.epilog(buildEpilog({ command, apiDocs: ['listApps', 'getApp'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

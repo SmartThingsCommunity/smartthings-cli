@@ -6,6 +6,7 @@ import type { Channel, ChannelsEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/edge/channels.js'
 import type { WithOrganization } from '../../../lib/api-helpers.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type {
 	APIOrganizationCommand,
 	APIOrganizationCommandFlags,
@@ -18,11 +19,13 @@ import type {
 } from '../../../lib/command/common-flags.js'
 import type { outputItemOrList, outputItemOrListBuilder } from '../../../lib/command/listing-io.js'
 import { listChannels } from '../../../lib/command/util/edge/channels.js'
-import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
 
-const { apiDocsURLMock } = apiCommandMocks('../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
@@ -83,7 +86,7 @@ describe('builder', () => {
 		expect(optionMock).toHaveBeenCalledTimes(3)
 		expect(positionalMock).toHaveBeenCalledTimes(2)
 		expect(exampleMock).toHaveBeenCalledTimes(1)
-		expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+		expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 		expect(epilogMock).toHaveBeenCalledTimes(1)
 	})
 

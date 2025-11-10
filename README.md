@@ -196,6 +196,7 @@ smartthings edge:channels:create --help
 | devices:rename [id] [new-label] | rename a device |
 | devices:status [id-or-index] | get the current status of all of a device's component's attributes |
 | devices:update [id] | update a device's label and room |
+| edge | edge-specific commands |
 | edge:channels [id-or-index] | list all channels owned by you or retrieve a single channel |
 | edge:channels:assign [driver-id] [driver-version] | assign a driver to a channel |
 | edge:channels:create | create a channel |

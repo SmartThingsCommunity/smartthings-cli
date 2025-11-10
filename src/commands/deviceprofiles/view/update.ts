@@ -1,6 +1,6 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiDocsURL } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -47,32 +47,34 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'update the specified device profile and its device configuration as defined in test.json',
 			],
 		])
-		.epilog(
-			'Updates a device profile and device configuration and sets the vid of the profile ' +
-			'to the vid of the updated configuration. Unlike deviceprofiles:update this ' +
-			'command accepts a consolidated object that can include a device configuration ' +
-			'in a property named "view".\n\n' +
-			'This sample file adds the powerMeter capability to the device and makes it available in' +
-			'the device detail view but not the rule builder:\n\n' +
-			'components:\n' +
-			'  - id: main\n' +
-			'    capabilities:\n' +
-			'      - id: switch\n' +
-			'      - id: powerMeter\n' +
-			'view:\n' +
-			'  dashboard:\n' +
-			'    states:\n' +
-			'      - capability: switch\n' +
-			'    actions:\n' +
-			'      - capability: switch\n' +
-			'  detailView:\n' +
-			'    - capability: switch\n' +
-			'    - capability: powerMeter\n' +
-			'  automation:\n' +
-			'    conditions:\n' +
-			'      - capability: switch  \n\n' +
-			apiDocsURL('createDeviceConfiguration', 'updateDeviceProfile', 'generateDeviceConfig'),
-		)
+		.epilog(buildEpilog({
+			command,
+			formattedNotes:
+				'  Updates a device profile and device configuration and sets the vid of the profile ' +
+				'to the vid of the updated configuration. Unlike deviceprofiles:update this ' +
+				'command accepts a consolidated object that can include a device configuration ' +
+				'in a property named "view".\n\n' +
+				'  This sample file adds the powerMeter capability to the device and makes it available in' +
+				'the device detail view but not the rule builder:\n\n' +
+				'  components:\n' +
+				'    - id: main\n' +
+				'      capabilities:\n' +
+				'        - id: switch\n' +
+				'        - id: powerMeter\n' +
+				'  view:\n' +
+				'    dashboard:\n' +
+				'      states:\n' +
+				'        - capability: switch\n' +
+				'      actions:\n' +
+				'        - capability: switch\n' +
+				'    detailView:\n' +
+				'      - capability: switch\n' +
+				'      - capability: powerMeter\n' +
+				'    automation:\n' +
+				'      conditions:\n' +
+				'        - capability: switch',
+			apiDocs: ['createDeviceConfiguration', 'updateDeviceProfile', 'generateDeviceConfig'],
+		}))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)
