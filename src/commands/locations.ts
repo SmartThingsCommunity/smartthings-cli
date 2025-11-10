@@ -2,7 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type Location, type LocationItem } from '@smartthings/core-sdk'
 
-import { type APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../lib/command/api-command.js'
+import { type APICommandFlags, apiCommand, apiCommandBuilder } from '../lib/command/api-command.js'
 import {
 	type OutputItemOrListConfig,
 	type OutputItemOrListFlags,
@@ -10,6 +10,7 @@ import {
 	outputItemOrListBuilder,
 } from '../lib/command/listing-io.js'
 import { tableFieldDefinitions } from '../lib/command/util/locations-util.js'
+import { buildEpilog } from '../lib/help.js'
 
 
 export type CommandArgs = APICommandFlags & OutputItemOrListFlags & {
@@ -28,7 +29,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 locations 1', 'display details for the first location in the list retrieved by running "smartthings locations"'],
 			['$0 locations 5dfd6626-ab1d-42da-bb76-90def3153998', 'display details for a location by id'],
 		])
-		.epilog(apiDocsURL('listLocations', 'getLocation'))
+		.epilog(buildEpilog({ command, apiDocs: ['listLocations', 'getLocation'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

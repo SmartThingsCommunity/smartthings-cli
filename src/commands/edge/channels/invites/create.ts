@@ -13,6 +13,7 @@ import { userInputProcessor } from '../../../../lib/command/input-processor.js'
 import { chooseChannel } from '../../../../lib/command/util/edge/channels-choose.js'
 import { type Invitation, type InvitationCreate } from '../../../../lib/edge/endpoints/invites.js'
 import { urlValidate } from '../../../../lib/validate-util.js'
+import { buildEpilog } from '../../../../lib/help.js'
 
 
 export type CommandArgs =
@@ -41,6 +42,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'create an invite from prompted input for the specified channel',
 			],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = edgeCommand(await apiCommand(argv))

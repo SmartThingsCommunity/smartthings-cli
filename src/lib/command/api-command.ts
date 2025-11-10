@@ -12,15 +12,20 @@ import { newBearerTokenAuthenticator, newSmartThingsClient } from './util/st-cli
 
 export const userAgent = '@smartthings/cli'
 
+// TODO: BEGIN remove
+// In the second phase of this work, we will remove these helper functions in favor of those
+// in help.ts.
 const toURL = (nameOrURL: string): string => nameOrURL.startsWith('http')
 	? nameOrURL
 	: `https://developer.smartthings.com/docs/api/public/#operation/${nameOrURL}`
 
-export const apiDocsURL = (...names: string[]): string => 'For API information, see:\n\n  ' +
+export const apiDocsURL = (...names: string[]): string => 'For API information, see:\n  ' +
 	names.map(name => toURL(name)).join('\n  ')
+
 
 export const itemInputHelpText = (...namesOrURLs: string[]): string => 'More information can be found at:\n  ' +
 	namesOrURLs.map(nameOrURL => toURL(nameOrURL)).join('\n  ')
+// TODO: END REMOVE
 
 export type APICommandFlags = SmartThingsCommandFlags & {
 	token?: string

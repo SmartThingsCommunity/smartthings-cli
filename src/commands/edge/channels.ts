@@ -1,7 +1,9 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { Channel, SubscriberType } from '@smartthings/core-sdk'
+import { type Channel, type SubscriberType } from '@smartthings/core-sdk'
 
+import { type WithOrganization } from '../../lib/api-helpers.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -17,8 +19,6 @@ import {
 	type OutputItemOrListConfig,
 	type OutputItemOrListFlags,
 } from '../../lib/command/listing-io.js'
-import { apiDocsURL } from '../../lib/command/api-command.js'
-import { WithOrganization } from '../../lib/api-helpers.js'
 import { listTableFieldDefinitions, tableFieldDefinitions } from '../../lib/command/util/edge/channels-table.js'
 import { listChannels } from '../../lib/command/util/edge/channels.js'
 
@@ -79,13 +79,15 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display channels subscribed to by the specified hub',
 			],
 		])
-		.epilog(
-			'Use this command to list all drivers you own, even if they are not yet assigned to' +
-			' a channel.\n\n' +
-			'See also drivers:installed to list installed drivers and channels:drivers to list' +
-			' drivers that are part of a channel you own or have subscribed to.\n\n' +
-			apiDocsURL('listChannels', 'channelById'),
-		)
+		.epilog(buildEpilog({
+			command,
+			notes: [
+				'Use this command to list all drivers you own, even if they are not yet assigned to a channel.',
+				'See also drivers:installed to list installed drivers and channels:drivers to list' +
+					' drivers that are part of a channel you own or have subscribed to.',
+			],
+			apiDocs: ['listChannels', 'channelById'],
+		}))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)
