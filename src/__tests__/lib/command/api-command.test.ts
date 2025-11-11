@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals'
 
-import { osLocale } from 'os-locale'
+import type { osLocale } from 'os-locale'
 
-import {
+import type {
 	Authenticator,
 	Logger,
 	RESTClientConfig,
@@ -10,18 +10,18 @@ import {
 	WarningFromHeader,
 } from '@smartthings/core-sdk'
 
-import {
+import type {
 	SmartThingsCommand,
 	SmartThingsCommandFlags,
 	smartThingsCommand,
 	smartThingsCommandBuilder,
 } from '../../../lib/command/smartthings-command.js'
-import { newBearerTokenAuthenticator, newSmartThingsClient } from '../../../lib/command/util/st-client-wrapper.js'
-import { coreSDKLoggerFromLog4JSLogger } from '../../../lib/log-utils.js'
-import { defaultClientIdProvider, loginAuthenticator } from '../../../lib/login-authenticator.js'
-import { TableGenerator } from '../../../lib/table-generator.js'
+import type { newBearerTokenAuthenticator, newSmartThingsClient } from '../../../lib/command/util/st-client-wrapper.js'
+import type { coreSDKLoggerFromLog4JSLogger } from '../../../lib/log-utils.js'
+import { defaultClientIdProvider, type loginAuthenticator } from '../../../lib/login-authenticator.js'
+import type { TableGenerator } from '../../../lib/table-generator.js'
 import { buildArgvMock } from '../../test-lib/builder-mock.js'
-import { CLIConfig } from '../../../lib/cli-config.js'
+import type { CLIConfig } from '../../../lib/cli-config.js'
 
 
 const { errorMock, loggerMock } = await import('../../test-lib/logger-mock.js')
@@ -92,7 +92,6 @@ const {
 	apiCommand,
 	apiCommandBuilder,
 	apiDocsURL,
-	itemInputHelpText,
 	userAgent,
 } = await import('../../../lib/command/api-command.js')
 
@@ -109,21 +108,6 @@ describe('apiDocsURL', () => {
 			.toBe('For API information, see:\n' +
 				'  https://developer.smartthings.com/docs/api/public/#operation/getDevice\n' +
 				'  https://developer.smartthings.com/docs/api/public/#operation/getDevices')
-	})
-})
-
-describe('itemInputHelpText', () => {
-	it('works with external URLs', () => {
-		expect(itemInputHelpText('https://adafruit.com', 'https://digikey.com'))
-			.toBe('More information can be found at:\n' +
-				'  https://adafruit.com\n' +
-				'  https://digikey.com')
-	})
-
-	it('builds URLs like `apiDocsURL`', () => {
-		expect(itemInputHelpText('getDevice'))
-			.toBe('More information can be found at:\n' +
-				'  https://developer.smartthings.com/docs/api/public/#operation/getDevice')
 	})
 })
 

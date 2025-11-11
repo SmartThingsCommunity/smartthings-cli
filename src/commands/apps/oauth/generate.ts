@@ -2,19 +2,19 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import type { GenerateAppOAuthRequest, GenerateAppOAuthResponse } from '@smartthings/core-sdk'
 
-import { TableFieldDefinition } from '../../../lib/table-generator.js'
+import { itemInputHelpText } from '../../../lib/help.js'
+import { type TableFieldDefinition } from '../../../lib/table-generator.js'
 import {
 	apiCommand,
 	apiCommandBuilder,
-	APICommandFlags,
+	type APICommandFlags,
 	apiDocsURL,
-	itemInputHelpText,
 } from '../../../lib/command/api-command.js'
 import {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
-	InputAndOutputItemConfig,
-	InputAndOutputItemFlags,
+	type InputAndOutputItemConfig,
+	type InputAndOutputItemFlags,
 } from '../../../lib/command/input-and-output-item.js'
 import { inputProcessor } from '../../../lib/command/input-processor.js'
 import { chooseApp } from '../../../lib/command/util/apps-util.js'

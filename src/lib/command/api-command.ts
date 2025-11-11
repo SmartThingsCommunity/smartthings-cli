@@ -21,10 +21,6 @@ const toURL = (nameOrURL: string): string => nameOrURL.startsWith('http')
 
 export const apiDocsURL = (...names: string[]): string => 'For API information, see:\n  ' +
 	names.map(name => toURL(name)).join('\n  ')
-
-
-export const itemInputHelpText = (...namesOrURLs: string[]): string => 'More information can be found at:\n  ' +
-	namesOrURLs.map(nameOrURL => toURL(nameOrURL)).join('\n  ')
 // TODO: END REMOVE
 
 export type APICommandFlags = SmartThingsCommandFlags & {
