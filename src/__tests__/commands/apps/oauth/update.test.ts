@@ -11,6 +11,7 @@ import type {
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
+import type { itemInputHelpText } from '../../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type {
 	inputAndOutputItem,
@@ -25,11 +26,15 @@ import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildInputDefMock } from '../../../test-lib/input-type-mock.js'
 
 
+const itemInputHelpTextMock = jest.fn<typeof itemInputHelpText>()
+jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	itemInputHelpText: itemInputHelpTextMock,
+}))
+
 const {
 	apiCommandMock,
 	apiCommandBuilderMock,
 	apiDocsURLMock,
-	itemInputHelpTextMock,
 } = apiCommandMocks('../../../..')
 
 const inputAndOutputItemMock =

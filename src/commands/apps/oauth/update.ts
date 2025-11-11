@@ -2,12 +2,12 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { AppOAuthRequest } from '@smartthings/core-sdk'
 
+import { itemInputHelpText } from '../../../lib/help.js'
 import {
 	apiCommand,
 	apiCommandBuilder,
 	APICommandFlags,
 	apiDocsURL,
-	itemInputHelpText,
 } from '../../../lib/command/api-command.js'
 import {
 	inputAndOutputItem,
