@@ -2,11 +2,11 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type SceneSummary, type SceneListOptions } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../lib/help.js'
 import {
 	apiCommand,
 	apiCommandBuilder,
 	type APICommandFlags,
-	apiDocsURL,
 } from '../lib/command/api-command.js'
 import {
 	outputItemOrList,
@@ -52,7 +52,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'list all scenes at the specified location',
 			],
 		])
-		.epilog(apiDocsURL('listScenes'))
+		.epilog(buildEpilog({ command, apiDocs: ['listScenes'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

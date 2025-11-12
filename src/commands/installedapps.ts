@@ -3,10 +3,10 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type InstalledApp, type InstalledAppListOptions } from '@smartthings/core-sdk'
 
 import { withLocation, withLocations, type WithNamedLocation } from '../lib/api-helpers.js'
+import { buildEpilog } from '../lib/help.js'
 import {
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 	type APICommandFlags,
 } from '../lib/command/api-command.js'
 import {
@@ -62,7 +62,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display details for an installed app by id',
 			],
 		])
-		.epilog(apiDocsURL('listInstallations', 'getInstallation'))
+		.epilog(buildEpilog({ command, apiDocs: ['listInstallations', 'getInstallation'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

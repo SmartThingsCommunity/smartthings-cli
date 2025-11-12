@@ -3,7 +3,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type Rule } from '@smartthings/core-sdk'
 
 import { type WithNamedLocation } from '../lib/api-helpers.js'
-import { apiCommand, apiCommandBuilder, APICommandFlags, apiDocsURL } from '../lib/command/api-command.js'
+import { buildEpilog } from '../lib/help.js'
+import { apiCommand, apiCommandBuilder, APICommandFlags } from '../lib/command/api-command.js'
 import {
 	outputItemOrList,
 	outputItemOrListBuilder,
@@ -39,7 +40,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 rules 1', 'display details for the first rule in the list retrieved by running "smartthings rules"'],
 			['$0 rules 5dfd6626-ab1d-42da-bb76-90def3153998', 'display details for an rule by id'],
 		])
-		.epilog(apiDocsURL('listRules', 'getRule'))
+		.epilog(buildEpilog({ command, apiDocs: ['listRules', 'getRule'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

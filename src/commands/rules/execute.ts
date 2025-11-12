@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type RuleExecutionResponse } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
 import { formatAndWriteItem, formatAndWriteItemBuilder, FormatAndWriteItemFlags } from '../../lib/command/format.js'
 import { chooseRuleFn } from '../../lib/command/util/rules-choose.js'
 import { buildExecuteResponseTableOutput } from '../../lib/command/util/rules-table.js'
@@ -39,7 +40,7 @@ export const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'execute the rule with the specified id',
 			],
 		])
-		.epilog(apiDocsURL('executeRule'))
+		.epilog(buildEpilog({ command, apiDocs: ['executeRule'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

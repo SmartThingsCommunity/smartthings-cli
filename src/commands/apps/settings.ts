@@ -1,6 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import { outputItem, outputItemBuilder, OutputItemFlags } from '../../lib/command/output-item.js'
 import { buildTableOutput, chooseApp } from '../../lib/command/util/apps-util.js'
 
@@ -30,7 +31,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'get the settings of the app with the given id',
 			],
 		])
-		.epilog(apiDocsURL('getAppSettings'))
+		.epilog(buildEpilog({ command, apiDocs: ['getAppSettings'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

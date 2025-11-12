@@ -2,11 +2,11 @@ import type { ArgumentsCamelCase, Argv, CommandModule } from 'yargs'
 
 import { type AppCreateRequest, type AppCreationResponse } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
 import {
 	apiCommand,
 	apiCommandBuilder,
 	type APICommandFlags,
-	apiDocsURL,
 } from '../../lib/command/api-command.js'
 import { lambdaAuthBuilder, LambdaAuthFlags } from '../../lib/command/common-flags.js'
 import {
@@ -49,7 +49,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 					'(See "smartthings apps:authorize" for more information on authorization.)',
 			],
 		])
-		.epilog(apiDocsURL('createApp'))
+		.epilog(buildEpilog({ command, apiDocs: ['createApp'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

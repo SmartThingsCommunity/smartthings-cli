@@ -1,23 +1,24 @@
-import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs'
+import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { DevicePreference } from '@smartthings/core-sdk'
+import { type DevicePreference } from '@smartthings/core-sdk'
 
-import { WithOrganization, forAllOrganizations } from '../lib/api-helpers.js'
-import { APICommand, APICommandFlags, apiDocsURL } from '../lib/command/api-command.js'
+import { type WithOrganization, forAllOrganizations } from '../lib/api-helpers.js'
+import { buildEpilog } from '../lib/help.js'
+import { type TableFieldDefinition } from '../lib/table-generator.js'
+import { type APICommand, type APICommandFlags } from '../lib/command/api-command.js'
 import {
-	APIOrganizationCommandFlags,
+	type APIOrganizationCommandFlags,
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
 } from '../lib/command/api-organization-command.js'
-import { AllOrganizationFlags, allOrganizationsBuilder } from '../lib/command/common-flags.js'
+import { type AllOrganizationFlags, allOrganizationsBuilder } from '../lib/command/common-flags.js'
 import {
-	OutputItemOrListConfig,
-	OutputItemOrListFlags,
+	type OutputItemOrListConfig,
+	type OutputItemOrListFlags,
 	outputItemOrList,
 	outputItemOrListBuilder,
 } from '../lib/command/listing-io.js'
 import { tableFieldDefinitions } from '../lib/command/util/devicepreferences-util.js'
-import { TableFieldDefinition } from '../lib/table-generator.js'
 
 
 export const standardPreferences = async (command: APICommand<APICommandFlags>): Promise<DevicePreference[]> => {
@@ -72,7 +73,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 devicepreferences motionSensitivity', 'display details for a preference by id'],
 			['$0 devicepreferences --standard', 'list standard device preferences'],
 		])
-		.epilog(apiDocsURL('listPreferences', 'getPreferenceById'))
+		.epilog(buildEpilog({ command, apiDocs: ['listPreferences', 'getPreferenceById'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

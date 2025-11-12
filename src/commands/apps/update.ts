@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type AppUpdateRequest, type AppResponse } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import { lambdaAuthBuilder, type LambdaAuthFlags } from '../../lib/command/common-flags.js'
 import { type TableCommonOutputProducer } from '../../lib/command/format.js'
 import {
@@ -56,7 +57,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			],
 		])
 		.epilog('See apps:oauth:update and apps:oauth:generate for updating oauth-related data.\n\n' +
-			apiDocsURL('updateApp'))
+			buildEpilog({ command, apiDocs: ['updateApp'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

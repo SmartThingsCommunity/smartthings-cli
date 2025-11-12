@@ -2,29 +2,35 @@ import { jest } from '@jest/globals'
 
 import type { ArgumentsCamelCase, Argv } from 'yargs'
 
-import {
-	type AppCreateRequest,
-	type AppCreationResponse,
-	type AppResponse,
-	type AppsEndpoint,
-	type AppUpdateRequest,
+import type {
+	AppCreateRequest,
+	AppCreationResponse,
+	AppResponse,
+	AppsEndpoint,
+	AppUpdateRequest,
 } from '@smartthings/core-sdk'
 
+import type { buildEpilog } from '../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
 import type { lambdaAuthBuilder } from '../../../lib/command/common-flags.js'
-import {
+import type {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
 } from '../../../lib/command/input-and-output-item.js'
-import { InputProcessor, userInputProcessor } from '../../../lib/command/input-processor.js'
+import type { InputProcessor, userInputProcessor } from '../../../lib/command/input-processor.js'
 import { type authorizeApp, type chooseApp, tableFieldDefinitions } from '../../../lib/command/util/apps-util.js'
-import { getAppUpdateRequestFromUser } from '../../../lib/command/util/apps-user-input-update.js'
+import type { getAppUpdateRequestFromUser } from '../../../lib/command/util/apps-user-input-update.js'
 import type { CommandArgs } from '../../../commands/apps/create.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
 const lambdaAuthBuilderMock = jest.fn<typeof lambdaAuthBuilder>()
 jest.unstable_mockModule('../../../lib/command/common-flags.js', () => ({
@@ -97,7 +103,7 @@ test('builder', () => {
 	expect(exampleMock).toHaveBeenCalledTimes(1)
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

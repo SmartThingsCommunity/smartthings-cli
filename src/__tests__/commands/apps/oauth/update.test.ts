@@ -11,7 +11,7 @@ import type {
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
-import type { itemInputHelpText } from '../../../../lib/help.js'
+import type { itemInputHelpText, buildEpilog } from '../../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type {
 	inputAndOutputItem,
@@ -26,15 +26,16 @@ import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildInputDefMock } from '../../../test-lib/input-type-mock.js'
 
 
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
 const itemInputHelpTextMock = jest.fn<typeof itemInputHelpText>()
 jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
 	itemInputHelpText: itemInputHelpTextMock,
 }))
 
 const {
 	apiCommandMock,
 	apiCommandBuilderMock,
-	apiDocsURLMock,
 } = apiCommandMocks('../../../..')
 
 const inputAndOutputItemMock =
@@ -97,7 +98,7 @@ test('builder', () => {
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

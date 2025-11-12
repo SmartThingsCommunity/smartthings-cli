@@ -4,20 +4,26 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 
 import type { RulesEndpoint, RuleExecutionResponse, Rule } from '@smartthings/core-sdk'
 
+import type { CommandArgs } from '../../../commands/rules/execute.js'
+import type { WithLocation } from '../../../lib/api-helpers.js'
+import type { buildEpilog } from '../../../lib/help.js'
+import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
+import type { CustomCommonOutputProducer, formatAndWriteItem, formatAndWriteItemBuilder } from '../../../lib/command/format.js'
 import type { chooseRuleFn } from '../../../lib/command/util/rules-choose.js'
 import type { buildExecuteResponseTableOutput } from '../../../lib/command/util/rules-table.js'
 import type { getRuleWithLocation } from '../../../lib/command/util/rules-util.js'
-import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
-import { CustomCommonOutputProducer, formatAndWriteItem, formatAndWriteItemBuilder } from '../../../lib/command/format.js'
-import { CommandArgs } from '../../../commands/rules/execute.js'
-import { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
-import { WithLocation } from '../../../lib/api-helpers.js'
-import { ChooseFunction } from '../../../lib/command/util/util-util.js'
+import type { ChooseFunction } from '../../../lib/command/util/util-util.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
+import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 import { tableGeneratorMock } from '../../test-lib/table-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
 const formatAndWriteItemMock = jest.fn<typeof formatAndWriteItem<RuleExecutionResponse>>()
 const formatAndWriteItemBuilderMock = jest.fn<typeof formatAndWriteItemBuilder>()
@@ -66,7 +72,7 @@ test('builder', () => {
 	expect(formatAndWriteItemBuilderMock).toHaveBeenCalledExactlyOnceWith(apiCommandBuilderArgvMock)
 	expect(positionalMock).toHaveBeenCalledOnce()
 	expect(exampleMock).toHaveBeenCalledOnce()
-	expect(apiDocsURLMock).toHaveBeenCalledOnce()
+	expect(buildEpilogMock).toHaveBeenCalledOnce()
 	expect(epilogMock).toHaveBeenCalledOnce()
 })
 

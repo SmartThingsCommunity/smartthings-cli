@@ -5,15 +5,21 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import { Rule, RuleRequest, RulesEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/locations/create.js'
-import { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
-import { inputAndOutputItem, inputAndOutputItemBuilder } from '../../../lib/command/input-and-output-item.js'
+import type { buildEpilog } from '../../../lib/help.js'
+import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
+import type { inputAndOutputItem, inputAndOutputItemBuilder } from '../../../lib/command/input-and-output-item.js'
 import type { chooseLocation } from '../../../lib/command/util/locations-util.js'
 import { tableFieldDefinitions } from '../../../lib/command/util/rules-table.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
 const inputAndOutputItemMock = jest.fn<typeof inputAndOutputItem>()
 const inputAndOutputItemBuilderMock = jest.fn<typeof inputAndOutputItemBuilder>()
@@ -52,7 +58,7 @@ test('builder', () => {
 	expect(inputAndOutputItemBuilderMock).toHaveBeenCalledWith(apiCommandBuilderArgvMock)
 
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

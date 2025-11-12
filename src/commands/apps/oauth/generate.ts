@@ -2,13 +2,12 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import type { GenerateAppOAuthRequest, GenerateAppOAuthResponse } from '@smartthings/core-sdk'
 
-import { itemInputHelpText } from '../../../lib/help.js'
+import { buildEpilog, itemInputHelpText } from '../../../lib/help.js'
 import { type TableFieldDefinition } from '../../../lib/table-generator.js'
 import {
 	apiCommand,
 	apiCommandBuilder,
 	type APICommandFlags,
-	apiDocsURL,
 } from '../../../lib/command/api-command.js'
 import {
 	inputAndOutputItem,
@@ -44,7 +43,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'regenerate the OAuth clientId and clientSecret of the app with the given id',
 			],
 		])
-		.epilog(apiDocsURL(docNames))
+		.epilog(buildEpilog({ command, apiDocs: [docNames] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

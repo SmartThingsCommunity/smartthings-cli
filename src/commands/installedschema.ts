@@ -3,7 +3,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type InstalledSchemaApp } from '@smartthings/core-sdk'
 
 import { withLocation, type WithNamedLocation } from '../lib/api-helpers.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../lib/command/api-command.js'
+import { buildEpilog } from '../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../lib/command/api-command.js'
 import {
 	outputItemOrList,
 	outputItemOrListBuilder,
@@ -57,7 +58,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display details for an installed schema app by id',
 			],
 		])
-		.epilog(apiDocsURL('getIsaByLocationId', 'getDevicesByIsaId'))
+		.epilog(buildEpilog({ command, apiDocs: ['getIsaByLocationId', 'getDevicesByIsaId'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

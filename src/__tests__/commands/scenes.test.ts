@@ -8,6 +8,7 @@ import type {
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
+import type { buildEpilog } from '../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../lib/command/api-command.js'
 import type { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
 import type { BuildOutputFormatterFlags } from '../../lib/command/output-builder.js'
@@ -18,7 +19,12 @@ import { apiCommandMocks } from '../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../..')
 
 const outputItemOrListMock = jest.fn<typeof outputItemOrList<SceneSummary>>()
 const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
@@ -54,7 +60,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

@@ -4,6 +4,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 
 import type { Device, DevicesEndpoint, DeviceUpdate } from '@smartthings/core-sdk'
 
+import type { buildEpilog } from '../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
 import type { CustomCommonOutputProducer } from '../../../lib/command/format.js'
 import type { inputAndOutputItem, inputAndOutputItemBuilder } from '../../../lib/command/input-and-output-item.js'
@@ -15,7 +16,9 @@ import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js
 import { tableGeneratorMock } from '../../test-lib/table-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({ buildEpilog: buildEpilogMock }))
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
 const inputAndOutputItemMock = jest.fn<typeof inputAndOutputItem<DeviceUpdate, Device>>()
 const inputAndOutputItemBuilderMock = jest.fn<typeof inputAndOutputItemBuilder>()
@@ -61,7 +64,7 @@ test('builder', () => {
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

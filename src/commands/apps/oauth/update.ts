@@ -2,12 +2,11 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { AppOAuthRequest } from '@smartthings/core-sdk'
 
-import { itemInputHelpText } from '../../../lib/help.js'
+import { buildEpilog, itemInputHelpText } from '../../../lib/help.js'
 import {
 	apiCommand,
 	apiCommandBuilder,
 	APICommandFlags,
-	apiDocsURL,
 } from '../../../lib/command/api-command.js'
 import {
 	inputAndOutputItem,
@@ -49,7 +48,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'update OAuth settings for the app with the given id using the data in "oauth-settings.json"',
 			],
 		])
-		.epilog(apiDocsURL(docNames))
+		.epilog(buildEpilog({ command, apiDocs: [docNames] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

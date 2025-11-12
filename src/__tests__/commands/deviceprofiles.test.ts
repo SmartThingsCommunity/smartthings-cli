@@ -11,6 +11,7 @@ import type {
 
 import type { CommandArgs } from '../../commands/deviceprofiles.js'
 import type { WithOrganization, forAllOrganizations } from '../../lib/api-helpers.js'
+import type { buildEpilog } from '../../lib/help.js'
 import type {
 	APIOrganizationCommand,
 	APIOrganizationCommandFlags,
@@ -27,9 +28,7 @@ import type {
 } from '../../lib/command/format.js'
 import type { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
 import type { ValueTableFieldDefinition } from '../../lib/table-generator.js'
-import type { shortARNorURL, verboseApps } from '../../lib/command/util/apps-util.js'
 import type { buildTableOutput } from '../../lib/command/util/deviceprofiles-util.js'
-import { apiCommandMocks } from '../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 import { tableGeneratorMock } from '../test-lib/table-mock.js'
 
@@ -39,7 +38,10 @@ jest.unstable_mockModule('../../lib/api-helpers.js', () => ({
 	forAllOrganizations: forAllOrganizationsMock,
 }))
 
-const { apiDocsURLMock } = apiCommandMocks('../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
@@ -59,14 +61,6 @@ const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
 jest.unstable_mockModule('../../lib/command/listing-io.js', () => ({
 	outputItemOrList: outputItemOrListMock,
 	outputItemOrListBuilder: outputItemOrListBuilderMock,
-}))
-
-const shortARNorURLMock = jest.fn<typeof shortARNorURL>()
-const verboseAppsMock = jest.fn<typeof verboseApps>()
-jest.unstable_mockModule('../../lib/command/util/apps-util.js', () => ({
-	shortARNorURL: shortARNorURLMock,
-	verboseApps: verboseAppsMock,
-	tableFieldDefinitions: [],
 }))
 
 const buildTableOutputMock = jest.fn<typeof buildTableOutput>()
@@ -107,7 +101,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
