@@ -3,9 +3,9 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import {
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 	type APICommandFlags,
 } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	formatAndWriteItem,
 	formatAndWriteItemBuilder,
@@ -43,7 +43,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 devices:capability-status fa1eb54c-c571-405f-8817-ffb7cd2f5a9d main',
 				'display the status for the specified device and component'],
 		])
-		.epilog(apiDocsURL('getDeviceComponentStatus'))
+		.epilog(buildEpilog({ command, apiDocs: ['getDeviceComponentStatus'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

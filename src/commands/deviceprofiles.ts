@@ -3,13 +3,13 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type DeviceProfile } from '@smartthings/core-sdk'
 
 import { forAllOrganizations, WithOrganization } from '../lib/api-helpers.js'
+import { buildEpilog } from '../lib/help.js'
 import { buildTableOutput } from '../lib/command/util/deviceprofiles-util.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
 	type APIOrganizationCommandFlags,
 } from '../lib/command/api-organization-command.js'
-import { apiDocsURL } from '../lib/command/api-command.js'
 import { AllOrganizationFlags, allOrganizationsBuilder } from '../lib/command/common-flags.js'
 import {
 	outputItemOrList,
@@ -51,7 +51,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			],
 			['$0 deviceprofiles 8bd382bb-07e8-48d3-8b11-5f0b508b1729', 'display details for a device profile by id'],
 		])
-		.epilog(apiDocsURL('listDeviceProfiles', 'getDeviceProfile'))
+		.epilog(buildEpilog({ command, apiDocs: ['listDeviceProfiles', 'getDeviceProfile'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

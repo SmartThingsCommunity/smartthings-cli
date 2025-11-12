@@ -5,9 +5,9 @@ import { type AppSettingsRequest, type AppSettingsResponse } from '@smartthings/
 import {
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 	type APICommandFlags,
 } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
 import {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
@@ -37,7 +37,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'ask for the ID of an app to update and then update it using the data in "app-settings.json"',
 			],
 		])
-		.epilog(apiDocsURL('updateAppSettings'))
+		.epilog(buildEpilog({ command, apiDocs: ['updateAppSettings'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

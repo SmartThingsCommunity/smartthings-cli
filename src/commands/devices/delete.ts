@@ -4,8 +4,8 @@ import {
 	type APICommandFlags,
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import { chooseDevice } from '../../lib/command/util/devices-choose.js'
 
 
@@ -27,7 +27,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'delete the device with the specified id',
 			],
 		])
-		.epilog(apiDocsURL('deleteDevice'))
+		.epilog(buildEpilog({ command, apiDocs: ['deleteDevice'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

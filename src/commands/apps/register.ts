@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { AppType, type PagedApp } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import { chooseApp } from '../../lib/command/util/apps-util.js'
 
 
@@ -24,7 +25,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'send registration request to the app with the given id',
 			],
 		])
-		.epilog(apiDocsURL('register'))
+		.epilog(buildEpilog({ command, apiDocs: ['register'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

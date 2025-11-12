@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { InstalledSchemaApp, SchemaEndpoint } from '@smartthings/core-sdk'
 
 import type { withLocation, WithLocation } from '../../lib/api-helpers.js'
+import type { buildEpilog } from '../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../lib/command/api-command.js'
 import type { outputItemOrList, outputItemOrListBuilder, OutputItemOrListFlags } from '../../lib/command/listing-io.js'
 import type { SmartThingsCommandFlags } from '../../lib/command/smartthings-command.js'
@@ -20,7 +21,12 @@ jest.unstable_mockModule('../../lib/api-helpers.js', () => ({
 	withLocation: withLocationMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../..')
 
 const outputItemOrListMock = jest.fn<typeof outputItemOrList<InstalledSchemaApp & WithLocation>>()
 const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
@@ -63,7 +69,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(2)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

@@ -9,6 +9,7 @@ import type {
 	SmartThingsClient,
 } from '@smartthings/core-sdk'
 
+import type { buildEpilog } from '../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
 import type { lambdaAuthBuilder } from '../../../lib/command/common-flags.js'
 import type { CustomCommonOutputProducer } from '../../../lib/command/format.js'
@@ -29,7 +30,12 @@ import {
 } from '../../test-lib/table-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
 const lambdaAuthBuilderMock = jest.fn<typeof lambdaAuthBuilder>()
 jest.unstable_mockModule('../../../lib/command/common-flags.js', () => ({
@@ -94,7 +100,7 @@ test('builder', () => {
 
 	expect(exampleMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

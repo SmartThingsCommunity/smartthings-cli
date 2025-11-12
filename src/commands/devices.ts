@@ -9,8 +9,9 @@ import {
 } from '@smartthings/core-sdk'
 
 import { withLocationAndRoom, withLocationsAndRooms, type WithNamedRoom } from '../lib/api-helpers.js'
+import { buildEpilog } from '../lib/help.js'
 import { type TableFieldDefinition } from '../lib/table-generator.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../lib/command/api-command.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../lib/command/api-command.js'
 import {
 	outputItemOrList,
 	outputItemOrListBuilder,
@@ -112,7 +113,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 devices --verbose', 'include location and room names in the output'],
 			['$0 devices --type zigbee --type zwave', 'list Zigbee and Z-Wave devices'],
 		])
-		.epilog(apiDocsURL('getDevices', 'getDevice'))
+		.epilog(buildEpilog({ command, apiDocs: ['getDevices', 'getDevice'] }))
 
 // type that includes extra fields sometimes included when requested via command line flags
 export type OutputDevice = Device & WithNamedRoom & Pick<DeviceStatus, 'healthState'>

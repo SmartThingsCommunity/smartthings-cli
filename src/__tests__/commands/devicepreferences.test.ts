@@ -10,17 +10,16 @@ import type {
 } from '@smartthings/core-sdk'
 
 import type { WithOrganization, forAllOrganizations } from '../../lib/api-helpers.js'
+import type { buildEpilog } from '../../lib/help.js'
 import type {
 	APIOrganizationCommand,
 	APIOrganizationCommandFlags,
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
 } from '../../lib/command/api-organization-command.js'
-import { AllOrganizationFlags, allOrganizationsBuilder } from '../../lib/command/common-flags.js'
-import { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
-import { CommandArgs } from '../../commands/devicepreferences.js'
-import { shortARNorURL, verboseApps } from '../../lib/command/util/apps-util.js'
-import { apiCommandMocks } from '../test-lib/api-command-mock.js'
+import type { AllOrganizationFlags, allOrganizationsBuilder } from '../../lib/command/common-flags.js'
+import type { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
+import type { CommandArgs } from '../../commands/devicepreferences.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
 
@@ -29,7 +28,10 @@ jest.unstable_mockModule('../../lib/api-helpers.js', () => ({
 	forAllOrganizations: forAllOrganizationsMock,
 }))
 
-const { apiDocsURLMock } = apiCommandMocks('../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
@@ -48,14 +50,6 @@ const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
 jest.unstable_mockModule('../../lib/command/listing-io.js', () => ({
 	outputItemOrList: outputItemOrListMock,
 	outputItemOrListBuilder: outputItemOrListBuilderMock,
-}))
-
-const shortARNorURLMock = jest.fn<typeof shortARNorURL>()
-const verboseAppsMock = jest.fn<typeof verboseApps>()
-jest.unstable_mockModule('../../lib/command/util/apps-util.js', () => ({
-	shortARNorURL: shortARNorURLMock,
-	verboseApps: verboseAppsMock,
-	tableFieldDefinitions: [],
 }))
 
 
@@ -89,7 +83,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(2)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

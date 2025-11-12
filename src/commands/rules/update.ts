@@ -2,11 +2,11 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import type { Rule, RuleRequest } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
 import {
 	type APICommandFlags,
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 } from '../../lib/command/api-command.js'
 import {
 	type InputAndOutputItemFlags,
@@ -48,7 +48,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'update the rule with the given id using the data in "my-rule.json"',
 			],
 		])
-		.epilog(apiDocsURL('updateRule'))
+		.epilog(buildEpilog({ command, apiDocs: ['updateRule'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

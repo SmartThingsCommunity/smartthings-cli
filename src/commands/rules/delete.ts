@@ -1,10 +1,10 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
+import { buildEpilog } from '../../lib/help.js'
 import {
 	type APICommandFlags,
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 } from '../../lib/command/api-command.js'
 import { chooseRuleFn } from '../../lib/command/util/rules-choose.js'
 import { getRuleWithLocation } from '../../lib/command/util/rules-util.js'
@@ -30,7 +30,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'delete the rule with the specified id',
 			],
 		])
-		.epilog(apiDocsURL('deleteRule'))
+		.epilog(buildEpilog({ command, apiDocs: ['deleteRule'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

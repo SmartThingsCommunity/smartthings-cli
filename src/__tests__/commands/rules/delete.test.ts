@@ -6,6 +6,7 @@ import { Rule, RulesEndpoint, SmartThingsClient } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/rules/delete.js'
 import type { WithNamedLocation } from '../../../lib/api-helpers.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
 import type { chooseRuleFn } from '../../../lib/command/util/rules-choose.js'
 import type { getRuleWithLocation } from '../../../lib/command/util/rules-util.js'
@@ -14,7 +15,12 @@ import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
 const chooseRuleMock = jest.fn<ChooseFunction<Rule>>()
 const chooseRuleFnMock = jest.fn<typeof chooseRuleFn>().mockReturnValue(chooseRuleMock)
@@ -52,7 +58,7 @@ test('builder', () => {
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

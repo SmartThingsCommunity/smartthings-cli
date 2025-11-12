@@ -2,10 +2,12 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type CapabilityReference, type CapabilityStatus } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
+import { type TableGenerator } from '../../lib/table-generator.js'
+import { fatalError } from '../../lib/util.js'
 import {
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 	type APICommandFlags,
 } from '../../lib/command/api-command.js'
 import { stringTranslateToId } from '../../lib/command/command-util.js'
@@ -17,8 +19,6 @@ import {
 import { selectFromList, type SelectFromListConfig } from '../../lib/command/select.js'
 import { prettyPrintAttribute } from '../../lib/command/util/devices.js'
 import { chooseComponentFn, chooseDevice } from '../../lib/command/util/devices-choose.js'
-import { type TableGenerator } from '../../lib/table-generator.js'
-import { fatalError } from '../../lib/util.js'
 
 
 export type CommandArgs = APICommandFlags & FormatAndWriteItemFlags & {
@@ -45,7 +45,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 devices:capability-status fa1eb54c-c571-405f-8817-ffb7cd2f5a9d main switch',
 				'display the status for the specified device, component, and capability'],
 		])
-		.epilog(apiDocsURL('getDeviceStatusByCapability'))
+		.epilog(buildEpilog({ command, apiDocs: 'getDeviceStatusByCapability' }))
 
 export const buildTableOutput = (
 		tableGenerator: TableGenerator,

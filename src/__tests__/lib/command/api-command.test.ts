@@ -17,11 +17,11 @@ import type {
 	smartThingsCommandBuilder,
 } from '../../../lib/command/smartthings-command.js'
 import type { newBearerTokenAuthenticator, newSmartThingsClient } from '../../../lib/command/util/st-client-wrapper.js'
+import type { CLIConfig } from '../../../lib/cli-config.js'
 import type { coreSDKLoggerFromLog4JSLogger } from '../../../lib/log-utils.js'
 import { defaultClientIdProvider, type loginAuthenticator } from '../../../lib/login-authenticator.js'
 import type { TableGenerator } from '../../../lib/table-generator.js'
 import { buildArgvMock } from '../../test-lib/builder-mock.js'
-import type { CLIConfig } from '../../../lib/cli-config.js'
 
 
 const { errorMock, loggerMock } = await import('../../test-lib/logger-mock.js')
