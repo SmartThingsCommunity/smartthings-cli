@@ -4,13 +4,14 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 
 import type { Device, DevicePreferenceResponse, DevicesEndpoint } from '@smartthings/core-sdk'
 
+import type { CommandArgs } from '../../../commands/devices/preferences.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type { APICommand } from '../../../lib/command/api-command.js'
 import type {
 	CustomCommonOutputProducer,
 	formatAndWriteItem,
 	formatAndWriteItemBuilder,
 } from '../../../lib/command/format.js'
-import type { CommandArgs } from '../../../commands/devices/preferences.js'
 import type { BuildOutputFormatterFlags } from '../.././../lib/command/output-builder.js'
 import type { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
 import type { ChooseFunction } from '../../../lib/command/util/util-util.js'
@@ -24,6 +25,11 @@ import {
 	tableToStringMock,
 } from '../../test-lib/table-mock.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
@@ -49,6 +55,7 @@ test('builder', () => {
 		yargsMock: apiCommandBuilderArgvMock,
 		positionalMock,
 		exampleMock,
+		epilogMock,
 		argvMock,
 	} = buildArgvMock<SmartThingsCommandFlags, BuildOutputFormatterFlags>()
 
@@ -63,6 +70,8 @@ test('builder', () => {
 	expect(formatAndWriteItemBuilderMock).toHaveBeenCalledExactlyOnceWith(apiCommandBuilderArgvMock)
 	expect(positionalMock).toHaveBeenCalledOnce()
 	expect(exampleMock).toHaveBeenCalledOnce()
+	expect(buildEpilogMock).toHaveBeenCalledOnce()
+	expect(epilogMock).toHaveBeenCalledOnce()
 })
 
 const preferences: DevicePreferenceResponse = {

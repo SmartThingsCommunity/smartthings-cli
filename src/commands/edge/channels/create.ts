@@ -2,9 +2,10 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type Channel, type ChannelCreate } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../../lib/help.js'
 import { stringInput } from '../../../lib/user-query.js'
 import { urlValidate } from '../../../lib/validate-util.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
@@ -37,7 +38,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'create a channel as defined in channel.json',
 			],
 		])
-		.epilog(apiDocsURL('createChannel'))
+		.epilog(buildEpilog({ command, apiDocs: 'createChannel' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

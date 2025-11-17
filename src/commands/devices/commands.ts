@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { Command } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import { inputItem, inputItemBuilder, type InputItemFlags } from '../../lib/command/input-item.js'
 import { chooseDevice } from '../../lib/command/util/devices-choose.js'
 import { commandLineInputProcessor, userInputProcessor } from '../../lib/command/input-processor.js'
@@ -40,7 +41,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 					' specified device (note: quotes prevent shell parsing errors)',
 			],
 		])
-		.epilog(apiDocsURL('executeDeviceCommands'))
+		.epilog(buildEpilog({ command, apiDocs: ['executeDeviceCommands'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

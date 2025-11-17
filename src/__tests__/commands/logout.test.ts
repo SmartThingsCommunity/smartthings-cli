@@ -4,12 +4,18 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 
 import type { Authenticator } from '@smartthings/core-sdk'
 
-import type { APICommand, APICommandFlags } from '../../lib/command/api-command.js'
 import type { CommandArgs } from '../../commands/locations.js'
+import type { buildEpilog } from '../../lib/help.js'
 import type { fatalError } from '../../lib/util.js'
+import type { APICommand, APICommandFlags } from '../../lib/command/api-command.js'
 import { apiCommandMocks } from '../test-lib/api-command-mock.js'
 import { buildArgvMock } from '../test-lib/builder-mock.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../..')
 
@@ -28,6 +34,7 @@ test('builder', () => {
 	const {
 		yargsMock,
 		exampleMock,
+		epilogMock,
 		argvMock,
 	} = buildArgvMock<APICommandFlags, CommandArgs>()
 
@@ -39,6 +46,8 @@ test('builder', () => {
 	expect(apiCommandBuilderMock).toHaveBeenCalledExactlyOnceWith(yargsMock)
 
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
+	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
 describe('handler', () => {

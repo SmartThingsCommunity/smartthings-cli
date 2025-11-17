@@ -5,8 +5,10 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { DevicesEndpoint, HistoryEndpoint, DeviceActivity, Device, PaginatedList } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/devices/history.js'
+import type { CLIConfig } from '../../../lib/cli-config.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
-import { calculateOutputFormat, OutputFormatter, writeOutput } from '../../../lib/command/output.js'
+import type { calculateOutputFormat, OutputFormatter, writeOutput } from '../../../lib/command/output.js'
 import type {
 	buildOutputFormatter,
 	buildOutputFormatterBuilder,
@@ -22,8 +24,12 @@ import type {
 import type { historyBuilder } from '../../../lib/command/util/history-builder.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
-import { CLIConfig } from '../../../lib/cli-config.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const { apiCommandBuilderMock, apiCommandMock } = apiCommandMocks('../../..')
 
@@ -76,6 +82,7 @@ test('builder', () => {
 		yargsMock: buildOutputFormatterBuilderArgvMock,
 		positionalMock,
 		exampleMock,
+		epilogMock,
 		argvMock,
 	} = buildArgvMock<APICommandFlags & BuildOutputFormatterFlags, CommandArgs>()
 
@@ -95,6 +102,8 @@ test('builder', () => {
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
+	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
 describe('handler', () => {

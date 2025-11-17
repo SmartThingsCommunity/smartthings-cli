@@ -1,5 +1,6 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
+import { buildEpilog } from '../../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -21,7 +22,6 @@ import {
 	prunePresentation,
 	augmentPresentation,
 } from '../../../lib/command/util/deviceprofiles-view.js'
-import { apiDocsURL } from '../../../lib/command/api-command.js'
 
 
 export type CommandArgs =
@@ -40,27 +40,30 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'create a device profile and device configuration as defined in view.yaml',
 			],
 		])
-		.epilog('Creates a new device profile and device configuration. Unlike deviceprofiles:create, ' +
-			'this command accepts a consolidated object that can include a device configuration ' +
-			'in a property named "view".\n\n' +
-			'A simple example, written in YAML:\n\n' +
-			'name: Test Switch\n' +
-			'components:\n' +
-			'  - id: main\n' +
-			'    capabilities:\n' +
-			'      - id: switch\n' +
-			'view:\n' +
-			'  dashboard:\n' +
-			'    states:\n' +
-			'      - capability: switch\n' +
-			'    actions:\n' +
-			'      - capability: switch\n' +
-			'  detailView:\n' +
-			'    - capability: switch\n' +
-			'  automation:\n' +
-			'    conditions:\n' +
-			'      - capability: switch\n\n' +
-			apiDocsURL('createDeviceProfile', 'createDeviceConfiguration', 'updateDeviceProfile', 'generateDeviceConfig'))
+		.epilog(buildEpilog({
+			command,
+			formattedNotes: 'Creates a new device profile and device configuration. Unlike deviceprofiles:create, ' +
+				'this command accepts a consolidated object that can include a device configuration ' +
+				'in a property named "view".\n\n' +
+				'A simple example, written in YAML:\n\n' +
+				'name: Test Switch\n' +
+				'components:\n' +
+				'  - id: main\n' +
+				'    capabilities:\n' +
+				'      - id: switch\n' +
+				'view:\n' +
+				'  dashboard:\n' +
+				'    states:\n' +
+				'      - capability: switch\n' +
+				'    actions:\n' +
+				'      - capability: switch\n' +
+				'  detailView:\n' +
+				'    - capability: switch\n' +
+				'  automation:\n' +
+				'    conditions:\n' +
+				'      - capability: switch',
+			apiDocs: ['createDeviceProfile', 'createDeviceConfiguration', 'updateDeviceProfile', 'generateDeviceConfig'],
+		}))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

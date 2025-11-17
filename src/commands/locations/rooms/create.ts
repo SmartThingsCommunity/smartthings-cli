@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type Room, type RoomRequest } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
@@ -41,7 +42,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'create a room in the specified location with the data in "room-info.json"',
 			],
 		])
-		.epilog(apiDocsURL('createRoom'))
+		.epilog(buildEpilog({ command, apiDocs: 'createRoom' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

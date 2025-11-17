@@ -3,15 +3,21 @@ import { jest } from '@jest/globals'
 import type { ArgumentsCamelCase, Argv } from 'yargs'
 
 import type { CommandArgs } from '../../../../commands/edge/channels/invites.js'
+import type { buildEpilog } from '../../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
-import { outputItemOrList, outputItemOrListBuilder } from '../../../../lib/command/listing-io.js'
+import type { edgeCommand, EdgeCommand } from '../../../../lib/command/edge-command.js'
+import type { outputItemOrList, outputItemOrListBuilder } from '../../../../lib/command/listing-io.js'
 import { listTableFieldDefinitions, tableFieldDefinitions } from '../../../../lib/command/util/edge-invites-table.js'
+import type { buildListFunction } from '../../../../lib/command/util/edge-invites-util.js'
+import type { Invitation, InvitesEndpoint } from '../../../../lib/edge/endpoints/invites.js'
 import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock.js'
-import { Invitation, InvitesEndpoint } from '../../../../lib/edge/endpoints/invites.js'
-import type { edgeCommand, EdgeCommand } from '../../../../lib/command/edge-command.js'
-import { buildListFunction } from '../../../../lib/command/util/edge-invites-util.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
 
@@ -43,6 +49,7 @@ test('builder', async () => {
 		positionalMock,
 		optionMock,
 		exampleMock,
+		epilogMock,
 		argvMock,
 	} = buildArgvMock<APICommandFlags, CommandArgs>()
 
@@ -58,6 +65,8 @@ test('builder', async () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
+	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
 test('handler', async () => {

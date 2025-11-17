@@ -2,6 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type DeviceEvent, DeviceIntegrationType } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
 import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
 import {
 	inputAndOutputItem,
@@ -50,8 +51,11 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'create an event, specifying all details on the command line',
 			],
 		])
-		.epilog('The command can be run interactively in question & answer mode, with command line parameters,' +
-			' or with input from a file or standard in.')
+		.epilog(buildEpilog({
+			command,
+			notes: 'The command can be run interactively in question & answer mode, with command line parameters,' +
+				' or with input from a file or standard in.',
+		}))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

@@ -28,12 +28,16 @@ import {
 	type listDrivers,
 	listTableFieldDefinitions,
 } from '../../../lib/command/util/edge-drivers.js'
-import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 import { tableGeneratorMock } from '../../test-lib/table-mock.js'
 
 
-const { apiDocsURLMock } = apiCommandMocks('../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({ buildEpilog: buildEpilogMock }))
+
+
+// buildEpilog is mocked; api-command mocks not required for this test post-migration
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
@@ -102,7 +106,7 @@ test('builder', () => {
 
 	expect(positionalMock).toHaveBeenCalledTimes(2)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

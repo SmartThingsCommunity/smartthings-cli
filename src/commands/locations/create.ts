@@ -2,12 +2,12 @@ import { ArgumentsCamelCase, Argv, CommandModule } from 'yargs'
 
 import { LocationCreate } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
 import { tableFieldDefinitions } from '../../lib/command/util/locations-util.js'
 import {
 	type APICommandFlags,
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 } from '../../lib/command/api-command.js'
 import {
 	type InputAndOutputItemFlags,
@@ -30,7 +30,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'create a location defined in "my-location.yaml"',
 			],
 		])
-		.epilog(apiDocsURL('createLocation'))
+		.epilog(buildEpilog({ command, apiDocs: 'createLocation' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

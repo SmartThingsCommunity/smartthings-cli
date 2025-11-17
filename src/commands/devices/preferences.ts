@@ -2,6 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type DevicePreferenceResponse } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
 import { type APICommandFlags, apiCommand, apiCommandBuilder } from '../../lib/command/api-command.js'
 import { chooseDevice } from '../../lib/command/util/devices-choose.js'
 import { type FormatAndWriteItemFlags, formatAndWriteItem, formatAndWriteItemBuilder } from '../../lib/command/format.js'
@@ -24,6 +25,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 devices:preferences 2', 'display preferences for device listed second in output of devices command'],
 			['$0 devices:preferences 92f9920a-7629-40e3-8fdc-14924413897f', 'display preferences for device by id'],
 		])
+		.epilog(buildEpilog({ command }))
 
 export const buildTableOutput = (tableGenerator: TableGenerator, data: DevicePreferenceResponse): string => {
 	let output = ''

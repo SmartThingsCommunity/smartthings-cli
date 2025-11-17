@@ -23,7 +23,7 @@ import {
 	listDrivers,
 	listTableFieldDefinitions,
 } from '../../lib/command/util/edge-drivers.js'
-import { apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 
 
 export type CommandArgs = APIOrganizationCommandFlags & AllOrganizationFlags & OutputItemOrListFlags & {
@@ -54,13 +54,11 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'get information on a specific version of a driver',
 			],
 		])
-		.epilog(
-			'Use this command to list all drivers you own, even if they are not yet assigned to' +
-			' a channel.\n\n' +
-			'See also drivers:installed to list installed drivers and channels:drivers to list' +
-			' drivers that are part of a channel you own or have subscribed to.\n\n' +
-			apiDocsURL('listDrivers', 'getDriver', 'getDriverRevision'),
-		)
+		.epilog(buildEpilog({
+			command,
+			apiDocs: ['listDrivers', 'getDriver', 'getDriverRevision'],
+			formattedNotes: 'Use this command to list all drivers you own, even if they are not yet assigned to a channel.\n\nSee also drivers:installed to list installed drivers and channels:drivers to list drivers that are part of a channel you own or have subscribed to.',
+		}))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

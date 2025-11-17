@@ -1,10 +1,10 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
+import { buildEpilog } from '../../lib/help.js'
 import {
 	type APICommandFlags,
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 } from '../../lib/command/api-command.js'
 import { chooseApp } from '../../lib/command/util/apps-util.js'
 
@@ -27,7 +27,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'delete the app with the specified id',
 			],
 		])
-		.epilog(apiDocsURL('deleteApp'))
+		.epilog(buildEpilog({ command, apiDocs: 'deleteApp' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

@@ -5,12 +5,18 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import { type Device, DeviceIntegrationType, type DevicesEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/virtualdevices/delete.js'
-import { chooseDeviceFn } from '../../../lib/command/util/devices-choose.js'
+import type { buildEpilog } from '../../../lib/help.js'
+import type { APICommand } from '../../../lib/command/api-command.js'
+import type { chooseDeviceFn } from '../../../lib/command/util/devices-choose.js'
+import type { ChooseFunction } from '../../../lib/command/util/util-util.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock } from '../../test-lib/builder-mock.js'
-import { ChooseFunction } from '../../../lib/command/util/util-util.js'
-import { APICommand } from '../../../lib/command/api-command.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
@@ -31,6 +37,7 @@ test('builder', () => {
 		yargsMock,
 		positionalMock,
 		exampleMock,
+		epilogMock,
 		argvMock,
 	} = buildArgvMock<object, CommandArgs>()
 
@@ -44,6 +51,8 @@ test('builder', () => {
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
+	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
 test('handler', async () => {

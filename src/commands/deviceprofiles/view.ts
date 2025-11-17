@@ -1,6 +1,6 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -45,7 +45,7 @@ export const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display configuration info for a device profile by id',
 			],
 		])
-		.epilog(apiDocsURL('getDeviceProfile, getDeviceConfiguration'))
+		.epilog(buildEpilog({ command, apiDocs: ['getDeviceProfile', 'getDeviceConfiguration'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

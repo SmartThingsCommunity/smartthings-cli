@@ -3,7 +3,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type Capability } from '@smartthings/core-sdk'
 
 import { forAllOrganizations, type WithOrganization } from '../lib/api-helpers.js'
-import { apiDocsURL } from '../lib/command/api-command.js'
+import { buildEpilog } from '../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -80,7 +80,7 @@ export const builder = (yargs: Argv): Argv<CommandArgs> =>
 			],
 			['$0 capabilities --standard', 'list standard capabilities'],
 		])
-		.epilog(apiDocsURL('listNamespacedCapabilities', 'listCapabilities', 'getCapability'))
+		.epilog(buildEpilog({ command, apiDocs: ['listNamespacedCapabilities', 'listCapabilities', 'getCapability'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

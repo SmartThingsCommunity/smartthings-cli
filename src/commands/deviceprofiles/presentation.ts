@@ -1,6 +1,6 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import { fatalError } from '../../lib/util.js'
 import {
 	apiOrganizationCommand,
@@ -49,11 +49,14 @@ export const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display presentation information for the specified device profile and language',
 			],
 		])
-		.epilog('Specifying only the presentationId defaults to the language set for the' +
-			' computer\'s operating system. The language can be overridden by specifying an ISO' +
-			' language code. If "NONE" is specified for the language' +
-			'flag then no language header is specified in the API request\n\n' +
-			apiDocsURL('getDeviceProfile', 'getDevicePresentation'))
+		.epilog(buildEpilog({
+			command,
+			apiDocs: ['getDeviceProfile', 'getDevicePresentation'],
+			notes: 'Specifying only the presentationId defaults to the language set for the' +
+				' computer\'s operating system. The language can be overridden by specifying an ISO' +
+				' language code. If "NONE" is specified for the language' +
+				' flag then no language header is specified in the API request.',
+		}))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

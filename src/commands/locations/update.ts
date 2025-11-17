@@ -2,12 +2,12 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type Location, type LocationUpdate } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
 import { chooseLocation, tableFieldDefinitions } from '../../lib/command/util/locations-util.js'
 import {
 	type APICommandFlags,
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 } from '../../lib/command/api-command.js'
 import {
 	type InputAndOutputItemFlags,
@@ -37,7 +37,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'update the location with the given id using the data in "my-location.json"',
 			],
 		])
-		.epilog(apiDocsURL('updateLocation'))
+		.epilog(buildEpilog({ command, apiDocs: 'updateLocation' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

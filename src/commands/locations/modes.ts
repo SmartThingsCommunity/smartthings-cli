@@ -3,8 +3,9 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type Mode } from '@smartthings/core-sdk'
 
 import { type WithNamedLocation } from '../../lib/api-helpers.js'
+import { buildEpilog } from '../../lib/help.js'
 import { fatalError } from '../../lib/util.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
 import {
 	outputItemOrList,
 	outputItemOrListBuilder,
@@ -48,7 +49,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 locations:modes --verbose', 'include location info in the output'],
 			['$0 locations:modes --location=5dfd6626-ab1d-42da-bb76-90def3153998', 'list all modes in a particular location'],
 		])
-		.epilog(apiDocsURL('getModes', 'getMode'))
+		.epilog(buildEpilog({ command, apiDocs: ['getModes', 'getMode'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)
