@@ -2,6 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type DeviceProfileTranslations, type LocaleReference } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
 import { fatalError } from '../../lib/util.js'
 import {
 	apiOrganizationCommand,
@@ -62,6 +63,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display translations for the specified device profile id and locale',
 			],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

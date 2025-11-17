@@ -1,5 +1,6 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
+import { buildEpilog } from '../../../lib/help.js'
 import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import { edgeCommand } from '../../../lib/command/edge-command.js'
 import {
@@ -49,6 +50,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'list invites for the specified channel',
 			],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = edgeCommand(await apiCommand(argv))

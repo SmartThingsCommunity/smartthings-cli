@@ -1,7 +1,8 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { stringInput } from '../../lib/user-query.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import { outputItem, outputItemBuilder, type OutputItemFlags } from '../../lib/command/output-item.js'
 import { chooseDevice } from '../../lib/command/util/devices-choose.js'
 import { buildTableOutput } from '../../lib/command/util/devices-table.js'
@@ -30,7 +31,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'rename the specified device with the specified name',
 			],
 		])
-		.epilog(apiDocsURL('updateDevice'))
+		.epilog(buildEpilog({ command, apiDocs: ['updateDevice'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

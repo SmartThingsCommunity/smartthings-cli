@@ -1,6 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { type APICommandFlags, apiCommand, apiCommandBuilder, apiDocsURL } from '../../lib/command/api-command.js'
+import { type APICommandFlags, apiCommand, apiCommandBuilder } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import { type FormatAndWriteItemFlags, formatAndWriteItem, formatAndWriteItemBuilder } from '../../lib/command/format.js'
 import { chooseDevice } from '../../lib/command/util/devices-choose.js'
 import { buildStatusTableOutput } from '../../lib/command/util/devices-table.js'
@@ -25,7 +26,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 devices:status 3', 'display component attributes for third device listed in output of devices command'],
 			['$0 devices:status eee23fb0-38cd-4f07-be6d-dec9000b41fe', 'display component attributes for device by id'],
 		])
-		.epilog(apiDocsURL('getDeviceStatus'))
+		.epilog(buildEpilog({ command, apiDocs: ['getDeviceStatus'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

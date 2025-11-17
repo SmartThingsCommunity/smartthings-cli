@@ -2,6 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type Device, type VirtualDeviceCreateRequest } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
 import { fatalError } from '../../lib/util.js'
 import {
 	type APIOrganizationCommand,
@@ -92,10 +93,13 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'create a virtual device using command line parameters for all values',
 			],
 		])
-		.epilog('The command can be run interactively in question & answer mode, with command line parameters,' +
-			' or with input from a file or standard in. You can also run this command multiple times with the same' +
-			' input file but different command line arguments to create multiple devices with different names in' +
-			' different locations and rooms.')
+		.epilog(buildEpilog({
+			command,
+			notes: 'The command can be run interactively in question & answer mode, with command line parameters,' +
+				' or with input from a file or standard in. You can also run this command multiple times with the same' +
+				' input file but different command line arguments to create multiple devices with different names in' +
+				' different locations and rooms.',
+		}))
 
 const mergeCreateFlagValues = (flags: CommandArgs, data: VirtualDeviceCreateRequest): VirtualDeviceCreateRequest => {
 	if (flags.name) {

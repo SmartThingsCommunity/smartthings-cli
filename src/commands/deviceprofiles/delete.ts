@@ -1,6 +1,6 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -29,7 +29,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'delete the device profile with the specified id',
 			],
 		])
-		.epilog(apiDocsURL('deleteDeviceProfile'))
+		.epilog(buildEpilog({ command, apiDocs: 'deleteDeviceProfile' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

@@ -2,8 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type DeviceProfile } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
 import { fatalError } from '../../lib/util.js'
-import { apiDocsURL } from '../../lib/command/api-command.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -47,7 +47,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'update the specified device profile using the data in my-profile.json',
 			],
 		])
-		.epilog(apiDocsURL('updateDeviceProfile'))
+		.epilog(buildEpilog({ command, apiDocs: 'updateDeviceProfile' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

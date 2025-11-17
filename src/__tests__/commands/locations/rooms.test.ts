@@ -5,9 +5,10 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { Room, RoomsEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/locations/rooms.js'
+import type { WithNamedLocation } from '../../../lib/api-helpers.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import { fatalError } from '../../../lib/util.js'
 import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
-import type { WithNamedLocation } from '../../../lib/api-helpers.js'
 import type { outputItemOrList, outputItemOrListBuilder } from '../../../lib/command/listing-io.js'
 import { tableFieldDefinitions, tableFieldDefinitionsWithLocationName } from '../../../lib/command/util/rooms-table.js'
 import type { getRoomsWithLocation } from '../../../lib/command/util/rooms-util.js'
@@ -15,12 +16,17 @@ import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
 
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
 const fatalErrorMock = jest.fn<typeof fatalError>()
 jest.unstable_mockModule('../../../lib/util.js', () => ({
 	fatalError: fatalErrorMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
 const outputItemOrListMock = jest.fn<typeof outputItemOrList<Room & WithNamedLocation>>()
 const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
@@ -61,7 +67,7 @@ test('builder', async () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(2)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

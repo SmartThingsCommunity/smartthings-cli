@@ -1,6 +1,6 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -34,8 +34,11 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'regenerate the client id and secret for for the specified Schema App link',
 			],
 		])
-		.epilog('NOTE: The previous values will be invalidated, which may affect existing installations.\n\n' +
-			apiDocsURL('generateStOauthCredentials'))
+		.epilog(buildEpilog({
+			command,
+			apiDocs: ['generateStOauthCredentials'],
+			formattedNotes: 'The previous values will be invalidated, which may affect existing installations.',
+		}))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

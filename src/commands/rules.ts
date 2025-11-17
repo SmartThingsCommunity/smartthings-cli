@@ -4,7 +4,7 @@ import { type Rule } from '@smartthings/core-sdk'
 
 import { type WithNamedLocation } from '../lib/api-helpers.js'
 import { buildEpilog } from '../lib/help.js'
-import { apiCommand, apiCommandBuilder, APICommandFlags } from '../lib/command/api-command.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../lib/command/api-command.js'
 import {
 	outputItemOrList,
 	outputItemOrListBuilder,

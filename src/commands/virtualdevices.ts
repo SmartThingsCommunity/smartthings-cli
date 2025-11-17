@@ -7,7 +7,7 @@ import {
 } from '@smartthings/core-sdk'
 
 import { withLocationsAndRooms, type WithNamedRoom } from '../lib/api-helpers.js'
-import { buildTableOutput } from '../lib/command/util/devices-table.js'
+import { buildEpilog } from '../lib/help.js'
 import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../lib/command/api-command.js'
 import {
 	outputItemOrList,
@@ -15,6 +15,7 @@ import {
 	type OutputItemOrListConfig,
 	type OutputItemOrListFlags,
 } from '../lib/command/listing-io.js'
+import { buildTableOutput } from '../lib/command/util/devices-table.js'
 
 
 export type CommandArgs = APICommandFlags & OutputItemOrListFlags & {
@@ -71,6 +72,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'list all virtual devices in the specified location',
 			],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

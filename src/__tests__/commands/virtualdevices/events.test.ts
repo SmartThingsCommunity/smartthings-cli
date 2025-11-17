@@ -10,6 +10,7 @@ import {
 } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/virtualdevices/events.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
 import type { CustomCommonOutputProducer } from '../../../lib/command/format.js'
 import type { inputAndOutputItem, inputAndOutputItemBuilder } from '../../../lib/command/input-and-output-item.js'
@@ -22,6 +23,11 @@ import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 import { tableGeneratorMock } from '../../test-lib/table-mock.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
@@ -83,6 +89,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(4)
 	expect(optionMock).toHaveBeenCalledTimes(0)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

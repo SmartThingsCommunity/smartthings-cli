@@ -1,6 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiCommand, apiCommandBuilder, apiDocsURL, type APICommandFlags } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import { chooseMode } from '../../../lib/command/util/modes-choose.js'
 
 
@@ -33,7 +34,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'set the specified mode to be current for its location',
 			],
 		])
-		.epilog(apiDocsURL('changeMode'))
+		.epilog(buildEpilog({ command, apiDocs: 'changeMode' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

@@ -2,6 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type DeviceActivity } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
 import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
 import { calculateOutputFormat, writeOutput } from '../../lib/command/output.js'
 import {
@@ -40,6 +41,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 locations:history 2', 'display history for location listed second in output of locations command'],
 			['$0 locations:history 92f9920a-7629-40e3-8fdc-14924413897f', 'display history for location by id'],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

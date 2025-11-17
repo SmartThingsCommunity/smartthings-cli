@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type Channel, type ChannelUpdate } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
@@ -36,7 +37,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'update the specified channel using the data in channel.json',
 			],
 		])
-		.epilog(apiDocsURL('updateChannel'))
+		.epilog(buildEpilog({ command, apiDocs: 'updateChannel' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

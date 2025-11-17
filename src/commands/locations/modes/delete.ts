@@ -1,6 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiCommand, apiCommandBuilder, apiDocsURL, type APICommandFlags } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import { chooseMode } from '../../../lib/command/util/modes-choose.js'
 
 
@@ -30,7 +31,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'delete the mode with the specified id',
 			],
 		])
-		.epilog(apiDocsURL('deleteMode'))
+		.epilog(buildEpilog({ command, apiDocs: 'deleteMode' }))
 
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {

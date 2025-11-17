@@ -2,7 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type DeviceProfile } from '@smartthings/core-sdk'
 
-import { apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -40,10 +40,13 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 deviceprofiles:create --dry-run', 'build JSON for a device profile from prompted input'],
 			['$0 deviceprofiles:create -i my-profile.yaml', 'create a device profile defined in "my-profile.yaml'],
 		])
-		.epilog('Creates a new device profile. If a vid field is not present in the metadata ' +
-			'then a default device presentation will be created for this profile and the ' +
-			'vid set to reference it.\n\n' +
-			apiDocsURL('createDeviceProfile'))
+		.epilog(buildEpilog({
+			command,
+			apiDocs: 'createDeviceProfile',
+			notes: 'Creates a new device profile. If a vid field is not present in the metadata' +
+				' then a default device presentation will be created for this profile and the' +
+				' vid set to reference it.',
+		}))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

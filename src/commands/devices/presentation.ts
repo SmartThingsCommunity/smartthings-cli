@@ -3,9 +3,9 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import {
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 	type APICommandFlags,
 } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	formatAndWriteItem,
 	formatAndWriteItemBuilder,
@@ -40,7 +40,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display the presentation for the specified device',
 			],
 		])
-		.epilog(apiDocsURL('getDevicePresentation'))
+		.epilog(buildEpilog({ command, apiDocs: ['getDevicePresentation'] }))
 
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {

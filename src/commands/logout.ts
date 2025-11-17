@@ -1,7 +1,8 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../lib/command/api-command.js'
+import { buildEpilog } from '../lib/help.js'
 import { fatalError } from '../lib/util.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../lib/command/api-command.js'
 
 
 export type CommandArgs = APICommandFlags
@@ -16,6 +17,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0', 'log out of default profile'],
 			['$0 --profile hub2', 'log out of profile named "hub2"'],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

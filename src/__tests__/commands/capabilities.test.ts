@@ -6,6 +6,7 @@ import type { CapabilitiesEndpoint, Capability, OrganizationResponse, SmartThing
 
 import type { CommandArgs } from '../../commands/capabilities.js'
 import type { forAllOrganizations, WithOrganization } from '../../lib/api-helpers.js'
+import type { buildEpilog } from '../../lib/help.js'
 import type {
 	APIOrganizationCommand,
 	APIOrganizationCommandFlags,
@@ -38,6 +39,11 @@ import { tableGeneratorMock } from '../test-lib/table-mock.js'
 const forAllOrganizationsMock = jest.fn<typeof forAllOrganizations>()
 jest.unstable_mockModule('../../lib/api-helpers.js', () => ({
 	forAllOrganizations: forAllOrganizationsMock,
+}))
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
 }))
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
@@ -116,8 +122,9 @@ test('builder', () => {
 		.toHaveBeenCalledExactlyOnceWith(capabilityIdOrIndexBuilderArgvMock)
 
 	expect(optionMock).toHaveBeenCalledTimes(2)
-	expect(epilogMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
+	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
 describe('handler', () => {

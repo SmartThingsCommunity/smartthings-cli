@@ -5,6 +5,7 @@ import { ArgumentsCamelCase, Argv } from 'yargs'
 import type { Room, RoomRequest, RoomsEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../../commands/locations/rooms/create.js'
+import type { buildEpilog } from '../../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type {
 	inputAndOutputItem,
@@ -16,10 +17,14 @@ import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock
 import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 
 
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
 const {
 	apiCommandMock,
 	apiCommandBuilderMock,
-	apiDocsURLMock,
 } = apiCommandMocks('../../../..')
 
 const inputAndOutputItemMock =
@@ -62,7 +67,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(0)
 	expect(optionMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

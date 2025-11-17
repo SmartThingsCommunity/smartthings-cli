@@ -3,7 +3,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type Mode } from '@smartthings/core-sdk'
 
 import { withLocation, type WithNamedLocation } from '../../../lib/api-helpers.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import {
 	formatAndWriteItem,
 	formatAndWriteItemBuilder,
@@ -47,7 +48,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'get the current mode for a specified location',
 			],
 		])
-		.epilog(apiDocsURL('getCurrentMode'))
+		.epilog(buildEpilog({ command, apiDocs: 'getCurrentMode' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

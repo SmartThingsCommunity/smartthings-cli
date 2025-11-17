@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type PresentationDevicePresentation } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, apiDocsURL, type APICommandFlags } from '../lib/command/api-command.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../lib/command/api-command.js'
+import { buildEpilog } from '../lib/help.js'
 import { outputItem, outputItemBuilder, type OutputItemFlags } from '../lib/command/output-item.js'
 import { buildTableOutput } from '../lib/command/util/presentation-table.js'
 
@@ -45,9 +46,13 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display the specified presentation, which is associated with the DoodadsInc manufacturer id',
 			],
 		])
-		.epilog('The language can be overridden by specifying an ISO language code with the "--language" option. If' +
-			' "NONE" is specified for the language code then no language header is specified in the API request.\n\n' +
-			apiDocsURL('getDevicePresentation'))
+		.epilog(buildEpilog({
+			command,
+			apiDocs: ['getDevicePresentation'],
+			notes:
+				'The language can be overridden by specifying an ISO language code with the "--language" option. ' +
+				'If "NONE" is specified for the language code then no language header is specified in the API request.',
+		}))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

@@ -2,6 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { DeviceIntegrationType } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
 import { type APICommandFlags, apiCommand, apiCommandBuilder } from '../../lib/command/api-command.js'
 import { chooseDeviceFn } from '../../lib/command/util/devices-choose.js'
 
@@ -24,6 +25,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'delete the device with the specified id',
 			],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)
