@@ -6,8 +6,9 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type EdgeDriver } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../../lib/help.js'
 import { fatalError } from '../../../lib/util.js'
-import { apiCommand, apiCommandBuilder, apiDocsURL, type APICommandFlags } from '../../../lib/command/api-command.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import { outputItem, outputItemBuilder, type OutputItemConfig } from '../../../lib/command/output-item.js'
 import {
 	buildTestFileMatchers,
@@ -123,7 +124,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'upload the previously built driver found in driver.zip',
 			],
 		])
-		.epilog(apiDocsURL('uploadDriverPackage'))
+		.epilog(buildEpilog({ command, apiDocs: 'uploadDriverPackage' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

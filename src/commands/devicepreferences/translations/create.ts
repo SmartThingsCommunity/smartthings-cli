@@ -2,6 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type PreferenceLocalization } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -38,6 +39,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'create a translation as defined in preferenceTranslation.json',
 			],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

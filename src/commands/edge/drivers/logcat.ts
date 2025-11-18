@@ -11,6 +11,7 @@ import { fetch, Agent } from 'undici'
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { green, red } from '../../../lib/colors.js'
+import { buildEpilog } from '../../../lib/help.js'
 import {
 	type DriverInfo,
 	handleConnectionErrors,
@@ -87,6 +88,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'log for all drivers on hub with IP address 192.168.1.13',
 			],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

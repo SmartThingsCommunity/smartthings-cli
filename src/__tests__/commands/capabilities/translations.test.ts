@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { CapabilitiesEndpoint, DeviceProfileTranslations, LocaleReference } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/capabilities/translations.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type {
 	APIOrganizationCommand,
 	APIOrganizationCommandFlags,
@@ -20,12 +21,14 @@ import type {
 } from '../../../lib/command/listing-io.js'
 import type { chooseCapability } from '../../../lib/command/util/capabilities-choose.js'
 import type { buildTableOutput } from '../../../lib/command/util/capabilities-translations-table.js'
-import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 import { tableGeneratorMock } from '../../test-lib/table-mock.js'
 
 
-const { apiDocsURLMock } = apiCommandMocks('../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
@@ -87,7 +90,7 @@ test('builder', () => {
 
 	expect(optionMock).toHaveBeenCalledTimes(2)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
 })
 

@@ -15,6 +15,7 @@ import type {
 } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../../commands/edge/drivers/package.js'
+import type { buildEpilog } from '../../../../lib/help.js'
 import type { CLIConfig } from '../../../../lib/cli-config.js'
 import type { fatalError } from '../../../../lib/util.js'
 import type { APICommand } from '../../../../lib/command/api-command.js'
@@ -34,6 +35,11 @@ import type { chooseChannel } from '../../../../lib/command/util/edge/channels-c
 import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const fatalErrorMock = jest.fn<typeof fatalError>()
 jest.unstable_mockModule('../../../../lib/util.js', () => ({
@@ -67,7 +73,7 @@ jest.unstable_mockModule('jszip', () => ({
 	default: JSZipMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
 
 const outputItemMock = jest.fn<typeof outputItem>()
 const outputItemBuilderMock = jest.fn<typeof outputItemBuilder>()
@@ -137,7 +143,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(6)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { DriversEndpoint, EdgeDriver } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../../commands/edge/drivers/default.js'
+import type { buildEpilog } from '../../../../lib/help.js'
 import type { fatalError } from '../../../../lib/util.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type { CustomCommonOutputProducer } from '../../../../lib/command/format.js'
@@ -15,12 +16,17 @@ import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock
 import { tableGeneratorMock } from '../../../test-lib/table-mock.js'
 
 
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
 const fatalErrorMock = jest.fn<typeof fatalError>().mockReturnValue('never return' as never)
 jest.unstable_mockModule('../../../../lib/util.js', () => ({
 	fatalError: fatalErrorMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
 
 const outputItemOrListMock = jest.fn<typeof outputItemOrList<EdgeDriver>>()
 const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
@@ -62,7 +68,7 @@ test('builder', async () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(0)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

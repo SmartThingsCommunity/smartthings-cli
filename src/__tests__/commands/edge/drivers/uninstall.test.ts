@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type{ Device, HubdevicesEndpoint, InstalledDriver } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../../commands/edge/drivers/uninstall.js'
+import type { buildEpilog } from '../../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type { chooseDriverFromChannelFn } from '../../../../lib/command/util/drivers-choose.js'
 import type { DriverChannelDetailsWithName } from '../../../../lib/command/util/edge-drivers.js'
@@ -15,7 +16,12 @@ import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock } from '../../../test-lib/builder-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
 
 const chooseDriverFromChannelMock = jest.fn<ChooseFunction<DriverChannelDetailsWithName>>()
 	.mockResolvedValue('driver-id-chosen-from-channel')
@@ -62,7 +68,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

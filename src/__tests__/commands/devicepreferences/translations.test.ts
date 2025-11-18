@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import { DevicePreferencesEndpoint, LocaleReference, PreferenceLocalization } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/devicepreferences/translations.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type {
 	APIOrganizationCommand,
 	apiOrganizationCommand,
@@ -19,6 +20,11 @@ import type {
 import { chooseDevicePreference } from '../../../lib/command/util/devicepreferences-util.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
@@ -49,6 +55,7 @@ test('builder', () => {
 		yargsMock: apiOrganizationCommandBuilderArgvMock,
 		positionalMock,
 		exampleMock,
+		epilogMock,
 		argvMock,
 	} = buildArgvMock<APIOrganizationCommandFlags, OutputItemOrListFlags>()
 
@@ -63,6 +70,8 @@ test('builder', () => {
 	expect(outputItemOrListBuilderMock).toHaveBeenCalledExactlyOnceWith(apiOrganizationCommandBuilderArgvMock)
 	expect(positionalMock).toHaveBeenCalledTimes(2)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
+	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
 describe('handler', () => {

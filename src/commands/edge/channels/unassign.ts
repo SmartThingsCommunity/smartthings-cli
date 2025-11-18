@@ -1,6 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiCommand, apiCommandBuilder, apiDocsURL, type APICommandFlags } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import { chooseChannelFn } from '../../../lib/command/util/edge/channels-choose.js'
 import { chooseDriverFromChannelFn } from '../../../lib/command/util/drivers-choose.js'
 
@@ -36,7 +37,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'remove the specified driver from the specified channel',
 			],
 		])
-		.epilog(apiDocsURL('deleteDriverChannel'))
+		.epilog(buildEpilog({ command, apiDocs: 'deleteDriverChannel' }))
 
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {

@@ -6,7 +6,7 @@ import {
 } from '@smartthings/core-sdk'
 
 import { type WithLocales } from '../../lib/api-helpers.js'
-import { apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -73,7 +73,7 @@ export const builder = (yargs: Argv): Argv<CommandArgs> =>
 					' "smartthings capabilities"',
 			],
 		])
-		.epilog(apiDocsURL('listCapabilityLocalizations', 'getCapabilityLocalization'))
+		.epilog(buildEpilog({ command, apiDocs: ['listCapabilityLocalizations', 'getCapabilityLocalization'] }))
 
 export type CapabilitySummaryWithLocales = CapabilitySummaryWithNamespace & WithLocales
 

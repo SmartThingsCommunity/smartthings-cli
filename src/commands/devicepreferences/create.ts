@@ -3,7 +3,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type DevicePreferenceCreate, type PreferenceType } from '@smartthings/core-sdk'
 
-import { apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -55,7 +55,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'create a new device preference defined by the file dp.json and write the results to dp-saved.json',
 			],
 		])
-		.epilog(apiDocsURL('createPreference'))
+		.epilog(buildEpilog({ command, apiDocs: ['createPreference'] }))
 
 const getInputFromUser = async (): Promise<DevicePreferenceCreate> => {
 	const validateName: ValidateFunction<string> = input => !input || input.match(/^[a-z][a-zA-Z0-9]{2,23}$/)

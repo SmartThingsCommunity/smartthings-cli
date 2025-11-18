@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type EnrolledChannel } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import { selectFromList, type SelectFromListConfig } from '../../../lib/command/select.js'
 import { chooseDriverFromChannelFn } from '../../../lib/command/util/drivers-choose.js'
 import { chooseHub } from '../../../lib/command/util/hubs-choose.js'
@@ -38,7 +39,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'install a driver from a channel on an enrolled hub',
 			],
 		])
-		.epilog(apiDocsURL('installDrivers'))
+		.epilog(buildEpilog({ command, apiDocs: 'installDrivers' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

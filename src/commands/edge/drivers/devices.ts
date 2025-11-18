@@ -1,6 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import {
 	outputItemOrList,
 	outputItemOrListBuilder,
@@ -47,7 +48,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'list devices that use the specified driver',
 			],
 		])
-		.epilog(apiDocsURL('getDevices', 'listDrivers', 'getDriver', 'getDriverRevision'))
+		.epilog(buildEpilog({ command, apiDocs: ['getDevices', 'listDrivers', 'getDriver', 'getDriverRevision'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

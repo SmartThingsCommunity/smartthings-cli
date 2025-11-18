@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { SchemaEndpoint, SchemaCreateResponse } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/schema/regenerate.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type {
 	APIOrganizationCommand,
 	apiOrganizationCommand,
@@ -13,12 +14,13 @@ import type {
 } from '../../../lib/command/api-organization-command.js'
 import type { outputItem, outputItemBuilder } from '../../../lib/command/output-item.js'
 import type { chooseSchemaApp } from '../../../lib/command/util/schema-util.js'
-import type { buildEpilog } from '../../../lib/help.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
 
 const buildEpilogMock = jest.fn<typeof buildEpilog>()
-jest.unstable_mockModule('../../../lib/help.js', () => ({ buildEpilog: buildEpilogMock }))
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()

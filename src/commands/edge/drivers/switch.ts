@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type Device, DeviceIntegrationType } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import { chooseDeviceFn } from '../../../lib/command/util/devices-choose.js'
 import { chooseDriver } from '../../../lib/command/util/drivers-choose.js'
 import { edgeDeviceTypes, listAllAvailableDrivers, listMatchingDrivers } from '../../../lib/command/util/edge-drivers.js'
@@ -48,7 +49,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				"include all available drivers in prompt, even if they don't match the chosen device",
 			],
 		])
-		.epilog(apiDocsURL('updateHubDevice'))
+		.epilog(buildEpilog({ command, apiDocs: 'updateHubDevice' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

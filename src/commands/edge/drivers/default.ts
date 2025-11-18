@@ -2,8 +2,9 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type EdgeDriver } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../../lib/help.js'
 import { fatalError } from '../../../lib/util.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import {
 	outputItemOrList,
 	outputItemOrListBuilder,
@@ -39,7 +40,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display details for a default driver by id',
 			],
 		])
-		.epilog(apiDocsURL('getDefaultDrivers'))
+		.epilog(buildEpilog({ command, apiDocs: 'getDefaultDrivers' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

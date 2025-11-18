@@ -2,6 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import type { EdgeDriver } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../../lib/help.js'
 import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import {
 	outputItemOrList,
@@ -48,6 +49,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display metainfo about a driver by using its channel and id',
 			],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

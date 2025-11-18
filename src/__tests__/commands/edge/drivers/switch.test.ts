@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import { type Device, DeviceIntegrationType, type HubdevicesEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../../commands/edge/drivers/switch.js'
+import type { buildEpilog } from '../../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type { chooseDeviceFn } from '../../../../lib/command/util/devices-choose.js'
 import type { chooseDriver } from '../../../../lib/command/util/drivers-choose.js'
@@ -20,7 +21,12 @@ import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock } from '../../../test-lib/builder-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
 
 const chooseDeviceMock = jest.fn<ChooseFunction<Device>>().mockResolvedValue('chosen-device')
 const chooseDeviceFnMock = jest.fn<typeof chooseDeviceFn>().mockReturnValue(chooseDeviceMock)
@@ -72,7 +78,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(3)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

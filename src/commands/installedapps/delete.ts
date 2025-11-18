@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type InstalledAppListOptions } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
 import { chooseInstalledAppFn } from '../../lib/command/util/installedapps-util.js'
 
 
@@ -36,7 +37,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'delete the installed app with the specified id',
 			],
 		])
-		.epilog(apiDocsURL('deleteInstallation'))
+		.epilog(buildEpilog({ command, apiDocs: 'deleteInstallation' }))
 
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {

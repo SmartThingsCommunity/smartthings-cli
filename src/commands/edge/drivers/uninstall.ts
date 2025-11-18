@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type InstalledDriver } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import { chooseDriver } from '../../../lib/command/util/drivers-choose.js'
 import { chooseHubFn } from '../../../lib/command/util/hubs-choose.js'
 
@@ -29,7 +30,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'uninstall the specified driver',
 			],
 		])
-		.epilog(apiDocsURL('uninstallDriver'))
+		.epilog(buildEpilog({ command, apiDocs: 'uninstallDriver' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

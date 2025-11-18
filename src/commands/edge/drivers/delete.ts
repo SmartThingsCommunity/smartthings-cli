@@ -1,6 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import { chooseDriver } from '../../../lib/command/util/drivers-choose.js'
 
 
@@ -24,7 +25,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'delete the specified driver',
 			],
 		])
-		.epilog(apiDocsURL('deleteDriver'))
+		.epilog(buildEpilog({ command, apiDocs: 'deleteDriver' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

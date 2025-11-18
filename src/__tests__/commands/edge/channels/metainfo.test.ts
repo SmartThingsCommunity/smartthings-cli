@@ -6,6 +6,7 @@ import type { CommandArgs } from '../../../../commands/edge/channels/metainfo.js
 
 import { ChannelsEndpoint, DriverChannelDetails, EdgeDriver } from '@smartthings/core-sdk'
 
+import type { buildEpilog } from '../../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type { CustomCommonOutputProducer } from '../../../../lib/command/format.js'
 import type { outputItemOrList, outputItemOrListBuilder } from '../../../../lib/command/listing-io.js'
@@ -15,6 +16,11 @@ import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock.js'
 import { tableGeneratorMock } from '../../../test-lib/table-mock.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
 
@@ -47,6 +53,7 @@ test('builder', async () => {
 		positionalMock,
 		optionMock,
 		exampleMock,
+		epilogMock,
 		argvMock,
 	} = buildArgvMock<APICommandFlags, CommandArgs>()
 
@@ -62,6 +69,8 @@ test('builder', async () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
+	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
 describe('handler', () => {

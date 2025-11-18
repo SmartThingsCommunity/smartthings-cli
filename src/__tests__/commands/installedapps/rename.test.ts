@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { InstalledApp, InstalledAppsEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/installedapps/rename.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type { WithNamedLocation } from '../../../lib/api-helpers.js'
 import type { stringInput } from '../../../lib/user-query.js'
 import type { APICommand } from '../../../lib/command/api-command.js'
@@ -17,6 +18,11 @@ import type { ChooseFunction } from '../../../lib/command/util/util-util.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const stringInputMock = jest.fn<typeof stringInput>()
 jest.unstable_mockModule('../../../lib/user-query.js', () => ({
@@ -47,6 +53,7 @@ test('builder', () => {
 		yargsMock: apiCommandBuilderArgvMock,
 		positionalMock,
 		exampleMock,
+		epilogMock,
 		argvMock,
 	} = buildArgvMock<SmartThingsCommandFlags, BuildOutputFormatterFlags>()
 
@@ -61,6 +68,8 @@ test('builder', () => {
 	expect(formatAndWriteItemBuilderMock).toHaveBeenCalledExactlyOnceWith(apiCommandBuilderArgvMock)
 	expect(positionalMock).toHaveBeenCalledOnce()
 	expect(exampleMock).toHaveBeenCalledOnce()
+	expect(buildEpilogMock).toHaveBeenCalledOnce()
+	expect(epilogMock).toHaveBeenCalledOnce()
 })
 
 describe('handler', () => {
