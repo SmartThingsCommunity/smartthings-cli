@@ -1,6 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { addSchemaPermission } from '../../lib/aws-util.js'
+import { buildEpilog } from '../../lib/help.js'
 import { lambdaAuthBuilder, type LambdaAuthFlags } from '../../lib/command/common-flags.js'
 import {
 	smartThingsCommand,
@@ -28,11 +29,14 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'authorize calls to the specified app from SmartThings',
 			],
 		])
-		.epilog('Note that the example above is the same as running the following with the AWS CLI:\n\n' +
-			'$ aws lambda add-permission --region us-east-1 \\\n' +
-			'    --function-name arn:aws:lambda:us-east-1:1234567890:function:your-test-app \\\n' +
-			'    --statement smartthings --principal 148790070172 --action lambda:InvokeFunction\n\n' +
-			'It requires your machine to be configured to run the AWS CLI.')
+		.epilog(buildEpilog({
+			command,
+			formattedNotes: 'Note that the example above is the same as running the following with the AWS CLI:\n\n' +
+				'$ aws lambda add-permission --region us-east-1 \\\n' +
+				'    --function-name arn:aws:lambda:us-east-1:1234567890:function:your-test-app \\\n' +
+				'    --statement smartthings --principal 148790070172 --action lambda:InvokeFunction\n\n' +
+				'This command requires your machine to be configured to run the AWS CLI.',
+		}))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	await smartThingsCommand(argv)

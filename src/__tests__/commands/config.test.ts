@@ -4,8 +4,9 @@ import type { join } from 'node:path'
 
 import type { ArgumentsCamelCase, Argv } from 'yargs'
 
-import type { Profile, ProfilesByName } from '../../lib/cli-config.js'
 import type { CommandArgs } from '../../commands/config.js'
+import type { Profile, ProfilesByName } from '../../lib/cli-config.js'
+import type { buildEpilog } from '../../lib/help.js'
 import type { stringTranslateToId } from '../../lib/command/command-util.js'
 import type { TableCommonListOutputProducer, TableCommonOutputProducer } from '../../lib/command/format.js'
 import type { outputItemOrListBuilder } from '../../lib/command/listing-io.js'
@@ -30,6 +31,11 @@ import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 const joinMock = jest.fn<typeof join>().mockImplementation((...paths: string[]) => paths.join('|'))
 jest.unstable_mockModule('node:path', () => ({
 	join: joinMock,
+}))
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
 }))
 
 const stringTranslateToIdMock = jest.fn<typeof stringTranslateToId>()
@@ -84,6 +90,7 @@ test('builder', () => {
 		positionalMock,
 		optionMock,
 		exampleMock,
+		epilogMock,
 		argvMock,
 	} = buildArgvMock<SmartThingsCommandFlags, BuildOutputFormatterFlags>()
 
@@ -96,6 +103,9 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
+	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
 describe('handler', () => {

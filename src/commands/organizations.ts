@@ -2,6 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type OrganizationResponse } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../lib/help.js'
 import {
 	apiCommand,
 	apiCommandBuilder,
@@ -42,6 +43,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display details for an organization by name',
 			],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

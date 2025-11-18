@@ -2,10 +2,10 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type SchemaAppInvitationCreate } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../../lib/help.js'
 import {
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 	type APICommandFlags,
 } from '../../../lib/command/api-command.js'
 import {
@@ -49,7 +49,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'create an invitation as defined in invitation.json with the specified schema-app',
 			],
 		])
-		.epilog(apiDocsURL('createSchemaAppInvite'))
+		.epilog(buildEpilog({ command, apiDocs: 'createSchemaAppInvite' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

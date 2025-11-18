@@ -9,6 +9,7 @@ import type {
 } from '@smartthings/core-sdk'
 
 import type { APICommand, APICommandFlags } from '../../lib/command/api-command.js'
+import type { buildEpilog } from '../../lib/help.js'
 import type { outputItemOrList, outputItemOrListBuilder } from '../../lib/command/listing-io.js'
 import type { CommandArgs } from '../../commands/organizations.js'
 import type { BuildOutputFormatterFlags } from '../../lib/command/output-builder.js'
@@ -16,6 +17,11 @@ import type { SmartThingsCommandFlags } from '../../lib/command/smartthings-comm
 import { apiCommandMocks } from '../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../..')
 
@@ -36,6 +42,7 @@ test('builder', () => {
 		yargsMock: apiCommandBuilderArgvMock,
 		positionalMock,
 		exampleMock,
+		epilogMock,
 		argvMock,
 	} = buildArgvMock<SmartThingsCommandFlags, BuildOutputFormatterFlags>()
 
@@ -50,6 +57,8 @@ test('builder', () => {
 	expect(outputItemOrListBuilderMock).toHaveBeenCalledExactlyOnceWith(apiCommandBuilderArgvMock)
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
+	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
 describe('handler', () => {

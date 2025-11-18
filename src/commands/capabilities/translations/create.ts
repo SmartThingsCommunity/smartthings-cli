@@ -2,7 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type CapabilityLocalization } from '@smartthings/core-sdk'
 
-import { apiDocsURL } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -39,7 +39,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'prompt for a capability and add the translation from "en.yaml" to it',
 			],
 		])
-		.epilog(apiDocsURL('createCapabilityLocalization'))
+		.epilog(buildEpilog({ command, apiDocs: 'createCapabilityLocalization' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

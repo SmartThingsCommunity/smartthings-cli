@@ -1,6 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiCommand, apiCommandBuilder, apiDocsURL, type APICommandFlags } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import {
 	outputList,
 	outputListBuilder,
@@ -39,7 +40,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display drivers assigned to the specified channel',
 			],
 		])
-		.epilog(apiDocsURL('getChannelDrivers', 'getDriverChannel'))
+		.epilog(buildEpilog({ command, apiDocs: ['getChannelDrivers', 'getDriverChannel'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

@@ -1,7 +1,8 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { resetManagedConfigKey } from '../../../lib/cli-config.js'
-import { apiCommand, apiCommandBuilder, apiDocsURL, type APICommandFlags } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import { chooseChannel } from '../../../lib/command/util/edge/channels-choose.js'
 
 
@@ -25,7 +26,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'delete the channel with the specified id',
 			],
 		])
-		.epilog(apiDocsURL('deleteChannel'))
+		.epilog(buildEpilog({ command, apiDocs: 'deleteChannel' }))
 
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {

@@ -3,8 +3,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type SchemaCreateResponse } from '@smartthings/core-sdk'
 
 import { addSchemaPermission, schemaAWSPrincipal } from '../../lib/aws-util.js'
+import { buildEpilog } from '../../lib/help.js'
 import { fatalError } from '../../lib/util.js'
-import { apiDocsURL } from '../../lib/command/api-command.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -52,7 +52,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'link Schema App to SmartThings with details defined in "schema-app-details.yaml"',
 			],
 		])
-		.epilog(apiDocsURL('postApps'))
+		.epilog(buildEpilog({ command, apiDocs: 'postApps' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

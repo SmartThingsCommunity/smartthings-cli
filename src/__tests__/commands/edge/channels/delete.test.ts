@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import { ChannelsEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../../commands/edge/channels/delete.js'
+import type { buildEpilog } from '../../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type { CLIConfig, resetManagedConfigKey } from '../../../../lib/cli-config.js'
 import type { chooseChannel } from '../../../../lib/command/util/edge/channels-choose.js'
@@ -17,7 +18,12 @@ jest.unstable_mockModule('../../../../lib/cli-config.js', () => ({
 	resetManagedConfigKey: resetManagedConfigKeyMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
 
 const chooseChannelMock = jest.fn<typeof chooseChannel>().mockResolvedValue('chosen-channel-id')
 jest.unstable_mockModule('../../../../lib/command/util/edge/channels-choose.js', () => ({
@@ -50,7 +56,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(0)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

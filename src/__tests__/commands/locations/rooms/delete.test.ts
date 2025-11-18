@@ -5,13 +5,19 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { RoomsEndpoint } from '@smartthings/core-sdk'
 
 import { CommandArgs } from '../../../../commands/locations/rooms/delete.js'
+import type { buildEpilog } from '../../../../lib/help.js'
 import type { chooseRoom } from '../../../../lib/command/util/rooms-choose.js'
 import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock } from '../../../test-lib/builder-mock.js'
 import { APICommand } from '../../../../lib/command/api-command.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
 
 const chooseRoomMock = jest.fn<typeof chooseRoom>()
 jest.unstable_mockModule('../../../../lib/command/util/rooms-choose.js', () => ({
@@ -45,7 +51,7 @@ test('builder', () => {
 	expect(optionMock).toHaveBeenCalledTimes(1)
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

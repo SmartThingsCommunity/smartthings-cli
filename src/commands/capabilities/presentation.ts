@@ -1,6 +1,6 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -58,7 +58,7 @@ export const builder = (yargs: Argv): Argv<CommandArgs> =>
 					' by running "smartthings capabilities"',
 			],
 		])
-		.epilog(apiDocsURL('getCapabilityPresentation'))
+		.epilog(buildEpilog({ command, apiDocs: 'getCapabilityPresentation' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

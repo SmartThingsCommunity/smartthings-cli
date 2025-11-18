@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { PresentationDeviceConfig, PresentationEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/presentation/device-config.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'
 import type { OutputItemOrListFlags } from '../../../lib/command/listing-io.js'
 import type { outputItem, outputItemBuilder } from '../../../lib/command/output-item.js'
@@ -16,7 +17,12 @@ import { CustomCommonOutputProducer } from '../../../lib/command/format.js'
 import { tableGeneratorMock } from '../../test-lib/table-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
 
 const outputItemMock = jest.fn<typeof outputItem>()
 const outputItemBuilderMock = jest.fn<typeof outputItemBuilder>()
@@ -55,7 +61,7 @@ test('builder', () => {
 	expect(outputItemBuilderMock).toHaveBeenCalledExactlyOnceWith(apiCommandBuilderArgvMock)
 	expect(positionalMock).toHaveBeenCalledTimes(2)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

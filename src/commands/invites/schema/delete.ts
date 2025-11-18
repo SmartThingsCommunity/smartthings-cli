@@ -1,7 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
+import { buildEpilog } from '../../../lib/help.js'
 import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
-
 import { chooseSchemaInvitationFn } from '../../../lib/command/util/schema-invites-choose.js'
 
 
@@ -34,6 +34,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'delete the invitation with the specified id',
 			],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)
