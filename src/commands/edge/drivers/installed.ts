@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type InstalledDriver } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import {
 	outputItemOrList,
 	outputItemOrListBuilder,
@@ -48,7 +49,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'display details for an installed driver by id',
 			],
 		])
-		.epilog(apiDocsURL('listHubInstalledDrivers', 'getHubDeviceDriver'))
+		.epilog(buildEpilog({ command, apiDocs: ['listHubInstalledDrivers', 'getHubDeviceDriver'] }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

@@ -4,6 +4,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 
 import type { CommandArgs } from '../../../commands/config/reset.js'
 import type { resetManagedConfig } from '../../../lib/cli-config.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type { booleanInput } from '../../../lib/user-query.js'
 import type {
 	SmartThingsCommand,
@@ -13,6 +14,11 @@ import type {
 } from '../../../lib/command/smartthings-command.js'
 import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const resetManagedConfigMock = jest.fn<typeof resetManagedConfig>()
 jest.unstable_mockModule('../../../lib/cli-config.js', () => ({
@@ -53,6 +59,7 @@ test('builder', () => {
 	expect(smartThingsCommandBuilderMock).toHaveBeenCalledExactlyOnceWith(yargsMock)
 
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

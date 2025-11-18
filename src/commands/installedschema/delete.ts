@@ -3,7 +3,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import type { InstalledSchemaApp } from '@smartthings/core-sdk'
 
 import { type WithNamedLocation } from '../../lib/api-helpers.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
 import { selectFromList, SelectFromListConfig } from '../../lib/command/select.js'
 import { installedSchemaInstances } from '../../lib/command/util/installedschema-util.js'
 
@@ -38,7 +39,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'delete the installed Schema App with the specified id',
 			],
 		])
-		.epilog(apiDocsURL('deleteIsaByIsaId'))
+		.epilog(buildEpilog({ command, apiDocs: 'deleteIsaByIsaId' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

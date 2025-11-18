@@ -2,8 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type Device } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../../lib/help.js'
 import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
-
 import { chooseChannelFn } from '../../../lib/command/util/edge/channels-choose.js'
 import { listOwnedHubs } from '../../../lib/command/util/hubs.js'
 import { chooseHub } from '../../../lib/command/util/hubs-choose.js'
@@ -38,6 +38,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'unenroll the specified hub from the specified channel',
 			],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

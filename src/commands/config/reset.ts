@@ -7,6 +7,7 @@ import {
 	smartThingsCommandBuilder,
 	type SmartThingsCommandFlags,
 } from '../../lib/command/smartthings-command.js'
+import { buildEpilog } from '../../lib/help.js'
 
 
 export type CommandArgs =
@@ -22,8 +23,11 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 config:reset', 'reset cli-managed configuration for the default profile'],
 			['$0 config:reset --profile hub2', 'reset cli-managed configuration for the profile named "hub2"'],
 		])
-		.epilog('The CLI will occasionally ask you if you want it to remember the answer to a question, such as ' +
-			'"Which hub do you want to use?" You can use this command to clear those answers.')
+		.epilog(buildEpilog({
+			command,
+			notes: 'The CLI will occasionally ask you if you want it to remember the answer to a question, such as ' +
+				'"Which hub do you want to use?" You can use this command to clear those answers.',
+		}))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await smartThingsCommand(argv)

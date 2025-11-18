@@ -2,6 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type InstalledAppListOptions } from '@smartthings/core-sdk'
 
+import { buildEpilog } from '../../lib/help.js'
 import { stringInput } from '../../lib/user-query.js'
 import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
 import {
@@ -49,6 +50,7 @@ export const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'rename the installed app with the specified id to "New Name"',
 			],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)
