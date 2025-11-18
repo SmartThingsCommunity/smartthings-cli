@@ -4,6 +4,7 @@ import yaml from 'js-yaml'
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type Profile } from '../lib/cli-config.js'
+import { buildEpilog } from '../lib/help.js'
 import { type TableFieldDefinition } from '../lib/table-generator.js'
 import { stringTranslateToId } from '../lib/command/command-util.js'
 import { type OutputItemOrListFlags, outputItemOrListBuilder } from '../lib/command/listing-io.js'
@@ -41,6 +42,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 config', 'summarize profiles in config file'],
 			['$0 config my-org-1', 'provide details for profile named "my-org-1"'],
 		])
+		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await smartThingsCommand(argv)

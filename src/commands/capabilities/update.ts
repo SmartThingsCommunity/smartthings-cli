@@ -2,7 +2,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type Capability, type CapabilityUpdate } from '@smartthings/core-sdk'
 
-import { apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -39,7 +39,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'update the capability with the given id using the data in "my-capability.json"',
 			],
 		])
-		.epilog(apiDocsURL('updateCapability'))
+		.epilog(buildEpilog({ command, apiDocs: 'updateCapability' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { Room, RoomRequest, RoomsEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../../commands/locations/rooms/update.js'
+import type { buildEpilog } from '../../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type { inputAndOutputItem, inputAndOutputItemBuilder } from '../../../../lib/command/input-and-output-item.js'
 import type { chooseRoom } from '../../../../lib/command/util/rooms-choose.js'
@@ -13,7 +14,12 @@ import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
 
 const inputAndOutputItemMock = jest.fn<typeof inputAndOutputItem>()
 const inputAndOutputItemBuilderMock = jest.fn<typeof inputAndOutputItemBuilder>()
@@ -56,7 +62,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

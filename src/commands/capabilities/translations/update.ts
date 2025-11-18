@@ -1,10 +1,19 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type CapabilityLocalization } from '@smartthings/core-sdk'
-import { apiOrganizationCommand, apiOrganizationCommandBuilder, type APIOrganizationCommandFlags } from '../../../lib/command/api-organization-command.js'
-import { inputAndOutputItem, inputAndOutputItemBuilder, type InputAndOutputItemFlags } from '../../../lib/command/input-and-output-item.js'
+
+import { buildEpilog } from '../../../lib/help.js'
+import {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	type APIOrganizationCommandFlags,
+} from '../../../lib/command/api-organization-command.js'
+import {
+	inputAndOutputItem,
+	inputAndOutputItemBuilder,
+	type InputAndOutputItemFlags,
+} from '../../../lib/command/input-and-output-item.js'
 import { capabilityIdBuilder, type CapabilityIdInputFlags } from '../../../lib/command/capability-flags.js'
-import { apiDocsURL } from '../../../lib/command/api-command.js'
 import { chooseCapability } from '../../../lib/command/util/capabilities-choose.js'
 import { buildTableOutput } from '../../../lib/command/util/capabilities-translations-table.js'
 
@@ -30,7 +39,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'update the translation defined in sw.yaml for the "cathappy12345.myCapability" capability',
 			],
 		])
-		.epilog(apiDocsURL('updateCapabilityLocalization'))
+		.epilog(buildEpilog({ command, apiDocs: 'updateCapabilityLocalization' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

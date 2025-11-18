@@ -1,10 +1,10 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
+import { buildEpilog } from '../../../lib/help.js'
 import {
 	type APICommandFlags,
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 } from '../../../lib/command/api-command.js'
 import { chooseRoom } from '../../../lib/command/util/rooms-choose.js'
 
@@ -33,7 +33,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'choose the room to delete from a list of rooms in the specified location',
 			],
 		])
-		.epilog(apiDocsURL('deleteRoom'))
+		.epilog(buildEpilog({ command, apiDocs: 'deleteRoom' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

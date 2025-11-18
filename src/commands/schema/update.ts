@@ -3,8 +3,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type SchemaAppRequest } from '@smartthings/core-sdk'
 
 import { addSchemaPermission } from '../../lib/aws-util.js'
+import { buildEpilog } from '../../lib/help.js'
 import { cancelCommand, fatalError } from '../../lib/util.js'
-import { apiDocsURL } from '../../lib/command/api-command.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -56,7 +56,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'update a Schema App link with the definition in the file data.yaml',
 			],
 		])
-		.epilog(apiDocsURL('putAppsByEndpointAppId'))
+		.epilog(buildEpilog({ command, apiDocs: 'putAppsByEndpointAppId' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

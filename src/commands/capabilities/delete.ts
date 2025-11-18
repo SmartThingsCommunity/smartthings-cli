@@ -1,6 +1,6 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -27,7 +27,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'delete the capability with the specified id',
 			],
 		])
-		.epilog(apiDocsURL('deleteCapability'))
+		.epilog(buildEpilog({ command, apiDocs: 'deleteCapability' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiOrganizationCommand(argv)

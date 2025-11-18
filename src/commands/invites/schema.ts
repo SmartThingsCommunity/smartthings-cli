@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type SmartThingsClient } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
 import {
 	outputItemOrList,
 	outputItemOrListBuilder,
@@ -52,7 +53,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'list details of specified invitation',
 			],
 		])
-		.epilog(apiDocsURL('listSchemaAppInvitations'))
+		.epilog(buildEpilog({ command, apiDocs: 'listSchemaAppInvitations' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

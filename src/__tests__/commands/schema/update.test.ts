@@ -6,6 +6,7 @@ import { type SchemaApp, type SchemaEndpoint, SuccessStatusValue } from '@smartt
 
 import { CommandArgs } from '../../../commands/schema/update.js'
 import type { addSchemaPermission } from '../../../lib/aws-util.js'
+import { buildEpilog } from '../../../lib/help.js'
 import type { cancelCommand, fatalError } from '../../../lib/util.js'
 import type {
 	APIOrganizationCommand,
@@ -25,7 +26,6 @@ import type {
 	getSchemaAppUpdateFromUser,
 	SchemaAppWithOrganization,
 } from '../../../lib/command/util/schema-util.js'
-import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 import { CLIConfig } from '../../../lib/cli-config.js'
 
@@ -43,7 +43,10 @@ jest.unstable_mockModule('../../../lib/util.js', () => ({
 	fatalError: fatalErrorMock,
 }))
 
-const { apiDocsURLMock } = apiCommandMocks('../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
@@ -126,7 +129,7 @@ test('builder', () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

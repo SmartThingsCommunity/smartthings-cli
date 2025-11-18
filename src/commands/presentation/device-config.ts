@@ -1,6 +1,7 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
-import { apiCommand, apiCommandBuilder, APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
+import { apiCommand, apiCommandBuilder, APICommandFlags } from '../../lib/command/api-command.js'
 import { outputItem, outputItemBuilder, OutputItemFlags } from '../../lib/command/output-item.js'
 import { buildTableOutput } from '../../lib/command/util/presentation-device-config-table.js'
 
@@ -34,7 +35,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'get the device config for the given presentation id',
 			],
 		])
-		.epilog(apiDocsURL('getDeviceConfiguration'))
+		.epilog(buildEpilog({ command, apiDocs: 'getDeviceConfiguration' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

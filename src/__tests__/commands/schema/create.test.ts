@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { SchemaAppRequest, SchemaCreateResponse, SchemaEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/schema/create.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import { type addSchemaPermission, schemaAWSPrincipal } from '../../../lib/aws-util.js'
 import type { fatalError } from '../../../lib/util.js'
 import type {
@@ -23,7 +24,6 @@ import type {
 	getSchemaAppCreateFromUser,
 	SchemaAppWithOrganization,
 } from '../../../lib/command/util/schema-util.js'
-import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
 
@@ -33,13 +33,16 @@ jest.unstable_mockModule('../../../lib/aws-util.js', () => ({
 	schemaAWSPrincipal,
 }))
 
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
 const fatalErrorMock = jest.fn<typeof fatalError>()
 	.mockImplementation(() => { throw Error('should exit') })
 jest.unstable_mockModule('../../../lib/util.js', () => ({
 	fatalError: fatalErrorMock,
 }))
-
-const { apiDocsURLMock } = apiCommandMocks('../../..')
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
@@ -105,7 +108,7 @@ test('builder', () => {
 
 	expect(exampleMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { SuccessStatusValue } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, APICommandFlags, apiDocsURL } from '../../lib/command/api-command.js'
+import { buildEpilog } from '../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../lib/command/api-command.js'
 import { chooseScene } from '../../lib/command/util/scenes-util.js'
 
 
@@ -26,7 +27,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'execute the scene with the specified id',
 			],
 		])
-		.epilog(apiDocsURL('executeScene'))
+		.epilog(buildEpilog({ command, apiDocs: 'executeScene' }))
 
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {

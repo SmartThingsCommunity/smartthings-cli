@@ -91,25 +91,9 @@ jest.unstable_mockModule('../../../lib/command/util/st-client-wrapper.js', () =>
 const {
 	apiCommand,
 	apiCommandBuilder,
-	apiDocsURL,
 	userAgent,
 } = await import('../../../lib/command/api-command.js')
 
-
-describe('apiDocsURL', () => {
-	it('produces URL', () => {
-		expect(apiDocsURL('getDevice'))
-			.toBe('For API information, see:\n' +
-				'  https://developer.smartthings.com/docs/api/public/#operation/getDevice')
-	})
-
-	it('joins multiple pages with line breaks', () => {
-		expect(apiDocsURL('getDevice', 'getDevices'))
-			.toBe('For API information, see:\n' +
-				'  https://developer.smartthings.com/docs/api/public/#operation/getDevice\n' +
-				'  https://developer.smartthings.com/docs/api/public/#operation/getDevices')
-	})
-})
 
 test('apiCommandBuilder', () => {
 	const { optionMock, argvMock } = buildArgvMock<SmartThingsCommandFlags>()

@@ -9,6 +9,7 @@ import type {
 } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../commands/organizations/current.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type {
 	APIOrganizationCommand,
 	APIOrganizationCommandFlags,
@@ -25,6 +26,11 @@ import {
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 import { CLIConfig } from '../../../lib/cli-config.js'
 
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
 
 const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
 const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
@@ -57,6 +63,7 @@ test('builder', () => {
 	const {
 		yargsMock: apiOrganizationCommandBuilderArgvMock,
 		exampleMock,
+		epilogMock,
 		argvMock,
 	} = buildArgvMock<APIOrganizationCommandFlags, CommandArgs>()
 
@@ -72,6 +79,8 @@ test('builder', () => {
 		.toHaveBeenCalledExactlyOnceWith(apiOrganizationCommandBuilderArgvMock)
 
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
+	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
 describe('handler', () => {

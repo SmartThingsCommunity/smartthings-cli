@@ -2,7 +2,8 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type PresentationDeviceConfigCreate, type PresentationDeviceConfig } from '@smartthings/core-sdk'
 
-import { apiCommand, apiCommandBuilder, type APICommandFlags, apiDocsURL } from '../../../lib/command/api-command.js'
+import { buildEpilog } from '../../../lib/help.js'
+import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
 import {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
@@ -27,7 +28,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'create a device config as defined in device-config.json',
 			],
 		])
-		.epilog(apiDocsURL('createDeviceConfiguration'))
+		.epilog(buildEpilog({ command, apiDocs: 'createDeviceConfiguration' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)

@@ -13,9 +13,17 @@ import {
 	type HttpClientParams,
 } from '@smartthings/core-sdk'
 
-import { booleanInput, integerInput, numberInput, optionalIntegerInput, optionalNumberInput, optionalStringInput, stringInput } from '../../lib/user-query.js'
+import { buildEpilog } from '../../lib/help.js'
+import {
+	booleanInput,
+	integerInput,
+	numberInput,
+	optionalIntegerInput,
+	optionalNumberInput,
+	optionalStringInput,
+	stringInput,
+} from '../../lib/user-query.js'
 import { fatalError } from '../../lib/util.js'
-import { apiDocsURL } from '../../lib/command/api-command.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -54,7 +62,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 capabilities:create --dry-run', 'build JSON for a capability from prompted input'],
 			['$0 capabilities:create -i my-capability.yaml', 'create a capability defined in "my-capability.yaml'],
 		])
-		.epilog(apiDocsURL('createCapability'))
+		.epilog(buildEpilog({ command, apiDocs: 'createCapability' }))
 
 const logger = log4js.getLogger('cli')
 

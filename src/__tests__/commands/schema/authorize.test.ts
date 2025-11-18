@@ -3,15 +3,26 @@ import { jest } from '@jest/globals'
 import type { ArgumentsCamelCase, Argv } from 'yargs'
 
 import type { CommandArgs } from '../../../commands/schema/authorize.js'
+import type { buildEpilog } from '../../../lib/help.js'
 import type { addSchemaPermission } from '../../../lib/aws-util.js'
 import type { lambdaAuthBuilder } from '../../../lib/command/common-flags.js'
-import type { SmartThingsCommand, smartThingsCommand, smartThingsCommandBuilder, SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
+import type {
+	SmartThingsCommand,
+	smartThingsCommand,
+	smartThingsCommandBuilder,
+	SmartThingsCommandFlags,
+} from '../../../lib/command/smartthings-command.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
 
 
 const addSchemaPermissionMock = jest.fn<typeof addSchemaPermission>()
 jest.unstable_mockModule('../../../lib/aws-util.js', () => ({
 	addSchemaPermission: addSchemaPermissionMock,
+}))
+
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
 }))
 
 const lambdaAuthBuilderMock = jest.fn<typeof lambdaAuthBuilder>()
@@ -50,6 +61,7 @@ test('builder', () => {
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 

@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import type { EnrolledChannel, HubdevicesEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../../commands/edge/channels/enrollments.js'
+import type { buildEpilog } from '../../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type { outputList, outputListBuilder } from '../../../../lib/command/output-list.js'
 import type { chooseHub } from '../../../../lib/command/util/hubs-choose.js'
@@ -12,7 +13,12 @@ import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock, apiDocsURLMock } = apiCommandMocks('../../../..')
+const buildEpilogMock = jest.fn<typeof buildEpilog>()
+jest.unstable_mockModule('../../../../lib/help.js', () => ({
+	buildEpilog: buildEpilogMock,
+}))
+
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
 
 const outputListMock = jest.fn<typeof outputList>()
 const outputListBuilderMock = jest.fn<typeof outputListBuilder>()
@@ -53,7 +59,7 @@ test('builder', async () => {
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(0)
 	expect(exampleMock).toHaveBeenCalledTimes(1)
-	expect(apiDocsURLMock).toHaveBeenCalledTimes(1)
+	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
 })
 
