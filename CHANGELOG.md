@@ -14,6 +14,8 @@
   instead of `smartthings capabilities myteam.myCapability 1`. Note that the version is always one,
   so this flag is not necessary at this time.
 * Under-the-hood changes to make the CLI more maintainable.
+* `--token` flag is no longer included in usage info (i.e. it does not show up when running `--help`)
+  but it still works.
 
 ## 1.10.6
 
