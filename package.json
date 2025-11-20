@@ -1,6 +1,6 @@
 {
 	"name": "@smartthings/cli",
-	"version": "2.0.0-prerelease1",
+	"version": "2.0.0-prerelease2",
 	"description": "Command Line Interface for the SmartThings APIs",
 	"keywords": [
 		"smartthings",
