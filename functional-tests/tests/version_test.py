@@ -9,4 +9,4 @@ def test_version_output():
         logfile=sys.stdout
     )
 
-    process.expect('@smartthings/cli/.+ .+ node-.+')
+    process.expect('^\\d+\\.\\d+\\.\\d+')

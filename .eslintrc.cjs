@@ -27,7 +27,7 @@ module.exports = {
 	parserOptions: {
 		ecmaVersion: 2019,
 		tsconfigRootDir: __dirname,
-		project: ['./tsconfig.json', './tsconfig-test.json'],
+		project: ['./tsconfig.json'],
 	},
 	rules: {
 		indent: 'off',

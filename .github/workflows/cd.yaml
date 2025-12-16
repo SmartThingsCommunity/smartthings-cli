@@ -8,7 +8,7 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  release:
+  npm-release:
     # don't run on forks
     if: ${{ github.repository_owner == 'SmartThingsCommunity' }}
 
@@ -17,16 +17,15 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      cli-released: ${{ steps.cli-release.outputs.published }}
       cli-version: ${{ steps.cli-metadata.outputs.version }}
       cli-tag: ${{ steps.cli-metadata.outputs.tag }}
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 24.8.0
 
@@ -35,7 +34,7 @@ jobs:
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v1.5.3
         with:
           version: npm run version
           publish: npm run release
@@ -46,18 +45,22 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # decouple Github Release from library-only publishing
-      - name: Check if CLI Published
-        id: cli-release
-        run: echo "published=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq 'any(.name == "@smartthings/cli")')" >> $GITHUB_OUTPUT
+      - name: Debug Published Packages
+        run: |
+          echo "Published Packages:"
+          echo '${{ steps.changesets.outputs.publishedPackages }}' | jq .
 
       - name: Derive Required Metadata
         id: cli-metadata
-        if: steps.cli-release.outputs.published == 'true'
         run: | # derive latest info from changesets output
-          PUBLISHED_PACKAGE=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq 'map(select(.name == "@smartthings/cli")) | .[]')
-          echo "tag=$(echo $PUBLISHED_PACKAGE | jq --raw-output '.name + "@" + .version')" >> $GITHUB_OUTPUT
-          echo "version=$(echo $PUBLISHED_PACKAGE | jq --raw-output '.version')" >> $GITHUB_OUTPUT
+          published_package=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq 'map(select(.name == "@smartthings/cli")) | .[]')
+          echo "tag=$(echo $published_package | jq --raw-output '.name + "@" + .version')" >> $GITHUB_OUTPUT
+          echo "version=$(echo $published_package | jq --raw-output '.version')" >> $GITHUB_OUTPUT
+
+      - name: Debug Version
+        run: |
+          echo "CLI Tag: ${{ steps.cli-metadata.outputs.tag }}"
+          echo "CLI Version: ${{ steps.cli-metadata.outputs.version }}"
 
   package:
     name: Package CLI
@@ -65,23 +68,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install and Setup QEMU
-        run: |
-          sudo apt update
-          sudo apt install binfmt-support qemu-user-static
-
-      # see https://github.com/vercel/pkg/issues/1251#issuecomment-1024832725
-      - name: Download and Install ldid Codesign Utility
-        run: |
-          wget https://github.com/jesec/ldid-static/releases/download/v2.1.4/ldid-amd64
-          chmod +x ldid-amd64
-          sudo mv ldid-amd64 /usr/local/bin/ldid
-
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6.0.1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 24.8.0
 
@@ -91,16 +82,21 @@ jobs:
       - name: Package CLI
         run: npm run package
 
-      # maintain executable file permissions
-      # see https://github.com/actions/upload-artifact/issues/38
-      - name: Tar files
-        run: tar -cvf dist_bin.tar packages/cli/dist_bin/
+      - name: Debug List Files after Packaging
+        run: ls -lR dist_bin
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4.4.0
+        id: upload-artifacts
+        uses: actions/upload-artifact@v6.0.0
         with:
-          name: dist_bin
-          path: dist_bin.tar
+          name: Binaries
+          path: |
+            dist_bin/*.tgz
+            dist_bin/*.zip
+
+      - name: Debug Artifact Ids
+        run: |
+          echo "Artifact Id: ${{ steps.upload-artifacts.outputs.artifact-id }}"
 
   functional-test:
     needs: package
@@ -115,84 +111,101 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6.0.1
 
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4.1.8
+      - name: Download Binaries
+        uses: actions/download-artifact@v7.0.0
         with:
-          name: dist_bin
+          name: Binaries
 
-      - name: Extract Artifacts
-        run: tar -xvf dist_bin.tar
+      - name: Debug List Files after Download, Windows
+        if: runner.os == 'Windows'
+        run: Get-ChildItem -Path dist_bin
 
-      - uses: actions/setup-python@v4
+      - name: Debug List Files after Download
+        if: runner.os != 'Windows'
+        run: ls -l dist_bin
+
+      - name: Extract Linux Binary
+        if: runner.os == 'Linux'
+        run: tar xvf dist_bin/smartthings-linux-x64.tgz
+
+      - name: Extract MacOS Binary
+        if: runner.os == 'macOS'
+        run: tar xvf dist_bin/smartthings-mac-arm64.tgz
+
+      - name: Extract Windows Binary
+        if: runner.os == 'Windows'
+        run: Expand-Archive -Path dist_bin\smartthings-windows-x64.zip -DestinationPath "${{ github.workspace }}"
+
+      - uses: actions/setup-python@v6.1.0
         with:
-          python-version: '3.11.5'
+          python-version: '3.14.2'
           cache: 'pip'
 
-      # make sure 'smartthings' is available to child processes
+      - name: Debug List Files after Extraction, Windows
+        if: runner.os == 'Windows'
+        run: Get-ChildItem
+
+      - name: Debug List Files after Extraction
+        if: runner.os != 'Windows'
+        run: ls -l
+
+      # Make sure 'smartthings' binary is available to child processes (i.e. included in PATH).
       - name: Set Windows Path
         if: runner.os == 'Windows'
-        run: Add-Content $env:GITHUB_PATH "${{ github.workspace }}\packages\cli\dist_bin\win\x64"
-      - name: Set macOS Path
-        if: runner.os == 'macOS'
-        run: echo "$GITHUB_WORKSPACE/packages/cli/dist_bin/macos/x64" >> $GITHUB_PATH
-      - name: Set Linux Path
-        if: runner.os == 'Linux'
-        run: echo "$GITHUB_WORKSPACE/packages/cli/dist_bin/linux/x64" >> $GITHUB_PATH
+        run: Add-Content $env:GITHUB_PATH "${{ github.workspace }}"
+      - name: Set Path
+        if: runner.os != 'Windows'
+        run: echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
 
       - name: Install Dependencies and Run Tests
+        working-directory: functional-tests
         run: |
-          python -m pip install --force-reinstall -v pip==23.3.1
+          python -m pip install --force-reinstall -v pip==25.3
           pip install -r requirements.txt
           pytest
-        working-directory: packages/cli/functional-tests
 
   github-release:
-    needs: [release, package]
-
-    if: needs.release.outputs.cli-released == 'true'
+    needs: [npm-release, package]
 
     name: Create Github Release
 
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debug Version
+        run: |
+          echo "CLI Version: ${{ needs.npm-release.outputs.cli-version }}"
+          echo "CLI Tag: ${{ needs.npm-release.outputs.cli-tag }}"
+
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6.0.1
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v4.1.8
+        uses: actions/download-artifact@v7.0.0
         with:
-          name: dist_bin
+          name: Binaries
 
-      - name: Extract Artifacts
-        run: tar -xvf dist_bin.tar
+      - name: Debug Downloaded Artifacts
+        run: ls -l dist_bin/smartthings-*.{tgz,zip}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 24.8.0
 
-      - run: npm ci
-
-      # hack since Github auto generated notes aren't working right now
-      - name: Generate Github Release Notes
-        run: node generate-release-notes.mjs ${{ needs.release.outputs.cli-version }}
-
       - name: Create Github Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2.5.0
         with:
-          name: ${{ needs.release.outputs.cli-version }}
-          body_path: ${{ github.workspace }}/RELEASE_NOTES.txt
-          tag_name: ${{ needs.release.outputs.cli-tag }}
+          name: ${{ needs.npm-release.outputs.cli-version }}
+          tag_name: ${{ needs.npm-release.outputs.cli-tag }}
+          generate_release_notes: true
           prerelease: false
-          files: 'packages/cli/dist_bin/**/*.@(tgz|zip)'
+          files: 'dist_bin/smartthings-*.{tgz,zip}'
 
   homebrew-formula:
-    needs: [release, github-release]
-
-    if: needs.release.outputs.cli-released == 'true'
+    needs: [npm-release, github-release]
 
     name: Bump Homebrew Formula
 
@@ -200,10 +213,10 @@ jobs:
 
     steps:
     - name: Checkout Repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6.0.1
 
     - name: Configure Git Identity
-      uses: Homebrew/actions/git-user-config@master
+      uses: Homebrew/actions/git-user-config@main
       with:
         username: smartthingspi
 
@@ -211,15 +224,13 @@ jobs:
       run: brew tap smartthingscommunity/smartthings
 
     - name: Bump Formula
-      uses: Homebrew/actions/bump-formulae@master
+      uses: Homebrew/actions/bump-packages@main
       with:
         token: ${{ secrets.HOMEBREW_COMMITTER_TOKEN }}
         formulae: smartthingscommunity/smartthings/smartthings
 
   windows-installer:
-    needs: [release, package, github-release]
-
-    if: needs.release.outputs.cli-released == 'true'
+    needs: [npm-release, package, github-release]
 
     name: Release Windows Installer
 
@@ -228,29 +239,33 @@ jobs:
     runs-on: windows-2022
 
     steps:
-      - name: Print needs.release.outputs.cli-version
-        run: Write-Output ${{ needs.release.outputs.cli-version }}
+      - name: Print needs.npm-release.outputs.cli-version
+        run: Write-Output ${{ needs.npm-release.outputs.cli-version }}
 
       # remove any pre-release labels since WiX doesn't support them
       - name: Sanitize CLI Version String
         id: safe-semver
-        run: echo "version=$('${{ needs.release.outputs.cli-version }}'.Split('-') | Select-Object -Index 0)" >> $env:GITHUB_OUTPUT
+        run: echo "version=$('${{ needs.npm-release.outputs.cli-version }}'.Split('-') | Select-Object -Index 0)" >> $env:GITHUB_OUTPUT
 
       - name: Print steps.safe-semver.outputs.version
         run: Write-Output ${{ steps.safe-semver.outputs.version }}
 
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6.0.1
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v4.1.8
+        uses: actions/download-artifact@v7.0.0
         with:
-          name: dist_bin
+          name: Binaries
 
-      - name: Extract Artifacts
-        run: tar -xvf dist_bin.tar
+      - name: Debug List Files after Download
+        run: Get-ChildItem -Path dist_bin
 
-      - run: mv packages\cli\dist_bin\win\x64\smartthings.exe packages\cli\wix
+      - name: Extract Windows Binary
+        run: Expand-Archive -Path dist_bin\smartthings-windows-x64.zip -DestinationPath "${{ github.workspace }}\wix"
+
+      - name: Debug List Files after Extraction
+        run: Get-ChildItem -Path .\wix
 
       # https://github.community/t/set-path-for-wix-toolset-in-windows-runner/154708/2
       # https://stackoverflow.com/a/71579543
@@ -259,7 +274,7 @@ jobs:
 
       - name: Compile WiX file
         run: candle.exe smartthings.wxs -ext WixUIExtension -arch x64
-        working-directory: packages\cli\wix
+        working-directory: wix
         env:
           SMARTTHINGS_SEMVER: ${{ steps.safe-semver.outputs.version }}
           # must be absolute path or relative to .wxs file
@@ -267,10 +282,10 @@ jobs:
 
       - name: Build .msi
         run: light.exe -out smartthings.msi smartthings.wixobj -ext WixUIExtension
-        working-directory: packages\cli\wix
+        working-directory: wix
 
       - name: Add .msi Artifact to Github Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2.5.0
         with:
-          tag_name: ${{ needs.release.outputs.cli-tag }}
-          files: packages/cli/wix/smartthings.msi
+          tag_name: ${{ needs.npm-release.outputs.cli-tag }}
+          files: wix/smartthings.msi
