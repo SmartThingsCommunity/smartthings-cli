@@ -64,7 +64,7 @@ const buildAndZipTarget = async (target: string): Promise<void> => {
 			? ['zip', 'zip', {}]
 			: ['tgz', 'tar', { gzip: true }]
 
-	const archiveName = path.join(binDir, `smartthings-${platform}-${arch}.${archiveExt}`)
+	const archiveName = path.join(distBinDir, `smartthings-${platform}-${arch}.${archiveExt}`)
 
 	const archive = archiver(compressionFormat, config)
 	archive.append(fs.createReadStream(fullBinaryFilename), { name: binaryFilename, mode: 0o755 })
