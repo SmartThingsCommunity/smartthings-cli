@@ -12,11 +12,12 @@ jobs:
     # don't run on forks
     if: ${{ github.repository_owner == 'SmartThingsCommunity' }}
 
-    name: Release
+    name: NPM Release
 
     runs-on: ubuntu-latest
 
     outputs:
+      cli-released: ${{ steps.changesets.outputs.published }}
       cli-version: ${{ steps.cli-metadata.outputs.version }}
       cli-tag: ${{ steps.cli-metadata.outputs.tag }}
 
@@ -47,8 +48,8 @@ jobs:
 
       - name: Debug Published Packages
         run: |
-          echo "Published Packages:"
-          echo '${{ steps.changesets.outputs.publishedPackages }}' | jq .
+          echo 'Published Packages: ${{ steps.changesets.outputs.publishedPackages }}' | jq .
+          echo 'Published: ${{ steps.changesets.outputs.published }}'
 
       - name: Derive Required Metadata
         id: cli-metadata
@@ -169,6 +170,8 @@ jobs:
   github-release:
     needs: [npm-release, package]
 
+    if: needs.npm-release.outputs.cli-released == 'true'
+
     name: Create Github Release
 
     runs-on: ubuntu-latest
@@ -207,6 +210,8 @@ jobs:
   homebrew-formula:
     needs: [npm-release, github-release]
 
+    if: needs.npm-release.outputs.cli-released == 'true'
+
     name: Bump Homebrew Formula
 
     runs-on: macos-latest
@@ -231,6 +236,8 @@ jobs:
 
   windows-installer:
     needs: [npm-release, package, github-release]
+
+    if: needs.npm-release.outputs.cli-released == 'true'
 
     name: Release Windows Installer
 
