@@ -48,7 +48,8 @@ jobs:
 
       - name: Debug Published Packages
         run: |
-          echo 'Published Packages: ${{ steps.changesets.outputs.publishedPackages }}' | jq .
+          echo 'Published Packages:'
+          echo '${{ steps.changesets.outputs.publishedPackages }}' | jq .
           echo 'Published: ${{ steps.changesets.outputs.published }}'
 
       - name: Derive Required Metadata
