@@ -117,7 +117,7 @@
 		"test-watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch --reporters=default",
 		"test-coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage=true",
 		"prepack": "tsc && npm run readme",
-		"version": "npm run build && npm run readme && git add README.md && changeset version && npm i --package-lock-only && npm run compile && npm run version -w packages/cli",
+		"version": "npm run build && npm run readme && git add README.md && changeset version && npm i --package-lock-only && npm run compile",
 		"release": "npm run build && changeset publish",
 		"package": "tsx src/build-tools/build-binaries.ts"
 	},
