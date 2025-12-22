@@ -120,23 +120,23 @@ jobs:
 
       - name: Debug List Files after Download, Windows
         if: runner.os == 'Windows'
-        run: Get-ChildItem -Path dist_bin
+        run: Get-ChildItem
 
       - name: Debug List Files after Download
         if: runner.os != 'Windows'
-        run: ls -l dist_bin
+        run: ls -l
 
       - name: Extract Linux Binary
         if: runner.os == 'Linux'
-        run: tar xvf dist_bin/smartthings-linux-x64.tgz
+        run: tar xvf smartthings-linux-x64.tgz
 
       - name: Extract MacOS Binary
         if: runner.os == 'macOS'
-        run: tar xvf dist_bin/smartthings-mac-arm64.tgz
+        run: tar xvf smartthings-mac-arm64.tgz
 
       - name: Extract Windows Binary
         if: runner.os == 'Windows'
-        run: Expand-Archive -Path dist_bin\smartthings-windows-x64.zip -DestinationPath "${{ github.workspace }}"
+        run: Expand-Archive -Path smartthings-windows-x64.zip -DestinationPath "${{ github.workspace }}"
 
       - uses: actions/setup-python@v6.1.0
         with:
@@ -188,7 +188,7 @@ jobs:
           name: Binaries
 
       - name: Debug Downloaded Artifacts
-        run: ls -l dist_bin/smartthings-*.{tgz,zip}
+        run: ls -l smartthings-*.{tgz,zip}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6.1.0
@@ -202,7 +202,7 @@ jobs:
           tag_name: ${{ needs.npm-release.outputs.cli-tag }}
           generate_release_notes: true
           prerelease: false
-          files: 'dist_bin/smartthings-*.{tgz,zip}'
+          files: 'smartthings-*.{tgz,zip}'
 
   homebrew-formula:
     needs: [npm-release, github-release]
@@ -259,10 +259,10 @@ jobs:
           name: Binaries
 
       - name: Debug List Files after Download
-        run: Get-ChildItem -Path dist_bin
+        run: Get-ChildItem
 
       - name: Extract Windows Binary
-        run: Expand-Archive -Path dist_bin\smartthings-windows-x64.zip -DestinationPath "${{ github.workspace }}\wix"
+        run: Expand-Archive -Path smartthings-windows-x64.zip -DestinationPath "${{ github.workspace }}\wix"
 
       - name: Debug List Files after Extraction
         run: Get-ChildItem -Path .\wix
