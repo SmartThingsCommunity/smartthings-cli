@@ -3,20 +3,24 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type Channel, type ChannelCreate } from '@smartthings/core-sdk'
 
 import { buildEpilog } from '../../../lib/help.js'
+import { type TableFieldDefinition } from '../../../lib/table-generator.js'
 import { stringInput } from '../../../lib/user-query.js'
 import { urlValidate } from '../../../lib/validate-util.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
+import {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	type APIOrganizationCommandFlags,
+} from '../../../lib/command/api-organization-command.js'
 import {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
 	type InputAndOutputItemFlags,
 } from '../../../lib/command/input-and-output-item.js'
-import { type TableFieldDefinition } from '../../../lib/table-generator.js'
 import { userInputProcessor } from '../../../lib/command/input-processor.js'
 
 
 export type CommandArgs =
-	& APICommandFlags
+	& APIOrganizationCommandFlags
 	& InputAndOutputItemFlags
 
 const command = 'edge:channels:create'
@@ -27,7 +31,7 @@ const tableFieldDefinitions: TableFieldDefinition<Channel>[] = ['channelId', 'na
 	'type', 'termsOfServiceUrl', 'createdDate', 'lastModifiedDate']
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
-	inputAndOutputItemBuilder(apiCommandBuilder(yargs))
+	inputAndOutputItemBuilder(apiOrganizationCommandBuilder(yargs))
 		.example([
 			[
 				'$0 edge:channels:create',
@@ -41,7 +45,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 		.epilog(buildEpilog({ command, apiDocs: 'createChannel' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
-	const command = await apiCommand(argv)
+	const command = await apiOrganizationCommand(argv)
 
 	const getInputFromUser = async (): Promise<ChannelCreate> => {
 		const name = await stringInput('Channel name:')

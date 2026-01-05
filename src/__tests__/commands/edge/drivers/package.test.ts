@@ -18,9 +18,12 @@ import type { CommandArgs } from '../../../../commands/edge/drivers/package.js'
 import type { buildEpilog } from '../../../../lib/help.js'
 import type { CLIConfig } from '../../../../lib/cli-config.js'
 import type { fatalError } from '../../../../lib/util.js'
-import type { APICommand } from '../../../../lib/command/api-command.js'
-import type { outputItem, outputItemBuilder } from '../../../../lib/command/output-item.js'
-import type { SmartThingsCommandFlags } from '../../../../lib/command/smartthings-command.js'
+import type {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	APIOrganizationCommand,
+} from '../../../../lib/command/api-organization-command.js'
+import type { outputItem, outputItemBuilder, OutputItemFlags } from '../../../../lib/command/output-item.js'
 import type {
 	buildTestFileMatchers,
 	processConfigFile,
@@ -32,7 +35,6 @@ import type {
 } from '../../../../lib/command/util/edge-driver-package.js'
 import type { chooseHub } from '../../../../lib/command/util/hubs-choose.js'
 import type { chooseChannel } from '../../../../lib/command/util/edge/channels-choose.js'
-import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock.js'
 
 
@@ -44,6 +46,13 @@ jest.unstable_mockModule('../../../../lib/help.js', () => ({
 const fatalErrorMock = jest.fn<typeof fatalError>()
 jest.unstable_mockModule('../../../../lib/util.js', () => ({
 	fatalError: fatalErrorMock,
+}))
+
+const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
+const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
+jest.unstable_mockModule('../../../../lib/command/api-organization-command.js', () => ({
+	apiOrganizationCommand: apiOrganizationCommandMock,
+	apiOrganizationCommandBuilder: apiOrganizationCommandBuilderMock,
 }))
 
 const createWriteStreamMock = jest.fn<typeof createWriteStream>()
@@ -72,8 +81,6 @@ const JSZipMock = jest.fn<typeof JSZip>().mockReturnValue(zipMock)
 jest.unstable_mockModule('jszip', () => ({
 	default: JSZipMock,
 }))
-
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
 
 const outputItemMock = jest.fn<typeof outputItem>()
 const outputItemBuilderMock = jest.fn<typeof outputItemBuilder>()
@@ -129,16 +136,16 @@ test('builder', () => {
 		exampleMock,
 		epilogMock,
 		argvMock,
-	} = buildArgvMock<SmartThingsCommandFlags, CommandArgs>()
+	} = buildArgvMock<OutputItemFlags, CommandArgs>()
 
-	apiCommandBuilderMock.mockReturnValue(apiCommandBuilderArgvMock)
+	apiOrganizationCommandBuilderMock.mockReturnValue(apiCommandBuilderArgvMock)
 	outputItemBuilderMock.mockReturnValue(argvMock)
 
 	const builder = cmd.builder as (yargs: Argv<object>) => Argv<CommandArgs>
 
 	expect(builder(yargsMock)).toBe(argvMock)
 
-	expect(apiCommandBuilderMock).toHaveBeenCalledExactlyOnceWith(yargsMock)
+	expect(apiOrganizationCommandBuilderMock).toHaveBeenCalledExactlyOnceWith(yargsMock)
 	expect(outputItemBuilderMock).toHaveBeenCalledExactlyOnceWith(apiCommandBuilderArgvMock)
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(6)
@@ -167,8 +174,8 @@ describe('handler', () => {
 		cliConfig: {
 			stringArrayConfigValue: stringArrayConfigValueMock,
 		},
-	} as unknown as APICommand<ArgumentsCamelCase<CommandArgs>>
-	apiCommandMock.mockResolvedValue(command)
+	} as unknown as APIOrganizationCommand<ArgumentsCamelCase<CommandArgs>>
+	apiOrganizationCommandMock.mockResolvedValue(command)
 
 	const driver = { driverId: 'driver-id', version: 'driver version' } as EdgeDriver
 	apiDriversUploadMock.mockResolvedValue(driver)
@@ -179,7 +186,7 @@ describe('handler', () => {
 
 		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
 
-		expect(apiCommandMock).toHaveBeenCalledExactlyOnceWith(inputArgv)
+		expect(apiOrganizationCommandMock).toHaveBeenCalledExactlyOnceWith(inputArgv)
 		expect(readFileMock).toHaveBeenCalledExactlyOnceWith('driver.zip')
 		expect(outputItemMock).toHaveBeenCalledExactlyOnceWith(
 			command,

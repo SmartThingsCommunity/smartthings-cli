@@ -8,7 +8,11 @@ import { type EdgeDriver } from '@smartthings/core-sdk'
 
 import { buildEpilog } from '../../../lib/help.js'
 import { fatalError } from '../../../lib/util.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
+import {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	type APIOrganizationCommandFlags,
+} from '../../../lib/command/api-organization-command.js'
 import { outputItem, outputItemBuilder, type OutputItemConfig } from '../../../lib/command/output-item.js'
 import {
 	buildTestFileMatchers,
@@ -24,7 +28,7 @@ import { chooseChannel } from '../../../lib/command/util/edge/channels-choose.js
 
 
 export type CommandArgs =
-	& APICommandFlags
+	& APIOrganizationCommandFlags
 	& {
 		projectDirectory?: string
 		buildOnly?: string
@@ -40,7 +44,7 @@ const command = 'edge:drivers:package [project-directory]'
 const describe = 'build and upload an edge package'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
-	outputItemBuilder(apiCommandBuilder(yargs))
+	outputItemBuilder(apiOrganizationCommandBuilder(yargs))
 		.positional(
 			'project-directory',
 			{ describe: 'directory containing project to upload', type: 'string', default: '.' },
@@ -127,7 +131,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 		.epilog(buildEpilog({ command, apiDocs: 'uploadDriverPackage' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
-	const command = await apiCommand(argv)
+	const command = await apiOrganizationCommand(argv)
 
 	const uploadAndPostProcess = async (archiveData: Uint8Array): Promise<void> => {
 		const config: OutputItemConfig<EdgeDriver> = {

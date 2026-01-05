@@ -1,13 +1,17 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { buildEpilog } from '../../../lib/help.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
+import {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	type APIOrganizationCommandFlags,
+} from '../../../lib/command/api-organization-command.js'
 import { chooseChannel } from '../../../lib/command/util/edge/channels-choose.js'
 import { chooseDriver } from '../../../lib/command/util/drivers-choose.js'
 
 
 export type CommandArgs =
-	& APICommandFlags
+	& APIOrganizationCommandFlags
 	& {
 		driverId?: string
 		driverVersion?: string
@@ -19,7 +23,7 @@ const command = 'edge:channels:assign [driver-id] [driver-version]'
 const describe = 'assign a driver to a channel'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
-	apiCommandBuilder(yargs)
+	apiOrganizationCommandBuilder(yargs)
 		.positional('driver-id', { describe: 'driver id', type: 'string' })
 		.positional('driver-version', { describe: 'driver version', type: 'string' })
 		.option('channel', { alias: 'C', describe: 'channel to assigned to', type: 'string' })
@@ -43,7 +47,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
-	const command = await apiCommand(argv)
+	const command = await apiOrganizationCommand(argv)
 
 	const channelId = await chooseChannel(
 		command,
