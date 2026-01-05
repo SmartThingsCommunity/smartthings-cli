@@ -1,14 +1,18 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { buildEpilog } from '../../../../lib/help.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../../lib/command/api-command.js'
+import {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	type APIOrganizationCommandFlags,
+} from '../../../../lib/command/api-organization-command.js'
 import { edgeCommand } from '../../../../lib/command/edge-command.js'
 import { chooseChannel } from '../../../../lib/command/util/edge/channels-choose.js'
 import { chooseInviteFn } from '../../../../lib/command/util/edge-invites-choose.js'
 
 
 export type CommandArgs =
-	& APICommandFlags
+	& APIOrganizationCommandFlags
 	& {
 		channel?: string
 		id?: string
@@ -19,7 +23,7 @@ const command = 'edge:channels:invites:delete [id]'
 const describe = 'delete a channel invitation'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
-	apiCommandBuilder(yargs)
+	apiOrganizationCommandBuilder(yargs)
 		.option('channel', {
 			alias: 'C',
 			describe: 'channel id',
@@ -41,7 +45,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
-	const command = edgeCommand(await apiCommand(argv))
+	const command = edgeCommand(await apiOrganizationCommand(argv))
 
 	const chooseInvite = async (): Promise<string> => {
 		if (argv.id) {

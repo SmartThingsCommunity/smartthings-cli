@@ -2,7 +2,11 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type TableFieldDefinition } from '../../../../lib/table-generator.js'
 import { stringInput } from '../../../../lib/user-query.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../../lib/command/api-command.js'
+import {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	type APIOrganizationCommandFlags,
+} from '../../../../lib/command/api-organization-command.js'
 import { edgeCommand } from '../../../../lib/command/edge-command.js'
 import {
 	inputAndOutputItem,
@@ -17,7 +21,7 @@ import { buildEpilog } from '../../../../lib/help.js'
 
 
 export type CommandArgs =
-	& APICommandFlags
+	& APIOrganizationCommandFlags
 	& InputAndOutputItemFlags
 	& {
 		channel?: string
@@ -28,7 +32,7 @@ const command = 'edge:channels:invites:create'
 const describe = 'create an invitation'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
-	inputAndOutputItemBuilder(apiCommandBuilder(yargs))
+	inputAndOutputItemBuilder(apiOrganizationCommandBuilder(yargs))
 		.option('channel', {
 			alias: 'C',
 			describe: 'channel id',
@@ -45,7 +49,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
-	const command = edgeCommand(await apiCommand(argv))
+	const command = edgeCommand(await apiOrganizationCommand(argv))
 
 	const getInputFromUser = async (): Promise<InvitationCreate> => {
 		const channelId = await chooseChannel(command, argv.channel,

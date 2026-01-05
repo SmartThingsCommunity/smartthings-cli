@@ -3,7 +3,11 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type Channel, type ChannelUpdate } from '@smartthings/core-sdk'
 
 import { buildEpilog } from '../../../lib/help.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
+import {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	type APIOrganizationCommandFlags,
+} from '../../../lib/command/api-organization-command.js'
 import {
 	inputAndOutputItem,
 	inputAndOutputItemBuilder,
@@ -14,7 +18,7 @@ import { tableFieldDefinitions } from '../../../lib/command/util/edge/channels-t
 
 
 export type CommandArgs =
-	& APICommandFlags
+	& APIOrganizationCommandFlags
 	& InputAndOutputItemFlags
 	& {
 		id?: string
@@ -25,7 +29,7 @@ const command = 'edge:channels:update [id]'
 const describe = 'update a channel'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
-	inputAndOutputItemBuilder(apiCommandBuilder(yargs))
+	inputAndOutputItemBuilder(apiOrganizationCommandBuilder(yargs))
 		.positional('id', { describe: 'id of channel to update', type: 'string' })
 		.example([
 			[
@@ -40,7 +44,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 		.epilog(buildEpilog({ command, apiDocs: 'updateChannel' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
-	const command = await apiCommand(argv)
+	const command = await apiOrganizationCommand(argv)
 
 	const id = await chooseChannel(
 		command,

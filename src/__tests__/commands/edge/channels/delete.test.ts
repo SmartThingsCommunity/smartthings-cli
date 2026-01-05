@@ -5,11 +5,15 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 import { ChannelsEndpoint } from '@smartthings/core-sdk'
 
 import type { CommandArgs } from '../../../../commands/edge/channels/delete.js'
-import type { buildEpilog } from '../../../../lib/help.js'
-import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
 import type { CLIConfig, resetManagedConfigKey } from '../../../../lib/cli-config.js'
+import type { buildEpilog } from '../../../../lib/help.js'
+import type {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	APIOrganizationCommand,
+	APIOrganizationCommandFlags,
+} from '../../../../lib/command/api-organization-command.js'
 import type { chooseChannel } from '../../../../lib/command/util/edge/channels-choose.js'
-import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock } from '../../../test-lib/builder-mock.js'
 
 
@@ -23,7 +27,12 @@ jest.unstable_mockModule('../../../../lib/help.js', () => ({
 	buildEpilog: buildEpilogMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
+const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
+const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
+jest.unstable_mockModule('../../../../lib/command/api-organization-command.js', () => ({
+	apiOrganizationCommand: apiOrganizationCommandMock,
+	apiOrganizationCommandBuilder: apiOrganizationCommandBuilderMock,
+}))
 
 const chooseChannelMock = jest.fn<typeof chooseChannel>().mockResolvedValue('chosen-channel-id')
 jest.unstable_mockModule('../../../../lib/command/util/edge/channels-choose.js', () => ({
@@ -44,14 +53,14 @@ test('builder', () => {
 		exampleMock,
 		epilogMock,
 		argvMock,
-	} = buildArgvMock<APICommandFlags, CommandArgs>()
+	} = buildArgvMock<APIOrganizationCommandFlags, CommandArgs>()
 
-	apiCommandBuilderMock.mockReturnValue(argvMock)
+	apiOrganizationCommandBuilderMock.mockReturnValue(argvMock)
 
 	const builder = cmd.builder as (yargs: Argv<object>) => Argv<CommandArgs>
 	expect(builder(yargsMock)).toBe(argvMock)
 
-	expect(apiCommandBuilderMock).toHaveBeenCalledExactlyOnceWith(yargsMock)
+	expect(apiOrganizationCommandBuilderMock).toHaveBeenCalledExactlyOnceWith(yargsMock)
 
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(0)
@@ -74,12 +83,12 @@ test('handler', async () => {
 			},
 		},
 		cliConfig,
-	} as unknown as APICommand
-	apiCommandMock.mockResolvedValueOnce(command)
+	} as unknown as APIOrganizationCommand<ArgumentsCamelCase<CommandArgs>>
+	apiOrganizationCommandMock.mockResolvedValueOnce(command)
 
 	await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
 
-	expect(apiCommandMock).toHaveBeenCalledExactlyOnceWith(inputArgv)
+	expect(apiOrganizationCommandMock).toHaveBeenCalledExactlyOnceWith(inputArgv)
 	expect(chooseChannelMock).toHaveBeenCalledExactlyOnceWith(
 		command,
 		'cmd-line-id',

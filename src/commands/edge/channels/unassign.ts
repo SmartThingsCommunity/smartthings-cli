@@ -1,13 +1,17 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { buildEpilog } from '../../../lib/help.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
+import {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	type APIOrganizationCommandFlags,
+} from '../../../lib/command/api-organization-command.js'
 import { chooseChannelFn } from '../../../lib/command/util/edge/channels-choose.js'
 import { chooseDriverFromChannelFn } from '../../../lib/command/util/drivers-choose.js'
 
 
 export type CommandArgs =
-	& APICommandFlags
+	& APIOrganizationCommandFlags
 	& {
 		driverId?: string
 		channel?: string
@@ -18,7 +22,7 @@ const command = 'edge:channels:unassign [driver-id]'
 const describe = 'remove a driver from a channel'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
-	apiCommandBuilder(yargs)
+	apiOrganizationCommandBuilder(yargs)
 		.positional('driver-id', { describe: 'driver id', type: 'string' })
 		.option('channel', { alias: 'C', describe: 'channel to unassigned from', type: 'string' })
 		.example([
@@ -41,7 +45,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
-	const command = await apiCommand(argv)
+	const command = await apiOrganizationCommand(argv)
 
 	const channelId = await chooseChannelFn({ withDriverId: argv.driverId })(
 		command,

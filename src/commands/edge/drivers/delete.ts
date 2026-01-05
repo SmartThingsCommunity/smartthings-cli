@@ -1,12 +1,16 @@
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { buildEpilog } from '../../../lib/help.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
+import {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	type APIOrganizationCommandFlags,
+} from '../../../lib/command/api-organization-command.js'
 import { chooseDriver } from '../../../lib/command/util/drivers-choose.js'
 
 
 export type CommandArgs =
-	& APICommandFlags
+	& APIOrganizationCommandFlags
 	& {
 		id?: string
 	}
@@ -16,7 +20,7 @@ const command = 'edge:drivers:delete [id]'
 const describe = 'delete an edge driver'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
-	apiCommandBuilder(yargs)
+	apiOrganizationCommandBuilder(yargs)
 		.positional('driver-id', { describe: 'id of driver to delete', type: 'string' })
 		.example([
 			['$0 edge:drivers:delete', 'prompt for a driver and delete it'],
@@ -28,7 +32,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 		.epilog(buildEpilog({ command, apiDocs: 'deleteDriver' }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
-	const command = await apiCommand(argv)
+	const command = await apiOrganizationCommand(argv)
 
 	const id = await chooseDriver(command, argv.id, { promptMessage: 'Select a driver to delete.' })
 	await command.client.drivers.delete(id)

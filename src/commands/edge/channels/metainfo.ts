@@ -3,7 +3,11 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import type { EdgeDriver } from '@smartthings/core-sdk'
 
 import { buildEpilog } from '../../../lib/help.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
+import {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	type APIOrganizationCommandFlags,
+} from '../../../lib/command/api-organization-command.js'
 import {
 	outputItemOrList,
 	outputItemOrListBuilder,
@@ -15,7 +19,7 @@ import { chooseChannel } from '../../../lib/command/util/edge/channels-choose.js
 
 
 export type CommandArgs =
-	& APICommandFlags
+	& APIOrganizationCommandFlags
 	& OutputItemOrListFlags
 	& {
 		driverIdOrIndex?: string
@@ -27,7 +31,7 @@ const command = 'edge:channels:metainfo [driver-id-or-index]'
 const describe = 'display metadata about drivers assigned to channels'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
-	outputItemOrListBuilder(apiCommandBuilder(yargs))
+	outputItemOrListBuilder(apiOrganizationCommandBuilder(yargs))
 		.positional('id-or-index', { describe: 'driver id or number in list', type: 'string' })
 		.option('channel', { alias: 'C', describe: 'channel id', type: 'string' })
 		.example([
@@ -52,7 +56,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 		.epilog(buildEpilog({ command }))
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
-	const command = await apiCommand(argv)
+	const command = await apiOrganizationCommand(argv)
 
 	const channelId = await chooseChannel(
 		command,

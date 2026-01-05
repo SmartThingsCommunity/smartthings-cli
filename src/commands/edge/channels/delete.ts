@@ -2,12 +2,16 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { resetManagedConfigKey } from '../../../lib/cli-config.js'
 import { buildEpilog } from '../../../lib/help.js'
-import { apiCommand, apiCommandBuilder, type APICommandFlags } from '../../../lib/command/api-command.js'
+import {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	type APIOrganizationCommandFlags,
+} from '../../../lib/command/api-organization-command.js'
 import { chooseChannel } from '../../../lib/command/util/edge/channels-choose.js'
 
 
 export type CommandArgs =
-	& APICommandFlags
+	& APIOrganizationCommandFlags
 	& {
 		id?: string
 	}
@@ -17,7 +21,7 @@ const command = 'edge:channels:delete [id]'
 const describe = 'delete a channel'
 
 const builder = (yargs: Argv): Argv<CommandArgs> =>
-	apiCommandBuilder(yargs)
+	apiOrganizationCommandBuilder(yargs)
 		.positional('id', { describe: 'channel id', type: 'string' })
 		.example([
 			['$0 edge:channels:delete', 'choose the channel to delete from a list'],
@@ -30,7 +34,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
-	const command = await apiCommand(argv)
+	const command = await apiOrganizationCommand(argv)
 
 	const id = await chooseChannel(command, argv.id, { promptMessage: 'Choose a channel to delete.' })
 	await command.client.channels.delete(id)

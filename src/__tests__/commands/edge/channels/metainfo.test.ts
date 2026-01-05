@@ -7,12 +7,16 @@ import type { CommandArgs } from '../../../../commands/edge/channels/metainfo.js
 import { ChannelsEndpoint, DriverChannelDetails, EdgeDriver } from '@smartthings/core-sdk'
 
 import type { buildEpilog } from '../../../../lib/help.js'
-import type { APICommand, APICommandFlags } from '../../../../lib/command/api-command.js'
+import type {
+	apiOrganizationCommand,
+	apiOrganizationCommandBuilder,
+	APIOrganizationCommand,
+	APIOrganizationCommandFlags,
+} from '../../../../lib/command/api-organization-command.js'
 import type { CustomCommonOutputProducer } from '../../../../lib/command/format.js'
 import type { outputItemOrList, outputItemOrListBuilder } from '../../../../lib/command/listing-io.js'
 import { type buildTableOutput, listTableFieldDefinitions } from '../../../../lib/command/util/edge-drivers.js'
 import type { chooseChannel } from '../../../../lib/command/util/edge/channels-choose.js'
-import { apiCommandMocks } from '../../../test-lib/api-command-mock.js'
 import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock.js'
 import { tableGeneratorMock } from '../../../test-lib/table-mock.js'
 
@@ -22,7 +26,12 @@ jest.unstable_mockModule('../../../../lib/help.js', () => ({
 	buildEpilog: buildEpilogMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
+const apiOrganizationCommandMock = jest.fn<typeof apiOrganizationCommand>()
+const apiOrganizationCommandBuilderMock = jest.fn<typeof apiOrganizationCommandBuilder>()
+jest.unstable_mockModule('../../../../lib/command/api-organization-command.js', () => ({
+	apiOrganizationCommand: apiOrganizationCommandMock,
+	apiOrganizationCommandBuilder: apiOrganizationCommandBuilderMock,
+}))
 
 const outputItemOrListMock = jest.fn<typeof outputItemOrList<EdgeDriver>>()
 const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
@@ -55,16 +64,16 @@ test('builder', async () => {
 		exampleMock,
 		epilogMock,
 		argvMock,
-	} = buildArgvMock<APICommandFlags, CommandArgs>()
+	} = buildArgvMock<APIOrganizationCommandFlags, CommandArgs>()
 
-	apiCommandBuilderMock.mockReturnValue(apiCommandBuilderArgvMock)
+	apiOrganizationCommandBuilderMock.mockReturnValue(apiCommandBuilderArgvMock)
 	outputItemOrListBuilderMock.mockReturnValue(argvMock)
 
 	const builder = cmd.builder as (yargs: Argv<object>) => Argv<CommandArgs>
 
 	expect(builder(yargsMock)).toBe(argvMock)
 
-	expect(apiCommandBuilderMock).toHaveBeenCalledExactlyOnceWith(yargsMock)
+	expect(apiOrganizationCommandBuilderMock).toHaveBeenCalledExactlyOnceWith(yargsMock)
 	expect(outputItemOrListBuilderMock).toHaveBeenCalledExactlyOnceWith(apiCommandBuilderArgvMock)
 	expect(positionalMock).toHaveBeenCalledTimes(1)
 	expect(optionMock).toHaveBeenCalledTimes(1)
@@ -92,14 +101,14 @@ describe('handler', () => {
 			},
 		},
 		tableGenerator: tableGeneratorMock,
-	} as unknown as APICommand
-	apiCommandMock.mockResolvedValue(command)
+	} as unknown as APIOrganizationCommand<ArgumentsCamelCase<CommandArgs>>
+	apiOrganizationCommandMock.mockResolvedValue(command)
 
 	const baseInputArgv = { profile: 'default' } as ArgumentsCamelCase<CommandArgs>
 	it('prompts for a channel and lists metadata', async () => {
 		await expect(cmd.handler(baseInputArgv)).resolves.not.toThrow()
 
-		expect(apiCommandMock).toHaveBeenCalledExactlyOnceWith(baseInputArgv)
+		expect(apiOrganizationCommandMock).toHaveBeenCalledExactlyOnceWith(baseInputArgv)
 		expect(chooseChannelMock).toHaveBeenCalledExactlyOnceWith(
 			command,
 			undefined,
