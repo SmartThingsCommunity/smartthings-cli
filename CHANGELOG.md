@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.1
+
+### Patch Changes
+
+- [#814](https://github.com/SmartThingsCommunity/smartthings-cli/pull/814) [`5d2041e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/5d2041eac91ca0f582977b3bab73d0ae52b56de6) Thanks [@rossiam](https://github.com/rossiam)! - add organization options back to edge commands that use them
+
 ## 2.0.0
 
 - All commands now have examples in their help (`smartthings <command> --help`).
