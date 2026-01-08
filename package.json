@@ -21,6 +21,7 @@
 		"dist/src",
 		"dist/tsconfig.tsbuildinfo",
 		"README.md",
+		"package.json",
 		"/npm-shrinkwrap.json",
 		"!*/src/build-tools",
 		"!*/src/__tests__"
