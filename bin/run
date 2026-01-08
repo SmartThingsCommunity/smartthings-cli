@@ -1,9 +1,0 @@
-#!/usr/bin/env node
-
-const oclif = require('@oclif/core')
-const log4js = require('log4js')
-
-oclif.run()
-	.then(oclif.flush)
-	.catch(oclif.Errors.handle)
-	.finally(log4js.shutdown)
