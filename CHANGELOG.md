@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.2
+
+### Patch Changes
+
+- [#817](https://github.com/SmartThingsCommunity/smartthings-cli/pull/817) [`5f4c071`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/5f4c071052fd9e4353030ccee4bdfcb14be1d620) Thanks [@rossiam](https://github.com/rossiam)! - fix binary installed via npm
+
 ## 2.0.1
 
 ### Patch Changes
