@@ -6,9 +6,11 @@ import { type APICommand, type APICommandFlags, apiCommand, apiCommandBuilder } 
 import { type SmartThingsCommand } from './smartthings-command.js'
 
 
-export type APIOrganizationCommandFlags = APICommandFlags & {
-	organization?: string
-}
+export type APIOrganizationCommandFlags =
+	& APICommandFlags
+	& {
+		organization?: string
+	}
 
 export const apiOrganizationCommandBuilder = <T extends object>(yargs: Argv<T>): Argv<T & APIOrganizationCommandFlags> =>
 	apiCommandBuilder(yargs)

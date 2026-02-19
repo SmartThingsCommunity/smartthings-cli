@@ -1,24 +1,51 @@
 import log4js from 'log4js'
 import { osLocale } from 'os-locale'
-import { Argv } from 'yargs'
+import { type Argv } from 'yargs'
 
-import { Authenticator, HttpClientHeaders, SmartThingsClient, WarningFromHeader } from '@smartthings/core-sdk'
+import {
+	type Authenticator,
+	chinaSmartThingsURLProvider,
+	type HttpClientHeaders,
+	type SmartThingsClient,
+	type SmartThingsURLProvider,
+	type WarningFromHeader,
+} from '@smartthings/core-sdk'
 
 import { coreSDKLoggerFromLog4JSLogger } from '../log-utils.js'
-import { ClientIdProvider, defaultClientIdProvider, loginAuthenticator } from '../login-authenticator.js'
-import { SmartThingsCommand, SmartThingsCommandFlags, smartThingsCommand, smartThingsCommandBuilder } from './smartthings-command.js'
+import { type ClientIdProvider, globalClientIdProvider, loginAuthenticator } from '../login-authenticator.js'
+import { fatalError } from '../util.js'
+import {
+	type SmartThingsCommand,
+	type SmartThingsCommandFlags,
+	smartThingsCommand,
+	smartThingsCommandBuilder,
+} from './smartthings-command.js'
 import { newBearerTokenAuthenticator, newSmartThingsClient } from './util/st-client-wrapper.js'
 
 
 export const userAgent = '@smartthings/cli'
 
-export type APICommandFlags = SmartThingsCommandFlags & {
-	token?: string
-	language?: string
+export type URLProvider = SmartThingsURLProvider & Partial<ClientIdProvider>
+export const urlProvidersByEnvironment: { [key: string]: URLProvider } = {
+	global: globalClientIdProvider,
+	china: chinaSmartThingsURLProvider,
 }
+
+export type APICommandFlags =
+	& SmartThingsCommandFlags
+	& {
+		environment?: string
+		token?: string
+		language?: string
+	}
 
 export const apiCommandBuilder = <T extends object>(yargs: Argv<T>): Argv<T & APICommandFlags> =>
 	smartThingsCommandBuilder(yargs)
+		.option('environment', {
+			desc: 'the environment to use',
+			type: 'string',
+			choices: Object.keys(urlProvidersByEnvironment),
+		})
 		.option('token', {
 			alias: 't',
 			desc: 'the auth token to use',
@@ -32,8 +59,9 @@ export const apiCommandBuilder = <T extends object>(yargs: Argv<T>): Argv<T & AP
 		})
 
 export type APICommand<T extends APICommandFlags = APICommandFlags> = SmartThingsCommand<T> & {
+	environment: string
 	token?: string
-	clientIdProvider: ClientIdProvider
+	urlProvider: SmartThingsURLProvider
 	authenticator: Authenticator
 	client: SmartThingsClient
 }
@@ -50,20 +78,37 @@ export const apiCommand = async <T extends APICommandFlags>(
 	// The `|| undefined` at then end of this line is to normalize falsy values to `undefined`.
 	const token = (flags.token ?? stCommand.cliConfig.stringConfigValue('token')) || undefined
 
-	const calculateClientIdProvider = (): ClientIdProvider => {
+	// Calculate the environment and clientIdProvider. In old configs, the clientIdProvider had to
+	// be specified manually. Now we support specifying the environment, which determines the
+	// clientIdProvider. If both are specified, environment wins. If only one is specified, calculate
+	// the other based on it. If neither is specified, use the globalClientIdProvider.
+	const calculateEnvironment = (): [string, SmartThingsURLProvider] => {
+		const environment = (flags.environment ?? stCommand.cliConfig.stringConfigValue('environment')) || undefined
+		// first look for environment; then fall back to the old config style
+		if (environment) {
+			if (environment in urlProvidersByEnvironment) {
+				return [environment, urlProvidersByEnvironment[environment]]
+			}
+			return fatalError(`unknown environment: ${environment}`)
+		}
+
 		const configClientIdProvider = stCommand.profile.clientIdProvider
 		if (configClientIdProvider) {
 			if (typeof configClientIdProvider !== 'object') {
 				stCommand.logger.error('ignoring invalid configClientIdProvider')
 			} else {
-				// TODO: do more type checking here eventually
-				return configClientIdProvider as ClientIdProvider
+				const clientIdProvider = configClientIdProvider as ClientIdProvider
+				// Look up the environment based on the clientIdProvider.baseURL.
+				const environment = Object.entries(urlProvidersByEnvironment)
+					.find(([, provider]) => provider.baseURL === clientIdProvider.baseURL)?.[0]
+					?? 'unknown'
+				return [environment, clientIdProvider]
 			}
 		}
-		return defaultClientIdProvider
+		return ['global', globalClientIdProvider]
 	}
 
-	const clientIdProvider = calculateClientIdProvider()
+	const [environment, urlProvider] = calculateEnvironment()
 	const logger = coreSDKLoggerFromLog4JSLogger(log4js.getLogger('rest-client'))
 
 	const buildHeaders = async (): Promise<HttpClientHeaders> => {
@@ -85,9 +130,25 @@ export const apiCommand = async <T extends APICommandFlags>(
 		addAdditionalHeaders(stCommand, headers)
 	}
 
-	const authenticator = token
-		? newBearerTokenAuthenticator(token)
-		: loginAuthenticator(`${stCommand.dataDir}/credentials.json`, stCommand.profileName, clientIdProvider, userAgent)
+	const buildAuthenticator = (): Authenticator => {
+		if (token) {
+			return newBearerTokenAuthenticator(token)
+		}
+		if ('clientId' in urlProvider) {
+			return loginAuthenticator(
+				`${stCommand.dataDir}/credentials.json`,
+				stCommand.profileName,
+				urlProvider as ClientIdProvider,
+				userAgent,
+			)
+		}
+		return fatalError(
+			environment === 'china'
+				? 'a token is required for the china environment'
+				: 'no authentication method available',
+		)
+	}
+	const authenticator = buildAuthenticator()
 
 	const warningLogger = (warnings: WarningFromHeader[] | string): void => {
 		const message = 'Warnings from API:\n' + (typeof(warnings) === 'string'
@@ -97,12 +158,13 @@ export const apiCommand = async <T extends APICommandFlags>(
 		console.warn(message)
 	}
 	const client = newSmartThingsClient(authenticator,
-		{ urlProvider: clientIdProvider, logger, headers, warningLogger })
+		{ urlProvider: urlProvider, logger, headers, warningLogger })
 
 	return {
 		...stCommand,
+		environment,
 		token,
-		clientIdProvider,
+		urlProvider,
 		authenticator,
 		client,
 	}

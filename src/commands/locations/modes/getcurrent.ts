@@ -62,7 +62,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	const locationId = await chooseLocation(command, argv.location, { autoChoose: true })
 	const currentMode = await command.client.modes.getCurrent(locationId)
 	const mode = argv.verbose ? await withLocation(command.client, { ...currentMode, locationId }) : currentMode
-	await formatAndWriteItem(command, config, mode)
+	await formatAndWriteItem<Mode & WithNamedLocation>(command, config, mode)
 }
 
 const cmd: CommandModule<object, CommandArgs> = { command, describe, builder, handler }

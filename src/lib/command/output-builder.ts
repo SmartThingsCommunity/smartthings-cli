@@ -1,22 +1,26 @@
-import { Argv } from 'yargs'
+import { type Argv } from 'yargs'
 
-import { IOFormat } from '../io-util.js'
+import { type CLIConfig } from '../cli-config.js'
+import { type IOFormat } from '../io-util.js'
 import {
 	calculateOutputFormat,
 	calculateOutputFormatBuilder,
-	CalculateOutputFormatFlags,
+	type CalculateOutputFormatFlags,
 	jsonFormatter,
-	OutputFormatter,
+	type OutputFormatter,
 	yamlFormatter,
 } from './output.js'
-import { SmartThingsCommandFlags } from './smartthings-command.js'
-import { CLIConfig } from '../cli-config.js'
+import { type SmartThingsCommandFlags } from './smartthings-command.js'
 
 
-export type BuildOutputFormatterFlags = SmartThingsCommandFlags & CalculateOutputFormatFlags & {
-	indent?: number
-	groupRows?: boolean
-}
+export type BuildOutputFormatterFlags =
+	& SmartThingsCommandFlags
+	& CalculateOutputFormatFlags
+	& {
+		indent?: number
+		groupRows?: boolean
+	}
+
 export const buildOutputFormatterBuilder = <T extends SmartThingsCommandFlags>(yargs: Argv<T>): Argv<T & BuildOutputFormatterFlags> =>
 	calculateOutputFormatBuilder(yargs)
 		.option('indent', {
