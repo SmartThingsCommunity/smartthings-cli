@@ -14,15 +14,20 @@ import {
 import { type SmartThingsCommand, type SmartThingsCommandFlags } from './smartthings-command.js'
 
 
-export type InputAndOutputItemFlags = InputProcessorFlags & BuildOutputFormatterFlags & {
-	dryRun?: boolean
-}
+export type InputAndOutputItemFlags =
+	& InputProcessorFlags
+	& BuildOutputFormatterFlags
+	& {
+		dryRun?: boolean
+	}
+
 export type InputAndOutputItemConfig<O extends object> = FormatAndWriteItemConfig<O>
 export const inputAndOutputItemBuilder = <T extends SmartThingsCommandFlags>(
 	yargs: Argv<T>,
 ): Argv<T & InputAndOutputItemFlags> =>
 	inputItemBuilder(buildOutputFormatterBuilder(yargs))
 		.option('dry-run', { alias: 'd', describe: "produce JSON but don't actually submit", type: 'boolean' })
+
 /**
  * This is the main function used in most create and update commands. It parses input and passes it
  * on to the executeAction function parameter.

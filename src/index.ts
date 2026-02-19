@@ -1,15 +1,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import yargs, { Argv } from 'yargs'
+import yargs, { type Argv, type CommandModule } from 'yargs'
 import { hideBin } from 'yargs/helpers'
-
-import { commands } from './commands/index.js'
 
 
 const pkg = JSON.parse(fs.readFileSync(path.join(import.meta.dirname, '..', 'package.json'), 'utf8'))
 
-export const buildInstance = (): Argv => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const buildInstance = (commands: CommandModule<object, any>[]): Argv => {
 	const instance: Argv = yargs(hideBin(process.argv))
 	instance
 		.scriptName('smartthings')

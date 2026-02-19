@@ -1,9 +1,9 @@
-import { Naming, Sorting } from './io-defs.js'
-import { IOFormat } from '../io-util.js'
-import { itemTableFormatter, listTableFormatter, writeOutput, OutputFormatter } from './output.js'
-import { buildOutputFormatter, buildOutputFormatterBuilder, BuildOutputFormatterFlags } from './output-builder.js'
-import { SmartThingsCommand } from './smartthings-command.js'
-import { TableFieldDefinition } from '../table-generator.js'
+import { type IOFormat } from '../io-util.js'
+import { type TableFieldDefinition } from '../table-generator.js'
+import { type Naming, type Sorting } from './io-defs.js'
+import { itemTableFormatter, listTableFormatter, writeOutput, type OutputFormatter } from './output.js'
+import { buildOutputFormatter, buildOutputFormatterBuilder, type BuildOutputFormatterFlags } from './output-builder.js'
+import { type SmartThingsCommand } from './smartthings-command.js'
 
 
 export type TableCommonOutputProducer<O extends object> = {
@@ -12,18 +12,27 @@ export type TableCommonOutputProducer<O extends object> = {
 export type CustomCommonOutputProducer<O extends object> = {
 	buildTableOutput(data: O): string
 }
-export type CommonOutputProducer<O extends object> = TableCommonOutputProducer<O> | CustomCommonOutputProducer<O>
+export type CommonOutputProducer<O extends object> =
+	TableCommonOutputProducer<O> | CustomCommonOutputProducer<O>
 
-export type TableCommonListOutputProducer<L extends object> = Sorting<L> & {
-	listTableFieldDefinitions: TableFieldDefinition<L>[]
-}
-export type CustomCommonListOutputProducer<L extends object> = Sorting<L> & {
-	buildListTableOutput(data: L[]): string
-}
+export type TableCommonListOutputProducer<L extends object> =
+	& Sorting<L>
+	& {
+		listTableFieldDefinitions: TableFieldDefinition<L>[]
+	}
+
+
+export type CustomCommonListOutputProducer<L extends object> =
+	& Sorting<L>
+	& {
+		buildListTableOutput(data: L[]): string
+	}
+
 export type CommonListOutputProducer<L extends object> =
 	| Sorting<L>
 	| TableCommonListOutputProducer<L>
 	| CustomCommonListOutputProducer<L>
+
 
 export type FormatAndWriteItemFlags = BuildOutputFormatterFlags
 export const formatAndWriteItemBuilder = buildOutputFormatterBuilder

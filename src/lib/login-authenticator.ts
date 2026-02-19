@@ -11,7 +11,7 @@ import open from 'open'
 import ora from 'ora'
 import qs from 'qs'
 
-import { SmartThingsURLProvider, defaultSmartThingsURLProvider, Authenticator, HttpClientHeaders } from '@smartthings/core-sdk'
+import { SmartThingsURLProvider, globalSmartThingsURLProvider, Authenticator, HttpClientHeaders } from '@smartthings/core-sdk'
 
 import { delay } from './util.js'
 
@@ -22,8 +22,8 @@ export type ClientIdProvider = SmartThingsURLProvider & {
 	oauthAuthTokenRefreshURL: string
 }
 
-export const defaultClientIdProvider: ClientIdProvider = {
-	...defaultSmartThingsURLProvider,
+export const globalClientIdProvider: ClientIdProvider = {
+	...globalSmartThingsURLProvider,
 	baseOAuthInURL: 'https://oauthin-regional.api.smartthings.com/oauth',
 	oauthAuthTokenRefreshURL: 'https://auth-global.api.smartthings.com/oauth/token',
 	clientId: 'd18cf96e-c626-4433-bf51-ddbb10c5d1ed',
@@ -43,9 +43,9 @@ type AuthenticationInfo = {
 	deviceId: string
 }
 
+// The key to this map is a combination of the profile base URL.
 type CredentialsFileData = {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	[profileName: string]: any
+	[profileEnvKey: string]: Omit<AuthenticationInfo, 'expires'> & { expires: string }
 }
 
 /**
@@ -58,7 +58,12 @@ function scrubAuthInfo(authInfo?: AuthenticationInfo): string {
 	return message.replace(tokenRegex, '"$1-xxxx-xxxx-xxxx-xxxxxxxxxxxx"')
 }
 
-export const loginAuthenticator = (credentialsFile: string, profileName: string, clientIdProvider: ClientIdProvider, userAgent: string): Authenticator => {
+export const loginAuthenticator = (
+		credentialsFile: string,
+		profileName: string,
+		clientIdProvider: ClientIdProvider,
+		userAgent: string,
+): Authenticator => {
 	let authenticationInfo: AuthenticationInfo | undefined
 
 	const logger = log4js.getLogger('login-authenticator')
@@ -79,8 +84,9 @@ export const loginAuthenticator = (credentialsFile: string, profileName: string,
 
 	const clientId = clientIdProvider.clientId
 	const credentialsFileData = readCredentialsFile()
-	if (profileName in credentialsFileData) {
-		const authInfo = credentialsFileData[profileName]
+	const profileEnvKey = `${profileName}:${clientIdProvider.baseURL.replace(/https:\/\//, '')}`
+	if (profileEnvKey in credentialsFileData) {
+		const authInfo = credentialsFileData[profileEnvKey]
 		authenticationInfo = {
 			...authInfo,
 			expires: new Date(authInfo.expires),
@@ -110,16 +116,20 @@ export const loginAuthenticator = (credentialsFile: string, profileName: string,
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const updateTokenFromResponse = (response: AxiosResponse<any>): void => {
+		const expires = new Date(Date.now() + response.data.expires_in * 1000)
 		const updatedAuthenticationInfo = {
 			accessToken: response.data.access_token,
 			refreshToken: response.data.refresh_token,
-			expires: new Date(Date.now() + response.data.expires_in * 1000),
+			expires,
 			scope: response.data.scope,
 			installedAppId: response.data.installed_app_id,
 			deviceId: response.data.device_id,
 		}
 		const credentialsFileData = readCredentialsFile()
-		credentialsFileData[profileName] = updatedAuthenticationInfo
+		credentialsFileData[profileEnvKey] = {
+			...updatedAuthenticationInfo,
+			expires: updatedAuthenticationInfo.expires.toISOString(),
+		}
 		writeCredentialsFile(credentialsFileData)
 		authenticationInfo = updatedAuthenticationInfo
 	}
@@ -235,7 +245,7 @@ export const loginAuthenticator = (credentialsFile: string, profileName: string,
 
 	const logout = async (): Promise<void> => {
 		const credentialsFileData = readCredentialsFile()
-		delete credentialsFileData[profileName]
+		delete credentialsFileData[profileEnvKey]
 		writeCredentialsFile(credentialsFileData)
 	}
 

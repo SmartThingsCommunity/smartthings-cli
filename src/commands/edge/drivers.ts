@@ -3,6 +3,7 @@ import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 import { type EdgeDriver } from '@smartthings/core-sdk'
 
 import { type WithOrganization } from '../../lib/api-helpers.js'
+import { buildEpilog } from '../../lib/help.js'
 import {
 	apiOrganizationCommand,
 	apiOrganizationCommandBuilder,
@@ -23,13 +24,16 @@ import {
 	listDrivers,
 	listTableFieldDefinitions,
 } from '../../lib/command/util/edge-drivers.js'
-import { buildEpilog } from '../../lib/help.js'
 
 
-export type CommandArgs = APIOrganizationCommandFlags & AllOrganizationFlags & OutputItemOrListFlags & {
-	driverVersion?: string
-	idOrIndex?: string
-}
+export type CommandArgs =
+	& APIOrganizationCommandFlags
+	& AllOrganizationFlags
+	& OutputItemOrListFlags
+	& {
+		driverVersion?: string
+		idOrIndex?: string
+	}
 
 const command = 'edge:drivers [id-or-index]'
 

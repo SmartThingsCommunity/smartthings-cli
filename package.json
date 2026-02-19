@@ -31,7 +31,9 @@
 		"smartthings": "dist/src/run.js"
 	},
 	"exports": {
-		".": "./dist/src/index.js"
+		".": "./dist/src/index.js",
+		"./*": "./dist/src/lib/*.js",
+		"./commands/list": "./dist/src/commands/index.js"
 	},
 	"engines": {
 		"node": ">=24.8.0",
@@ -44,7 +46,7 @@
 	"dependencies": {
 		"@aws-sdk/client-lambda": "^3.899.0",
 		"@inquirer/prompts": "^7.8.6",
-		"@smartthings/core-sdk": "^8.4.1",
+		"@smartthings/core-sdk": "^8.5.0",
 		"axios": "1.12.2",
 		"chalk": "^5.6.2",
 		"env-paths": "^3.0.0",

@@ -60,8 +60,9 @@ const { loginAuthenticator } = await import('../../lib/login-authenticator.js')
 
 const credentialsFilename = '/full/path/to/file/credentials.json'
 const profileName = 'myProfile'
+const profileEnvKey = `${profileName}:example.com/base-url`
 const clientIdProvider = {
-	baseURL: 'https://example.com/unused-here',
+	baseURL: 'https://example.com/base-url',
 	authURL: 'https://example.com/unused-here',
 	keyApiURL: 'https://example.com/unused-here',
 	baseOAuthInURL: 'https://example.com/oauth-in-url',
@@ -72,7 +73,7 @@ const userAgent = 'userAgent'
 const accessToken = 'db3d92f1-0000-0000-0000-000000000000'
 const refreshToken = '3f3fb859-0000-0000-0000-000000000000'
 const credentialsFileData = {
-	[profileName]: {
+	[profileEnvKey]: {
 		accessToken: accessToken,
 		refreshToken: refreshToken,
 		expires: '2020-10-15T13:26:39.966Z',
@@ -92,8 +93,8 @@ const otherCredentialsFileData = {
 	},
 }
 const refreshableCredentialsFileData = {
-	[profileName]: {
-		...credentialsFileData[profileName],
+	[profileEnvKey]: {
+		...credentialsFileData[profileEnvKey],
 		expires: new Date().toISOString(),
 	},
 }
@@ -190,11 +191,13 @@ const mockBrowser = async (finishHandlerCaller = finishHappy, closeError?: Error
 
 describe('loginAuthenticator', () => {
 	it('creates Authenticator without errors', () => {
-		expect(loginAuthenticator(credentialsFilename, profileName, clientIdProvider, userAgent)).toBeDefined()
+		expect(loginAuthenticator(credentialsFilename, profileName, clientIdProvider, userAgent))
+			.toBeDefined()
 	})
 
 	it('makes sure directories exist', () => {
-		expect(loginAuthenticator(credentialsFilename, profileName, clientIdProvider, userAgent)).toBeDefined()
+		expect(loginAuthenticator(credentialsFilename, profileName, clientIdProvider, userAgent))
+			.toBeDefined()
 
 		expect(mkdirSyncMock).toHaveBeenCalledTimes(1)
 		expect(mkdirSyncMock).toHaveBeenCalledWith('/full/path/to/file', { recursive: true })
@@ -203,7 +206,8 @@ describe('loginAuthenticator', () => {
 	it('reads auth from credentials file', () => {
 		readFileSyncMock.mockReturnValueOnce(Buffer.from(JSON.stringify(credentialsFileData)))
 
-		expect(loginAuthenticator(credentialsFilename, profileName, clientIdProvider, userAgent)).toBeDefined()
+		expect(loginAuthenticator(credentialsFilename, profileName, clientIdProvider, userAgent))
+			.toBeDefined()
 
 		expect(traceMock).toHaveBeenCalledWith('constructing a LoginAuthenticator')
 		expect(traceMock).toHaveBeenCalledWith(expect.stringContaining('authentication info from file'))
@@ -213,7 +217,8 @@ describe('loginAuthenticator', () => {
 	it('partially redacts token values in logs', async () => {
 		readFileSyncMock.mockReturnValueOnce(Buffer.from(JSON.stringify(credentialsFileData)))
 
-		expect(loginAuthenticator(credentialsFilename, profileName, clientIdProvider, userAgent)).toBeDefined()
+		expect(loginAuthenticator(credentialsFilename, profileName, clientIdProvider, userAgent))
+			.toBeDefined()
 
 		expect(traceMock).not.toHaveBeenCalledWith(expect.stringContaining(accessToken))
 		expect(traceMock).not.toHaveBeenCalledWith(expect.stringContaining(refreshToken))
@@ -282,7 +287,8 @@ describe('login', () => {
 		expect(readFileSyncMock).toHaveBeenCalledTimes(2)
 		expect(readFileSyncMock).toHaveBeenCalledWith(credentialsFilename)
 		expect(writeFileSyncMock).toHaveBeenCalledTimes(1)
-		expect(writeFileSyncMock).toHaveBeenCalledWith(credentialsFilename, expect.stringMatching(/"myProfile":/))
+		expect(writeFileSyncMock)
+			.toHaveBeenCalledWith(credentialsFilename, expect.stringMatching(/"myProfile:example.com\/base-url":/))
 		expect(chmodMock).toHaveBeenCalledTimes(1)
 		expect(chmodMock).toHaveBeenCalledWith(credentialsFilename, 0o600, expect.any(Function))
 
@@ -481,7 +487,8 @@ describe('authenticate', () => {
 		expect(readFileSyncMock).toHaveBeenCalledTimes(2)
 		expect(readFileSyncMock).toHaveBeenCalledWith(credentialsFilename)
 		expect(writeFileSyncMock).toHaveBeenCalledTimes(1)
-		expect(writeFileSyncMock).toHaveBeenCalledWith(credentialsFilename, expect.stringMatching(/"myProfile":/))
+		expect(writeFileSyncMock)
+			.toHaveBeenCalledWith(credentialsFilename, expect.stringMatching(/"myProfile:example.com\/base-url":/))
 	})
 
 	it('includes User-Agent on refresh', async () => {
@@ -536,7 +543,8 @@ describe('authenticate', () => {
 		expect(readFileSyncMock).toHaveBeenCalledTimes(2)
 		expect(readFileSyncMock).toHaveBeenCalledWith(credentialsFilename)
 		expect(writeFileSyncMock).toHaveBeenCalledTimes(1)
-		expect(writeFileSyncMock).toHaveBeenCalledWith(credentialsFilename, expect.stringMatching(/"myProfile":/))
+		expect(writeFileSyncMock)
+			.toHaveBeenCalledWith(credentialsFilename, expect.stringMatching(/"myProfile:example.com\/base-url":/))
 	})
 
 	it('logs in not logged in', async () => {
@@ -580,7 +588,8 @@ describe('authenticate', () => {
 		expect(readFileSyncMock).toHaveBeenCalledTimes(2)
 		expect(readFileSyncMock).toHaveBeenCalledWith(credentialsFilename)
 		expect(writeFileSyncMock).toHaveBeenCalledTimes(1)
-		expect(writeFileSyncMock).toHaveBeenCalledWith(credentialsFilename, expect.stringMatching(/"myProfile":/))
+		expect(writeFileSyncMock)
+			.toHaveBeenCalledWith(credentialsFilename, expect.stringMatching(/"myProfile:example.com\/base-url":/))
 	})
 
 	it('logs errors with trying to refresh token', async () => {

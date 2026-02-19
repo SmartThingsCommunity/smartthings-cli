@@ -2,12 +2,12 @@ import { jest } from '@jest/globals'
 
 import type { osLocale } from 'os-locale'
 
-import type {
-	Authenticator,
-	Logger,
-	RESTClientConfig,
-	SmartThingsClient,
-	WarningFromHeader,
+import {
+	type Authenticator,
+	type Logger,
+	type RESTClientConfig,
+	type SmartThingsClient,
+	type WarningFromHeader,
 } from '@smartthings/core-sdk'
 
 import type {
@@ -19,8 +19,9 @@ import type {
 import type { newBearerTokenAuthenticator, newSmartThingsClient } from '../../../lib/command/util/st-client-wrapper.js'
 import type { CLIConfig } from '../../../lib/cli-config.js'
 import type { coreSDKLoggerFromLog4JSLogger } from '../../../lib/log-utils.js'
-import { defaultClientIdProvider, type loginAuthenticator } from '../../../lib/login-authenticator.js'
+import { globalClientIdProvider, type loginAuthenticator } from '../../../lib/login-authenticator.js'
 import type { TableGenerator } from '../../../lib/table-generator.js'
+import type { fatalError } from '../../../lib/util.js'
 import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
 
@@ -74,7 +75,7 @@ const loginAuthenticatorMock = jest.fn<typeof loginAuthenticator>()
 const mockAuthenticator = { mock: 'authenticator' } as unknown as Authenticator
 loginAuthenticatorMock.mockReturnValue(mockAuthenticator)
 jest.unstable_mockModule('../../../lib/login-authenticator.js', () => ({
-	defaultClientIdProvider,
+	globalClientIdProvider,
 	loginAuthenticator: loginAuthenticatorMock,
 }))
 
@@ -85,6 +86,11 @@ newSmartThingsClientMock.mockReturnValue(clientMock)
 jest.unstable_mockModule('../../../lib/command/util/st-client-wrapper.js', () => ({
 	newBearerTokenAuthenticator: newBearerTokenAuthenticatorMock,
 	newSmartThingsClient: newSmartThingsClientMock,
+}))
+
+const fatalErrorMock = jest.fn<typeof fatalError>().mockImplementation(() => { throw Error('fatal error')})
+jest.unstable_mockModule('../../../lib/util.js', () => ({
+	fatalError: fatalErrorMock,
 }))
 
 
@@ -103,7 +109,7 @@ test('apiCommandBuilder', () => {
 
 	expect(smartThingsCommandBuilderMock).toHaveBeenCalledTimes(1)
 	expect(smartThingsCommandBuilderMock).toHaveBeenCalledWith(argvMock)
-	expect(optionMock).toHaveBeenCalledTimes(2)
+	expect(optionMock).toHaveBeenCalledTimes(3)
 })
 
 describe('apiCommand', () => {
@@ -120,31 +126,78 @@ describe('apiCommand', () => {
 		expect(smartThingsCommandMock).toHaveBeenCalledWith(flags)
 	})
 
-	describe('token handling', () => {
-		it('leaves token undefined when not specified anywhere', async () => {
+	describe('environment and token handling', () => {
+		it('environment is "global" and leaves token undefined when not specified anywhere', async () => {
 			stringConfigValueMock.mockReturnValueOnce(undefined)
 
 			const result = await apiCommand(flags)
 
+			expect(result.environment).toBe('global')
 			expect(result.token).toBeUndefined()
-			expect(stringConfigValueMock).toHaveBeenCalledTimes(1)
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(2)
 			expect(stringConfigValueMock).toHaveBeenCalledWith('token')
+			expect(stringConfigValueMock).toHaveBeenCalledWith('environment')
 			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(0)
 			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(1)
 			expect(loginAuthenticatorMock).toHaveBeenCalledWith(
 				'test-data-dir/credentials.json',
 				'profile-from-parent',
-				defaultClientIdProvider, userAgent)
+				globalClientIdProvider,
+				userAgent,
+			)
+		})
+
+		it('uses environment from command line', async () => {
+			const result = await apiCommand({ profile: 'default', environment: 'china', token: 'token-from-cmd-line' })
+
+			expect(result.environment).toBe('china')
+			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledExactlyOnceWith('token-from-cmd-line')
+			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('errors out when token required and not provided', async () => {
+			await expect(apiCommand({ profile: 'default', environment: 'china' })).rejects.toThrow('fatal error')
+
+			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith('a token is required for the china environment')
+		})
+
+		it('errors out when token required and not provided', async () => {
+			const clientIdProvider = {
+				baseURL: 'https://api.example.com',
+			}
+			smartThingsCommandMock.mockResolvedValueOnce({
+				...stCommandMock,
+				'profile': {
+					clientIdProvider,
+				},
+			})
+
+			await expect(apiCommand(flags)).rejects.toThrow('fatal error')
+
+			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith('no authentication method available')
 		})
 
 		it('uses token from command line', async () => {
 			const result = await apiCommand({ profile: 'default', token: 'token-from-cmd-line' })
 
 			expect(result.token).toBe('token-from-cmd-line')
-			expect(stringConfigValueMock).toHaveBeenCalledTimes(0)
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(1)
+			expect(stringConfigValueMock).toHaveBeenCalledWith('environment')
 			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(1)
 			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledWith('token-from-cmd-line')
 			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('uses environment from config file', async () => {
+			stringConfigValueMock.mockReturnValueOnce('token-from-config-file')
+			stringConfigValueMock.mockReturnValueOnce('china')
+
+			const result = await apiCommand(flags)
+
+			expect(result.environment).toBe('china')
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(2)
+			expect(stringConfigValueMock).toHaveBeenCalledWith('token')
+			expect(stringConfigValueMock).toHaveBeenCalledWith('environment')
 		})
 
 		it('uses token from config file', async () => {
@@ -153,8 +206,9 @@ describe('apiCommand', () => {
 			const result = await apiCommand(flags)
 
 			expect(result.token).toBe('token-from-config-file')
-			expect(stringConfigValueMock).toHaveBeenCalledTimes(1)
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(2)
 			expect(stringConfigValueMock).toHaveBeenCalledWith('token')
+			expect(stringConfigValueMock).toHaveBeenCalledWith('environment')
 			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(1)
 			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledWith('token-from-config-file')
 			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(0)
@@ -164,7 +218,8 @@ describe('apiCommand', () => {
 			const result = await apiCommand({ profile: 'default', token: 'token-from-cmd-line' })
 
 			expect(result.token).toBe('token-from-cmd-line')
-			expect(stringConfigValueMock).toHaveBeenCalledTimes(0)
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(1)
+			expect(stringConfigValueMock).toHaveBeenCalledWith('environment')
 			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(1)
 			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledWith('token-from-cmd-line')
 			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(0)
@@ -175,39 +230,92 @@ describe('apiCommand', () => {
 			const result = await apiCommand(flags)
 
 			expect(result.token).toBe(undefined)
-			expect(stringConfigValueMock).toHaveBeenCalledTimes(1)
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(2)
 			expect(stringConfigValueMock).toHaveBeenCalledWith('token')
+			expect(stringConfigValueMock).toHaveBeenCalledWith('environment')
 			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(0)
 			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(1)
 			expect(loginAuthenticatorMock).toHaveBeenCalledWith(
 				'test-data-dir/credentials.json',
 				'profile-from-parent',
-				defaultClientIdProvider, userAgent)
+				globalClientIdProvider, userAgent)
+		})
+	})
+
+	describe('environment handling', () => {
+		it('uses environment from command line over environment from config file', async () => {
+			smartThingsCommandMock.mockResolvedValueOnce({
+				...stCommandMock,
+				profile: {
+					environment: 'global',
+				},
+			})
+
+			const result = await apiCommand({ profile: 'default', environment: 'china', token: 'token-from-cmd-line' })
+
+			expect(result.environment).toBe('china')
+			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledExactlyOnceWith('token-from-cmd-line')
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(0)
+			expect(loginAuthenticatorMock).toHaveBeenCalledTimes(0)
+		})
+
+		it('normalizes empty environment to "global"', async () => {
+			stringConfigValueMock.mockReturnValueOnce('')
+			const result = await apiCommand(flags)
+
+			expect(result.environment).toBe('global')
+			expect(stringConfigValueMock).toHaveBeenCalledTimes(2)
+			expect(stringConfigValueMock).toHaveBeenCalledWith('token')
+			expect(stringConfigValueMock).toHaveBeenCalledWith('environment')
+			expect(loginAuthenticatorMock).toHaveBeenCalledExactlyOnceWith(
+				'test-data-dir/credentials.json',
+				'profile-from-parent',
+				globalClientIdProvider, userAgent)
+			expect(newBearerTokenAuthenticatorMock).toHaveBeenCalledTimes(0)
 		})
 	})
 
 	describe('clientIdProvider handling', () => {
-		it('uses defaultClientIdProvider when none provided in configuration', async () => {
+		it('uses globalClientIdProvider when none provided in configuration', async () => {
 			const result = await apiCommand(flags)
 
-			expect(result.clientIdProvider).toBe(defaultClientIdProvider)
+			expect(result.urlProvider).toBe(globalClientIdProvider)
 		})
 
 		it('uses value from config', async () => {
 			const clientIdProvider = {
-				notReally: 'valid',
-				needToFix: 'this test when we do more input checking',
+				baseURL: 'https://api.smartthings.com',
 			}
 			smartThingsCommandMock.mockResolvedValueOnce({
 				...stCommandMock,
-				profile: {
+				'profile': {
 					clientIdProvider,
 				},
 			})
+			stringConfigValueMock.mockReturnValueOnce('token-from-config-file')
 
 			const result = await apiCommand(flags)
 
-			expect(result.clientIdProvider).toStrictEqual(clientIdProvider)
+			expect(result.urlProvider).toStrictEqual(clientIdProvider)
+			expect(result.environment).toBe('global')
+		})
+
+		it('calculates environment based on clientIdProvider.baseURL', async () => {
+			const clientIdProvider = {
+				baseURL: 'https://api.samsungiotcloud.cn',
+			}
+			smartThingsCommandMock.mockResolvedValueOnce({
+				...stCommandMock,
+				'profile': {
+					clientIdProvider,
+				},
+			})
+			stringConfigValueMock.mockReturnValueOnce('token-from-config-file')
+
+			const result = await apiCommand(flags)
+
+			expect(result.urlProvider).toStrictEqual(clientIdProvider)
+			expect(result.environment).toBe('china')
 		})
 
 		it('logs error and uses default when config is not an object', async () => {
@@ -221,7 +329,8 @@ describe('apiCommand', () => {
 			const result = await apiCommand(flags)
 
 			expect(errorMock).toHaveBeenCalledWith('ignoring invalid configClientIdProvider')
-			expect(result.clientIdProvider).toBe(defaultClientIdProvider)
+			expect(result.urlProvider).toBe(globalClientIdProvider)
+			expect(result.environment).toBe('global')
 		})
 	})
 

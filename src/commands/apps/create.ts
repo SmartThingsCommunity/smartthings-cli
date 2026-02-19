@@ -22,9 +22,13 @@ import {
 import { getAppCreateRequestFromUser } from '../../lib/command/util/apps-user-input-create.js'
 
 
-export type CommandArgs = APICommandFlags & InputAndOutputItemFlags & LambdaAuthFlags & {
-	authorize: boolean
-}
+export type CommandArgs =
+	& APICommandFlags
+	& InputAndOutputItemFlags
+	& LambdaAuthFlags
+	& {
+		authorize: boolean
+	}
 
 const command = 'apps:create'
 
