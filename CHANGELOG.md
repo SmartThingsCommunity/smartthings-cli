@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.1.0
+
+### Minor Changes
+
+- [#819](https://github.com/SmartThingsCommunity/smartthings-cli/pull/819) [`56fd5f2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/56fd5f2218f88a07436d55718d4775162e8eaac4) Thanks [@rossiam](https://github.com/rossiam)! - add support for China environment
+
 ## 2.0.2
 
 ### Patch Changes
