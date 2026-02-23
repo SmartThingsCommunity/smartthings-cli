@@ -45,7 +45,7 @@ export type CreateChooseFunctionOptions<T extends object> = {
 
 export type ChooseFunction<T extends object> = (
 	command: APICommand<SelectFromListFlags>,
-	itemIdOrNameFromArg?: string,
+	itemIdOrIndexFromArg?: string,
 	options?: Partial<ChooseOptions<T>>) => Promise<string>
 
 export const createChooseFn = <T extends object>(
@@ -55,20 +55,25 @@ export const createChooseFn = <T extends object>(
 ): ChooseFunction<T> =>
 	async (
 			command: APICommand<SelectFromListFlags>,
-			itemIdOrNameFromArg?: string,
+			itemIdOrIndexFromArg?: string,
 			options?: Partial<ChooseOptions<T>>,
 	): Promise<string> => {
 		const opts = chooseOptionsWithDefaults(options)
 
 		// Listing items usually makes an API call which we only want to happen once so we do it
 		// now and just use stub functions that return these items later as needed.
-		const items = await (opts.listItems ?? listItems)(command)
-		const filteredItems = opts.listFilter ? items.filter(opts.listFilter) : items
-		const listItemsWrapper = async (): Promise<T[]> => filteredItems
+		let items: T[] | undefined = undefined
+		const listItemsWrapper = async (): Promise<T[]> => {
+			if (!items) {
+				items = await (opts.listItems ?? listItems)(command)
+			}
+			const filteredItems = opts.listFilter ? items.filter(opts.listFilter) : items
+			return filteredItems
+		}
 
 		const preselectedId = opts.allowIndex
-			? await stringTranslateToId(config, itemIdOrNameFromArg, listItemsWrapper)
-			: itemIdOrNameFromArg
+			? await stringTranslateToId(config, itemIdOrIndexFromArg, listItemsWrapper)
+			: itemIdOrIndexFromArg
 
 		const selectOptions: SelectOptions<T> = {
 			preselectedId,

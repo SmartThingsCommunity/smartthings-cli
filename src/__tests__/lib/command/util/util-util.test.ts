@@ -166,7 +166,8 @@ describe('createChooseFn', () => {
 		it('uses listItems from createChooseFn by default', async () => {
 			expect(await chooseSimpleType(command)).toBe('selected-simple-type-id')
 
-			expect(itemListMock).toHaveBeenCalledExactlyOnceWith(command)
+			// The list function should not be called until it's actually used.
+			expect(itemListMock).toHaveBeenCalledTimes(0)
 
 			const listItems = selectFromListMock.mock.calls[0][2].listItems
 
@@ -183,7 +184,7 @@ describe('createChooseFn', () => {
 			expect(await chooseSimpleType(command, undefined, { listItems: overridingListItemsMock }))
 				.toBe('selected-simple-type-id')
 
-			expect(overridingListItemsMock).toHaveBeenCalledExactlyOnceWith(command)
+			expect(overridingListItemsMock).toHaveBeenCalledTimes(0)
 			expect(itemListMock).not.toHaveBeenCalled()
 
 			const listItems = selectFromListMock.mock.calls[0][2].listItems
