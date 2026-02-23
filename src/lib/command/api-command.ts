@@ -1,5 +1,5 @@
 import log4js from 'log4js'
-import { osLocale } from 'os-locale'
+import osLocale from 'os-locale'
 import { type Argv } from 'yargs'
 
 import {
@@ -120,7 +120,7 @@ export const apiCommand = async <T extends APICommandFlags>(
 				headers['Accept-Language'] = flags.language
 			}
 		} else {
-			headers['Accept-Language'] = await osLocale()
+			headers['Accept-Language'] = osLocale()
 		}
 
 		return headers

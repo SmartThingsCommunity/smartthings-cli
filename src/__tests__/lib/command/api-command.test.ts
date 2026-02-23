@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import type { osLocale } from 'os-locale'
+import type osLocale from 'os-locale'
 
 import {
 	type Authenticator,
@@ -28,9 +28,9 @@ import { buildArgvMock } from '../../test-lib/builder-mock.js'
 const { errorMock, loggerMock } = await import('../../test-lib/logger-mock.js')
 
 const osLocaleMock = jest.fn<typeof osLocale>()
-osLocaleMock.mockResolvedValue('OS Locale')
+osLocaleMock.mockReturnValue('OS Locale')
 jest.unstable_mockModule('os-locale', () => ({
-	osLocale: osLocaleMock,
+	default: osLocaleMock,
 }))
 
 const coreSDKLoggerFromLog4JSLoggerMock = jest.fn<typeof coreSDKLoggerFromLog4JSLogger>()
