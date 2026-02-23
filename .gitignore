@@ -26,3 +26,4 @@ packages/edge/lib
 __pycache__
 
 .github/copilot-instructions.md
+/*.tgz
