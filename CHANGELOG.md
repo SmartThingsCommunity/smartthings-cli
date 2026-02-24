@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.1.0
+
+### Minor Changes
+
+- [#819](https://github.com/SmartThingsCommunity/smartthings-cli/pull/819) [`56fd5f2`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/56fd5f2218f88a07436d55718d4775162e8eaac4) Thanks [@rossiam](https://github.com/rossiam)! - add support for China environment
+
+### Patch Changes
+
+- [#821](https://github.com/SmartThingsCommunity/smartthings-cli/pull/821) [`d71a676`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d71a6765dc52a44e9f7fff5c8efc940bb87ebb25) Thanks [@rossiam](https://github.com/rossiam)! - remove some unnecessary calls to the API
+
 ## 2.0.2
 
 ### Patch Changes
