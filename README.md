@@ -96,7 +96,7 @@ asking you to log in and give the CLI permission to access your account.
 The CLI will automatically request login as needed.
 
 You can also use a personal access token (PAT) for authentication by passing a `--token <uuid>` flag to commands or by creating a
-[configuration file](https://github.com/SmartThingsCommunity/smartthings-cli/blob/main/packages/cli/doc/configuration.md)
+[configuration file](https://github.com/SmartThingsCommunity/smartthings-cli/blob/main/doc/configuration.md)
 and including the token in a `token` key for your profile. We generally don't recommend this approach
 since it less secure, given that PATs don't expire unless revoked by the user, but it can be useful when working with
 headless servers or for users who frequently switch between accounts.
@@ -285,4 +285,4 @@ $ SMARTTHINGS_DEBUG=true smartthings <command>
 ```
 
 More details about advanced configuration and logging in the CLI can be found on the
-[configuration documentation page](https://github.com/SmartThingsCommunity/smartthings-cli/blob/master/packages/cli/doc/configuration.md).
+[configuration documentation page](https://github.com/SmartThingsCommunity/smartthings-cli/blob/main/doc/configuration.md).

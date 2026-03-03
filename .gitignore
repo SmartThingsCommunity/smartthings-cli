@@ -17,10 +17,6 @@ jest-html-reporters-attach
 jest_html_reporters.html
 smartthings-*.zip
 
-# the Typescript outDir that oclif prefers
-packages/cli/lib
-packages/edge/lib
-
 # functional tests
 .pytest_cache
 __pycache__

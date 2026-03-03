@@ -103,10 +103,10 @@ Command line flags always override configuration options.
 
 Logging is useful when you are developing the CLI itself or if you need to debug an issue experienced during general use.
 
-By default, a rolling log file will be created at the [OCLIF CLI cache](https://oclif.io/docs/config) directory.
-* macOS: `~/Library/Caches/@smartthings/cli`
-* Unix: `~/.cache/@smartthings/cli`
-* Windows: `%LOCALAPPDATA%\@smartthings\cli`
+By default, a rolling log file will be created at the log directory specified by [env-paths](https://www.npmjs.com/package/env-paths) directory.
+* macOS: `~/Library/Logs/@smartthings/cli`
+* Unix: `~/.local/state/@smartthings/cli` (or `$XDG_STATE_HOME/@smartthings/cli`)
+* Windows: `%LOCALAPPDATA%\@smartthings\cli\Log`
 
 The CLI uses [log4js](https://log4js-node.github.io/log4js-node/) for logging.
 
