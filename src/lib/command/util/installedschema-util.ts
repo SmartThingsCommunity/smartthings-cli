@@ -15,8 +15,6 @@ export const installedSchemaInstances = async (
 		locationIds: string[] | undefined,
 		options: { verbose: boolean },
 ): Promise<(InstalledSchemaApp & WithNamedLocation)[]> => {
-	// We accept and handle undefined locationIds because that's what we get from oclif even
-	// though the type is just `string[]`.
 	if (!locationIds || locationIds.length == 0) {
 		locationIds = (await client.locations.list()).map(it => it.locationId)
 	}

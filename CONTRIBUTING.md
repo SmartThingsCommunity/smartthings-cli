@@ -57,8 +57,7 @@ commands. Some ground rules to follow when creating or updating commands:
 * Commands should be kebab case. The module name is used as the command name and can be placed in
   a topic by placing it in that topic's directory.
 * Commands should always include a short one-line description that starts with a lowercase letter
-  and does not end with a period. A more detailed description can be included after a newline. This
-  description can be split across lines but should not include newlines (oclif will wrap it).
+  and does not end with a period. More details can be provided in the epilog if necessary.
 * Flags are also kebab case and should have a short single-character version only if they are
   expected to be used often.
   * Descriptions of flags should be short, start with a lowercase letter, and include no ending
@@ -68,12 +67,9 @@ commands. Some ground rules to follow when creating or updating commands:
   * Descriptions for arguments should be a short phrase without a capital letter and without ending
     punctuation.
 * Examples of common tasks should be included with a description of the example.
-  * Use the [object format](https://oclif.io/docs/commands#other-command-options)
-    rather than the simple string format when providing examples.
   * When specifying an id in an example, use a representative example id.
   * One-line descriptions should start with a lowercase letter and not end with a period.
-  * There is no need to include `$ ` prefix for command examples because oclif includes it
-    automatically.
+  * Use `$0` in place of `smartthings` in the example.
 
 ### Command Naming
 
@@ -138,7 +134,7 @@ If you are not familiar with SmartThings, we have
 [extensive online documentation](https://developer.smartthings.com/docs/getting-started/welcome/).
 
 To create and manage your services and devices on SmartThings, create an account in the
-[developer workspace](https://smartthings.developer.samsung.com/workspace/).
+[developer console](https://developer.smartthings.com/console).
 
 The [SmartThings Community](https://community.smartthings.com/) is a good place share and
 ask questions.

@@ -27,7 +27,7 @@
 - All commands now have examples in their help (`smartthings <command> --help`).
 - args that require enum-like types are now case-insensitive. e.g. For example, you can now list zigbee
   devices with `smartthings devices --type zigbee`.
-- The config file location is now determined by [envPaths](https://www.npmjs.com/package/env-paths) library
+- The config file location is now determined by [env-paths](https://www.npmjs.com/package/env-paths) library
   rather than oclif. A reasonable attempt has been made at finding the old config and copying it for
   the user so normally no change is needed. (Future changes will need to be made to the new file, of course.)
   The `config` command now displays the location of the configuration file.
