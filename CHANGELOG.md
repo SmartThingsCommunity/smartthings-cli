@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.1.1
+
+### Patch Changes
+
+- [#825](https://github.com/SmartThingsCommunity/smartthings-cli/pull/825) [`7ca9575`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/7ca957535dc9c237b0235b476bfaba2f0f906690) Thanks [@rossiam](https://github.com/rossiam)! - downgrade axios to work around regression
+
 ## 2.1.0
 
 ### Minor Changes
