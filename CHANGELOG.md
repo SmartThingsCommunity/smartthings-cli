@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.1.2
+
+### Patch Changes
+
+- [#832](https://github.com/SmartThingsCommunity/smartthings-cli/pull/832) [`9fcc731`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/9fcc73168f834529a9add0a2768b5337eba536f6) Thanks [@rossiam](https://github.com/rossiam)! - process exceptions manually for better error messages
+
 ## 2.1.1
 
 ### Patch Changes
