@@ -32,7 +32,7 @@ export const buildInstance = (commands: CommandModule<object, any>[]): Argv => {
 		/* eslint-enable @typescript-eslint/naming-convention */
 		.completion('generate-completions-script', 'output completion script setup')
 		.fail((message, error, yargs) => {
-			if ('isAxiosError' in error && error.isAxiosError) {
+			if (error && 'isAxiosError' in error && error.isAxiosError) {
 				// We don't print axiosError.message here because it just duplicates the things
 				// we're displaying but unformatted.
 				const axiosError = error as AxiosError
