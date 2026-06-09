@@ -31,8 +31,11 @@ export const buildInstance = (commands: CommandModule<object, any>[]): Argv => {
 		})
 		/* eslint-enable @typescript-eslint/naming-convention */
 		.completion('generate-completions-script', 'output completion script setup')
-		.fail((message, error, yargs) => {
-			if ('isAxiosError' in error && error.isAxiosError) {
+		.fail((message, error) => {
+			if (message) {
+				console.error(message)
+				console.error('Run with --help for usage details.')
+			} else if (error && 'isAxiosError' in error && error.isAxiosError) {
 				// We don't print axiosError.message here because it just duplicates the things
 				// we're displaying but unformatted.
 				const axiosError = error as AxiosError
@@ -43,8 +46,7 @@ export const buildInstance = (commands: CommandModule<object, any>[]): Argv => {
 			} else if (error) {
 				console.error(error.message)
 			} else {
-				console.error(message)
-				console.error(yargs.help())
+				console.error('An unknown error occurred.')
 			}
 
 			// eslint-disable-next-line no-process-exit
