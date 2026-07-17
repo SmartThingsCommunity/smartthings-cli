@@ -31,7 +31,7 @@ jest.unstable_mockModule('../../../lib/help.js', () => ({
 	buildEpilog: buildEpilogMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const chooseDeviceMock = jest.fn<ChooseFunction<Device>>()
 jest.unstable_mockModule('../../../lib/command/util/devices-choose.js', () => ({

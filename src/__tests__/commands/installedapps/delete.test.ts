@@ -18,7 +18,7 @@ jest.unstable_mockModule('../../../lib/help.js', () => ({
 	buildEpilog: buildEpilogMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const chooseInstalledAppMock = jest.fn<ChooseFunction<InstalledApp>>()
 const chooseInstalledAppFnMock = jest.fn<typeof chooseInstalledAppFn>()

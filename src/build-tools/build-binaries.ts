@@ -3,7 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import pack from '@vercel/ncc'
-import archiver from 'archiver'
+import { TarArchive, ZipArchive, type Archiver } from 'archiver'
 import { compile } from 'nexe'
 
 
@@ -59,14 +59,13 @@ const buildAndZipTarget = async (target: string): Promise<void> => {
 	console.log(`Compressing ${target}`)
 
 	const [platform, arch] = target.split('-')
-	const [archiveExt, compressionFormat, config]: [string, archiver.Format, archiver.ArchiverOptions] =
-		platform === 'windows'
-			? ['zip', 'zip', {}]
-			: ['tgz', 'tar', { gzip: true }]
+	const archiveExt = platform === 'windows' ? 'zip' : 'tgz'
 
 	const archiveName = path.join(distBinDir, `smartthings-${platform}-${arch}.${archiveExt}`)
 
-	const archive = archiver(compressionFormat, config)
+	const archive: Archiver = platform === 'windows'
+		? new ZipArchive({})
+		: new TarArchive({ gzip: true })
 	archive.append(fs.createReadStream(fullBinaryFilename), { name: binaryFilename, mode: 0o755 })
 	archive.pipe(fs.createWriteStream(archiveName))
 

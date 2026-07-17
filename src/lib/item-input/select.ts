@@ -63,12 +63,11 @@ export function selectDef<T>(
 		}
 		inquirerChoices.push(cancelOption)
 
-		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			const selection = await select({
 				message: `Select ${name}.`,
 				choices: inquirerChoices,
-				default: defaultSelection ?? 0,
+				default: defaultSelection,
 				pageSize: inquirerPageSize,
 			})
 

@@ -35,7 +35,7 @@ jest.unstable_mockModule('../../../../lib/help.js', () => ({
 const {
 	apiCommandMock,
 	apiCommandBuilderMock,
-} = apiCommandMocks('../../../..')
+} = apiCommandMocks()
 
 const inputAndOutputItemMock =
 	jest.fn<typeof inputAndOutputItem<GenerateAppOAuthRequest, GenerateAppOAuthResponse>>()
@@ -46,6 +46,7 @@ jest.unstable_mockModule('../../../../lib/command/input-and-output-item.js', () 
 }))
 
 const inputProcessorMock = jest.fn<typeof inputProcessor>()
+	.mockReturnValue({} as unknown as ReturnType<typeof inputProcessor>)
 jest.unstable_mockModule('../../../../lib/command/input-processor.js', () => ({
 	inputProcessor: inputProcessorMock,
 }))

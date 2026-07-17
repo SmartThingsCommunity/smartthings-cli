@@ -21,7 +21,7 @@ jest.unstable_mockModule('../../../../lib/help.js', () => ({
 	buildEpilog: buildEpilogMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const chooseDriverFromChannelMock = jest.fn<ChooseFunction<DriverChannelDetailsWithName>>()
 	.mockResolvedValue('driver-id-chosen-from-channel')

@@ -147,7 +147,7 @@ const promptAndAddBasicCommands = async (
 		attribute: CapabilityAttribute,
 		type: Type,
 ): Promise<void> => {
-	let basicCommandName: string | undefined = undefined
+	let basicCommandName: string | undefined
 	const baseMessage = 'If you want to add a basic command, enter a command name now (or hit enter for none):'
 	let message = `${baseMessage}\n(Basic commands are simple commands that set the attribute to a specific value.)`
 	do {
@@ -278,7 +278,7 @@ const promptAndAddCommand = async (capability: CapabilityCreate): Promise<void> 
 		arguments: [],
 	}
 
-	let argumentName: string | undefined = undefined
+	let argumentName: string | undefined
 	do {
 		argumentName =
 			await optionalStringInput('If you want to add an argument, enter a name for it now (enter to finish): ')

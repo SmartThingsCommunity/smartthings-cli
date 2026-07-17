@@ -19,7 +19,7 @@ jest.unstable_mockModule('../../../../lib/help.js', () => ({
 	buildEpilog: buildEpilogMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const edgeCommandMock = jest.fn<typeof edgeCommand>()
 jest.unstable_mockModule('../../../../lib/command/edge-command.js', () => ({

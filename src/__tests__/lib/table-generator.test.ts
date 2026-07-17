@@ -12,7 +12,6 @@ const atMock = jest.fn(original)
 jest.unstable_mockModule('lodash.at', async () => ({ default: atMock }))
 
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 const { defaultTableGenerator } = await import('../../lib/table-generator.js')
 
 

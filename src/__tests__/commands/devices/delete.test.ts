@@ -14,7 +14,7 @@ import { buildArgvMock } from '../../test-lib/builder-mock.js'
 
 const buildEpilogMock = jest.fn<typeof buildEpilog>()
 jest.unstable_mockModule('../../../lib/help.js', () => ({ buildEpilog: buildEpilogMock }))
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const chooseDeviceMock = jest.fn<typeof chooseDevice>()
 jest.unstable_mockModule('../../../lib/command/util/devices-choose.js', () => ({

@@ -76,7 +76,6 @@ export const coreSDKLoggerFromLog4JSLogger = (logger: Logger): CoreSDKLogger => 
 		},
 
 		/* eslint-disable @typescript-eslint/no-explicit-any */
-		/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 		trace: (message: any, ...args: any[]) => logger.trace(message, ...args),
 		debug: (message: any, ...args: any[]) => logger.debug(message, ...args),
 		info: (message: any, ...args: any[]) => logger.info(message, ...args),
@@ -84,7 +83,6 @@ export const coreSDKLoggerFromLog4JSLogger = (logger: Logger): CoreSDKLogger => 
 		error: (message: any, ...args: any[]) => logger.error(message, ...args),
 		fatal: (message: any, ...args: any[]) => logger.fatal(message, ...args),
 		/* eslint-enable @typescript-eslint/no-explicit-any */
-		/* eslint-enable @typescript-eslint/explicit-module-boundary-types */
 
 		isTraceEnabled: (): boolean => logger.isTraceEnabled(),
 		isDebugEnabled: (): boolean => logger.isDebugEnabled(),

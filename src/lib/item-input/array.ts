@@ -109,7 +109,6 @@ export function arrayDef<T>(name: string, itemDef: InputDefinition<T>, options?:
 
 	// Common code from build and edit
 	const editList = async (list: T[], context: unknown[]): Promise<FinishAction | CancelAction> => {
-		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			const choices: (Choice<symbol | number>)[] = list.map((item, index) => ({
 				name: `Edit ${itemSummary(item)}.`,

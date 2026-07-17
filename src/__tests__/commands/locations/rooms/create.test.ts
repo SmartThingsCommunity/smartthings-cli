@@ -25,7 +25,7 @@ jest.unstable_mockModule('../../../../lib/help.js', () => ({
 const {
 	apiCommandMock,
 	apiCommandBuilderMock,
-} = apiCommandMocks('../../../..')
+} = apiCommandMocks()
 
 const inputAndOutputItemMock =
 	jest.fn<typeof inputAndOutputItem<RoomRequest, Room>>()

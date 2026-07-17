@@ -8,7 +8,7 @@ export const getRulesByLocation = async (
 		client: SmartThingsClient,
 		locationId?: string,
 ): Promise<(Rule & WithNamedLocation)[]> => {
-	let locations: LocationItem[] = []
+	let locations: LocationItem[]
 	if (locationId) {
 		locations = [await client.locations.get(locationId)]
 	} else {

@@ -215,7 +215,7 @@ describe('processSrcDir', () => {
 	it('includes files at top level', async () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua specific check
-		readdirSyncMock.mockReturnValueOnce(['init.lua' as unknown as Dirent<Buffer<ArrayBufferLike>>])
+		readdirSyncMock.mockReturnValueOnce(['init.lua' as unknown as Dirent<Buffer<ArrayBuffer>>])
 		fileExistsMock.mockResolvedValueOnce(true) // init.lua
 		isSymbolicLinkMock.mockResolvedValueOnce(false)
 		isDirMock.mockResolvedValueOnce(false) // init.lua is not a directory
@@ -246,7 +246,7 @@ describe('processSrcDir', () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua specific check
 		readdirSyncMock.mockReturnValueOnce(
-			['init.lua', 'subdirectory'] as unknown as Dirent<Buffer<ArrayBufferLike>>[],
+			['init.lua', 'subdirectory'] as unknown as Dirent<Buffer<ArrayBuffer>>[],
 		)
 		fileExistsMock.mockResolvedValueOnce(true) // init.lua
 		isSymbolicLinkMock.mockResolvedValueOnce(false) // init.lua
@@ -255,7 +255,7 @@ describe('processSrcDir', () => {
 		fileExistsMock.mockResolvedValueOnce(true) // subdirectory
 		isSymbolicLinkMock.mockResolvedValueOnce(false) // subdirectory
 		isDirMock.mockResolvedValueOnce(true) // subdirectory is a directory
-		readdirSyncMock.mockReturnValueOnce(['lib.lua' as unknown as Dirent<Buffer<ArrayBufferLike>>])
+		readdirSyncMock.mockReturnValueOnce(['lib.lua' as unknown as Dirent<Buffer<ArrayBuffer>>])
 		fileExistsMock.mockResolvedValueOnce(true) // lib.lua
 		isDirMock.mockResolvedValueOnce(false) // lib.lua
 		createReadStreamMock.mockReturnValueOnce(readStreamMock) // lib.lua
@@ -285,7 +285,7 @@ describe('processSrcDir', () => {
 	it('follows sym links to files', async () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua specific check
-		readdirSyncMock.mockReturnValueOnce(['file link' as unknown as Dirent<Buffer<ArrayBufferLike>>])
+		readdirSyncMock.mockReturnValueOnce(['file link' as unknown as Dirent<Buffer<ArrayBuffer>>])
 		fileExistsMock.mockResolvedValueOnce(true)
 		isSymbolicLinkMock.mockResolvedValueOnce(true)
 		realPathForSymbolicLinkMock.mockResolvedValueOnce('real file')
@@ -318,7 +318,7 @@ describe('processSrcDir', () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua specific check
 
-		readdirSyncMock.mockReturnValueOnce(['init.lua', 'test.lua'] as unknown as Dirent<Buffer<ArrayBufferLike>>[])
+		readdirSyncMock.mockReturnValueOnce(['init.lua', 'test.lua'] as unknown as Dirent<Buffer<ArrayBuffer>>[])
 		fileExistsMock.mockResolvedValueOnce(true) // init.lua
 		isSymbolicLinkMock.mockResolvedValueOnce(false) // init.lua
 		isDirMock.mockResolvedValueOnce(false) // init.lua is not a directory
@@ -352,7 +352,7 @@ describe('processSrcDir', () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua exists
 
-		readdirSyncMock.mockReturnValueOnce(['init.lua', 'subdirectory'] as unknown as Dirent<Buffer<ArrayBufferLike>>[])
+		readdirSyncMock.mockReturnValueOnce(['init.lua', 'subdirectory'] as unknown as Dirent<Buffer<ArrayBuffer>>[])
 		fileExistsMock.mockResolvedValueOnce(true) // init.lua
 		isSymbolicLinkMock.mockResolvedValueOnce(false) // init.lua
 		isDirMock.mockResolvedValueOnce(false) // init.lua is not a directory
@@ -362,7 +362,7 @@ describe('processSrcDir', () => {
 		// The services limit nesting to 10 but count both the main directory and the source
 		// directory, so we only need to add a total of 9 directories to get one too many.
 		for (let count = 1; count <= 8; count++) {
-			readdirSyncMock.mockReturnValueOnce(['subdirectory' as unknown as Dirent<Buffer<ArrayBufferLike>>])
+			readdirSyncMock.mockReturnValueOnce(['subdirectory' as unknown as Dirent<Buffer<ArrayBuffer>>])
 			fileExistsMock.mockResolvedValueOnce(true) // subdirectory
 			isSymbolicLinkMock.mockResolvedValueOnce(false) // subdirectory
 			isDirMock.mockResolvedValueOnce(true)
@@ -394,7 +394,7 @@ describe('processSrcDir', () => {
 	it('logs error for sym link to directory', async () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua specific check
-		readdirSyncMock.mockReturnValueOnce(['dir link' as unknown as Dirent<Buffer<ArrayBufferLike>>])
+		readdirSyncMock.mockReturnValueOnce(['dir link' as unknown as Dirent<Buffer<ArrayBuffer>>])
 		fileExistsMock.mockResolvedValueOnce(true)
 		isSymbolicLinkMock.mockResolvedValueOnce(true)
 		realPathForSymbolicLinkMock.mockResolvedValueOnce('real dir')
@@ -425,7 +425,7 @@ describe('processSrcDir', () => {
 	it('logs error for broken sym link', async () => {
 		requireDirMock.mockResolvedValueOnce('src dir')
 		isFileMock.mockResolvedValueOnce(true) // init.lua specific check
-		readdirSyncMock.mockReturnValueOnce(['file link' as unknown as Dirent<Buffer<ArrayBufferLike>>])
+		readdirSyncMock.mockReturnValueOnce(['file link' as unknown as Dirent<Buffer<ArrayBuffer>>])
 		fileExistsMock.mockResolvedValueOnce(false)
 
 		expect(await processSrcDir('project dir', zipMock, [])).toBe(false)
@@ -469,7 +469,7 @@ describe('processProfiles', () => {
 	it('adds yaml files with .yml extension', async () => {
 		requireDirMock.mockResolvedValueOnce('profiles dir')
 		readdirSyncMock.mockReturnValueOnce(
-			['profile1.yml', 'profile2.yml'] as unknown as Dirent<Buffer<ArrayBufferLike>>[],
+			['profile1.yml', 'profile2.yml'] as unknown as Dirent<Buffer<ArrayBuffer>>[],
 		)
 		createReadStreamMock.mockReturnValueOnce(readStreamMock)
 
@@ -492,7 +492,7 @@ describe('processProfiles', () => {
 
 	it('adds yaml files with .yaml extension as .yml', async () => {
 		requireDirMock.mockResolvedValueOnce('profiles dir')
-		readdirSyncMock.mockReturnValueOnce(['profile.yaml' as unknown as Dirent<Buffer<ArrayBufferLike>>])
+		readdirSyncMock.mockReturnValueOnce(['profile.yaml' as unknown as Dirent<Buffer<ArrayBuffer>>])
 		createReadStreamMock.mockReturnValueOnce(readStreamMock)
 
 		await expect(processProfiles('project dir', zipMock)).resolves.not.toThrow()
@@ -511,7 +511,7 @@ describe('processProfiles', () => {
 
 	it('throws exception for non-yaml files in profiles directory', async () => {
 		requireDirMock.mockResolvedValueOnce('profiles dir')
-		readdirSyncMock.mockReturnValueOnce(['profile.exe' as unknown as Dirent<Buffer<ArrayBufferLike>>])
+		readdirSyncMock.mockReturnValueOnce(['profile.exe' as unknown as Dirent<Buffer<ArrayBuffer>>])
 
 		expect(await processProfiles('project dir', zipMock)).toBe('never return')
 

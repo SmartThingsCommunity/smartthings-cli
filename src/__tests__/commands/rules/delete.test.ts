@@ -20,7 +20,7 @@ jest.unstable_mockModule('../../../lib/help.js', () => ({
 	buildEpilog: buildEpilogMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const chooseRuleMock = jest.fn<ChooseFunction<Rule>>()
 const chooseRuleFnMock = jest.fn<typeof chooseRuleFn>().mockReturnValue(chooseRuleMock)

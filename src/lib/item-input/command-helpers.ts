@@ -58,7 +58,6 @@ export const updateFromUserInput = async <T extends object>(
 		}
 	}
 
-	// eslint-disable-next-line no-constant-condition
 	while (true) {
 		const validationResult = inputDefinition.validateFinal
 			? inputDefinition.validateFinal(retVal)

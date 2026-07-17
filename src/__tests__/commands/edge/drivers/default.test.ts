@@ -26,7 +26,7 @@ jest.unstable_mockModule('../../../../lib/util.js', () => ({
 	fatalError: fatalErrorMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const outputItemOrListMock = jest.fn<typeof outputItemOrList<EdgeDriver>>()
 const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()

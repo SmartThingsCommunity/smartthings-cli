@@ -51,7 +51,7 @@ export const getCustomByNamespace = async (
 		client: SmartThingsClient,
 		namespace?: string,
 ): Promise<CapabilitySummaryWithNamespace[]> => {
-	let namespaces: string[] = []
+	let namespaces: string[]
 	if (namespace) {
 		namespaces = [namespace]
 	} else {

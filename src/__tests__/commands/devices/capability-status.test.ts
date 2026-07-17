@@ -37,7 +37,7 @@ import type { fatalError } from '../../../lib/util.js'
 import { apiCommandMocks } from '../../test-lib/api-command-mock.js'
 
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const buildEpilogMock = jest.fn<typeof buildEpilog>()
 jest.unstable_mockModule('../../../lib/help.js', () => ({

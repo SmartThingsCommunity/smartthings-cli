@@ -17,7 +17,7 @@ const apiCommandResultMock = {
 	profileName: 'profile-from-parent',
 } as unknown as APICommand
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 apiCommandMock.mockResolvedValue(apiCommandResultMock)
 
 const {
