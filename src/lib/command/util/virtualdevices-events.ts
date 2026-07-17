@@ -71,7 +71,7 @@ export const getInputFromUser = async (
 ): Promise<DeviceEvent[]> => {
 	const attributeName = argv.name
 	const attributeValue = argv.value
-	let events: DeviceEvent[] = []
+	let events: DeviceEvent[]
 
 	if (attributeName) {
 		if (attributeValue) {

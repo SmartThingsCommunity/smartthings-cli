@@ -35,7 +35,7 @@ jest.unstable_mockModule('../../../lib/help.js', () => ({
 	buildEpilog: buildEpilogMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const lambdaAuthBuilderMock = jest.fn<typeof lambdaAuthBuilder>()
 jest.unstable_mockModule('../../../lib/command/common-flags.js', () => ({

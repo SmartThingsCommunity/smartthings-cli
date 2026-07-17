@@ -5,7 +5,7 @@
 		"declarationMap": true,
 		"sourceMap": true,
 		"importHelpers": true,
-		"module": "node18",
+		"module": "node20",
 		"lib": ["ES2023", "DOM"],
 		"strict": true,
 		"target": "ES2023",
@@ -21,7 +21,6 @@
 	"include": [
 		"src/**/*",
 		"global.d.ts",
-		".eslintrc.cjs",
 		"jest.config.ts",
 		"package.json"
 	]

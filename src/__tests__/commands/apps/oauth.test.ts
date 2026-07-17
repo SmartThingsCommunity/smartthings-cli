@@ -20,7 +20,7 @@ jest.unstable_mockModule('../../../lib/help.js', () => ({
 	buildEpilog: buildEpilogMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const outputItemMock = jest.fn<typeof outputItem>()
 const outputItemBuilderMock = jest.fn<typeof outputItemBuilder>()

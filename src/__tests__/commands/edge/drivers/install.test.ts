@@ -21,7 +21,7 @@ jest.unstable_mockModule('../../../../lib/help.js', () => ({
 	buildEpilog: buildEpilogMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const selectFromListMock = jest.fn<typeof selectFromList>()
 jest.unstable_mockModule('../../../../lib/command/select.js', () => ({

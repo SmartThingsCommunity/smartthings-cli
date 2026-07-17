@@ -19,7 +19,7 @@ import { tableGeneratorMock } from '../../test-lib/table-mock.js'
 
 const buildEpilogMock = jest.fn<typeof buildEpilog>()
 jest.unstable_mockModule('../../../lib/help.js', () => ({ buildEpilog: buildEpilogMock }))
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const inputAndOutputItemMock = jest.fn<typeof inputAndOutputItem<DeviceUpdate, Device>>()
 const inputAndOutputItemBuilderMock = jest.fn<typeof inputAndOutputItemBuilder>()

@@ -56,7 +56,7 @@ describe('selectDef', () => {
 					expect.any(Separator),
 					cancelOption,
 				],
-				default: 0,
+				default: undefined,
 			}))
 		})
 
@@ -75,7 +75,7 @@ describe('selectDef', () => {
 					expect.any(Separator),
 					cancelOption,
 				],
-				default: 0,
+				default: undefined,
 			}))
 		})
 
@@ -93,7 +93,7 @@ describe('selectDef', () => {
 					expect.any(Separator),
 					cancelOption,
 				],
-				default: 0,
+				default: undefined,
 			}))
 		})
 

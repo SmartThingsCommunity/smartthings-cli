@@ -29,7 +29,7 @@ jest.unstable_mockModule('../../../lib/user-query.js', () => ({
 	stringInput: stringInputMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const formatAndWriteItemMock = jest.fn<typeof formatAndWriteItem<InstalledApp>>()
 const formatAndWriteItemBuilderMock = jest.fn<typeof formatAndWriteItemBuilder>()

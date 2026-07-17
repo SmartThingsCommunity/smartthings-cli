@@ -17,7 +17,7 @@ jest.unstable_mockModule('../../../lib/help.js', () => ({
 	buildEpilog: buildEpilogMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const chooseSceneMock = jest.fn<typeof chooseScene>()
 jest.unstable_mockModule('../../../lib/command/util/scenes-util.js', () => ({

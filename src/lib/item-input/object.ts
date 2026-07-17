@@ -148,7 +148,6 @@ export function objectDef<T extends object>(name: string, inputDefsByProperty: I
 
 	const updateFromUserInput = async (original: T, context: unknown[] = []): Promise<T | CancelAction> => {
 		const updated = { ...original }
-		// eslint-disable-next-line no-constant-condition
 		while (true) {
 			const contextForChildren = [{ ...updated }, ...context]
 			const choices = buildPropertyChoices(inputDefsByProperty, updated, contextForChildren)

@@ -17,7 +17,7 @@ jest.unstable_mockModule('../../lib/help.js', () => ({
 	buildEpilog: buildEpilogMock,
 }))
 
-const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks('../..')
+const { apiCommandMock, apiCommandBuilderMock } = apiCommandMocks()
 
 const fatalErrorMock = jest.fn<typeof fatalError>()
 jest.unstable_mockModule('../../lib/util.js', () => ({
