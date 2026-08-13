@@ -49,7 +49,12 @@ const buildAndZipTarget = async (target: string): Promise<void> => {
 	await compile({
 		name: 'smartthings',
 		input: packFile,
-		resources: ['package.json'],
+		// nexe's static analysis doesn't always detect the packed entry file as a
+		// dependency to embed (e.g. it misses it when ncc emits require/import shims
+		// for ESM-only transitive dependencies), which leaves the compiled binary
+		// unable to find its own bundled script at runtime. Listing it explicitly
+		// forces nexe to embed it regardless.
+		resources: ['package.json', packFile],
 		remote: 'https://github.com/SmartThingsCommunity/cli-nexe-builds/releases/download/1.0.0',
 		output: fullBinaryFilename,
 		python: 'python3',
