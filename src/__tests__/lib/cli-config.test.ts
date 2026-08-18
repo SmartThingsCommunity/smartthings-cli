@@ -2,7 +2,7 @@ import { jest } from '@jest/globals'
 
 import type { readFile, writeFile } from 'node:fs/promises'
 
-import type yaml from 'js-yaml'
+import { type load, type dump, YAML11_SCHEMA } from 'js-yaml'
 
 import type {
 	CLIConfig,
@@ -20,14 +20,16 @@ jest.unstable_mockModule('node:fs/promises', () => ({
 	writeFile: writeFileMock,
 }))
 
-const yamlLoadMock = jest.fn<typeof yaml.load>()
-const yamlDumpMock = jest.fn<typeof yaml.dump>()
+const yamlLoadMock = jest.fn<typeof load>()
+const yamlDumpMock = jest.fn<typeof dump>()
 jest.unstable_mockModule('js-yaml', () => ({
-	default: {
-		load: yamlLoadMock,
-		dump: yamlDumpMock,
-	},
+	load: yamlLoadMock,
+	dump: yamlDumpMock,
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	YAML11_SCHEMA,
 }))
+
+const yamlLoadOptions = { schema: YAML11_SCHEMA }
 
 const { loggerMock, warnMock } = await import('../test-lib/logger-mock.js')
 
@@ -67,9 +69,8 @@ describe('loadConfigFile', () => {
 		expect(readFileMock).toHaveBeenCalledTimes(0)
 	})
 
-	it('returns empty object for empty file', async () => {
-		readFileMock.mockResolvedValueOnce('empty contents')
-		yamlLoadMock.mockReturnValueOnce('')
+	it.each([undefined, null, ''])('returns empty object for empty file', async (fileContents) => {
+		readFileMock.mockResolvedValueOnce(fileContents as string)
 
 		expect(await loadConfigFile('empty file')).toEqual({})
 
@@ -77,8 +78,7 @@ describe('loadConfigFile', () => {
 		expect(yamlExistsMock).toHaveBeenCalledWith('empty file')
 		expect(readFileMock).toHaveBeenCalledTimes(1)
 		expect(readFileMock).toHaveBeenCalledWith('empty file', 'utf-8')
-		expect(yamlLoadMock).toHaveBeenCalledTimes(1)
-		expect(yamlLoadMock).toHaveBeenCalledWith('empty contents')
+		expect(yamlLoadMock).not.toHaveBeenCalled()
 	})
 
 	it.each(['string', ['array']])('throws error for non-object yaml file', async (parsedYAML) => {
@@ -92,7 +92,7 @@ describe('loadConfigFile', () => {
 		expect(readFileMock).toHaveBeenCalledTimes(1)
 		expect(readFileMock).toHaveBeenCalledWith('configFilename.json', 'utf-8')
 		expect(yamlLoadMock).toHaveBeenCalledTimes(1)
-		expect(yamlLoadMock).toHaveBeenCalledWith('file contents')
+		expect(yamlLoadMock).toHaveBeenCalledWith('file contents', yamlLoadOptions)
 		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
 			'invalid config file format\n' + seeConfigDocs,
 		)
@@ -113,7 +113,7 @@ describe('loadConfigFile', () => {
 		expect(readFileMock).toHaveBeenCalledTimes(1)
 		expect(readFileMock).toHaveBeenCalledWith('file with bad configs', 'utf-8')
 		expect(yamlLoadMock).toHaveBeenCalledTimes(1)
-		expect(yamlLoadMock).toHaveBeenCalledWith('config with multiple errors')
+		expect(yamlLoadMock).toHaveBeenCalledWith('config with multiple errors', yamlLoadOptions)
 		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
 			'bad profile badProfile1; profile must be an object\n' +
 				'bad profile badProfile2; profile must be an object\n' +
@@ -141,7 +141,7 @@ describe('loadConfigFile', () => {
 		expect(readFileMock).toHaveBeenCalledTimes(1)
 		expect(readFileMock).toHaveBeenCalledWith('good file', 'utf-8')
 		expect(yamlLoadMock).toHaveBeenCalledTimes(1)
-		expect(yamlLoadMock).toHaveBeenCalledWith('good contents')
+		expect(yamlLoadMock).toHaveBeenCalledWith('good contents', yamlLoadOptions)
 	})
 })
 

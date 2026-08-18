@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 
-import yaml from 'js-yaml'
+import { dump } from 'js-yaml'
 import { type ArgumentsCamelCase, type Argv, type CommandModule } from 'yargs'
 
 import { type Profile } from '../lib/cli-config.js'
@@ -52,7 +52,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	]
 	const tableFieldDefinitions: TableFieldDefinition<ProfileWithName>[] = [
 		...listTableFieldDefinitions,
-		{ label: 'Definition', value: item => yaml.dump(item.profile) },
+		{ label: 'Definition', value: item => dump(item.profile) },
 	]
 
 	const outputListConfig: OutputListConfig<ProfileWithName> = {

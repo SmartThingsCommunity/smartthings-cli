@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises'
 
-import yaml from 'js-yaml'
+import { dump } from 'js-yaml'
 import { Argv } from 'yargs'
 
 import { formatFromFilename, IOFormat, stdoutIsTTY } from '../io-util.js'
@@ -52,7 +52,7 @@ export const jsonFormatter = <T extends object>(indent: number): OutputFormatter
 	(data: T) => JSON.stringify(data, null, indent)
 
 export const yamlFormatter = <T extends object>(indent: number): OutputFormatter<T> =>
-	(data: T) => yaml.dump(data, { indent })
+	(data: T) => dump(data, { indent })
 
 export const itemTableFormatter =
 	<T extends object>(tableGenerator: TableGenerator, fieldDefinitions: TableFieldDefinition<T>[]): OutputFormatter<T> =>
