@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import yaml from 'js-yaml'
+import { load, YAML11_SCHEMA } from 'js-yaml'
 import { Configuration as Log4jsConfig, Logger, FileAppender, StandardErrorAppender } from 'log4js'
 
 import { Logger as CoreSDKLogger } from '@smartthings/core-sdk'
@@ -54,7 +54,8 @@ export function loadLog4jsConfig(configFilename: string, defaultConfig: Log4jsCo
 		return defaultConfig
 	}
 
-	const parsedConfig = yaml.load(fs.readFileSync(configFilename, 'utf-8'))
+	const contents = fs.readFileSync(configFilename, 'utf-8')
+	const parsedConfig = contents.trim() ? load(contents, { schema: YAML11_SCHEMA }) : undefined
 	if (isLog4jsConfig(parsedConfig)) {
 		return parsedConfig
 	}

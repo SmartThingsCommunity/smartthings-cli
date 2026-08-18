@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { lstat, mkdir, realpath, stat } from 'node:fs/promises'
 
-import yaml from 'js-yaml'
+import { load, YAML11_SCHEMA } from 'js-yaml'
 
 import { fatalError } from './util.js'
 
@@ -75,13 +75,14 @@ const isYAMLFileData = (data: unknown): data is YAMLFileData =>
 
 export const readYAMLFile = (filename: string): YAMLFileData => {
 	try {
-		const data = yaml.load(readFileSync(filename, 'utf-8'))
-		if (isYAMLFileData(data)) {
-			return data
+		const contents = readFileSync(filename, 'utf-8')
+		if (!contents?.trim()) {
+			return fatalError(`empty file ${filename}`)
 		}
 
-		if (data == null) {
-			return fatalError(`empty file ${filename}`)
+		const data = load(contents, { schema: YAML11_SCHEMA })
+		if (isYAMLFileData(data)) {
+			return data
 		}
 
 		return fatalError(`invalid file ${filename}`)

@@ -3,7 +3,7 @@ import { jest } from '@jest/globals'
 import { type readFileSync } from 'node:fs'
 
 import log4js, { type Logger } from 'log4js'
-import type yaml from 'js-yaml'
+import { type load, YAML11_SCHEMA } from 'js-yaml'
 
 import type { yamlExists } from '../../lib/io-util.js'
 import { fatalError } from '../../lib/util.js'
@@ -16,11 +16,11 @@ jest.unstable_mockModule('node:fs', () => ({
 	},
 }))
 
-const yamlLoadMock = jest.fn<typeof yaml.load>()
+const yamlLoadMock = jest.fn<typeof load>()
 jest.unstable_mockModule('js-yaml', () => ({
-	default: {
-		load: yamlLoadMock,
-	},
+	load: yamlLoadMock,
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	YAML11_SCHEMA,
 }))
 
 const yamlExistsMock = jest.fn<typeof yamlExists>()
@@ -101,7 +101,7 @@ describe('loadLog4jsConfig', () => {
 		expect(loadLog4jsConfig('filename', defaultConfig)).toStrictEqual(loadedConfig)
 
 		expect(readFileSyncMock).toHaveBeenCalledExactlyOnceWith('filename', 'utf-8')
-		expect(yamlLoadMock).toHaveBeenCalledExactlyOnceWith('file contents')
+		expect(yamlLoadMock).toHaveBeenCalledExactlyOnceWith('file contents', { schema: YAML11_SCHEMA })
 	})
 
 	it('ends with error if config is invalid', () => {
@@ -115,7 +115,7 @@ describe('loadLog4jsConfig', () => {
 		expect(loadLog4jsConfig('filename', defaultConfig)).toBe('never return')
 
 		expect(readFileSyncMock).toHaveBeenCalledExactlyOnceWith('filename', 'utf-8')
-		expect(yamlLoadMock).toHaveBeenCalledExactlyOnceWith('bad file contents')
+		expect(yamlLoadMock).toHaveBeenCalledExactlyOnceWith('bad file contents', { schema: YAML11_SCHEMA })
 
 		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
 			expect.stringContaining('invalid or unreadable logging config file format'),

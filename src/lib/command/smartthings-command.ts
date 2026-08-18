@@ -85,7 +85,14 @@ export const getConfigDirsCheckingForOldConfig = async (
 	// The documentation says not to use `suffix` "unless you really have to" but the directories
 	// get suffixed with `-nodejs` without using it. This would be fine for the data directory,
 	// but for the config and log directories that users might use, it seems rather ugly.
-	const { config: configDir, data: dataDir, log: logDir } = envPaths('@smartthings/cli', { suffix: '' })
+	const { config, data, log } = envPaths('@smartthings_cli', { suffix: '' })
+
+	// Version 4.0.0 no longer allows `/` as part of the path so we use `_` in the request
+	// and substitute `/` back in the results.
+	const backToSlash = (path: string): string => path.replace(/@smartthings_cli/, '@smartthings/cli')
+	const configDir = backToSlash(config)
+	const dataDir = backToSlash(data)
+	const logDir = backToSlash(log)
 	if (options.verboseLogging) {
 		console.error(`config dir = ${configDir}`)
 		console.error(`data dir = ${dataDir}`)

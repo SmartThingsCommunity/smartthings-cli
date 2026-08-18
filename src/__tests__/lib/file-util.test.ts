@@ -2,7 +2,7 @@ import { jest } from '@jest/globals'
 
 import { readFileSync, promises as fsPromises, Stats } from 'node:fs'
 
-import type yaml from 'js-yaml'
+import { type load, YAML11_SCHEMA } from 'js-yaml'
 
 import { type YAMLFileData } from '../../lib/file-util.js'
 import type { fatalError } from '../../lib/util.js'
@@ -24,13 +24,11 @@ jest.unstable_mockModule('node:fs/promises', () => ({
 	realpath: realpathMock,
 }))
 
-const yamlLoadMock = jest.fn<typeof yaml.load>()
-const yamlDumpMock = jest.fn<typeof yaml.dump>()
+const yamlLoadMock = jest.fn<typeof load>()
 jest.unstable_mockModule('js-yaml', () => ({
-	default: {
-		load: yamlLoadMock,
-		dump: yamlDumpMock,
-	},
+	load: yamlLoadMock,
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	YAML11_SCHEMA,
 }))
 
 const fatalErrorMock = jest.fn<typeof fatalError>()
@@ -271,7 +269,7 @@ describe('readYAMLFile', () => {
 		expect(readYAMLFile('filename')).toBe(yamlFile)
 
 		expect(readFileSyncMock).toHaveBeenCalledExactlyOnceWith('filename', 'utf-8')
-		expect(yamlLoadMock).toHaveBeenCalledExactlyOnceWith('file contents')
+		expect(yamlLoadMock).toHaveBeenCalledExactlyOnceWith('file contents', { schema: YAML11_SCHEMA })
 	})
 
 	it('passes error message into user-facing error', () => {
@@ -285,18 +283,31 @@ describe('readYAMLFile', () => {
 	})
 
 	it.each`
-		invalidYaml | errorMessage
-		${{}}       | ${'invalid file filename'}
-		${null}     | ${'empty file filename'}
-		${''}       | ${'invalid file filename'}
-		${0}        | ${'invalid file filename'}
-	`('throws $errorMessage when reading $invalidYaml', ({ invalidYaml, errorMessage }) => {
+		invalidYaml
+		${{}}
+		${0}
+	`('throws "invalid file filename" when reading $invalidYaml', ({ invalidYaml }) => {
 		readFileSyncMock.mockReturnValueOnce('file contents')
 		yamlLoadMock.mockReturnValueOnce(invalidYaml)
 		fatalErrorMock.mockReturnValueOnce('never return' as never)
 
 		expect(readYAMLFile('filename')).toBe('never return')
 
-		expect(fatalErrorMock).toHaveBeenCalledWith(errorMessage)
+		expect(fatalErrorMock).toHaveBeenCalledWith('invalid file filename')
+	})
+
+	it.each`
+		invalidYaml
+		${null}
+		${''}
+		${undefined}
+	`('throws "empty file filename" when reading $invalidYaml', ({ invalidYaml }) => {
+		readFileSyncMock.mockReturnValueOnce(invalidYaml)
+		fatalErrorMock.mockReturnValueOnce('never return' as never)
+
+		expect(readYAMLFile('filename')).toBe('never return')
+
+		expect(fatalErrorMock).toHaveBeenCalledWith('empty file filename')
+		expect(yamlLoadMock).not.toHaveBeenCalled()
 	})
 })

@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises'
 
 import { type Logger } from 'log4js'
-import yaml from 'js-yaml'
+import { dump, load, YAML11_SCHEMA } from 'js-yaml'
 
 import { yamlExists } from './io-util.js'
 import { fatalError } from './util.js'
@@ -72,7 +72,8 @@ export const loadConfigFile = async (filename: string): Promise<ProfilesByName> 
 		return {}
 	}
 
-	const parsed = yaml.load(await readFile(filename, 'utf-8'))
+	const contents = await readFile(filename, 'utf-8')
+	const parsed = contents?.trim() ? load(contents, { schema: YAML11_SCHEMA }) : {}
 	if (parsed) {
 		if (typeof parsed === 'object' && !Array.isArray(parsed)) {
 			const errors: string[] = []
@@ -178,13 +179,13 @@ export const loadConfig = async (description: CLIConfigDescription, logger: Logg
 
 /**
  * Generate managed config file contents. If there are no profiles to save, we skip calling
- * `yaml.dump` which returns `{}` in that case.
+ * `dump` which returns `{}` in that case.
  */
 export const buildManagedConfigFileContents = (config: CLIConfig): string =>
 	`# This file is used to store settings managed by the CLI. Users are not meant to edit it directly.
 # Any options in the main config file will override values from this one.
 
-` + (Object.keys(config.managedProfiles).length > 0 ? yaml.dump(config.managedProfiles) : '')
+` + (Object.keys(config.managedProfiles).length > 0 ? dump(config.managedProfiles) : '')
 
 /**
  * Save the specified configuration key into managed config so it will be picked up

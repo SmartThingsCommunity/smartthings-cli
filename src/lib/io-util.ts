@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import log4js from 'log4js'
-import yaml from 'js-yaml'
+import { load, YAML11_SCHEMA } from 'js-yaml'
 
 import { fatalError } from './util.js'
 
@@ -26,7 +26,7 @@ export function formatFromFilename(filename: string): IOFormat {
 
 
 export function parseJSONOrYAML<T>(rawInputData: string, source: string): T {
-	const data = yaml.load(rawInputData)
+	const data = rawInputData.trim() ? load(rawInputData, { schema: YAML11_SCHEMA }) : undefined
 	if (!data) {
 		return fatalError(`did not get any data from ${source}`)
 	}
