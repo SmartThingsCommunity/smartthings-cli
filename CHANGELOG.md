@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.1.3
+
+### Patch Changes
+
+- [#838](https://github.com/SmartThingsCommunity/smartthings-cli/pull/838) [`d0e7681`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d0e76816b56608fb827ee3bac0c09b31d92b9388) Thanks [@rossiam](https://github.com/rossiam)! - Fixed error message when no command is given.
+
 ## 2.1.2
 
 ### Patch Changes
