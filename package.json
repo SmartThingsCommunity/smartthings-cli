@@ -44,9 +44,9 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@aws-sdk/client-lambda": "^3.1110.0",
-		"@inquirer/prompts": "^8.5.2",
-		"@smartthings/core-sdk": "^8.5.3",
+		"@aws-sdk/client-lambda": "^3.1114.0",
+		"@inquirer/prompts": "^8.6.0",
+		"@smartthings/core-sdk": "^8.5.4",
 		"axios": "1.19.0",
 		"chalk": "^6.0.0",
 		"env-paths": "^4.0.0",
@@ -67,15 +67,15 @@
 		"tslib": "^2.8.1",
 		"tsx": "^4.23.12",
 		"undici": "^8.10.0",
-		"uuid": "^14.0.1",
+		"uuid": "^14.0.2",
 		"yargs": "^18.1.0"
 	},
 	"devDependencies": {
-		"@changesets/changelog-github": "^0.7.0",
-		"@changesets/cli": "^2.31.1",
-		"@changesets/release-utils": "^0.2.7",
-		"@commitlint/cli": "^21.2.1",
-		"@commitlint/config-conventional": "^21.2.0",
+		"@changesets/changelog-github": "^1.0.0",
+		"@changesets/cli": "^3.0.1",
+		"@changesets/release-utils": "^1.0.0",
+		"@commitlint/cli": "^21.2.2",
+		"@commitlint/config-conventional": "^21.2.2",
 		"@eslint-community/eslint-plugin-eslint-comments": "^4.7.2",
 		"@eslint/js": "^10.0.1",
 		"@stylistic/eslint-plugin": "^5.10.0",
@@ -91,9 +91,9 @@
 		"@vercel/ncc": "^0.45.0",
 		"archiver": "^8.0.0",
 		"cz-conventional-changelog": "^3.3.0",
-		"eslint": "^10.8.0",
+		"eslint": "^10.8.1",
 		"eslint-plugin-import-x": "^4.17.1",
-		"eslint-plugin-jest": "^29.16.0",
+		"eslint-plugin-jest": "^29.16.1",
 		"globals": "^17.11.0",
 		"jest": "^30.4.2",
 		"jest-environment-jsdom": "^30.4.1",
@@ -105,7 +105,10 @@
 		"strip-ansi": "^7.2.0",
 		"ts-jest": "^29.4.12",
 		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.66.0"
+		"typescript-eslint": "^8.67.0"
+	},
+	"overrides": {
+		"got": "^12.6.0"
 	},
 	"scripts": {
 		"lint": "eslint src",
