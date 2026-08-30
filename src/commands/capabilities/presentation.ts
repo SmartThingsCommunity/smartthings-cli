@@ -40,20 +40,20 @@ export const builder = (yargs: Argv): Argv<CommandArgs> =>
 		})
 		.example([
 			[
-				'$0 capabilities:presentations',
+				'$0 capabilities:presentation',
 				'prompt for a capability and display its presentation information',
 			],
 			[
-				'$0 capabilities:presentations --namespace cathappy12345',
+				'$0 capabilities:presentation --namespace cathappy12345',
 				'prompt for a capability from the specified namespace and display its' +
 					' presentation information',
 			],
 			[
-				'$0 capabilities:presentations cathappy12345.myCapability',
+				'$0 capabilities:presentation cathappy12345.myCapability',
 				'display details for a capability by id',
 			],
 			[
-				'$0 capabilities:presentations 1',
+				'$0 capabilities:presentation 1',
 				'display presentation information for the first capability in the list retrieved' +
 					' by running "smartthings capabilities"',
 			],

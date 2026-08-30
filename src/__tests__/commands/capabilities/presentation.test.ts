@@ -86,7 +86,26 @@ test('builder', () => {
 	expect(capabilityIdOrIndexBuilderMock).toHaveBeenCalledExactlyOnceWith(apiOrganizationCommandBuilderArgvMock)
 	expect(formatAndWriteItemBuilderMock).toHaveBeenCalledExactlyOnceWith(capabilityIdOrIndexBuilderArgvMock)
 
-	expect(exampleMock).toHaveBeenCalledTimes(1)
+	expect(exampleMock).toHaveBeenCalledExactlyOnceWith([
+		[
+			'$0 capabilities:presentation',
+			'prompt for a capability and display its presentation information',
+		],
+		[
+			'$0 capabilities:presentation --namespace cathappy12345',
+			'prompt for a capability from the specified namespace and display its' +
+				' presentation information',
+		],
+		[
+			'$0 capabilities:presentation cathappy12345.myCapability',
+			'display details for a capability by id',
+		],
+		[
+			'$0 capabilities:presentation 1',
+			'display presentation information for the first capability in the list retrieved' +
+				' by running "smartthings capabilities"',
+		],
+	])
 	expect(optionMock).toHaveBeenCalledTimes(1)
 	expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 	expect(epilogMock).toHaveBeenCalledTimes(1)
