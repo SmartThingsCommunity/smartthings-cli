@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.1.3
+
+### Patch Changes
+
+- [#846](https://github.com/SmartThingsCommunity/smartthings-cli/pull/846) [`6ec2af4`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/6ec2af407787d9771e68e3bc1f46bc956a48c696) Thanks [@sungmpar](https://github.com/sungmpar)! - Correct the capability presentation help examples to use the registered command name.
+
+- [#838](https://github.com/SmartThingsCommunity/smartthings-cli/pull/838) [`d0e7681`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/d0e76816b56608fb827ee3bac0c09b31d92b9388) Thanks [@rossiam](https://github.com/rossiam)! - Fixed error message when no command is given.
+
 ## 2.1.2
 
 ### Patch Changes
