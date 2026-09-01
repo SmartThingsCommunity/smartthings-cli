@@ -4,7 +4,7 @@ import type { ArgumentsCamelCase, Argv } from 'yargs'
 
 import type { DeviceActivity, HistoryEndpoint, PaginatedList } from '@smartthings/core-sdk'
 
-import type { CommandArgs } from '../../../commands/devices/history.js'
+import type { CommandArgs } from '../../../commands/locations/history.js'
 import type { CLIConfig } from '../../../lib/cli-config.js'
 import type { buildEpilog } from '../../../lib/help.js'
 import type { APICommand, APICommandFlags } from '../../../lib/command/api-command.js'

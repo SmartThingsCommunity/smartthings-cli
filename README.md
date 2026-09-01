@@ -190,7 +190,7 @@ smartthings edge:channels:create --help
 | devices:commands [id] [command] | execute a device command |
 | devices:delete [id] | delete a device |
 | devices:health [id-or-index] | get the current health status of a device |
-| devices:history [id-or-index] | get device history by device |
+| devices:history [id-or-index..] | get device history by device |
 | devices:preferences [id-or-index] | get the current preferences of a device |
 | devices:presentation [id-or-index] | get a device presentation |
 | devices:rename [id] [new-label] | rename a device |
