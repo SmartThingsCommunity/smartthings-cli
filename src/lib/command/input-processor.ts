@@ -6,7 +6,9 @@ import {
 	parseJSONOrYAML,
 	readDataFromStdin,
 	stdinIsTTY,
+	stdoutIsTTY,
 } from '../io-util.js'
+import { fatalError } from '../util.js'
 
 
 export type InputProcessor<T> = {
@@ -89,6 +91,31 @@ export function commandLineInputProcessor<T>(command: CommandLineInputCommand<T>
 	return inputProcessor(() => command.hasCommandLineInput(), () => command.getInputFromCommandLine())
 }
 
+/**
+ * A Q & A session needs an interactive terminal for both the questions and the answers. Without
+ * one the prompting library writes control characters into redirected output and then fails
+ * obscurely, so bail out here with an explanation instead.
+ *
+ * The two causes have different remedies, so they get different messages, and neither message
+ * suggests something the user has already tried. Reaching the stdin case means `stdinInputProcessor`
+ * already read stdin and got nothing, so stdin is not offered as a remedy. Suggesting `--input` for
+ * the stdout case would be wrong too: building an input file by answering prompts under `--dry-run`
+ * is exactly what that combination is for, and `--output` keeps the prompts and the JSON separate.
+ */
+const userInputHasInput = (): boolean => {
+	if (!stdinIsTTY()) {
+		return fatalError('No input was received on stdin and it is not an interactive terminal,' +
+			' so you cannot be prompted for input. Specify input with the --input option or run in' +
+			' an interactive terminal.')
+	}
+	if (!stdoutIsTTY()) {
+		return fatalError('Output is not an interactive terminal so prompts would be mixed into' +
+			' the output. Use the --output option to write results to a file instead of' +
+			' redirecting output.')
+	}
+	return true
+}
+
 export type UserInputCommand<T> = {
 	getInputFromUser(): Promise<T>
 }
@@ -102,9 +129,9 @@ export function userInputProcessor<T>(command: UserInputCommand<T>): InputProces
 export function userInputProcessor<T>(readFn: () => Promise<T>): InputProcessor<T>
 export function userInputProcessor<T>(commandOrReadFn: UserInputCommand<T> | (() => Promise<T>)): InputProcessor<T> {
 	if (typeof commandOrReadFn === 'function') {
-		return inputProcessor(() => true, commandOrReadFn)
+		return inputProcessor(userInputHasInput, commandOrReadFn)
 	}
-	return inputProcessor(() => true, () => commandOrReadFn.getInputFromUser())
+	return inputProcessor(userInputHasInput, () => commandOrReadFn.getInputFromUser())
 }
 
 export const combinedInputProcessor = <T>(inputProcessor: InputProcessor<T>, ...moveInputProcessors: InputProcessor<T>[]): InputProcessor<T> => {
