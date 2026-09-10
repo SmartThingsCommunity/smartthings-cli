@@ -1,9 +1,10 @@
 import { jest } from '@jest/globals'
 
-import type {
-	selectFromList,
-	SelectFromListConfig,
-	SelectFromListFlags,
+import {
+	indefiniteArticleFor,
+	type selectFromList,
+	type SelectFromListConfig,
+	type SelectFromListFlags,
 } from '../../../../lib/command/select.js'
 import type { APICommand } from '../../../../lib/command/api-command.js'
 import type { stringTranslateToId } from '../../../../lib/command/command-util.js'
@@ -18,6 +19,7 @@ jest.unstable_mockModule('../../../../lib/command/command-util.js', () => ({
 
 const selectFromListMock = jest.fn<typeof selectFromList>()
 jest.unstable_mockModule('../../../../lib/command/select.js', () => ({
+	indefiniteArticleFor,
 	selectFromList: selectFromListMock,
 }))
 
@@ -248,6 +250,34 @@ describe('createChooseFn', () => {
 				command,
 				config,
 				expect.objectContaining({ customNotFoundMessage: 'custom not found' }),
+			)
+		})
+
+		it('passes notATTYMessage option on to selectFromList', async () => {
+			expect(await chooseSimpleType(command, undefined, { notATTYMessage: 'custom not a TTY message' }))
+				.toBe('selected-simple-type-id')
+
+			expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
+				command,
+				config,
+				expect.objectContaining({ notATTYMessage: 'custom not a TTY message' }),
+			)
+		})
+
+		it('passes notATTYMessage and defaultValue on to selectFromList together when no id is given', async () => {
+			expect(await chooseSimpleTypeWithDefaultConfig(command, undefined, {
+				useConfigDefault: true,
+				notATTYMessage: 'custom not a TTY message',
+			})).toBe('selected-simple-type-id')
+
+			expect(selectFromListMock).toHaveBeenCalledExactlyOnceWith(
+				command,
+				config,
+				expect.objectContaining({
+					preselectedId: undefined,
+					notATTYMessage: 'custom not a TTY message',
+					defaultValue: expect.objectContaining({ configKey: '' }),
+				}),
 			)
 		})
 	})

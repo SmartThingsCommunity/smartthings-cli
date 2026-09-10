@@ -7,15 +7,22 @@ import {
 	type Naming,
 	type Sorting,
 } from './io-defs.js'
-import { outputList, type OutputListConfig } from './output-list.js'
+import { fatalError } from '../util.js'
 import { resetManagedConfigKey, setConfigKey } from '../cli-config.js'
 import { stringGetIdFromUser } from './command-util.js'
+import { stdinIsTTY, stdoutIsTTY } from '../io-util.js'
+import { outputList, type OutputListConfig } from './output-list.js'
 import { type SmartThingsCommand } from './smartthings-command.js'
 import { buildOutputFormatterBuilder, BuildOutputFormatterFlags } from './output-builder.js'
 
 
 export type SelectFromListConfig<L extends object> = Sorting<L> & Naming & OutputListConfig<L>
 
+/**
+ * Make a decent guess as to the correct indefinite article for a word. Anything that uses this
+ * should allow a manual override for exceptions. (e.g. the prompt message for `selectFromList`
+ * is automatically generated using the item name but can be overridden with `promptMessage`)
+ */
 export const indefiniteArticleFor = (name: string): string => name.match(/^[aeio]/i) ? 'an' : 'a'
 
 function promptFromNaming(config: Naming): string | undefined {
@@ -60,6 +67,12 @@ export type PromptUserOptions<L extends object, ID = string> = {
 	 * A custom error message to display when no items are found.
 	 */
 	customNotFoundMessage?: string
+
+	/**
+	 * A custom error message to display when input and/or output is not an interactive terminal
+	 * and no item could be selected without prompting.
+	 */
+	notATTYMessage?: string
 }
 
 /**
@@ -153,7 +166,7 @@ export async function selectFromList<L extends object, ID = string>(
 			try {
 				const item = await options.defaultValue.getItem(configuredDefault)
 				if (item) {
-					console.log(options.defaultValue.userMessage(item))
+					console.error(options.defaultValue.userMessage(item))
 					return configuredDefault
 				}
 			} catch (error) {
@@ -167,7 +180,23 @@ export async function selectFromList<L extends object, ID = string>(
 		}
 	}
 
-	const userSelected = await promptUser(command, config, options)
+	// We want to ensure that `listItems` is called no more than once, so cache its result here in case
+	// it is needed both for the not-a-TTY check below and by `promptUser`.
+	let cachedItems: Promise<L[]> | undefined
+	const listItems = (): Promise<L[]> => cachedItems ??= options.listItems()
+
+	if (!stdinIsTTY() || !stdoutIsTTY()) {
+		const availableItems = await listItems()
+		// If no available items, skip this error message and let `promptUser` report no items.
+		if (!(options.autoChoose && availableItems.length === 1) && availableItems.length > 0) {
+			const itemName = config.itemName ?? 'item'
+			return fatalError(options.notATTYMessage ??
+				'Input and/or output is not an interactive terminal; you must specify ' +
+					`${indefiniteArticleFor(itemName)} ${itemName}.`)
+		}
+	}
+
+	const userSelected = await promptUser(command, config, { ...options, listItems })
 
 	const neverAgainKey = `${options.defaultValue?.configKey ?? ''}::neverAskForSaveAgain`
 	if (options.defaultValue && !command.cliConfig.booleanConfigValue(neverAgainKey)) {

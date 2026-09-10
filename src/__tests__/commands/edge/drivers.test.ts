@@ -22,7 +22,6 @@ import type {
 } from '../../../lib/command/common-flags.js'
 import type { CustomCommonOutputProducer } from '../../../lib/command/format.js'
 import type { outputItemOrList, outputItemOrListBuilder } from '../../../lib/command/listing-io.js'
-import type { shortARNorURL, verboseApps } from '../../../lib/command/util/apps-util.js'
 import {
 	type buildTableOutput,
 	type listDrivers,
@@ -57,14 +56,6 @@ const outputItemOrListBuilderMock = jest.fn<typeof outputItemOrListBuilder>()
 jest.unstable_mockModule('../../../lib/command/listing-io.js', () => ({
 	outputItemOrList: outputItemOrListMock,
 	outputItemOrListBuilder: outputItemOrListBuilderMock,
-}))
-
-const shortARNorURLMock = jest.fn<typeof shortARNorURL>()
-const verboseAppsMock = jest.fn<typeof verboseApps>()
-jest.unstable_mockModule('../../../lib/command/util/apps-util.js', () => ({
-	shortARNorURL: shortARNorURLMock,
-	verboseApps: verboseAppsMock,
-	tableFieldDefinitions: [],
 }))
 
 const buildTableOutputMock = jest.fn<typeof buildTableOutput>()

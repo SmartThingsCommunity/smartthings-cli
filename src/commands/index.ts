@@ -1,16 +1,5 @@
 import { CommandModule } from 'yargs'
 
-import appsCommand from './apps.js'
-import appsAuthorizeCommand from './apps/authorize.js'
-import appsCreateCommand from './apps/create.js'
-import appsDeleteCommand from './apps/delete.js'
-import appsOAuthCommand from './apps/oauth.js'
-import appsOAuthGenerateCommand from './apps/oauth/generate.js'
-import appsOAuthUpdateCommand from './apps/oauth/update.js'
-import appsRegisterCommand from './apps/register.js'
-import appsSettingsCommand from './apps/settings.js'
-import appsSettingsUpdateCommand from './apps/settings/update.js'
-import appsUpdateCommand from './apps/update.js'
 import capabilitiesCommand from './capabilities.js'
 import capabilitiesCreateCommand from './capabilities/create.js'
 import capabilitiesDeleteCommand from './capabilities/delete.js'
@@ -126,6 +115,16 @@ import schemaCreateCommand from './schema/create.js'
 import schemaDeleteCommand from './schema/delete.js'
 import schemaRegenerateCommand from './schema/regenerate.js'
 import schemaUpdateCommand from './schema/update.js'
+import smartappsCommand from './smartapps.js'
+import smartappsConfirmCommand from './smartapps/confirm.js'
+import smartappsCreateCommand from './smartapps/create.js'
+import smartappsDeleteCommand from './smartapps/delete.js'
+import smartappsOAuthCommand from './smartapps/oauth.js'
+import smartappsOAuthGenerateCommand from './smartapps/oauth/generate.js'
+import smartappsOAuthUpdateCommand from './smartapps/oauth/update.js'
+import smartappsSettingsCommand from './smartapps/settings.js'
+import smartappsSettingsUpdateCommand from './smartapps/settings/update.js'
+import smartappsUpdateCommand from './smartapps/update.js'
 import virtualdevicesCommand from './virtualdevices.js'
 import virtualdevicesCreateCommand from './virtualdevices/create.js'
 import virtualdevicesCreateStandardCommand from './virtualdevices/create-standard.js'
@@ -136,17 +135,6 @@ import virtualdevicesUpdateCommand from './virtualdevices/update.js'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const commands: CommandModule<object, any>[] = [
-	appsCommand,
-	appsAuthorizeCommand,
-	appsCreateCommand,
-	appsDeleteCommand,
-	appsOAuthCommand,
-	appsOAuthGenerateCommand,
-	appsOAuthUpdateCommand,
-	appsRegisterCommand,
-	appsSettingsCommand,
-	appsSettingsUpdateCommand,
-	appsUpdateCommand,
 	capabilitiesCommand,
 	capabilitiesCreateCommand,
 	capabilitiesDeleteCommand,
@@ -262,6 +250,16 @@ export const commands: CommandModule<object, any>[] = [
 	schemaDeleteCommand,
 	schemaRegenerateCommand,
 	schemaUpdateCommand,
+	smartappsCommand,
+	smartappsConfirmCommand,
+	smartappsCreateCommand,
+	smartappsDeleteCommand,
+	smartappsOAuthCommand,
+	smartappsOAuthGenerateCommand,
+	smartappsOAuthUpdateCommand,
+	smartappsSettingsCommand,
+	smartappsSettingsUpdateCommand,
+	smartappsUpdateCommand,
 	virtualdevicesCommand,
 	virtualdevicesCreateCommand,
 	virtualdevicesCreateStandardCommand,
