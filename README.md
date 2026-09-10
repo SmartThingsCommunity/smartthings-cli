@@ -140,17 +140,6 @@ smartthings edge:channels:create --help
 <!-- Do not manually this file between the "BEGIN commands" and "END commands" comments. -->
 | Command | Description |
 | -- | -- |
-| apps [id-or-index] | get a specific app or a list of apps |
-| apps:authorize <arn> | authorize calls to your AWS Lambda function from SmartThings |
-| apps:create | create an app |
-| apps:delete [id] | delete an app |
-| apps:oauth [id-or-index] | get OAuth information for an app |
-| apps:oauth:generate [id] | regenerate the OAuth clientId and clientSecret of an app |
-| apps:oauth:update [id] | update the OAuth settings of an app |
-| apps:register [id] | send request to app target URL to confirm existence and authorize lifecycle events |
-| apps:settings [id-or-index] | get the settings of an app |
-| apps:settings:update [id] | update the settings of an app |
-| apps:update [id] | update the settings of the app |
 | capabilities [id-or-index] | get a specific capability or a list of capabilities |
 | capabilities:create | create a capability |
 | capabilities:delete [id] | delete a capability |
@@ -266,6 +255,16 @@ smartthings edge:channels:create --help
 | schema:delete [id] | unlink a Schema App from smartthings |
 | schema:regenerate [id] | regenerate the client id and secret of the Schema App link |
 | schema:update [id] | update a link to a Schema App |
+| smartapps [id-or-index] | get a specific Smart App or a list of Smart Apps |
+| smartapps:confirm [id] | send request to Smart App target URL to confirm existence and authorize lifecycle events |
+| smartapps:create | create a Smart App |
+| smartapps:delete [id] | delete a Smart App |
+| smartapps:oauth [id-or-index] | get OAuth information for a Smart App |
+| smartapps:oauth:generate [id] | regenerate the OAuth clientId and clientSecret of a Smart App |
+| smartapps:oauth:update [id] | update the OAuth settings of a Smart App |
+| smartapps:settings [id-or-index] | get the settings of a Smart App |
+| smartapps:settings:update [id] | update the settings of a Smart App |
+| smartapps:update [id] | update a Smart App |
 | virtualdevices [id-or-index] | list all virtual devices available in a user account or retrieve a single device |
 | virtualdevices:create | create a virtual device from a device profile id or definition |
 | virtualdevices:create-standard | create a virtual device from one of the standard prototypes |
