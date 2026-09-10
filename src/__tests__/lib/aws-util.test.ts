@@ -15,18 +15,14 @@ jest.unstable_mockModule('@aws-sdk/client-lambda', () => ({
 }))
 
 
-const {
-	addPermission,
-	addSchemaPermission,
-	schemaAWSPrincipal,
-} = await import('../../lib/aws-util.js')
+const { addSchemaPermission } = await import('../../lib/aws-util.js')
 
 
 const arn = 'seg0:seg1:seg2:region:seg4:seg5:seg6'
 
-describe('addPermission', () => {
+describe('addSchemaPermission', () => {
 	it('returns "Invalid Lambda ARN" with too few segments', async () => {
-		expect(await addPermission('bad arn')).toBe('Invalid Lambda ARN')
+		expect(await addSchemaPermission('bad arn')).toBe('Invalid Lambda ARN')
 
 		expect(LambdaClientMock).not.toHaveBeenCalled()
 		expect(AddPermissionCommandMock).not.toHaveBeenCalled()
@@ -35,13 +31,13 @@ describe('addPermission', () => {
 	it('returns "Authorization added" when successful', async () => {
 		sendMock.mockImplementationOnce(async () => {})
 
-		expect(await addPermission(arn)).toBe('Authorization added')
+		expect(await addSchemaPermission(arn)).toBe('Authorization added')
 
 		expect(LambdaClientMock).toHaveBeenCalledExactlyOnceWith({ region: 'region' })
 		expect(AddPermissionCommandMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			Action: 'lambda:InvokeFunction',
 			FunctionName: arn,
-			Principal: '906037444270',
+			Principal: '148790070172',
 			StatementId: 'smartthings',
 		}))
 		expect(sendMock).toHaveBeenCalledExactlyOnceWith(command)
@@ -50,7 +46,7 @@ describe('addPermission', () => {
 	it('returns "Already Authorized" when already authorized', async () => {
 		sendMock.mockImplementationOnce(async () => { throw { name: 'ResourceConflictException' } })
 
-		expect(await addPermission(arn)).toBe('Already authorized')
+		expect(await addSchemaPermission(arn)).toBe('Already authorized')
 		expect(AddPermissionCommandMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			Action: 'lambda:InvokeFunction',
 			FunctionName: arn,
@@ -62,26 +58,11 @@ describe('addPermission', () => {
 		const error = Error('unexpected error')
 		sendMock.mockImplementationOnce(async () => { throw error })
 
-		await expect(addPermission(arn)).rejects.toThrow(error)
+		await expect(addSchemaPermission(arn)).rejects.toThrow(error)
 		expect(AddPermissionCommandMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
 			Action: 'lambda:InvokeFunction',
 			FunctionName: arn,
 		}))
 		expect(sendMock).toHaveBeenCalledExactlyOnceWith(command)
 	})
-})
-
-test('addSchemaPermission', async () => {
-	sendMock.mockImplementationOnce(async () => {})
-
-	expect(await addSchemaPermission(arn)).toBe('Authorization added')
-
-	expect(LambdaClientMock).toHaveBeenCalledExactlyOnceWith({ region: 'region' })
-	expect(AddPermissionCommandMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
-		Action: 'lambda:InvokeFunction',
-		FunctionName: arn,
-		Principal: schemaAWSPrincipal,
-		StatementId: 'smartthings',
-	}))
-	expect(sendMock).toHaveBeenCalledExactlyOnceWith(command)
 })

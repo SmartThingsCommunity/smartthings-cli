@@ -1,9 +1,10 @@
 import { LambdaClient, AddPermissionCommand, AddPermissionRequest } from '@aws-sdk/client-lambda'
 
 
-export const addPermission = async (
+export const schemaAWSPrincipal = '148790070172'
+export const addSchemaPermission = async (
 		arn: string,
-		principal = '906037444270',
+		principal = schemaAWSPrincipal,
 		statementId = 'smartthings',
 ): Promise<string> => {
 	const segments = arn.split(':')
@@ -34,13 +35,6 @@ export const addPermission = async (
 		throw error
 	}
 }
-
-export const schemaAWSPrincipal = '148790070172'
-export const addSchemaPermission = (
-		arn: string,
-		principal = schemaAWSPrincipal,
-		statementId = 'smartthings',
-): Promise<string> => addPermission(arn, principal, statementId)
 
 /**
  * Help text for use in `InputDefinition` instances.
