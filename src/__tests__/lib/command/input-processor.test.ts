@@ -12,7 +12,9 @@ import {
 	parseJSONOrYAML,
 	readDataFromStdin,
 	stdinIsTTY,
+	stdoutIsTTY,
 } from '../../../lib/io-util.js'
+import type { fatalError } from '../../../lib/util.js'
 import { SimpleType, validData } from '../../test-lib/simple-type.js'
 
 
@@ -24,12 +26,19 @@ jest.unstable_mockModule('node:fs/promises', () => ({
 const formatFromFilenameMock = jest.fn<typeof formatFromFilename>()
 const parseJSONOrYAMLMock = jest.fn<typeof parseJSONOrYAML>()
 const readDataFromStdinMock = jest.fn<typeof readDataFromStdin>()
-const stdinIsTTYMock = jest.fn<typeof stdinIsTTY>()
+const stdinIsTTYMock = jest.fn<typeof stdinIsTTY>().mockReturnValue(true)
+const stdoutIsTTYMock = jest.fn<typeof stdoutIsTTY>().mockReturnValue(true)
 jest.unstable_mockModule('../../../lib/io-util.js', () => ({
 	formatFromFilename: formatFromFilenameMock,
 	parseJSONOrYAML: parseJSONOrYAMLMock,
 	readDataFromStdin: readDataFromStdinMock,
 	stdinIsTTY: stdinIsTTYMock,
+	stdoutIsTTY: stdoutIsTTYMock,
+}))
+
+const fatalErrorMock = jest.fn<typeof fatalError>().mockReturnValue('never returns' as never)
+jest.unstable_mockModule('../../../lib/util.js', () => ({
+	fatalError: fatalErrorMock,
 }))
 
 
@@ -193,6 +202,62 @@ describe('simple input processor builder functions', () => {
 		expect(inputProcessor.hasInput()).toBe(true)
 
 		expect(inputProcessor.read).toBe(read)
+	})
+
+	describe('when stdin or stdout is not a TTY', () => {
+		// Reaching this case means stdin was already read and was empty, so the message must not
+		// send the user back to stdin.
+		const notATTYStdinMessage = 'No input was received on stdin and it is not an interactive' +
+			' terminal, so you cannot be prompted for input. Specify input with the --input option' +
+			' or run in an interactive terminal.'
+		const notATTYStdoutMessage = 'Output is not an interactive terminal so prompts would be' +
+			' mixed into the output. Use the --output option to write results to a file instead of' +
+			' redirecting output.'
+
+		afterEach(() => {
+			stdinIsTTYMock.mockReturnValue(true)
+			stdoutIsTTYMock.mockReturnValue(true)
+		})
+
+		it('points at --input and a terminal, not back at stdin, when stdin is not a TTY', () => {
+			stdinIsTTYMock.mockReturnValue(false)
+
+			expect(userInputProcessor(readMock).hasInput()).toBe('never returns')
+
+			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(notATTYStdinMessage)
+			expect(readMock).not.toHaveBeenCalled()
+		})
+
+		it('points at --output, not --input, when only stdout is not a TTY', () => {
+			stdoutIsTTYMock.mockReturnValue(false)
+
+			expect(userInputProcessor(readMock).hasInput()).toBe('never returns')
+
+			// `--dry-run` with redirected output is a supported way to build an input file, so
+			// suggesting `--input` here would be nonsense.
+			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(notATTYStdoutMessage)
+			expect(readMock).not.toHaveBeenCalled()
+		})
+
+		it('reports the stdin problem first when neither is a TTY', () => {
+			stdinIsTTYMock.mockReturnValue(false)
+			stdoutIsTTYMock.mockReturnValue(false)
+
+			expect(userInputProcessor(readMock).hasInput()).toBe('never returns')
+
+			// --output cannot rescue a non-interactive stdin, so that is the actionable message.
+			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(notATTYStdinMessage)
+		})
+
+		it('exits with an explanation when built from a command', () => {
+			stdinIsTTYMock.mockReturnValue(false)
+			const command: UserInputCommand<string> = { getInputFromUser: readMock }
+
+			expect(userInputProcessor(command).hasInput()).toBe('never returns')
+
+			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(notATTYStdinMessage)
+			expect(readMock).not.toHaveBeenCalled()
+		})
 	})
 })
 

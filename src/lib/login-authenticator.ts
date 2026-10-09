@@ -165,9 +165,9 @@ export const loginAuthenticator = (
 
 		app.get('/finish', (req, res) => {
 			if ('error' in req.query) {
-				logger.error('error trying to authenticate', req.query.error)
+				logger.error('error trying to authenticate: ', req.query.error)
 				if ('error_description' in req.query) {
-					logger.error(`${req.query.error_description}`)
+					logger.error(`error description: ${req.query.error_description}`)
 				}
 
 				loginFailed = true
@@ -197,7 +197,7 @@ export const loginAuthenticator = (
 					if (error.isAxiosError) {
 						const axiosError = error as AxiosError
 						if (axiosError.response) {
-							logger.error(axiosError.response.data)
+							logger.error('axios error:', axiosError.response.data)
 						}
 					}
 

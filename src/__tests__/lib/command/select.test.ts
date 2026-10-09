@@ -22,6 +22,8 @@ import type {
 	SmartThingsCommand,
 	SmartThingsCommandFlags,
 } from '../../../lib/command/smartthings-command.js'
+import type { stdinIsTTY, stdoutIsTTY } from '../../../lib/io-util.js'
+import type { fatalError } from '../../../lib/util.js'
 import type { SimpleType } from '../../test-lib/simple-type.js'
 
 
@@ -46,6 +48,21 @@ jest.unstable_mockModule('../../../lib/command/command-util.js', () => ({
 const outputListMock = jest.fn<typeof outputList>()
 jest.unstable_mockModule('../../../lib/command/output-list.js', () => ({
 	outputList: outputListMock,
+}))
+
+const actualIoUtil = await import('../../../lib/io-util.js')
+const stdinIsTTYMock = jest.fn<typeof stdinIsTTY>().mockReturnValue(true)
+const stdoutIsTTYMock = jest.fn<typeof stdoutIsTTY>().mockReturnValue(true)
+jest.unstable_mockModule('../../../lib/io-util.js', () => ({
+	...actualIoUtil,
+	stdinIsTTY: stdinIsTTYMock,
+	stdoutIsTTY: stdoutIsTTYMock,
+}))
+
+const fatalErrorMock = jest.fn<typeof fatalError>()
+	.mockImplementation(error => { throw error instanceof Error ? error : Error(error) })
+jest.unstable_mockModule('../../../lib/util.js', () => ({
+	fatalError: fatalErrorMock,
 }))
 
 
@@ -80,6 +97,7 @@ const config: SelectFromListConfig<SimpleType> = {
 const listItemsMock = jest.fn<ListDataFunction<SimpleType>>().mockResolvedValue(list)
 
 const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { /*no-op*/ })
+const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { /*no-op*/ })
 
 describe('indefiniteArticleFor', () => {
 	it.each(['apple', 'Animal', 'egret', 'item', 'orange'])('returns "an" for "%s"', word => {
@@ -267,7 +285,7 @@ describe('selectFromList', () => {
 		const options = { listItems: listItemsMock, defaultValue }
 		expect(await selectFromList(commandWithDefault, config, options)).toBe('default-item-id')
 
-		expect(consoleLogSpy).toHaveBeenCalledWith('user message')
+		expect(consoleErrorSpy).toHaveBeenCalledWith('user message')
 
 		expect(listItemsMock).not.toHaveBeenCalled()
 		expect(outputListMock).not.toHaveBeenCalled()
@@ -407,6 +425,98 @@ describe('selectFromList', () => {
 			.toHaveBeenCalledExactlyOnceWith(command.cliConfig, 'defaultItem', 'chosen-id')
 		expect(consoleLogSpy).toHaveBeenCalledWith('chosen-id is now the default.\n' +
 			'You can reset these settings using the config:reset command.')
+	})
+
+	describe('when stdin or stdout is not a TTY', () => {
+		afterEach(() => {
+			stdinIsTTYMock.mockReturnValue(true)
+			stdoutIsTTYMock.mockReturnValue(true)
+		})
+
+		it('throws an error when neither stdin nor stdout is a TTY and no item id is given', async () => {
+			stdinIsTTYMock.mockReturnValue(false)
+			stdoutIsTTYMock.mockReturnValue(false)
+
+			await expect(selectFromList(command, config, { listItems: listItemsMock })).rejects.toThrow(
+				'Input and/or output is not an interactive terminal; you must specify an item.',
+			)
+
+			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
+				'Input and/or output is not an interactive terminal; you must specify an item.',
+			)
+		})
+
+		it('throws a custom error message when configured', async () => {
+			stdinIsTTYMock.mockReturnValue(false)
+
+			await expect(selectFromList(command, config,
+				{ listItems: listItemsMock, notATTYMessage: 'custom not a TTY message' }))
+				.rejects.toThrow('custom not a TTY message')
+
+			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith('custom not a TTY message')
+		})
+
+		it('does not throw when a preselected id is given', async () => {
+			stdinIsTTYMock.mockReturnValue(false)
+			stdoutIsTTYMock.mockReturnValue(false)
+
+			expect(await selectFromList(command, config,
+				{ preselectedId: 'sample-id', listItems: listItemsMock })).toBe('sample-id')
+		})
+
+		it('uses the configured default value without requiring a TTY', async () => {
+			stdinIsTTYMock.mockReturnValue(false)
+			stdoutIsTTYMock.mockReturnValue(false)
+
+			const commandWithDefault = commandWithProfile({
+				defaultItem: 'default-item-id',
+			})
+			getItemMock.mockResolvedValueOnce(item1)
+			userMessageMock.mockReturnValueOnce('user message')
+
+			const options = { listItems: listItemsMock, defaultValue }
+			expect(await selectFromList(commandWithDefault, config, options)).toBe('default-item-id')
+
+			expect(consoleErrorSpy).toHaveBeenCalledWith('user message')
+			expect(listItemsMock).not.toHaveBeenCalled()
+		})
+
+		it('does not throw when autoChoose is true and there is only one item', async () => {
+			stdinIsTTYMock.mockReturnValue(false)
+			stdoutIsTTYMock.mockReturnValue(false)
+
+			expect(await selectFromList(command, config,
+				{ listItems: jest.fn<ListDataFunction<SimpleType>>().mockResolvedValue(singleItemList), autoChoose: true }))
+				.toBe('string-id-1')
+		})
+
+		it('throws when autoChoose is true but there is more than one item', async () => {
+			stdoutIsTTYMock.mockReturnValue(false)
+
+			await expect(selectFromList(command, config, { listItems: listItemsMock, autoChoose: true })).rejects.toThrow(
+				'Input and/or output is not an interactive terminal; you must specify an item.',
+			)
+
+			expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
+				'Input and/or output is not an interactive terminal; you must specify an item.',
+			)
+		})
+
+		it('does not throw and lets promptUser report no items found when the list is empty', async () => {
+			stdinIsTTYMock.mockReturnValue(false)
+			stdoutIsTTYMock.mockReturnValue(false)
+
+			const exitSpy = jest.spyOn(process, 'exit')
+			exitSpy.mockImplementation(() => { throw Error('should exit') })
+
+			const emptyListItemsMock = jest.fn<ListDataFunction<SimpleType>>().mockResolvedValue([])
+			outputListMock.mockResolvedValueOnce([])
+
+			await expect(selectFromList(command, config, { listItems: emptyListItemsMock }))
+				.rejects.toThrow('should exit')
+
+			expect(emptyListItemsMock).toHaveBeenCalledTimes(1)
+		})
 	})
 
 	it('saves "never ask again" response"', async () => {

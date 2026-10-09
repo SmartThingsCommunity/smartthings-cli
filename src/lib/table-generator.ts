@@ -197,7 +197,7 @@ export const defaultTableGenerator = (tableOptions: Pick<TableOptions, 'groupRow
 		return propertyNames[propertyNames.length - 1]
 			.replace(/([a-z])([A-Z])/g, '$1 $2')
 			.replace(/^([a-z])/, text => text.toUpperCase())
-			.replace(/\bUri\b/, 'URI')
+			.replace(/\bUris?\b/, match => match === 'Uri' ? 'URI' : 'URIs')
 			.replace(/\bUrl\b/, 'URL')
 			.replace(/\bArn\b/, 'ARN')
 			.replace(/\bO ?[Aa]uth\b/, 'OAuth')

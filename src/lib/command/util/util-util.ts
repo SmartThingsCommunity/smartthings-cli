@@ -1,6 +1,11 @@
 import { type APICommand } from '../api-command.js'
 import { stringTranslateToId } from '../command-util.js'
-import { type SelectFromListConfig, type SelectFromListFlags, SelectOptions, selectFromList } from '../select.js'
+import {
+	type SelectFromListConfig,
+	type SelectFromListFlags,
+	type SelectOptions,
+	selectFromList,
+} from '../select.js'
 
 
 export type ListItemPredicate<T extends object> = (value: T, index: number, array: T[]) => boolean
@@ -20,6 +25,7 @@ export type ChooseOptions<T extends object> = {
 	autoChoose?: boolean
 	listFilter?: ListItemPredicate<T>
 	promptMessage?: string
+	notATTYMessage?: string
 }
 
 export const chooseOptionsDefaults = <T extends object>(): ChooseOptions<T> => ({
@@ -62,12 +68,12 @@ export const createChooseFn = <T extends object>(
 
 		// Listing items usually makes an API call which we only want to happen once so we do it
 		// now and just use stub functions that return these items later as needed.
-		let items: T[] | undefined = undefined
+		let filteredItems: T[] | undefined = undefined
 		const listItemsWrapper = async (): Promise<T[]> => {
-			if (!items) {
-				items = await (opts.listItems ?? listItems)(command)
+			if (!filteredItems) {
+				const items = await (opts.listItems ?? listItems)(command)
+				filteredItems = opts.listFilter ? items.filter(opts.listFilter) : items
 			}
-			const filteredItems = opts.listFilter ? items.filter(opts.listFilter) : items
 			return filteredItems
 		}
 
@@ -81,6 +87,7 @@ export const createChooseFn = <T extends object>(
 			listItems: listItemsWrapper,
 			promptMessage: opts.promptMessage,
 			customNotFoundMessage: createOptions?.customNotFoundMessage,
+			notATTYMessage: opts.notATTYMessage,
 		}
 
 		if (opts.useConfigDefault) {
