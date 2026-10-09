@@ -8,7 +8,7 @@ import { fatalError } from './util.js'
 
 
 export const seeConfigDocs = 'see https://github.com/SmartThingsCommunity/smartthings-cli/blob/' +
-	'main/packages/cli/doc/configuration.md for more information'
+	'main/doc/configuration.md for more information'
 
 export type Profile = Record<string, unknown>
 export type ProfilesByName = Record<string, Profile>

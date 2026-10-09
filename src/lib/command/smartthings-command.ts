@@ -3,6 +3,7 @@ import log4js from 'log4js'
 import { type Argv } from 'yargs'
 
 import { type CLIConfig, loadConfig, type Profile } from '../cli-config.js'
+import { yellow } from '../colors.js'
 import { ensureDir } from '../file-util.js'
 import { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../log-utils.js'
 import { defaultTableGenerator, type TableGenerator } from '../table-generator.js'
@@ -136,6 +137,9 @@ export const getConfigDirsCheckingForOldConfig = async (
 	return { configDir, dataDir, logDir }
 }
 
+const profileDocsURL =
+	'https://github.com/SmartThingsCommunity/smartthings-cli/blob/main/doc/configuration.md#profiles'
+
 /**
  * A function to be called at the start of every CLI command that sets up shared things.
  */
@@ -162,6 +166,11 @@ export const smartThingsCommand = async <T extends SmartThingsCommandFlags>(
 	}, logger)
 
 	const profile = cliConfig.profile
+	if (profileName !== 'default' && !(profileName in cliConfig.mergedProfiles)) {
+		console.warn(yellow(`warning: profile ${profileName} not found in configuration\n` +
+			`To use a profile with no configuration options, add "${profileName}: {}" to config.yaml.\n` +
+			`See ${profileDocsURL} for more information.`))
+	}
 
 	const groupRowsFlag = (flags as Pick<BuildOutputFormatterFlags, 'groupRows'>).groupRows
 	const groupRows = groupRowsFlag ?? cliConfig.booleanConfigValue('groupTableOutputRows', true)
