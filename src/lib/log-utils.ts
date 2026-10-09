@@ -11,7 +11,7 @@ import { fatalError } from './util.js'
 
 const defaultLogFileSize = 1_000_000 // bytes
 const loggingDocsURL = 'https://github.com/SmartThingsCommunity/smartthings-cli/' +
-	'blob/main/packages/cli/doc/configuration.md#logging'
+	'blob/main/doc/configuration.md#logging'
 
 
 export function buildDefaultLog4jsConfig(logFilename: string): Log4jsConfig {

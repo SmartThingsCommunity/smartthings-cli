@@ -5,6 +5,7 @@ import type { Paths } from 'env-paths'
 import type log4js from 'log4js'
 
 import type { CLIConfig, loadConfig } from '../../../lib/cli-config.js'
+import type { yellow } from '../../../lib/colors.js'
 import type { ensureDir } from '../../../lib/file-util.js'
 import type { buildDefaultLog4jsConfig, loadLog4jsConfig } from '../../../lib/log-utils.js'
 import type { SmartThingsCommandFlags } from '../../../lib/command/smartthings-command.js'
@@ -28,6 +29,11 @@ const { configureMock, getLoggerMock, loggerMock } = await import('../../test-li
 const loadConfigMock = jest.fn<typeof loadConfig>()
 jest.unstable_mockModule('../../../lib/cli-config.js', () => ({
 	loadConfig: loadConfigMock,
+}))
+
+const yellowMock = jest.fn<typeof yellow>()
+jest.unstable_mockModule('../../../lib/colors.js', () => ({
+	yellow: yellowMock,
 }))
 
 const ensureDirMock = jest.fn<typeof ensureDir>()
@@ -58,6 +64,7 @@ jest.unstable_mockModule('../../../lib/yargs-transition-temp.js', () => ({
 }))
 
 const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { /* do nothing */ })
+const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => { /* do nothing */ })
 
 
 const {
@@ -94,6 +101,7 @@ describe('smartThingsCommand', () => {
 		.mockReturnValue(true)
 	const cliConfig = {
 		profile: {},
+		mergedProfiles: {},
 		booleanConfigValue: booleanConfigValueMock,
 	} as unknown as CLIConfig
 	loadConfigMock.mockResolvedValue(cliConfig)
@@ -121,5 +129,31 @@ describe('smartThingsCommand', () => {
 		}, loggerMock)
 		expect(defaultTableGeneratorMock).toHaveBeenCalledTimes(1)
 		expect(defaultTableGeneratorMock).toHaveBeenCalledWith({ groupRows: true })
+		expect(consoleWarnSpy).not.toHaveBeenCalled()
+	})
+
+	it('warns when a non-default profile is missing', async () => {
+		yellowMock.mockReturnValueOnce('yellow warning')
+
+		await smartThingsCommand({ profile: 'other' })
+
+		expect(yellowMock).toHaveBeenCalledExactlyOnceWith(
+			'warning: profile other not found in configuration\n' +
+			'To use a profile with no configuration options, add "other: {}" to config.yaml.\n' +
+			'See https://github.com/SmartThingsCommunity/smartthings-cli/blob/main/doc/configuration.md#profiles' +
+			' for more information.',
+		)
+		expect(consoleWarnSpy).toHaveBeenCalledExactlyOnceWith('yellow warning')
+	})
+
+	it('does not warn when a non-default profile exists but is empty', async () => {
+		loadConfigMock.mockResolvedValueOnce({
+			...cliConfig,
+			mergedProfiles: { other: {} },
+		} as unknown as CLIConfig)
+
+		await smartThingsCommand({ profile: 'other' })
+
+		expect(consoleWarnSpy).not.toHaveBeenCalled()
 	})
 })
