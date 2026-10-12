@@ -9,22 +9,18 @@ import { fatalError } from '../../util.js'
 
 
 /**
- * Build a function suitable for use as a `catch` handler on Smart App API calls. The API returns
+ * A `catch` handler for Smart App API calls that create or modify a Smart App. The API returns
  * a 403 for accounts that don't have a paid plan; in that case, exit with a message explaining
  * how to upgrade. All other errors are rethrown.
- *
- * @param action Description of what was being attempted, used to start the message,
- *   e.g. "Creating a Smart App".
  */
-export const paidAccountRequiredHandler = (action: string) =>
-	(error: unknown): never => {
-		if ((error as { response?: { status?: number } } | undefined)?.response?.status === 403) {
-			return fatalError(`${action} requires a paid account. Visit` +
-				'\n  https://developer.smartthings.com/console/service-integrations/manage-plans' +
-				'\nto upgrade.')
-		}
-		throw error
+export const paidPlanRequiredHandler = (error: unknown): never => {
+	if ((error as { response?: { status?: number } } | undefined)?.response?.status === 403) {
+		return fatalError('Creating or modifying a Smart App requires a paid plan. Visit' +
+			'\n  https://developer.smartthings.com/console/service-integrations/manage-plans' +
+			'\nto upgrade.')
 	}
+	throw error
+}
 
 export const verboseSmartApps = async (
 		client: SmartThingsClient,

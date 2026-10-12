@@ -21,6 +21,7 @@ import {
 	oauthAppScopeDef,
 	redirectUrisDef,
 } from '../../../lib/command/util/smartapps-input-primitives.js'
+import { paidPlanRequiredHandler } from '../../../lib/command/util/smartapps-util.js'
 import { objectDef, stringDef, updateFromUserInput } from '../../../lib/item-input/index.js'
 
 
@@ -76,7 +77,8 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	}
 
 	await inputAndOutputItem(command, { tableFieldDefinitions: oauthTableFieldDefinitions },
-		(_, data: SmartAppOAuthRequest) => command.client.smartapps.updateOauth(appId, data),
+		(_, data: SmartAppOAuthRequest) => command.client.smartapps.updateOauth(appId, data)
+			.catch(paidPlanRequiredHandler),
 		userInputProcessor(getInputFromUser))
 }
 

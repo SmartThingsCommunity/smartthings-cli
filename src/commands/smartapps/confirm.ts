@@ -7,6 +7,7 @@ import {
 } from '../../lib/command/api-organization-command.js'
 import { buildEpilog } from '../../lib/help.js'
 import { chooseSmartAppFn } from '../../lib/command/util/smartapps-choose.js'
+import { paidPlanRequiredHandler } from '../../lib/command/util/smartapps-util.js'
 
 
 export type CommandArgs = APIOrganizationCommandFlags & {
@@ -38,6 +39,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	})(command, argv.id)
 
 	await command.client.smartapps.register(id)
+		.catch(paidPlanRequiredHandler)
 	console.log(`Confirmation request sent to Smart App ${id}. Check server log for confirmation URL.`)
 }
 

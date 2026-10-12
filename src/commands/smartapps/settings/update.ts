@@ -15,6 +15,7 @@ import {
 } from '../../../lib/command/input-and-output-item.js'
 import { chooseSmartAppFn } from '../../../lib/command/util/smartapps-choose.js'
 import { buildTableOutput } from '../../../lib/command/util/smartapps-table.js'
+import { paidPlanRequiredHandler } from '../../../lib/command/util/smartapps-util.js'
 
 
 export type CommandArgs = APIOrganizationCommandFlags & InputAndOutputItemFlags & {
@@ -46,7 +47,8 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	await inputAndOutputItem(
 		command,
 		{ buildTableOutput: (data: SmartAppSettingsResponse) => buildTableOutput(command.tableGenerator, data) },
-		(_, data: SmartAppSettingsRequest) => command.client.smartapps.updateSettings(appId, data),
+		(_, data: SmartAppSettingsRequest) => command.client.smartapps.updateSettings(appId, data)
+			.catch(paidPlanRequiredHandler),
 	)
 }
 

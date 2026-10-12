@@ -25,6 +25,7 @@ import type {
 import { userInputProcessor } from '../../../../lib/command/input-processor.js'
 import type { ChooseFunction } from '../../../../lib/command/util/util-util.js'
 import type { chooseSmartAppFn } from '../../../../lib/command/util/smartapps-choose.js'
+import type { paidPlanRequiredHandler } from '../../../../lib/command/util/smartapps-util.js'
 import type { objectDef, stringDef, updateFromUserInput } from '../../../../lib/item-input/index.js'
 import type { CommandArgs } from '../../../../commands/smartapps/oauth/generate.js'
 import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock.js'
@@ -68,6 +69,12 @@ jest.unstable_mockModule('../../../../lib/command/util/smartapps-choose.js', () 
 const oauthAppScopeDefMock = buildInputDefMock<string>('Scopes Mock')
 jest.unstable_mockModule('../../../../lib/command/util/smartapps-input-primitives.js', () => ({
 	oauthAppScopeDef: oauthAppScopeDefMock,
+}))
+
+const paidPlanRequiredHandlerMock = jest.fn<typeof paidPlanRequiredHandler>()
+	.mockImplementation(() => { throw Error('should exit') })
+jest.unstable_mockModule('../../../../lib/command/util/smartapps-util.js', () => ({
+	paidPlanRequiredHandler: paidPlanRequiredHandlerMock,
 }))
 
 const updateFromUserInputMock = jest.fn<typeof updateFromUserInput>()
@@ -147,6 +154,19 @@ describe('handler', () => {
 
 		expect(apiAppsRegenerateOauthMock)
 			.toHaveBeenCalledExactlyOnceWith('chosen-app-id', generateRequest)
+		expect(paidPlanRequiredHandlerMock).not.toHaveBeenCalled()
+	})
+
+	it('uses paid plan required handler for errors regenerating OAuth credentials', async () => {
+		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
+		const actionFunction = inputAndOutputItemMock.mock.calls[0][2]
+
+		const error = { response: { status: 403 } }
+		apiAppsRegenerateOauthMock.mockRejectedValueOnce(error)
+
+		await expect(actionFunction(undefined, {} as GenerateSmartAppOAuthRequest)).rejects.toThrow('should exit')
+
+		expect(paidPlanRequiredHandlerMock).toHaveBeenCalledExactlyOnceWith(error)
 	})
 
 	it('accepts app id from command line', async () => {

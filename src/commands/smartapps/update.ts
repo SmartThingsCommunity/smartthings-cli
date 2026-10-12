@@ -19,7 +19,7 @@ import { type ActionFunction } from '../../lib/command/io-defs.js'
 import { getAppUpdateRequestFromUser } from '../../lib/command/util/smartapps-user-input-update.js'
 import { chooseSmartAppFn } from '../../lib/command/util/smartapps-choose.js'
 import { tableFieldDefinitions } from '../../lib/command/util/smartapps-table.js'
-import { paidAccountRequiredHandler } from '../../lib/command/util/smartapps-util.js'
+import { paidPlanRequiredHandler } from '../../lib/command/util/smartapps-util.js'
 
 
 export type CommandArgs =
@@ -61,11 +61,11 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	const appId = await chooseSmartAppFn({
 		appType: 'API_ONLY',
 		accountId: command.client.config.headers?.['X-ST-Organization'],
-	})(command, argv.id).catch(paidAccountRequiredHandler('Listing Smart Apps'))
+	})(command, argv.id)
 
 	const executeUpdate: ActionFunction<void, SmartAppUpdateRequest, SmartAppResponse> = async (_, data) =>
 		command.client.smartapps.update(appId, data)
-			.catch(paidAccountRequiredHandler('Updating a Smart App'))
+			.catch(paidPlanRequiredHandler)
 
 	const config: TableCommonOutputProducer<SmartAppResponse> = { tableFieldDefinitions }
 	await inputAndOutputItem(

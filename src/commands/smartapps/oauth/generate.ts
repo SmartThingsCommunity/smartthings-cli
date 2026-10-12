@@ -18,6 +18,7 @@ import {
 import { userInputProcessor } from '../../../lib/command/input-processor.js'
 import { oauthAppScopeDef } from '../../../lib/command/util/smartapps-input-primitives.js'
 import { chooseSmartAppFn } from '../../../lib/command/util/smartapps-choose.js'
+import { paidPlanRequiredHandler } from '../../../lib/command/util/smartapps-util.js'
 import { objectDef, stringDef, updateFromUserInput } from '../../../lib/item-input/index.js'
 
 
@@ -78,7 +79,8 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 	await inputAndOutputItem(
 		command,
 		config,
-		(_, data: GenerateSmartAppOAuthRequest) => command.client.smartapps.regenerateOauth(appId, data),
+		(_, data: GenerateSmartAppOAuthRequest) => command.client.smartapps.regenerateOauth(appId, data)
+			.catch(paidPlanRequiredHandler),
 		userInputProcessor(getInputFromUser),
 	)
 }

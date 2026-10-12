@@ -23,6 +23,7 @@ import type {
 import type { ChooseFunction } from '../../../../lib/command/util/util-util.js'
 import type { chooseSmartAppFn } from '../../../../lib/command/util/smartapps-choose.js'
 import type { buildTableOutput } from '../../../../lib/command/util/smartapps-table.js'
+import type { paidPlanRequiredHandler } from '../../../../lib/command/util/smartapps-util.js'
 import type { CommandArgs } from '../../../../commands/smartapps/settings/update.js'
 import { buildArgvMock, buildArgvMockStub } from '../../../test-lib/builder-mock.js'
 import { CustomCommonOutputProducer } from '../../../../lib/command/format.js'
@@ -57,6 +58,12 @@ jest.unstable_mockModule('../../../../lib/command/util/smartapps-choose.js', () 
 const buildTableOutputMock = jest.fn<typeof buildTableOutput>()
 jest.unstable_mockModule('../../../../lib/command/util/smartapps-table.js', () => ({
 	buildTableOutput: buildTableOutputMock,
+}))
+
+const paidPlanRequiredHandlerMock = jest.fn<typeof paidPlanRequiredHandler>()
+	.mockImplementation(() => { throw Error('should exit') })
+jest.unstable_mockModule('../../../../lib/command/util/smartapps-util.js', () => ({
+	paidPlanRequiredHandler: paidPlanRequiredHandlerMock,
 }))
 
 
@@ -125,6 +132,7 @@ describe('handler', () => {
 		expect(await executeFunction(undefined, settings)).toBe(updatedSettings)
 
 		expect(apiAppsUpdateSettingsMock).toHaveBeenCalledExactlyOnceWith('chosen-id', settings)
+		expect(paidPlanRequiredHandlerMock).not.toHaveBeenCalled()
 
 		const config = inputAndOutputItemMock.mock.calls[0][1] as
 			CustomCommonOutputProducer<SmartAppSettingsResponse>
@@ -133,6 +141,18 @@ describe('handler', () => {
 		expect(config.buildTableOutput(updatedSettings)).toBe('table output')
 
 		expect(buildTableOutputMock).toHaveBeenCalledExactlyOnceWith(tableGeneratorMock, updatedSettings)
+	})
+
+	it('uses paid plan required handler for errors updating settings', async () => {
+		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
+		const executeFunction = inputAndOutputItemMock.mock.calls[0][2]
+
+		const error = { response: { status: 403 } }
+		apiAppsUpdateSettingsMock.mockRejectedValueOnce(error)
+
+		await expect(executeFunction(undefined, {} as SmartAppSettingsResponse)).rejects.toThrow('should exit')
+
+		expect(paidPlanRequiredHandlerMock).toHaveBeenCalledExactlyOnceWith(error)
 	})
 
 	it('passes command line id on to chooseApp', async () => {

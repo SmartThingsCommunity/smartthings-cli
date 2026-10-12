@@ -24,11 +24,7 @@ import type { outputItemOrList, outputItemOrListBuilder } from '../../lib/comman
 import type { CommandArgs } from '../../commands/smartapps.js'
 import type { ListDataFunction } from '../../lib/command/io-defs.js'
 import type { BuildOutputFormatterFlags } from '../../lib/command/output-builder.js'
-import type {
-	paidAccountRequiredHandler,
-	shortARNorURL,
-	verboseSmartApps,
-} from '../../lib/command/util/smartapps-util.js'
+import type { shortARNorURL, verboseSmartApps } from '../../lib/command/util/smartapps-util.js'
 import { buildArgvMock, buildArgvMockStub } from '../test-lib/builder-mock.js'
 
 
@@ -61,14 +57,9 @@ jest.unstable_mockModule('../../lib/command/listing-io.js', () => ({
 	outputItemOrListBuilder: outputItemOrListBuilderMock,
 }))
 
-const paidAccountRequiredErrorHandlerMock = jest.fn<ReturnType<typeof paidAccountRequiredHandler>>()
-	.mockImplementation(() => { throw Error('should exit') })
-const paidAccountRequiredHandlerMock = jest.fn<typeof paidAccountRequiredHandler>()
-	.mockReturnValue(paidAccountRequiredErrorHandlerMock)
 const shortARNorURLMock = jest.fn<typeof shortARNorURL>()
 const verboseSmartAppsMock = jest.fn<typeof verboseSmartApps>()
 jest.unstable_mockModule('../../lib/command/util/smartapps-util.js', () => ({
-	paidAccountRequiredHandler: paidAccountRequiredHandlerMock,
 	shortARNorURL: shortARNorURLMock,
 	verboseSmartApps: verboseSmartAppsMock,
 }))
@@ -266,30 +257,6 @@ describe('handler', () => {
 			expect(apiAppsListMock).toHaveBeenCalledTimes(1)
 			expect(apiAppsListMock).toHaveBeenCalledWith({ accountId: 'organization-id' })
 			expect(verboseSmartAppsMock).toHaveBeenCalledTimes(0)
-		})
-
-		it('uses paid account required handler for errors', async () => {
-			const listItems = await listAppsForArgs({})
-
-			const error = { response: { status: 403 } }
-			apiAppsListMock.mockRejectedValueOnce(error)
-
-			await expect(listItems()).rejects.toThrow('should exit')
-
-			expect(paidAccountRequiredHandlerMock).toHaveBeenCalledExactlyOnceWith('Listing Smart Apps')
-			expect(paidAccountRequiredErrorHandlerMock).toHaveBeenCalledExactlyOnceWith(error)
-		})
-
-		it('uses paid account required handler for errors in verbose mode', async () => {
-			const listItems = await listAppsForArgs({ verbose: true })
-
-			const error = { response: { status: 403 } }
-			verboseSmartAppsMock.mockRejectedValueOnce(error)
-
-			await expect(listItems()).rejects.toThrow('should exit')
-
-			expect(paidAccountRequiredHandlerMock).toHaveBeenCalledExactlyOnceWith('Listing Smart Apps')
-			expect(paidAccountRequiredErrorHandlerMock).toHaveBeenCalledExactlyOnceWith(error)
 		})
 
 		it('omits accountId when no organization header is set', async () => {

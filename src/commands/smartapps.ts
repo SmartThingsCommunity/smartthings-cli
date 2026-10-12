@@ -27,11 +27,7 @@ import {
 	outputItemOrListBuilder,
 } from '../lib/command/listing-io.js'
 import { tableFieldDefinitions } from '../lib/command/util/smartapps-table.js'
-import {
-	paidAccountRequiredHandler,
-	shortARNorURL,
-	verboseSmartApps,
-} from '../lib/command/util/smartapps-util.js'
+import { shortARNorURL, verboseSmartApps } from '../lib/command/util/smartapps-util.js'
 
 
 export type CommandArgs = APIOrganizationCommandFlags & AllOrganizationFlags & OutputItemOrListFlags & {
@@ -69,7 +65,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			['$0 smartapps', 'list all Smart Apps'],
 			[
 				'$0 smartapps 1',
-				'display details for the first smart app in the list retrieved by running "smartthings smartapps"',
+				'display details for the first Smart App in the list retrieved by running "smartthings smartapps"',
 			],
 			['$0 smartapps 5dfd6626-ab1d-42da-bb76-90def3153998', 'display details for a Smart App by id'],
 			['$0 smartapps --verbose', 'include URLs and ARNs in the output'],
@@ -106,8 +102,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 
 		const listForClient = (client: SmartThingsClient, accountId?: string): Promise<ListedSmartApp[]> => {
 			const options = accountId ? { ...appListOptions, accountId } : appListOptions
-			return (argv.verbose ? verboseSmartApps(client, options) : client.smartapps.list(options))
-				.catch(paidAccountRequiredHandler('Listing Smart Apps'))
+			return argv.verbose ? verboseSmartApps(client, options) : client.smartapps.list(options)
 		}
 
 		if (argv.allOrganizations) {

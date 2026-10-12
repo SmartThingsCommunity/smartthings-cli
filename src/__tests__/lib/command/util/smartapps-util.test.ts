@@ -18,39 +18,35 @@ jest.unstable_mockModule('../../../../lib/util.js', () => ({
 
 
 const {
-	paidAccountRequiredHandler,
+	paidPlanRequiredHandler,
 	shortARNorURL,
 	verboseSmartApps,
 } = await import('../../../../lib/command/util/smartapps-util.js')
 
 
-describe('paidAccountRequiredHandler', () => {
+describe('paidPlanRequiredHandler', () => {
 	it('exits with a helpful message on 403', () => {
-		const handler = paidAccountRequiredHandler('Doing a Thing')
-
-		expect(() => handler({ response: { status: 403 } })).toThrow('should exit')
+		expect(() => paidPlanRequiredHandler({ response: { status: 403 } })).toThrow('should exit')
 
 		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
-			'Doing a Thing requires a paid account. Visit' +
+			'Creating or modifying a Smart App requires a paid plan. Visit' +
 				'\n  https://developer.smartthings.com/console/service-integrations/manage-plans' +
 				'\nto upgrade.',
 		)
 	})
 
 	it('rethrows other errors', () => {
-		const handler = paidAccountRequiredHandler('Doing a Thing')
 		const otherError = { response: { status: 500 } }
 
-		expect(() => handler(otherError)).toThrow(expect.objectContaining(otherError))
+		expect(() => paidPlanRequiredHandler(otherError)).toThrow(expect.objectContaining(otherError))
 
 		expect(fatalErrorMock).not.toHaveBeenCalled()
 	})
 
 	it('rethrows errors without a response', () => {
-		const handler = paidAccountRequiredHandler('Doing a Thing')
 		const otherError = Error('network failure')
 
-		expect(() => handler(otherError)).toThrow(otherError)
+		expect(() => paidPlanRequiredHandler(otherError)).toThrow(otherError)
 
 		expect(fatalErrorMock).not.toHaveBeenCalled()
 	})

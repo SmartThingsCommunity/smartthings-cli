@@ -15,7 +15,7 @@ import {
 } from '../../lib/command/input-and-output-item.js'
 import { userInputProcessor } from '../../lib/command/input-processor.js'
 import { tableFieldDefinitions } from '../../lib/command/util/smartapps-table.js'
-import { paidAccountRequiredHandler } from '../../lib/command/util/smartapps-util.js'
+import { paidPlanRequiredHandler } from '../../lib/command/util/smartapps-util.js'
 import { getAppCreateRequestFromUser } from '../../lib/command/util/smartapps-user-input-create.js'
 import { chooseOrganization } from '../../lib/command/util/organizations-util.js'
 
@@ -56,7 +56,7 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 
 	const createSmartApp = async (_: void, data: SmartAppCreateRequest): Promise<SmartAppCreationResponse> =>
 		command.client.smartapps.create(data, accountId)
-			.catch(paidAccountRequiredHandler('Creating a Smart App'))
+			.catch(paidPlanRequiredHandler)
 
 	const buildTableOutput = (data: SmartAppCreationResponse): string => {
 		const basicInfo = command.tableGenerator.buildTableFromItem(data.app, tableFieldDefinitions)

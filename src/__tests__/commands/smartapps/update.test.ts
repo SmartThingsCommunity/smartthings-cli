@@ -23,7 +23,7 @@ import type {
 import type { InputProcessor, userInputProcessor } from '../../../lib/command/input-processor.js'
 import type { ChooseFunction } from '../../../lib/command/util/util-util.js'
 import type { chooseSmartAppFn } from '../../../lib/command/util/smartapps-choose.js'
-import type { paidAccountRequiredHandler } from '../../../lib/command/util/smartapps-util.js'
+import type { paidPlanRequiredHandler } from '../../../lib/command/util/smartapps-util.js'
 import type { getAppUpdateRequestFromUser } from '../../../lib/command/util/smartapps-user-input-update.js'
 import type { CommandArgs } from '../../../commands/smartapps/update.js'
 import { buildArgvMock, buildArgvMockStub } from '../../test-lib/builder-mock.js'
@@ -63,12 +63,10 @@ jest.unstable_mockModule('../../../lib/command/util/smartapps-choose.js', () => 
 	chooseSmartAppFn: chooseSmartAppFnMock,
 }))
 
-const paidAccountRequiredErrorHandlerMock = jest.fn<ReturnType<typeof paidAccountRequiredHandler>>()
+const paidPlanRequiredHandlerMock = jest.fn<typeof paidPlanRequiredHandler>()
 	.mockImplementation(() => { throw Error('should exit') })
-const paidAccountRequiredHandlerMock = jest.fn<typeof paidAccountRequiredHandler>()
-	.mockReturnValue(paidAccountRequiredErrorHandlerMock)
 jest.unstable_mockModule('../../../lib/command/util/smartapps-util.js', () => ({
-	paidAccountRequiredHandler: paidAccountRequiredHandlerMock,
+	paidPlanRequiredHandler: paidPlanRequiredHandlerMock,
 }))
 
 const getAppUpdateRequestFromUserMock = jest.fn<typeof getAppUpdateRequestFromUser>()
@@ -163,18 +161,7 @@ describe('handler', () => {
 		expect(getAppUpdateRequestFromUserMock).toHaveBeenCalledExactlyOnceWith(command, 'chosen-app-id')
 	})
 
-	it('uses paid account required handler for errors choosing app', async () => {
-		const error = { response: { status: 403 } }
-		chooseSmartAppMock.mockRejectedValueOnce(error)
-
-		await expect(cmd.handler(inputArgv)).rejects.toThrow('should exit')
-
-		expect(paidAccountRequiredHandlerMock).toHaveBeenCalledExactlyOnceWith('Listing Smart Apps')
-		expect(paidAccountRequiredErrorHandlerMock).toHaveBeenCalledExactlyOnceWith(error)
-		expect(inputAndOutputItemMock).not.toHaveBeenCalled()
-	})
-
-	it('uses paid account required handler for errors updating app', async () => {
+	it('uses paid plan required handler for errors updating app', async () => {
 		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
 		const executeUpdate = inputAndOutputItemMock.mock.calls[0][2]
 
@@ -183,8 +170,7 @@ describe('handler', () => {
 
 		await expect(executeUpdate(undefined, {} as SmartAppUpdateRequest)).rejects.toThrow('should exit')
 
-		expect(paidAccountRequiredHandlerMock).toHaveBeenCalledWith('Updating a Smart App')
-		expect(paidAccountRequiredErrorHandlerMock).toHaveBeenCalledExactlyOnceWith(error)
+		expect(paidPlanRequiredHandlerMock).toHaveBeenCalledExactlyOnceWith(error)
 	})
 
 	it('passes resolved organization header to chooseSmartAppFn as accountId', async () => {

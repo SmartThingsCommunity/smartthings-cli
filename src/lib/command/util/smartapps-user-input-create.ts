@@ -53,7 +53,7 @@ const oauthAppCreateRequestInputDefinition = objectDef<SmartAppCreateRequest>(
 			{
 				targetUrl: optionalStringDef('Target URL', { validate: httpsURLValidate }),
 				privacyPolicyUrl: optionalStringDef(
-					'Privacy Policy URL (required for business accounts)',
+					'Privacy Policy URL (required for business plans)',
 					{ validate: httpsURLValidate },
 				),
 			},
