@@ -39,7 +39,7 @@ Download and run the `smartthings.msi` installer from the [latest Release](https
 
 The CLI can be used on any platform that supports Node 24.
 
-First, install at least [Node version 24.8.0](https://nodejs.org/en/download/current) on your machine.
+First, install at least [Node version 24.22.1](https://nodejs.org/en/download/current) on your machine.
 The official Node release can be found here:
 
 https://nodejs.org/en/download/current
