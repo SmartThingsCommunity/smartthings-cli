@@ -11,7 +11,6 @@ const targets = [
 	'linux-arm64',
 	'linux-x64',
 	'mac-arm64',
-	'mac-x64',
 	'windows-x64',
 ]
 const nodeVersion = process.version.substring(1)
@@ -55,7 +54,7 @@ const buildAndZipTarget = async (target: string): Promise<void> => {
 		// unable to find its own bundled script at runtime. Listing it explicitly
 		// forces nexe to embed it regardless.
 		resources: ['package.json', packFile],
-		remote: 'https://github.com/SmartThingsCommunity/cli-nexe-builds/releases/download/1.0.0',
+		remote: 'https://github.com/SmartThingsCommunity/cli-nexe-builds/releases/download/2.0.0',
 		output: fullBinaryFilename,
 		python: 'python3',
 		targets: [`${target}-${nodeVersion}`],
