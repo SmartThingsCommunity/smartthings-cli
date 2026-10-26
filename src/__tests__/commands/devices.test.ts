@@ -5,6 +5,7 @@ import type { ArgumentsCamelCase, Argv, Options } from 'yargs'
 import {
 	type Device,
 	type DeviceHealth,
+	type DeviceListOptions,
 	DeviceHealthState,
 	DeviceIntegrationType,
 	DevicesEndpoint,
@@ -70,6 +71,8 @@ describe('builder', () => {
 	outputItemOrListBuilderMock.mockReturnValue(argvMock)
 
 	const builder = cmd.builder as (yargs: Argv<object>) => Argv<CommandArgs>
+	const optionFor = (name: string): Options | undefined =>
+		(optionMock as OptionMock).mock.calls.find(([key]) => key === name)?.[1]
 
 	it('calls correct parent and yargs functions', () => {
 		expect(builder(yargsMock)).toBe(argvMock)
@@ -79,7 +82,7 @@ describe('builder', () => {
 		expect(outputItemOrListBuilderMock).toHaveBeenCalledTimes(1)
 		expect(outputItemOrListBuilderMock).toHaveBeenCalledWith(apiCommandBuilderArgvMock)
 		expect(positionalMock).toHaveBeenCalledTimes(1)
-		expect(optionMock).toHaveBeenCalledTimes(9)
+		expect(optionMock).toHaveBeenCalledTimes(10)
 		expect(exampleMock).toHaveBeenCalledTimes(1)
 		expect(buildEpilogMock).toHaveBeenCalledTimes(1)
 		expect(epilogMock).toHaveBeenCalledTimes(1)
@@ -91,12 +94,23 @@ describe('builder', () => {
 	it('accepts upper or lowercase types', () => {
 		expect(builder(yargsMock)).toBe(argvMock)
 
-		const typeCoerce = (optionMock as OptionMock).mock.calls[7][1]?.coerce
+		const typeCoerce = optionFor('type')?.coerce
 		expect(typeCoerce).toBeDefined()
 		expect(typeCoerce?.(['ZIGBEE', 'zwave']))
 			.toStrictEqual([DeviceIntegrationType.ZIGBEE, DeviceIntegrationType.ZWAVE])
 		expect(typeCoerce?.(['zigbee', 'ZWAVE']))
 			.toStrictEqual([DeviceIntegrationType.ZIGBEE, DeviceIntegrationType.ZWAVE])
+	})
+
+	it('adds long-form --hub and preserves -H for --health', () => {
+		expect(builder(yargsMock)).toBe(argvMock)
+
+		expect(optionFor('hub')).toEqual(expect.objectContaining({
+			describe: 'filter results by hub',
+			type: 'string',
+		}))
+		expect(optionFor('hub')).not.toHaveProperty('alias')
+		expect(optionFor('health')).toEqual(expect.objectContaining({ alias: 'H' }))
 	})
 })
 
@@ -117,6 +131,7 @@ describe('handler', () => {
 		tableGenerator: tableGeneratorMock,
 	} as APICommand<ArgumentsCamelCase<CommandArgs>>
 	apiCommandMock.mockResolvedValue(command)
+	beforeEach(() => apiDevicesListMock.mockReset())
 
 	const defaultInputArgv = {
 		profile: 'default',
@@ -124,6 +139,18 @@ describe('handler', () => {
 		health: false,
 		verbose: false,
 	} as ArgumentsCamelCase<CommandArgs>
+	const selectedHubId = 'selected-hub-id'
+	const otherHubId = 'other-hub-id'
+	const selectedHub = {
+		deviceId: selectedHubId,
+		label: 'Selected Hub',
+		type: DeviceIntegrationType.HUB,
+	} as Device
+	const otherHub = {
+		deviceId: otherHubId,
+		label: 'Other Hub',
+		type: DeviceIntegrationType.HUB,
+	} as Device
 
 	const device1 = { deviceId: 'device-1-id' } as Device
 	const device2 = { deviceId: 'device-2-id' } as Device
@@ -165,7 +192,11 @@ describe('handler', () => {
 	})
 
 	it('lists details of a specified device', async () => {
-		const inputArgv = { ...defaultInputArgv, idOrIndex: 'device-from-arg' } as ArgumentsCamelCase<CommandArgs>
+		const inputArgv = {
+			...defaultInputArgv,
+			hub: selectedHubId,
+			idOrIndex: 'device-from-arg',
+		} as ArgumentsCamelCase<CommandArgs>
 
 		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
 
@@ -184,6 +215,7 @@ describe('handler', () => {
 		expect(await getFunction('chosen-device-id')).toStrictEqual(device1)
 
 		expect(apiDevicesGetMock).toHaveBeenCalledWith('chosen-device-id', { includeStatus: false })
+		expect(apiDevicesListMock).not.toHaveBeenCalled()
 
 		buildTableOutputMock.mockReturnValueOnce('build table output')
 		const config = outputItemOrListMock.mock.calls[0][1] as
@@ -339,5 +371,303 @@ describe('handler', () => {
 		expect(await getFunction('chosen-device-id')).toStrictEqual(device1)
 
 		expect(apiDevicesGetMock).toHaveBeenCalledWith('chosen-device-id', { includeStatus: true })
+	})
+
+	it('filters all supported direct hub-id integrations using the declared device type', async () => {
+		const directDevices = [
+			{ deviceId: 'dth-device', label: 'DTH Device', type: DeviceIntegrationType.DTH,
+				dth: { hubId: selectedHubId } },
+			{ deviceId: 'lan-device', label: 'LAN Device', type: DeviceIntegrationType.LAN,
+				lan: { hubId: selectedHubId } },
+			{ deviceId: 'zigbee-device', label: 'Zigbee Device', type: DeviceIntegrationType.ZIGBEE,
+				zigbee: { hubId: selectedHubId } },
+			{ deviceId: 'zwave-device', label: 'Z-Wave Device', type: DeviceIntegrationType.ZWAVE,
+				zwave: { hubId: selectedHubId } },
+			{ deviceId: 'matter-device', label: 'Matter Device', type: DeviceIntegrationType.MATTER,
+				matter: { hubId: selectedHubId } },
+			{ deviceId: 'edge-child-device', label: 'Edge Child Device', type: DeviceIntegrationType.EDGE_CHILD,
+				edgeChild: { hubId: selectedHubId } },
+			{ deviceId: 'virtual-device', label: 'Virtual Device', type: DeviceIntegrationType.VIRTUAL,
+				virtual: { hubId: selectedHubId } },
+		] as unknown as Device[]
+		const deviceOnOtherHub = {
+			deviceId: 'other-hub-device',
+			label: 'Other Hub Device',
+			type: DeviceIntegrationType.ZIGBEE,
+			zigbee: { hubId: otherHubId },
+		} as unknown as Device
+		const deviceWithIrrelevantHubField = {
+			deviceId: 'irrelevant-hub-field-device',
+			label: 'Irrelevant Hub Field Device',
+			type: DeviceIntegrationType.LAN,
+			lan: {},
+			zigbee: { hubId: selectedHubId },
+		} as unknown as Device
+		const inputArgv = { ...defaultInputArgv, hub: selectedHubId } as ArgumentsCamelCase<CommandArgs>
+
+		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
+
+		const listFunction = outputItemOrListMock.mock.calls[0][3]
+		apiDevicesListMock.mockResolvedValueOnce([
+			selectedHub,
+			...directDevices,
+			otherHub,
+			deviceOnOtherHub,
+			deviceWithIrrelevantHubField,
+		])
+
+		expect(await listFunction()).toStrictEqual(directDevices)
+		expect(apiDevicesListMock).toHaveBeenCalledExactlyOnceWith({
+			capability: undefined,
+			capabilitiesMode: 'and',
+			locationId: undefined,
+			deviceId: undefined,
+			installedAppId: undefined,
+			type: undefined,
+			includeHealth: false,
+			includeStatus: false,
+		})
+	})
+
+	it('treats declared-type hub ownership as authoritative over ancestry', async () => {
+		const selectedDespiteOtherParent = {
+			deviceId: 'selected-despite-other-parent',
+			label: 'Selected Despite Other Parent',
+			type: DeviceIntegrationType.ZIGBEE,
+			parentDeviceId: otherHubId,
+			zigbee: { hubId: selectedHubId },
+		} as unknown as Device
+		const excludedDespiteSelectedParent = {
+			deviceId: 'excluded-despite-selected-parent',
+			label: 'Excluded Despite Selected Parent',
+			type: DeviceIntegrationType.LAN,
+			parentDeviceId: selectedHubId,
+			lan: { hubId: otherHubId },
+			zigbee: { hubId: selectedHubId },
+		} as unknown as Device
+		const inputArgv = { ...defaultInputArgv, hub: selectedHubId } as ArgumentsCamelCase<CommandArgs>
+
+		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
+
+		const listFunction = outputItemOrListMock.mock.calls[0][3]
+		apiDevicesListMock.mockResolvedValueOnce([
+			selectedHub,
+			otherHub,
+			selectedDespiteOtherParent,
+			excludedDespiteSelectedParent,
+		])
+
+		expect(await listFunction()).toStrictEqual([selectedDespiteOtherParent])
+	})
+
+	it('handles nested ancestry, missing parents, cycles, and duplicate devices safely', async () => {
+		const directDevice = {
+			deviceId: 'direct-device',
+			label: 'Direct Device',
+			type: DeviceIntegrationType.LAN,
+			lan: { hubId: selectedHubId },
+		} as unknown as Device
+		const intermediateDevice = {
+			deviceId: 'intermediate-device',
+			label: 'Intermediate Device',
+			type: DeviceIntegrationType.EDGE_CHILD,
+			parentDeviceId: selectedHubId,
+			edgeChild: {},
+		} as unknown as Device
+		const nestedDevice = {
+			deviceId: 'nested-device',
+			label: 'Nested Device',
+			type: DeviceIntegrationType.EDGE_CHILD,
+			parentDeviceId: intermediateDevice.deviceId,
+			edgeChild: {},
+		} as unknown as Device
+		const otherHubChild = {
+			deviceId: 'other-hub-child',
+			label: 'Other Hub Child',
+			type: DeviceIntegrationType.EDGE_CHILD,
+			parentDeviceId: otherHubId,
+			edgeChild: {},
+		} as unknown as Device
+		const missingParentDevice = {
+			deviceId: 'missing-parent-device',
+			label: 'Missing Parent Device',
+			type: DeviceIntegrationType.EDGE_CHILD,
+			parentDeviceId: 'missing-parent-id',
+			edgeChild: {},
+		} as unknown as Device
+		const cycleA = {
+			deviceId: 'cycle-a',
+			label: 'Cycle A',
+			type: DeviceIntegrationType.EDGE_CHILD,
+			parentDeviceId: 'cycle-b',
+			edgeChild: {},
+		} as unknown as Device
+		const cycleB = {
+			deviceId: 'cycle-b',
+			label: 'Cycle B',
+			type: DeviceIntegrationType.EDGE_CHILD,
+			parentDeviceId: 'cycle-a',
+			edgeChild: {},
+		} as unknown as Device
+		const duplicateFirst = {
+			deviceId: 'duplicate-device',
+			label: 'Duplicate First',
+			type: DeviceIntegrationType.EDGE_CHILD,
+			parentDeviceId: selectedHubId,
+			edgeChild: {},
+		} as unknown as Device
+		const duplicateSecond = { ...duplicateFirst, label: 'Duplicate Second' }
+		const inputArgv = { ...defaultInputArgv, hub: selectedHubId } as ArgumentsCamelCase<CommandArgs>
+
+		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
+
+		const listFunction = outputItemOrListMock.mock.calls[0][3]
+		apiDevicesListMock.mockResolvedValueOnce([
+			selectedHub,
+			directDevice,
+			intermediateDevice,
+			nestedDevice,
+			otherHub,
+			otherHubChild,
+			missingParentDevice,
+			cycleA,
+			cycleB,
+			duplicateFirst,
+			duplicateSecond,
+		])
+
+		expect(await listFunction()).toStrictEqual([
+			directDevice,
+			intermediateDevice,
+			nestedDevice,
+			duplicateFirst,
+		])
+		expect(apiDevicesListMock).toHaveBeenCalledTimes(1)
+	})
+
+	const narrowingFilterCases: [string, Partial<CommandArgs>, Partial<DeviceListOptions>][] = [
+		['location', { location: ['location-id'] }, { locationId: ['location-id'] }],
+		['capability', { capability: ['switch'], capabilitiesMode: 'or' },
+			{ capability: ['switch'], capabilitiesMode: 'or' }],
+		['device', { device: ['filtered-leaf-id'] }, { deviceId: ['filtered-leaf-id'] }],
+		['installed app', { installedApp: 'installed-app-id' }, { installedAppId: 'installed-app-id' }],
+		['type', { type: [DeviceIntegrationType.EDGE_CHILD] }, { type: [DeviceIntegrationType.EDGE_CHILD] }],
+	]
+
+	it.each(narrowingFilterCases)('loads complete topology for a %s filter', async (_name, flags, expectedOptions) => {
+		const filteredLeaf = {
+			deviceId: 'filtered-leaf-id',
+			label: 'Filtered Leaf',
+			type: DeviceIntegrationType.EDGE_CHILD,
+			edgeChild: {},
+			healthState: { state: DeviceHealthState.ONLINE },
+		} as unknown as OutputDevice
+		const topologyIntermediate = {
+			deviceId: 'topology-intermediate-id',
+			label: 'Topology Intermediate',
+			type: DeviceIntegrationType.EDGE_CHILD,
+			parentDeviceId: selectedHubId,
+			edgeChild: {},
+		} as unknown as Device
+		const topologyLeaf = {
+			deviceId: filteredLeaf.deviceId,
+			label: 'Lean Topology Leaf',
+			type: DeviceIntegrationType.EDGE_CHILD,
+			parentDeviceId: topologyIntermediate.deviceId,
+			edgeChild: {},
+		} as unknown as Device
+		const inputArgv = {
+			...defaultInputArgv,
+			hub: selectedHubId,
+			...flags,
+		} as ArgumentsCamelCase<CommandArgs>
+
+		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
+
+		const listFunction = outputItemOrListMock.mock.calls[0][3]
+		apiDevicesListMock
+			.mockResolvedValueOnce([filteredLeaf])
+			.mockResolvedValueOnce([selectedHub, topologyIntermediate, topologyLeaf])
+
+		const result = await listFunction()
+		expect(result).toStrictEqual([filteredLeaf])
+		expect(result[0]).toBe(filteredLeaf)
+		expect(apiDevicesListMock).toHaveBeenCalledTimes(2)
+		expect(apiDevicesListMock).toHaveBeenNthCalledWith(1, {
+			capability: undefined,
+			capabilitiesMode: 'and',
+			locationId: undefined,
+			deviceId: undefined,
+			installedAppId: undefined,
+			type: undefined,
+			includeHealth: false,
+			includeStatus: false,
+			...expectedOptions,
+		})
+		expect(apiDevicesListMock.mock.calls[1]).toStrictEqual([])
+	})
+
+	it('uses the hub-filtered list for a numeric index without extra health or status topology calls', async () => {
+		const matchingDevice = {
+			deviceId: 'matching-index-device',
+			label: 'Matching Index Device',
+			type: DeviceIntegrationType.MATTER,
+			matter: { hubId: selectedHubId },
+		} as unknown as Device
+		const otherDevice = {
+			deviceId: 'other-index-device',
+			label: 'Other Index Device',
+			type: DeviceIntegrationType.MATTER,
+			matter: { hubId: otherHubId },
+		} as unknown as Device
+		const inputArgv = {
+			...defaultInputArgv,
+			hub: selectedHubId,
+			health: true,
+			status: true,
+			idOrIndex: '1',
+		} as ArgumentsCamelCase<CommandArgs>
+
+		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
+		expect(outputItemOrListMock.mock.calls[0][2]).toBe('1')
+
+		const listFunction = outputItemOrListMock.mock.calls[0][3]
+		apiDevicesListMock.mockResolvedValueOnce([selectedHub, matchingDevice, otherDevice])
+
+		expect(await listFunction()).toStrictEqual([matchingDevice])
+		expect(apiDevicesListMock).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+			includeHealth: true,
+			includeStatus: true,
+		}))
+	})
+
+	it('adds verbose location data only after filtering devices by hub', async () => {
+		const matchingDevice = {
+			deviceId: 'matching-verbose-device',
+			label: 'Matching Verbose Device',
+			type: DeviceIntegrationType.ZIGBEE,
+			zigbee: { hubId: selectedHubId },
+		} as unknown as Device
+		const otherDevice = {
+			deviceId: 'other-verbose-device',
+			label: 'Other Verbose Device',
+			type: DeviceIntegrationType.ZIGBEE,
+			zigbee: { hubId: otherHubId },
+		} as unknown as Device
+		const matchingDeviceWithLocation = { ...matchingDevice, location: 'Home' } as OutputDevice
+		const inputArgv = {
+			...defaultInputArgv,
+			hub: selectedHubId,
+			verbose: true,
+		} as ArgumentsCamelCase<CommandArgs>
+
+		await expect(cmd.handler(inputArgv)).resolves.not.toThrow()
+
+		const listFunction = outputItemOrListMock.mock.calls[0][3]
+		apiDevicesListMock.mockResolvedValueOnce([matchingDevice, otherDevice])
+		withLocationsAndRoomsMock.mockResolvedValueOnce([matchingDeviceWithLocation])
+
+		expect(await listFunction()).toStrictEqual([matchingDeviceWithLocation])
+		expect(withLocationsAndRoomsMock).toHaveBeenCalledExactlyOnceWith(clientMock, [matchingDevice])
 	})
 })
