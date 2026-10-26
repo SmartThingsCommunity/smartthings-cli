@@ -4,6 +4,18 @@ on:
   push:
     branches:
       - main
+  # Re-run the GitHub release, Homebrew, and Windows installer jobs for a version
+  # that was already published to npm (e.g. after a failed or partial release).
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version already published to npm (e.g. 2.1.3)
+        required: true
+        type: string
+      ref:
+        description: Commit SHA the version was released from (the version packages commit)
+        required: true
+        type: string
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -17,23 +29,27 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      cli-released: ${{ steps.changesets.outputs.published }}
-      cli-version: ${{ steps.cli-metadata.outputs.version }}
-      cli-tag: ${{ steps.cli-metadata.outputs.tag }}
+      cli-released: ${{ github.event_name == 'workflow_dispatch' || steps.changesets.outputs.published }}
+      cli-version: ${{ steps.cli-metadata-manual.outputs.version || steps.cli-metadata.outputs.version }}
+      cli-tag: ${{ steps.cli-metadata-manual.outputs.tag || steps.cli-metadata.outputs.tag }}
 
     steps:
       - name: Checkout Repo
+        if: github.event_name != 'workflow_dispatch'
         uses: actions/checkout@v6.0.1
 
       - name: Setup Node.js
+        if: github.event_name != 'workflow_dispatch'
         uses: actions/setup-node@v6.1.0
         with:
           node-version: 24.22.1
 
       - name: Install Dependencies
+        if: github.event_name != 'workflow_dispatch'
         run: npm ci
 
       - name: Create Release Pull Request or Publish to npm
+        if: github.event_name != 'workflow_dispatch'
         id: changesets
         uses: changesets/action@v1.5.3
         with:
@@ -52,7 +68,17 @@ jobs:
           echo '${{ steps.changesets.outputs.publishedPackages }}' | jq .
           echo 'Published: ${{ steps.changesets.outputs.published }}'
 
+      - name: Derive Required Metadata (manual dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        id: cli-metadata-manual
+        run: |
+          echo "tag=@smartthings/cli@$INPUT_VERSION" >> $GITHUB_OUTPUT
+          echo "version=$INPUT_VERSION" >> $GITHUB_OUTPUT
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+
       - name: Derive Required Metadata
+        if: github.event_name != 'workflow_dispatch'
         id: cli-metadata
         run: | # derive latest info from changesets output
           published_package=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq 'map(select(.name == "@smartthings/cli")) | .[]')
@@ -61,8 +87,8 @@ jobs:
 
       - name: Debug Version
         run: |
-          echo "CLI Tag: ${{ steps.cli-metadata.outputs.tag }}"
-          echo "CLI Version: ${{ steps.cli-metadata.outputs.version }}"
+          echo "CLI Tag: ${{ steps.cli-metadata-manual.outputs.tag || steps.cli-metadata.outputs.tag }}"
+          echo "CLI Version: ${{ steps.cli-metadata-manual.outputs.version || steps.cli-metadata.outputs.version }}"
 
   package:
     name: Package CLI
@@ -72,6 +98,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v6.0.1
+        with:
+          ref: ${{ inputs.ref || github.sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6.1.0
@@ -185,6 +213,8 @@ jobs:
 
       - name: Checkout Repo
         uses: actions/checkout@v6.0.1
+        with:
+          ref: ${{ inputs.ref || github.sha }}
 
       - name: Download Artifacts
         uses: actions/download-artifact@v7.0.0
@@ -204,6 +234,7 @@ jobs:
         with:
           name: ${{ needs.npm-release.outputs.cli-version }}
           tag_name: ${{ needs.npm-release.outputs.cli-tag }}
+          target_commitish: ${{ inputs.ref || github.sha }}
           generate_release_notes: true
           prerelease: false
           files: 'smartthings-*.{tgz,zip}'
@@ -260,6 +291,8 @@ jobs:
 
       - name: Checkout Repo
         uses: actions/checkout@v6.0.1
+        with:
+          ref: ${{ inputs.ref || github.sha }}
 
       - name: Download Artifacts
         uses: actions/download-artifact@v7.0.0
