@@ -419,7 +419,8 @@ describe('login', () => {
 
 	it('logs axios response data', async () => {
 		readFileSyncMock.mockReturnValueOnce(Buffer.from(JSON.stringify(credentialsFileData)))
-		postMock.mockRejectedValueOnce({ isAxiosError: true, response: { data: 'axios error data' } })
+		const response = { data: 'axios error data' }
+		postMock.mockRejectedValueOnce({ isAxiosError: true, response })
 		const authenticator = setupAuthenticator()
 
 		const loginPromise = authenticator.login?.()
@@ -427,7 +428,7 @@ describe('login', () => {
 		await mockBrowser()
 		await expect(loginPromise).rejects.toBe('unable to get authentication info')
 
-		expect(errorMock).toHaveBeenCalledWith('axios error data')
+		expect(errorMock).toHaveBeenCalledWith('axios error:', response.data)
 	})
 
 	it('logs express server close error', async () => {
