@@ -215,6 +215,9 @@ jobs:
         uses: actions/checkout@v6.0.1
         with:
           ref: ${{ inputs.ref || github.sha }}
+          # Full history is needed to push the release tag; from a shallow clone git sends the
+          # whole tree and GitHub rejects it as creating .github/workflows files.
+          fetch-depth: 0
 
       - name: Download Artifacts
         uses: actions/download-artifact@v7.0.0
