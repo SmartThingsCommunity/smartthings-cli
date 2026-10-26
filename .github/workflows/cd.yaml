@@ -252,7 +252,6 @@ jobs:
         with:
           name: ${{ needs.npm-release.outputs.cli-version }}
           tag_name: ${{ needs.npm-release.outputs.cli-tag }}
-          target_commitish: ${{ inputs.ref || github.sha }}
           generate_release_notes: true
           prerelease: false
           files: 'smartthings-*.{tgz,zip}'
