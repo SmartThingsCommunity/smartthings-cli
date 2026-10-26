@@ -229,6 +229,21 @@ jobs:
         with:
           node-version: 24.22.1
 
+      # On a manual dispatch the tag was never pushed (changeset publish pushes it in the normal
+      # flow), so push it here rather than having the releases API create it.
+      - name: Push Release Tag
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/$CLI_TAG"; then
+            echo "Tag $CLI_TAG already exists"
+          else
+            git tag "$CLI_TAG" "$CLI_REF"
+            git push origin "refs/tags/$CLI_TAG"
+          fi
+        env:
+          CLI_TAG: ${{ needs.npm-release.outputs.cli-tag }}
+          CLI_REF: ${{ inputs.ref }}
+
       - name: Create Github Release
         uses: softprops/action-gh-release@v2.5.0
         with:
