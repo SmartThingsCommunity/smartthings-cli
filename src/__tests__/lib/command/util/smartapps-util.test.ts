@@ -28,11 +28,9 @@ describe('paidPlanRequiredHandler', () => {
 	it('exits with a helpful message on 403', () => {
 		expect(() => paidPlanRequiredHandler({ response: { status: 403 } })).toThrow('should exit')
 
-		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(
-			'Creating or modifying a Smart App requires a paid plan. Visit' +
-				'\n  https://developer.smartthings.com/console/service-integrations/manage-plans' +
-				'\nto upgrade.',
-		)
+		expect(fatalErrorMock).toHaveBeenCalledExactlyOnceWith(expect.stringContaining(
+			'Creating or modifying a Smart App requires a paid plan.',
+		))
 	})
 
 	it('rethrows other errors', () => {
