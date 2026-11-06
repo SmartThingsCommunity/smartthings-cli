@@ -17,7 +17,9 @@ export const paidPlanRequiredHandler = (error: unknown): never => {
 	if ((error as { response?: { status?: number } } | undefined)?.response?.status === 403) {
 		return fatalError('Creating or modifying a Smart App requires a paid plan. Visit' +
 			'\n  https://developer.smartthings.com/console/service-integrations/manage-plans' +
-			'\nto upgrade.')
+			'\nto upgrade.' +
+			'\n\nMore info can be found at' +
+			'\n  https://developer.smartthings.com/docs/service-integrations/get-started')
 	}
 	throw error
 }
