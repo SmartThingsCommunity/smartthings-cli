@@ -1,5 +1,11 @@
 # Change Log
 
+## 3.0.1
+
+### Patch Changes
+
+- [#860](https://github.com/SmartThingsCommunity/smartthings-cli/pull/860) [`c838d1e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c838d1ea6c0d94b3a2fd6c75d942fe46d96130af) Thanks [@rossiam](https://github.com/rossiam)! - Update scopes available when creating an API Access Smart App.
+
 ## 3.0.0
 
 ### Major Changes
