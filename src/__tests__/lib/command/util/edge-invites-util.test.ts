@@ -4,12 +4,12 @@ import type { Channel, ChannelsEndpoint } from '@smartthings/core-sdk'
 
 import type { EdgeCommand } from '../../../../lib/command/edge-command.js'
 import { buildListFunction } from '../../../../lib/command/util/edge-invites-util.js'
-import { Invitation, invitesEndpoint } from '../../../../lib/edge/endpoints/invites.js'
+import type { Invitation, InvitesEndpoint } from '../../../../lib/edge/endpoints/invites.js'
 
 
 describe('buildListFunction', () => {
 	const apiChannelsListMock = jest.fn<typeof ChannelsEndpoint.prototype.list>()
-	const apiInvitesListMock =  jest.fn<typeof invitesEndpoint.prototype.list>()
+	const apiInvitesListMock =  jest.fn<InvitesEndpoint['list']>()
 	const command = {
 		client: {
 			channels: {
