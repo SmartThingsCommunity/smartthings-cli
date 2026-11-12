@@ -30,6 +30,7 @@ export type CommandArgs =
 		capabilitiesMode?: 'and' | 'or'
 		device?: string[]
 		installedApp?: string
+		hub?: string
 		status: boolean
 		health: boolean
 		type?: DeviceIntegrationType[]
@@ -73,6 +74,10 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 			describe: 'filter results by installed app that created the device',
 			type: 'string',
 		})
+		.option('hub', {
+			describe: 'filter results by hub',
+			type: 'string',
+		})
 		.option('status', {
 			alias: 's',
 			describe: 'include attribute values in the response',
@@ -110,6 +115,7 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 				'$0 devices --capability button --capability temperatureMeasurement --capabilitiesMode or',
 				'list devices with either the button or temperatureMeasurement capability',
 			],
+			['$0 devices --hub a9108ab1-7087-4c10-9781-a0627b084fce', 'list devices joined to the specified hub'],
 			['$0 devices --verbose', 'include location and room names in the output'],
 			['$0 devices --type zigbee --type zwave', 'list Zigbee and Z-Wave devices'],
 		])
@@ -117,6 +123,81 @@ const builder = (yargs: Argv): Argv<CommandArgs> =>
 
 // type that includes extra fields sometimes included when requested via command line flags
 export type OutputDevice = Device & WithNamedRoom & Pick<DeviceStatus, 'healthState'>
+
+const directHubId = (device: Device): string | undefined => {
+	switch (device.type) {
+		case DeviceIntegrationType.DTH:
+			return device.dth?.hubId ?? undefined
+		case DeviceIntegrationType.LAN:
+			return device.lan?.hubId ?? undefined
+		case DeviceIntegrationType.MATTER:
+			return device.matter?.hubId ?? undefined
+		case DeviceIntegrationType.ZIGBEE:
+			return device.zigbee?.hubId ?? undefined
+		case DeviceIntegrationType.ZWAVE:
+			return device.zwave?.hubId ?? undefined
+		case DeviceIntegrationType.EDGE_CHILD:
+			return device.edgeChild?.hubId ?? undefined
+		case DeviceIntegrationType.VIRTUAL:
+			return device.virtual?.hubId ?? undefined
+		default:
+			return undefined
+	}
+}
+
+const isAssociatedWithHub = (
+		device: Device,
+		devicesById: ReadonlyMap<string, Device>,
+		hubId: string,
+): boolean => {
+	const deviceHubId = directHubId(device)
+	if (deviceHubId !== undefined) {
+		return deviceHubId === hubId
+	}
+
+	let currentDevice = devicesById.get(device.deviceId) ?? device
+	const visitedDeviceIds = new Set<string>()
+	while (!visitedDeviceIds.has(currentDevice.deviceId)) {
+		visitedDeviceIds.add(currentDevice.deviceId)
+
+		const currentHubId = directHubId(currentDevice)
+		if (currentHubId !== undefined) {
+			return currentHubId === hubId
+		}
+
+		const parentDeviceId = currentDevice.parentDeviceId
+		if (parentDeviceId === undefined) {
+			return false
+		}
+		if (parentDeviceId === hubId) {
+			return true
+		}
+
+		const parentDevice = devicesById.get(parentDeviceId)
+		if (parentDevice === undefined) {
+			return false
+		}
+		currentDevice = parentDevice
+	}
+
+	return false
+}
+
+const filterDevicesByHub = (devices: Device[], topology: Device[], hubId: string): Device[] => {
+	const devicesById = new Map(topology.map(device => [device.deviceId, device]))
+	const includedDeviceIds = new Set<string>()
+	return devices.filter(device => {
+		if (
+			device.deviceId === hubId
+			|| includedDeviceIds.has(device.deviceId)
+			|| !isAssociatedWithHub(device, devicesById, hubId)
+		) {
+			return false
+		}
+		includedDeviceIds.add(device.deviceId)
+		return true
+	})
+}
 
 const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => {
 	const command = await apiCommand(argv)
@@ -155,10 +236,21 @@ const handler = async (argv: ArgumentsCamelCase<CommandArgs>): Promise<void> => 
 		includeHealth: argv.health,
 		...deviceGetOptions,
 	}
+	const hasNarrowingFilter = Boolean(
+		argv.capability?.length
+		|| argv.location?.length
+		|| argv.device?.length
+		|| argv.installedApp !== undefined
+		|| argv.type?.length,
+	)
 
 	await outputItemOrList<OutputDevice>(command, config, argv.idOrIndex,
 		async () => {
-			const devices = await command.client.devices.list(deviceListOptions)
+			let devices = await command.client.devices.list(deviceListOptions)
+			if (argv.hub !== undefined) {
+				const topology = hasNarrowingFilter ? await command.client.devices.list() : devices
+				devices = filterDevicesByHub(devices, topology, argv.hub)
+			}
 			if (argv.verbose) {
 				return await withLocationsAndRooms(command.client, devices)
 			}
