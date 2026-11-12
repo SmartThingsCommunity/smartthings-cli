@@ -1,5 +1,13 @@
 # Change Log
 
+## 3.0.1
+
+### Patch Changes
+
+- [#860](https://github.com/SmartThingsCommunity/smartthings-cli/pull/860) [`c838d1e`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/c838d1ea6c0d94b3a2fd6c75d942fe46d96130af) Thanks [@rossiam](https://github.com/rossiam)! - Update scopes available when creating an API Access Smart App.
+
+- [#863](https://github.com/SmartThingsCommunity/smartthings-cli/pull/863) [`042baae`](https://github.com/SmartThingsCommunity/smartthings-cli/commit/042baae9ea34735d6118de459685d8572a7bad3a) Thanks [@rossiam](https://github.com/rossiam)! - Fix virtualdevices:create-standard error.
+
 ## 3.0.0
 
 ### Major Changes
